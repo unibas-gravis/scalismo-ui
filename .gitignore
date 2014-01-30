@@ -1,0 +1,13 @@
+.cache
+.target
+bin/
+project/target/
+project/project/target/
+*~
+.classpath
+.settings
+target/
+lib/
+playground/
+.worksheet/
+statismo-ui.jar
