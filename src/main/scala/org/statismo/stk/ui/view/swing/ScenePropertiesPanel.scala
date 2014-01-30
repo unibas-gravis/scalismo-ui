@@ -53,7 +53,7 @@ class ScenePropertiesPanel(val workspace: Workspace) extends BorderPanel with Re
   }
 
   def populateTree() {
-    0 until root.getChildCount() foreach ({ i =>
+    {0 until root.getChildCount()}.reverse.foreach ({ i =>
       tree.removeNodeFromParent(root.getChildAt(i).asInstanceOf[MutableTreeNode])
     })
     workspace.scene.objects.foreach({ o =>

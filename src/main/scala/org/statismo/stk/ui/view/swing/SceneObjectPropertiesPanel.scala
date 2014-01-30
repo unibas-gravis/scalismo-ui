@@ -71,7 +71,10 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     updateContent
   }
 
-  val scroll = new ScrollPane
+  val scroll = new ScrollPane() {
+    horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
+    verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
+  }
   layout(scroll) = Center
   
   def updateContent() {
