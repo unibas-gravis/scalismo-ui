@@ -35,16 +35,6 @@ class Scene extends Publisher {
 	  val ok = tries filter(_.isSuccess) map(_.get)
 	  addObjects(ok)
 	}
+	
+	
 }
-
-trait SceneAdapter extends Reactor {
-  val scene: Scene
-  listenTo(scene)
-  
-  reactions += {
-    case SceneChanged() => {
-      
-    }
-  }
-}
-

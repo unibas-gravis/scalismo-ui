@@ -9,8 +9,7 @@ import org.statismo.stk.ui.SceneChanged
 import org.statismo.stk.ui.Workspace
 
 class WorkspacePanel(val workspace: Workspace) extends BorderPanel { //with SceneAdapter {
-  layout(new ViewportsPanel(workspace)) = Center
-  //layout(new DetailsPanel(scene)) = West
   layout(new PropertiesPanel(workspace)) = West
+  layout(new ViewportsPanel(workspace)) = Center
   
 }

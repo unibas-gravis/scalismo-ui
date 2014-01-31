@@ -42,7 +42,7 @@ class StatModel(val rawModel: StatisticalMeshModel, val displayName: String) ext
 	    coeffs = newCoeffs
 	    val newptseq = for ((pt, df) <- ptdefs) yield pt + df
 	    mesh = new TriangleMesh(newptseq, refMesh.cells)
-	    publish(SceneObject.GeometryChanged)
+	    publish(Surface.GeometryChanged(this))
     }
   }
   

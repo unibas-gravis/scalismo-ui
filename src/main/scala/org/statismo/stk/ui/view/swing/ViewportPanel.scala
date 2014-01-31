@@ -11,7 +11,7 @@ import javax.swing.border.TitledBorder
 
 class ViewportPanel(val viewport: Viewport) extends BorderPanel with ViewportAdapter {
   
-  //border = new TitledBorder(null, "3D View", TitledBorder.LEADING, 0, null, null)
+  border = new TitledBorder(null, "3D View", TitledBorder.LEADING, 0, null, null)
 	val vtk = new VtkPanel
 	layout(vtk) = Center
 	def reloadViewport = {

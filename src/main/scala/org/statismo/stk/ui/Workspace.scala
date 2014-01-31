@@ -8,7 +8,7 @@ object Workspace {
 }
 
 class Workspace(val scene: Scene) extends Publisher {
-  private var _viewports: Seq[Viewport] = Seq(new Viewport(scene))
+  private var _viewports: Seq[Viewport] = Seq(new Viewport(scene), new Viewport(scene), new Viewport(scene), new Viewport(scene))
   def viewports = { _viewports }
 
   private var _selectedObject: Option[SceneObject] = None

@@ -1,18 +1,16 @@
 package org.statismo.stk.ui
 
 import java.awt.Dimension
-
 import scala.Array.canBuildFrom
 import scala.swing.MainFrame
 import scala.swing.MenuBar
 import scala.swing.Reactor
 import scala.swing.SimpleSwingApplication
-
 import org.statismo.stk.ui.swing.menu.MainMenuBar
 import org.statismo.stk.ui.view.swing.WorkspacePanel
-
 import javax.swing.UIManager
 import javax.swing.WindowConstants
+import scala.swing.Component
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
@@ -58,7 +56,9 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   val workspace = new Workspace(scene)
-  contents = new WorkspacePanel(workspace)
+  
+  lazy val workspacePanel: Component  = new WorkspacePanel(workspace)
+  contents = workspacePanel
   menuBar = new MainMenuBar()(this)
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)

@@ -25,6 +25,7 @@ import org.statismo.stk.ui.controller.PrincipalComponentsController
 import scala.swing.Reactions
 import org.statismo.stk.ui.SceneObject
 import scala.swing.event.Event
+import org.statismo.stk.ui.Surface
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with SceneObjectPropertyView {
   //controller.views += PrincipalComponentsPanel.this
@@ -133,7 +134,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
           randomizeValues
         }
       }
-      case SceneObject.GeometryChanged => benchmark({
+      case Surface.GeometryChanged(s) => benchmark({
         updateCoefficients()
       },"sgc")
       case Cleanup => benchmark({

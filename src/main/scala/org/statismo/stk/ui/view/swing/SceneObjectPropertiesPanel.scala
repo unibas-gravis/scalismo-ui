@@ -28,7 +28,7 @@ trait SceneObjectPropertyView extends Component {
 
 object SceneObjectPropertiesPanel extends Publisher {
   case object AvailableViewsChanged extends Event
-  private var _availableViews: Seq[SceneObjectPropertyView] = Seq(new PrincipalComponentsPanel())
+  private var _availableViews: Seq[SceneObjectPropertyView] = Seq(new PrincipalComponentsPanel(), new AppearancePanel())
   def availableViews = { _availableViews }
   def availableViews_=(newViews: Seq[SceneObjectPropertyView]) = {
     if (_availableViews != newViews) {
@@ -67,6 +67,9 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     applicableViews.removeAllElements()
     applicable foreach ({ v =>
       applicableViews.addElement(v)
+      if (scroll.contents == v) {
+        applicableViews.setSelectedItem(v)
+      }
     })
     updateContent
   }

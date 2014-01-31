@@ -7,6 +7,7 @@ import org.statismo.stk.ui.view.PrincipalComponentsView
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.ListBuffer
 import org.statismo.stk.ui.SceneObject
+import org.statismo.stk.ui.Surface
 
 class PrincipalComponentsController(val model: StatModel, val min: Float = -3.0f, val max: Float = 3.0f) extends Reactor {
 	require(min < max)
@@ -15,7 +16,7 @@ class PrincipalComponentsController(val model: StatModel, val min: Float = -3.0f
 	val views: Buffer[PrincipalComponentsView] = new ListBuffer[PrincipalComponentsView]
 	
 	reactions += {
-	  case SceneObject.GeometryChanged => updateViews
+	  case Surface.GeometryChanged(s) => updateViews
 	}
 	
 	def getCoefficients: Seq[Float] = {

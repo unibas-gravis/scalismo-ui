@@ -16,6 +16,7 @@ import org.statismo.stk.core.utils.MeshConversion
 import scala.swing.Reactor
 import scala.swing.event.Event
 import scala.swing.Publisher
+import org.statismo.stk.ui.Colorable
 
 case class RenderRequest extends Event
 
@@ -65,15 +66,24 @@ class MeshActor(val surface: Surface) extends vtkActor with Publisher {
   val mapper = new vtkPolyDataMapper
   this.SetMapper(mapper)
   reloadGeometry()
+  setAppearance()
   
   reactions += {
-    case SceneObject.GeometryChanged => reloadGeometry()
+    case Surface.GeometryChanged(s) => reloadGeometry()
+    case Colorable.AppearanceChanged(c) => setAppearance()
   }
   
   def reloadGeometry() {
     mesh = Some(MeshConversion.meshToVTKPolyData(surface.mesh, mesh))
     mapper.SetInputData(mesh.get)
     mapper.Modified()
+    publish(RenderRequest())
+  }
+  
+  def setAppearance() {
+    this.GetProperty().SetOpacity(surface.opacity)
+    val color = surface.color.getColorComponents(null)
+    this.GetProperty().SetColor(color(0), color(1), color(2))
     publish(RenderRequest())
   }
 }
