@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.swing;
 
-import org.statismo.stk.ui.view.swing.SimpleViewer;
+import org.statismo.stk.ui.swing.SimpleViewer;
 
 public class Launcher {
 

@@ -7,7 +7,7 @@ import scala.swing.MenuBar
 import scala.swing.Reactor
 import scala.swing.SimpleSwingApplication
 import org.statismo.stk.ui.swing.menu.MainMenuBar
-import org.statismo.stk.ui.view.swing.WorkspacePanel
+import org.statismo.stk.ui.swing.WorkspacePanel
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import scala.swing.Component
@@ -67,7 +67,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   def startup(args: Array[String]): Unit = {
-    size = new Dimension(800, 600)
+    size = new Dimension(1024, 768)
     // center on screen
     peer.setLocationRelativeTo(null)
   }

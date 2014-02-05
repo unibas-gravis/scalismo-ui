@@ -48,12 +48,13 @@ object Resolvers {
 }
 
 object Dependencies {
+  import BuildSettings._
 
   val scalatest = "org.scalatest" %% "scalatest" % "1.9" % "test"
   val breezeMath = "org.scalanlp" %% "breeze-math" % "0.4"
   val breezeViz = "org.scalanlp" %% "breeze-viz" % "0.4"
-  val scalaReflect = "org.scala-lang" % "scala-reflect" % "2.10.0"
-  val scalaSwing = "org.scala-lang" % "scala-swing" % "2.10.0"
+  val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
+  val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val twitterUtilCollection = "com.twitter" % "util-collection" % "5.3.10"
   val twitterUtilEval = "com.twitter" %% "util-eval" % "6.2.4"
   val stkCore = "org.statismo" %% "stkcore" % "0.2.0-SNAPSHOT"

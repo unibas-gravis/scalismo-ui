@@ -11,3 +11,5 @@ lib/
 playground/
 .worksheet/
 statismo-ui.jar
+*.sc
+

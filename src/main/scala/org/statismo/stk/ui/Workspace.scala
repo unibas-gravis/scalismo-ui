@@ -8,12 +8,12 @@ object Workspace {
 }
 
 class Workspace(val scene: Scene) extends Publisher {
-  private var _viewports: Seq[Viewport] = Seq(new Viewport(scene), new Viewport(scene), new Viewport(scene), new Viewport(scene))
+  private var _viewports: Seq[Viewport] = Seq(new Viewport(scene))
   def viewports = { _viewports }
 
-  private var _selectedObject: Option[SceneObject] = None
+  private var _selectedObject: Option[SceneTreeObject] = None
   def selectedObject = { _selectedObject }
-  def selectedObject_=(newObject: Option[SceneObject]) = {
+  def selectedObject_=(newObject: Option[SceneTreeObject]) = {
     if (_selectedObject != newObject) {
       _selectedObject = newObject
       publish(Workspace.SelectedObjectChanged)

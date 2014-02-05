@@ -6,12 +6,12 @@ import scala.util.Failure
 import java.io.IOException
 
 object Loadable {
-  def combineFileExtensions(filters: Seq[Loadable[SceneObject]]) : Array[String] = {
+  def combineFileExtensions(filters: Seq[Loadable[SceneTreeObject]]) : Array[String] = {
     filters.map(_.fileExtensions).flatten.toSeq.sorted.toArray
   }
-  val defaultFactories: Seq[Loadable[SceneObject]] = Seq(RawMesh, StatModel)
+  val DefaultFactories: Seq[Loadable[SceneTreeObject]] = Seq(ShapeModel, StaticMesh)
   
-  def load(filename: String, factories: Seq[Loadable[SceneObject]] = defaultFactories): Try[SceneObject] = {
+  def load(filename: String, factories: Seq[Loadable[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))
     val file = new File(filename)
     val errors = candidates map ({ f =>
@@ -26,7 +26,7 @@ object Loadable {
   }
 }
 
-trait Loadable[+T <: SceneObject] {
+trait Loadable[+T <: SceneTreeObject] {
   val fileExtensions: Seq[String]
   val description: String
   
@@ -39,10 +39,10 @@ trait Loadable[+T <: SceneObject] {
     fileExtensions.map(ext => lc.endsWith("."+ext.toLowerCase())).filter(_ == true).size != 0
   }
   
-  def apply(filename: String): Try[T] = {
+  def apply(filename: String)(implicit scene:Scene): Try[T] = {
     apply(new File(filename))
   }
 
-  def apply(file: File): Try[T]
+  def apply(file: File)(implicit scene:Scene): Try[T]
 }
 

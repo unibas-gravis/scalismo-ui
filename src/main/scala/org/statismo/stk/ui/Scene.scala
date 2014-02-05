@@ -4,37 +4,47 @@ import scala.collection.immutable.List
 import scala.swing.Publisher
 import scala.swing.Reactor
 import scala.swing.event.Event
+import java.util.Vector
+import scala.util.Try
 
-case class SceneChanged extends Event
 
-class Scene extends Publisher {
-	org.statismo.stk.core.initialize
-	
-	var objects: List[SceneObject] = Nil
-	def addObjects(list: List[SceneObject]): List[SceneObject] = {
-	  if (list.length > 0) {
-		  objects ++= list
-		  publish(SceneChanged())
-	  }
-	  list
-	}
-	
-	def removeAllObjects() = {
-	  if (objects.length > 0) {
-		  objects = Nil;
-		  publish(SceneChanged())
-	  }
-	}
-	
-	def loadObjects(paths: String*): List[SceneObject] = {
-	  loadObjects(List(paths).flatten)
-	}
-	
-	def loadObjects(paths: List[String], factories: Seq[Loadable[SceneObject]] = Loadable.defaultFactories): List[SceneObject] = {
-	  val tries = paths map(fn => Loadable.load(fn, factories))
-	  val ok = tries filter(_.isSuccess) map(_.get)
-	  addObjects(ok)
-	}
-	
-	
+object Scene {
+  case class TreeTopologyChanged(scene: Scene) extends Event
+}
+
+class Scene extends SceneTreeObject {
+  org.statismo.stk.core.initialize
+
+  name = "Scene"
+
+  override implicit lazy val parent = this
+  val models = new ShapeModels
+  val statics = new StaticThreeDObjects
+  val auxiliaries = new AuxiliaryObjects
+  
+  override val children = List(models, statics, auxiliaries)
+
+  def load(paths: String*): Seq[SceneTreeObject] = {
+    tryLoad(Seq(paths).flatten).filter(_.isSuccess).map(_.get)
+  }
+
+  def tryLoad(paths: Seq[String], factories: Seq[Loadable[SceneTreeObject]] = Loadable.DefaultFactories): Seq[Try[SceneTreeObject]] = {
+    paths.map(fn => Loadable.load(fn, factories))
+  }
+
+  deafTo(this)
+  reactions += {
+    case SceneTreeObject.ChildrenChanged(s) => {
+//      println("CC: " + s + " " + s.getClass().getSimpleName())
+      publish(Scene.TreeTopologyChanged(this))
+    }
+    case m@Nameable.NameChanged(s) => {
+      publish(m)
+    }
+  }
+}
+
+case class AuxiliaryObjects()(implicit override val scene: Scene) extends SceneTreeObjectContainer[Displayable] {
+  name = "Auxiliary Objects"
+  override lazy val parent = scene
 }
