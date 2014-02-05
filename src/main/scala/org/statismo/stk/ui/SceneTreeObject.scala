@@ -7,7 +7,7 @@ object SceneTreeObject {
 }
 
 trait SceneTreeObject extends Nameable {
-  lazy val parent: SceneTreeObject = null
+  lazy val parent: SceneTreeObject = ??? //you MUST override this. The exception that is thrown if you don't is intentional.
   def children: Seq[SceneTreeObject] = Nil
 
   def scene: Scene = {

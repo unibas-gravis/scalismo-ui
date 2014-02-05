@@ -9,8 +9,10 @@ import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui.Sphere
 import vtk.vtkSphereSource
+import org.statismo.stk.ui.SphereLike
+import org.statismo.stk.ui.Radius
 
-class SphereActor(source: Sphere) extends PolyDataActor with ColorableActor {
+class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor {
 	private lazy val sphere = new vtkSphereSource
 	override lazy val colorable = source
 	listenTo(source)
@@ -19,7 +21,8 @@ class SphereActor(source: Sphere) extends PolyDataActor with ColorableActor {
     setGeometry()
 	
 	reactions += {
-	  case Sphere.GeometryChanged(m) => setGeometry
+	  case SphereLike.CenterChanged(s) => setGeometry
+	  case Radius.RadiusChanged(r) => setGeometry
 	}
 	
 	def setGeometry() {

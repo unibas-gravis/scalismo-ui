@@ -12,4 +12,5 @@ playground/
 .worksheet/
 statismo-ui.jar
 *.sc
+hs_err*.log
 
