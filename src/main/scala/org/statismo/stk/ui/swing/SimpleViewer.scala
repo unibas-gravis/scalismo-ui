@@ -24,18 +24,14 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
   }
   
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Mesh...", Seq(StaticMesh))))
-  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Statistical Shape Model", Seq(ShapeModel))))
-// menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneObjectAction(loadFiles)))
-//  SceneObjectPropertiesPanel.availableViews = SceneObjectPropertiesPanel.availableViews
-
+  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Statistical Shape Model...", Seq(ShapeModel))))
+  
   def loadFiles(files: Seq[File], factories: Seq[Loadable[SceneTreeObject]]): Unit = {
-    //scene.removeAllObjects()
     scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
   }
 
   override lazy val workspacePanel: Component = {{
       val p =new WorkspacePanel(workspace)
-      //p.layout(new Button("huhu")) = BorderPanel.Position.South
       p
     }
   }

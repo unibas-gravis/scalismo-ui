@@ -28,7 +28,7 @@ object ShapeModel extends Loadable[ShapeModel] {
   override val description = "Statistical Shape Model (.h5)"
   override val fileExtensions = Seq("h5")
 
-  override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 2)
+  override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 1)
   def apply(filename: String, numberOfInstancesToCreate: Int = 1)(implicit scene: Scene): Try[ShapeModel] = apply(new File(filename), numberOfInstancesToCreate)
   def apply(file: File, numberOfInstancesToCreate: Int)(implicit scene: Scene): Try[ShapeModel] = {
     for {
