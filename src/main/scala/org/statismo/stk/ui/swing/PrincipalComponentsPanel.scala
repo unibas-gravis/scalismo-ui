@@ -22,7 +22,7 @@ import scala.collection.mutable.ArrayBuffer
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Shape Parameters"
 
-  val reset = new Button("Reset")
+  val reset = new Button("Mean")
   val random = new Button("Random")
   listenTo(reset, random)
 

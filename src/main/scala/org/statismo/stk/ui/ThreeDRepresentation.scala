@@ -1,7 +1,8 @@
 package org.statismo.stk.ui
 
-case class ThreeDRepresentations(theObject: ThreeDObject) extends SceneTreeObjectContainer[ThreeDRepresentation] {
+class ThreeDRepresentations(theObject: ThreeDObject) extends SceneTreeObjectContainer[ThreeDRepresentation] {
   name = "Representations"
+  override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 }
 

@@ -16,7 +16,7 @@ object VtkContext {
 }
 
 class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends VtkContext {
-  val scene = viewport.scene
+  val scene = viewport.workspace.scene
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
   def refresh() {
@@ -38,7 +38,10 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends Vtk
     })
 
     // determine new actors
-    val toCreate = backend.filterNot(actors.contains(_))
+    val toCreate = backend.filterNot { d =>
+      actors.keys.exists{k => k eq d}
+    }
+    
     val created = toCreate.map(d => Tuple2(d, DisplayableActor(d)))
     created.foreach({
       case (back, front) =>

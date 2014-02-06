@@ -3,9 +3,11 @@ package org.statismo.stk.ui.vtk
 import vtk.vtkCanvas
 import vtk.vtkGenericRenderWindowInteractor
 import vtk.vtkInteractorStyleTrackballCamera
+import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui.Viewport
 
-class VtkCanvas extends vtkCanvas {
-  lazy val interactor = new VtkRenderWindowInteractor
+class VtkCanvas(viewport: Viewport) extends vtkCanvas {
+  lazy val interactor = new VtkRenderWindowInteractor(viewport)
   iren = interactor
 
   iren.SetRenderWindow(rw);

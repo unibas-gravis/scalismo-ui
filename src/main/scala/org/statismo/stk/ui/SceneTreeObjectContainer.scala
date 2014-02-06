@@ -1,7 +1,9 @@
 package org.statismo.stk.ui
 
+import scala.collection.mutable.ArrayBuffer
+
 trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject {
-  private var _children: List[Child] = Nil
+  protected var _children: ArrayBuffer[Child] = new ArrayBuffer
   override def children: Seq[Child] = _children
 
   def add(newChild: Child): Unit = {
@@ -9,7 +11,7 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject
   }
   
   def addAll(newChildren: Seq[Child]): Unit = {
-    _children = _children ::: List(newChildren).flatten
+    _children ++= newChildren
     publish(SceneTreeObject.ChildrenChanged(this))
   }
 }

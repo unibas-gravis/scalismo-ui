@@ -4,5 +4,5 @@ import scala.swing.Publisher
 import scala.swing.Reactor
 import scala.swing.event.Event
 
-class Viewport(val scene: Scene) extends Publisher {
+class Viewport(val workspace: Workspace) extends Publisher {
 }

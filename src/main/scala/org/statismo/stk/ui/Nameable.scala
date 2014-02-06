@@ -19,8 +19,25 @@ trait Nameable extends Publisher {
 	  }
 	}
 	
-	lazy val isNameModifiable = true
+	def isNameUserModifiable = true
 	override def toString: String = {
 	  if (name.trim().length() > 0) name else Nameable.NoName
 	}
+}
+
+object NameGenerator {
+  def defaultGenerator = new NumberNameGenerator
+}
+
+trait NameGenerator {
+  def nextName: String
+}
+
+class NumberNameGenerator extends NameGenerator {
+  private var last = 0
+  
+  def nextName = this.synchronized {
+    last += 1
+    last.toString
+  }
 }

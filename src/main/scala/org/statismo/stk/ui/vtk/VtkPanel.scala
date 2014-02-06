@@ -9,8 +9,8 @@ import org.statismo.stk.ui.Viewport
 
 import javax.swing.JPanel
 
-class VtkPanel(val viewport: Viewport) extends Component with Reactor {
-  lazy val ui = new VtkCanvas
+class VtkPanel(viewport: Viewport) extends Component with Reactor {
+  lazy val ui = new VtkCanvas(viewport)
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
     panel.add(ui, BorderLayout.CENTER);

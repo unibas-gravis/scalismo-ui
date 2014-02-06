@@ -30,43 +30,44 @@ class NameablePanel extends BorderPanel with SceneObjectPropertyPanel {
   lazy val okButton = new Button("Apply")
   lazy val cancelButton = new Button("Cancel")
   lazy val nameField = new TextField
-  
+
   listenTo(okButton, cancelButton)
-  
+
   {
-     val buttons = new GridPanel(1, 2) {
-       contents ++= Seq(cancelButton, okButton)
-     }
+    val buttons = new GridPanel(1, 2) {
+      contents ++= Seq(cancelButton, okButton)
+    }
     val bothPanel = new BorderPanel {
       layout(nameField) = BorderPanel.Position.Center
       layout(buttons) = BorderPanel.Position.South
+      border = new TitledBorder(null, "Name", TitledBorder.LEADING, 0, null, null)
     }
     layout(bothPanel) = BorderPanel.Position.North
   }
-  
+
   def cleanup() = {
     if (target.isDefined) {
       deafTo(target.get)
       target = None
     }
   }
-  
+
   reactions += {
     case Nameable.NameChanged(s) => updateUi
     case ButtonClicked(b) => {
       if (target.isDefined) {
-	      if (b == cancelButton) {
-	        nameField.text = target.get.name
-	      } else if (b == okButton) {
-	        target.get.name = nameField.text
-	      }
+        if (b == cancelButton) {
+          nameField.text = target.get.name
+        } else if (b == okButton) {
+          target.get.name = nameField.text
+        }
       }
     }
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-	cleanup()
-    if (obj.isDefined && obj.get.isInstanceOf[Nameable] && obj.get.asInstanceOf[Nameable].isNameModifiable) {
+    cleanup()
+    if (obj.isDefined && obj.get.isInstanceOf[Nameable] && obj.get.asInstanceOf[Nameable].isNameUserModifiable) {
       target = Some(obj.get.asInstanceOf[Nameable])
       updateUi()
       listenTo(target.get)

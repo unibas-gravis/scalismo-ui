@@ -10,7 +10,7 @@ object SphereLike {
 
 trait SphereLike extends Radius with Colorable {
 
-  private var _center: Point3D = initialCenter
+  private var _center: Point3D = Point3D(0,0,0)
   def center = { _center }
   def center_=(newCenter: Point3D) = {
     if (newCenter != _center) {
@@ -18,6 +18,4 @@ trait SphereLike extends Radius with Colorable {
       publish(SphereLike.CenterChanged(this))
     }
   }
-
-  def initialCenter: Point3D
 }

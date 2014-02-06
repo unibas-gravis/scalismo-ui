@@ -18,6 +18,8 @@ import scala.swing.LayoutContainer
 import scala.swing.Panel
 import java.util.UUID
 import java.awt.Dimension
+import java.util.Date
+import scala.swing.Label
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
@@ -28,16 +30,18 @@ trait SceneObjectPropertyPanel extends Component {
 }
 
 object SceneObjectPropertiesPanel extends Publisher {
-  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, new ColorablePanel, new NameablePanel)
+  private val combined = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
+  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, combined)
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
   private val applicableViews = new DefaultComboBoxModel[SceneObjectPropertyPanel]
 
-  private val emptyPanel = new Panel {
+  private val emptyPanel = new BorderPanel {
     lazy val uniqueId = UUID.randomUUID().toString()
     peer.setPreferredSize(new Dimension(1,1))
+    //layout(new Label("Gehen Sie bitte weiter, es gibt hier nichts zu sehen")) = BorderPanel.Position.North
   }
 
   lazy val cards = new CardPanel {
@@ -62,7 +66,9 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   reactions += {
     case SelectionChanged(e) => updateContent
-    case Workspace.SelectedObjectChanged => updateListAndContent
+    case Workspace.SelectedObjectChanged => {
+      updateListAndContent
+    }
   }
 
   def updateListAndContent() {
@@ -77,6 +83,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
         applicableViews.setSelectedItem(p)
       }
     }
+    combo.enabled = !applicable.isEmpty
     updateContent
   }
 

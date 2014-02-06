@@ -20,7 +20,7 @@ import javax.swing.JPanel
 import java.awt.Graphics
 
 class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
-  val description = "Appearance"
+  val description = "Color"
   private var target: Option[Colorable] = None
 
   private val opacitySlider = new Slider() {

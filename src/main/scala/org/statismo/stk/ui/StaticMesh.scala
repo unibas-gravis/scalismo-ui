@@ -20,7 +20,7 @@ object StaticMesh extends Loadable[StaticMesh] {
   }
 }
 
-case class StaticMesh(override val triangleMesh: TriangleMesh, initialParent: Option[ThreeDRepresentations] = None, initialName: String = "(no name)")(implicit override val scene: Scene) extends Mesh {
+class StaticMesh(override val triangleMesh: TriangleMesh, initialParent: Option[ThreeDRepresentations] = None, initialName: String = "(no name)")(implicit override val scene: Scene) extends Mesh {
   name = initialName
   override lazy val parent: ThreeDRepresentations = initialParent.getOrElse {
     val p = new StaticThreeDObject(Some(scene.statics), initialName)
@@ -30,6 +30,6 @@ case class StaticMesh(override val triangleMesh: TriangleMesh, initialParent: Op
   
   def addLandmarkAt(point: Point3D) = {
     val landmarks = parent.parent.landmarks
-    landmarks.addLandmarkAt(point)
+    landmarks.addAt(point)
   }
 }

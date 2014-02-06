@@ -16,6 +16,7 @@ class Scene extends SceneTreeObject {
   org.statismo.stk.core.initialize
 
   name = "Scene"
+  override lazy val isNameUserModifiable = false
 
   override implicit lazy val parent = this
   val models = new ShapeModels
@@ -44,7 +45,8 @@ class Scene extends SceneTreeObject {
   }
 }
 
-case class AuxiliaryObjects()(implicit override val scene: Scene) extends SceneTreeObjectContainer[Displayable] {
+class AuxiliaryObjects()(implicit override val scene: Scene) extends SceneTreeObjectContainer[Displayable] {
   name = "Auxiliary Objects"
+  override lazy val isNameUserModifiable = false
   override lazy val parent = scene
 }
