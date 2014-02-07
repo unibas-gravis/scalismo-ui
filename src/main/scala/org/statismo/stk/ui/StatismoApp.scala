@@ -71,5 +71,15 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
     // center on screen
     peer.setLocationRelativeTo(null)
   }
+  
+  // this is a hack...
+  listenTo(workspace)
+  reactions += {
+    case Workspace.PleaseLayoutAgain => {
+      val d = this.size
+      this.size = new Dimension(d.width - 1, this.size.height - 1)
+      this.size = d
+    }
+  }
 }
 

@@ -5,6 +5,8 @@ import scala.swing.Publisher
 
 object Workspace {
   case object SelectedObjectChanged extends Event
+  // this is a hack
+  case object PleaseLayoutAgain extends Event
 }
 
 class Workspace(val scene: Scene) extends Publisher {

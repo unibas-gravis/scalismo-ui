@@ -100,6 +100,10 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     if (view != null) {
       if (cards.current != view.uniqueId) {
         cards.show(view.uniqueId)
+        // this is a hack...
+        if (cards.preferredSize.width > cards.size.width) {
+          workspace.publish(Workspace.PleaseLayoutAgain)
+        }
       }
     } else {
         cards.show(emptyPanel.uniqueId)
