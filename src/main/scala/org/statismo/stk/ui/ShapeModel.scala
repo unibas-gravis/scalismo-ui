@@ -12,16 +12,16 @@ import org.statismo.stk.core.io.StatismoIO
 import scala.swing.event.Event
 import org.statismo.stk.core.geometry.Point3D
 import scala.collection.mutable.ArrayBuffer
+import scala.swing.Swing
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.async.Async.{ async, await }
+import scala.swing.Reactor
 
 class ShapeModels(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModel] {
   override lazy val parent = scene
   name = "Statistical Shape Models"
   override lazy val isNameUserModifiable = false
 
-  def load(filenames: String*): Seq[ShapeModel] = {
-    val loaded = filenames.map({ fn => ShapeModel(fn) }).filter(_.isSuccess).map(_.get)
-    loaded
-  }
 }
 
 object ShapeModel extends Loadable[ShapeModel] {
@@ -42,18 +42,28 @@ object ShapeModel extends Loadable[ShapeModel] {
       shape
     }
   }
-
-  case class LandmarksAdded(source: ShapeModel) extends Event
+  
+  def apply(peer: StatisticalMeshModel, template: Option[ShapeModel])(implicit scene: Scene) = {
+    val nm = new ShapeModel(peer)
+    if (template.isDefined) {
+      nm.name = template.get.name
+      template.get.instances.children.foreach { inst =>
+        nm.instances.create(inst)
+      }
+      template.get.landmarks.children.foreach{lm =>
+        nm.landmarks.create(lm)
+      }
+    }
+    nm
+  }
 }
 
-class ShapeModel(val rawModel: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject {
-
-  private lazy val refMesh = rawModel.mesh
+class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Removeable {
 
   lazy val gp: SpecializedLowRankGaussianProcess[ThreeD] = {
-    rawModel.gp match {
+    peer.gp match {
       case specializedGP: SpecializedLowRankGaussianProcess[ThreeD] => specializedGP
-      case gp => gp.specializeForPoints(refMesh.points.force)
+      case gp => gp.specializeForPoints(peer.mesh.points.force)
     }
   }
 
@@ -61,7 +71,7 @@ class ShapeModel(val rawModel: StatisticalMeshModel)(implicit override val scene
     val vector = DenseVector[Float](coefficients.toArray)
     val ptdefs = gp.instanceAtPoints(vector)
     val newptseq = for ((pt, df) <- ptdefs) yield pt + df
-    new TriangleMesh(newptseq, refMesh.cells)
+    new TriangleMesh(newptseq, peer.mesh.cells)
   }
 
   override lazy val parent: ShapeModels = scene.models
@@ -71,14 +81,7 @@ class ShapeModel(val rawModel: StatisticalMeshModel)(implicit override val scene
 
   lazy val landmarkNameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
-  val landmarks = new ArrayBuffer[VirtualLandmark] {
-    def add(index: Int) = {
-    	val lm = new VirtualLandmark(index)
-    	lm.name = landmarkNameGenerator.nextName
-    	this += lm
-    	publish(ShapeModel.LandmarksAdded(ShapeModel.this))
-    }
-  }
+  val landmarks = new ReferenceLandmarks(this)
   
   parent.add(this)
 
@@ -96,13 +99,26 @@ class ShapeModelInstances(val model: ShapeModel)(implicit override val scene: Sc
     add(child)
     child
   }
+  
+  def create(template: ShapeModelInstance): ShapeModelInstance = {
+    val child = new ShapeModelInstance(this)
+    child.name = template.name
+    //child.coefficients = template.coefficients
+    child.landmarks.color = template.landmarks.color
+    child.landmarks.radius = template.landmarks.radius
+    child.landmarks.name = template.landmarks.name
+    child.meshRepresentation.name = template.meshRepresentation.name
+    child.meshRepresentation.color = template.meshRepresentation.color
+    add(child)
+    child
+  }
 }
 
 object ShapeModelInstance {
   case class CoefficientsChanged(source: ShapeModelInstance) extends Event
 }
 
-class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
+class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
   override lazy val parent: ShapeModelInstances = container
   lazy val model = parent.model
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(model.gp.rank)(0.0f)
@@ -111,10 +127,13 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
   def coefficients: IndexedSeq[Float] = { _coefficients }
 
   def coefficients_=(newCoeffs: IndexedSeq[Float]) = {
+
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
-      meshRepresentation.triangleMesh = model.calculateMesh(_coefficients);
       publish(ShapeModelInstance.CoefficientsChanged(this))
+      async {
+        meshRepresentation.triangleMesh = model.calculateMesh(newCoeffs);
+      }
     }
   }
   representations.add(meshRepresentation)
@@ -128,14 +147,14 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
     def triangleMesh = { _mesh }
     private[ShapeModelInstance] def triangleMesh_=(newMesh: TriangleMesh) = {
       _mesh = newMesh
-      publish(Mesh.GeometryChanged(this))
+      Swing.onEDT(publish(Mesh.GeometryChanged(this)))
     }
     override lazy val parent: ShapeModelInstance = ShapeModelInstance.this
 
     def addLandmarkAt(point: Point3D) = {
       val index = _mesh.findClosestPoint(point)._2
       val model = parent.parent.parent
-      model.landmarks.add(index)
+      model.landmarks.create(model.peer.mesh.points(index).asInstanceOf[Point3D])
     }
   }
 }

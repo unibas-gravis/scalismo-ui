@@ -55,6 +55,7 @@ object Dependencies {
   val breezeViz = "org.scalanlp" %% "breeze-viz" % "0.4"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
+  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
   val twitterUtilCollection = "com.twitter" % "util-collection" % "5.3.10"
   val twitterUtilEval = "com.twitter" %% "util-eval" % "6.2.4"
   val stkCore = "org.statismo" %% "stkcore" % "0.2.0-SNAPSHOT"
@@ -72,6 +73,7 @@ object STKBuild extends Build {
     breezeViz,
     scalaReflect,
     scalaSwing,
+    scalaAsync,
     stkCore)
 
   lazy val cdap2 = Project(

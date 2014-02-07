@@ -13,6 +13,7 @@ import scala.swing.Component
 import org.statismo.stk.ui.ShapeModel
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.StaticMesh
+import java.awt.Color
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
@@ -27,7 +28,15 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Statistical Shape Model...", Seq(ShapeModel))))
   
   def loadFiles(files: Seq[File], factories: Seq[Loadable[SceneTreeObject]]): Unit = {
-    scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
+    val x = scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
+    x foreach {o =>
+      if (o.isSuccess) {
+        if (o.get.isInstanceOf[ShapeModel]) {
+          val s = o.get.asInstanceOf[ShapeModel]
+          s.instances.children(0).meshRepresentation.color = Color.RED
+        }
+      }
+    }
   }
 
   override lazy val workspacePanel: Component = {{

@@ -28,6 +28,8 @@ class StaticMesh(override val triangleMesh: TriangleMesh, initialParent: Option[
   }
   parent.add(this)
   
+  def peer = triangleMesh
+  
   def addLandmarkAt(point: Point3D) = {
     val landmarks = parent.parent.landmarks
     landmarks.addAt(point)

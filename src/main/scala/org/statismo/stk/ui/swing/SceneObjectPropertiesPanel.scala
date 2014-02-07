@@ -30,8 +30,8 @@ trait SceneObjectPropertyPanel extends Component {
 }
 
 object SceneObjectPropertiesPanel extends Publisher {
-  private val combined = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
-  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, combined)
+  private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
+  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, appearance)
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {

@@ -7,7 +7,7 @@ import scala.swing.BorderPanel.Position._
 import org.statismo.stk.ui.Workspace
 
 class PropertiesPanel(val workspace: Workspace) extends BorderPanel {
-	val scene = new ScenePropertiesPanel(workspace);
+	val scene = new SceneTreePanel(workspace);
 	val details = new SceneObjectPropertiesPanel(workspace);
 	
 	val split = new SplitPane(Orientation.Horizontal, scene, details)

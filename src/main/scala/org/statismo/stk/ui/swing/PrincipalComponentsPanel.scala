@@ -18,6 +18,10 @@ import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.ShapeModelInstance
 import scala.collection.mutable.Buffer
 import scala.collection.mutable.ArrayBuffer
+import javax.swing.JSlider
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
+import java.awt.Point
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Shape Parameters"
@@ -37,10 +41,23 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   private case class Entry(val index: Int) {
     val label = new Label(index.toString)
     val slider = new Slider() {
+      override lazy val peer = new JSlider with SuperMixin {
+        addMouseListener(new MouseAdapter() {
+          override def mousePressed(e: MouseEvent) = {
+            val p = e.getPoint();
+            val percent = p.x / (getWidth().toDouble);
+            val range = getMaximum() - getMinimum();
+            val newVal = range * percent;
+            val result = (getMinimum() + newVal).toInt
+            setValue(result);
+          }
+        });
+      }
       min = (minValue * granularity).toInt
       max = (maxValue * granularity).toInt
       name = index.toString
       value = 0
+      snapToTicks = true
     }
     val value = new Label(labelFormat(0.0f))
   }

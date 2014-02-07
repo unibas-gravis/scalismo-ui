@@ -12,12 +12,12 @@ import org.statismo.stk.ui.swing.util.FileNameExtensionFilterWrapper
 
 import javax.swing.filechooser.FileNameExtensionFilter
 
-class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[Loadable[SceneTreeObject]]) => Unit, val name: String = "Open...", val factories: Seq[Loadable[SceneTreeObject]] = Loadable.DefaultFactories) extends Action(name) {
+class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[Loadable[SceneTreeObject]]) => Unit, val name: String = "Open...", val factories: Seq[Loadable[SceneTreeObject]] = Loadable.DefaultFactories, val multipleSelection: Boolean = true) extends Action(name) {
   val parentComponent: Component = null
   val allSupportedDescription = "All supported files"
   val chooser = new FileChooser() {
     title = name
-    multiSelectionEnabled = true
+    multiSelectionEnabled = multipleSelection
     peer.setAcceptAllFileFilterUsed(false)
     val combinedFilter: Option[FileNameExtensionFilter] = {
       if (factories.size <= 1) None else {
@@ -30,7 +30,11 @@ class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[Loadable[SceneTr
   }
   def apply() = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {
-      onSelected(chooser.selectedFiles, factories)
+      if (chooser.multiSelectionEnabled) {
+    	  onSelected(chooser.selectedFiles, factories)
+      } else {
+        onSelected(Seq(chooser.selectedFile), factories)
+      }
     }
   }
 }

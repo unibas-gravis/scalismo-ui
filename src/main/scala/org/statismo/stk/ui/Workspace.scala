@@ -8,7 +8,7 @@ object Workspace {
 }
 
 class Workspace(val scene: Scene) extends Publisher {
-  private var _viewports: Seq[Viewport] = Seq(new Viewport(this),new Viewport(this))
+  private var _viewports: Seq[Viewport] = Seq(new Viewport(this))
   def viewports = { _viewports }
   
   private var _landmarkClickMode = false
