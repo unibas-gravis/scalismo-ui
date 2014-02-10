@@ -12,10 +12,14 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   val metadata = this
   
   def apply(file: File)(implicit scene: Scene): Try[StaticMesh] = {
+      apply(file, None, file.getName())
+  }
+  
+  def apply(file: File, parent: Option[ThreeDRepresentations], name: String)(implicit scene: Scene): Try[StaticMesh] = {
     for {
       raw <-MeshIO.readMesh(file)
     } yield {
-      val static = new StaticMesh(raw, None, file.getName())
+      val static = new StaticMesh(raw, parent, name)
       static
     }
   }

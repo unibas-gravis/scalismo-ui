@@ -144,6 +144,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
   class ShapeModelInstanceMeshRepresentation extends Mesh {
     name = "Mesh"
     override lazy val isNameUserModifiable = false
+    override lazy val isCurrentlyRemoveable = false
     private var _mesh: TriangleMesh = model.calculateMesh(_coefficients)
     def triangleMesh = { _mesh }
     private[ShapeModelInstance] def triangleMesh_=(newMesh: TriangleMesh) = {

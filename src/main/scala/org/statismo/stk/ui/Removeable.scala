@@ -9,18 +9,20 @@ object Removeable {
 
 trait Removeable extends EdtPublisher {
   def remove() = {
-      publish(Removeable.Removed(this))
+    publish(Removeable.Removed(this))
   }
-  
+
   def isCurrentlyRemoveable = true
 }
 
 trait RemoveableChildren extends Removeable {
   def children: Seq[Removeable]
   override def remove = {
-    val copy = children.map{c => c}
-    copy.foreach(c => c.remove)
+    val copy = children.map { c => c }
+    copy.foreach { c => if (c.isCurrentlyRemoveable) c.remove }
   }
-  
-  override def isCurrentlyRemoveable = !children.isEmpty
+
+  override def isCurrentlyRemoveable = {
+    children.foldLeft(false)({ case (b, c) => b || c.isCurrentlyRemoveable })
+  }
 }
