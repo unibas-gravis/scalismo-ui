@@ -4,7 +4,6 @@ import org.statismo.stk.ui.Scene
 import java.io.File
 import scala.swing.MenuItem
 import org.statismo.stk.ui.swing.actions.OpenSceneTreeObjectAction
-import org.statismo.stk.ui.Loadable
 import org.statismo.stk.ui.StatismoFrame
 import org.statismo.stk.ui.StatismoApp
 import scala.swing.BorderPanel
@@ -12,6 +11,7 @@ import scala.swing.Button
 import scala.swing.Component
 import org.statismo.stk.ui.ShapeModel
 import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.SceneTreeObjectFactory
 import org.statismo.stk.ui.StaticMesh
 import java.awt.Color
 
@@ -27,7 +27,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Mesh...", Seq(StaticMesh))))
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadFiles, "Open Statistical Shape Model...", Seq(ShapeModel))))
   
-  def loadFiles(files: Seq[File], factories: Seq[Loadable[SceneTreeObject]]): Unit = {
+  def loadFiles(files: Seq[File], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Unit = {
     val x = scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
     x foreach {o =>
       if (o.isSuccess) {

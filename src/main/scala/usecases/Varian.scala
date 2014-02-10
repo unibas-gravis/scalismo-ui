@@ -4,7 +4,7 @@ import org.statismo.stk.ui.Scene
 import java.io.File
 import scala.swing.MenuItem
 import org.statismo.stk.ui.swing.actions.OpenSceneTreeObjectAction
-import org.statismo.stk.ui.Loadable
+import org.statismo.stk.ui.SceneTreeObjectFactory
 import org.statismo.stk.ui.StatismoFrame
 import org.statismo.stk.ui.StatismoApp
 import scala.swing.BorderPanel
@@ -38,7 +38,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
   implicit val theScene = this.scene
 
-  def loadMesh(files: Seq[File], factories: Seq[Loadable[SceneTreeObject]]): Unit = {
+  def loadMesh(files: Seq[File], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Unit = {
     val x = scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
     x foreach { o =>
       if (o.isSuccess) {
@@ -50,7 +50,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
     }
   }
 
-  def loadModel(files: Seq[File], factories: Seq[Loadable[SceneTreeObject]]): Unit = {
+  def loadModel(files: Seq[File], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Unit = {
     files foreach { fn =>
       val o = ShapeModel(fn, 1)
       if (o.isSuccess) {

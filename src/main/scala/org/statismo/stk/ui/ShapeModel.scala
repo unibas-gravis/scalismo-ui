@@ -24,9 +24,10 @@ class ShapeModels(implicit override val scene: Scene) extends SceneTreeObjectCon
 
 }
 
-object ShapeModel extends Loadable[ShapeModel] {
+object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata {
   override val description = "Statistical Shape Model (.h5)"
   override val fileExtensions = Seq("h5")
+  val metadata = this
 
   override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 1)
   def apply(filename: String, numberOfInstancesToCreate: Int = 1)(implicit scene: Scene): Try[ShapeModel] = apply(new File(filename), numberOfInstancesToCreate)
@@ -152,9 +153,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
     override lazy val parent: ShapeModelInstance = ShapeModelInstance.this
 
     def addLandmarkAt(point: Point3D) = {
-      val index = _mesh.findClosestPoint(point)._2
-      val model = parent.parent.parent
-      model.landmarks.create(model.peer.mesh.points(index).asInstanceOf[Point3D])
+      parent.landmarks.addAt(point)
     }
   }
 }

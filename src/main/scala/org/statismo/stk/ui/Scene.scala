@@ -29,8 +29,8 @@ class Scene extends SceneTreeObject {
     tryLoad(Seq(paths).flatten).filter(_.isSuccess).map(_.get)
   }
 
-  def tryLoad(paths: Seq[String], factories: Seq[Loadable[SceneTreeObject]] = Loadable.DefaultFactories): Seq[Try[SceneTreeObject]] = {
-    paths.map(fn => Loadable.load(fn, factories))
+  def tryLoad(paths: Seq[String], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = SceneTreeObjectFactory.DefaultFactories): Seq[Try[SceneTreeObject]] = {
+    paths.map(fn => SceneTreeObjectFactory.load(fn, factories))
   }
 
   deafTo(this)

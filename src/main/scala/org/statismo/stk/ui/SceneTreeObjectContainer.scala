@@ -22,16 +22,29 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   }
 
   def apply(index: Int) = children(index)
+  
+  def removeAll = this.synchronized{
+    println("before removeAll: "+_children.length)
+    _children.foreach{ c =>
+      println ("removing "+c)
+      remove(c)
+    }
+    println("after removeAll: "+_children.length)
+    
+  }
 
-  def remove(child: Child): Boolean = {
+  protected def remove(child: Child): Boolean = {
+    println("trying to remove child, exists=" + children.exists(c=> c eq child))
     val before = _children.length
-    if (_children.exists({ x => x eq child })) {
-      val index = _children.indexOf(child)
-      if (child.isInstanceOf[Removeable]) {
-        deafTo(child.asInstanceOf[Removeable])
-        child.asInstanceOf[Removeable].remove()
-      }
-      _children.remove(index)
+    val toRemove = _children.toIndexedSeq.zipWithIndex.filter { case (c,i) => c eq child }.map(_._2)
+    println("toRemove: "+toRemove)
+    toRemove.foreach{ idx =>
+    	val child = _children(idx)
+    	if (child.isInstanceOf[Removeable]) {
+    	  deafTo(child.asInstanceOf[Removeable])
+    	  child.asInstanceOf[Removeable].remove
+    	}
+    	_children.remove(idx)
     }
     val after = _children.length
     before != after

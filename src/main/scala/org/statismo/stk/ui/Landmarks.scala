@@ -16,7 +16,7 @@ trait Landmark extends Nameable with Removeable {
 
 class ReferenceLandmark(val peer: Point3D) extends Landmark
 
-class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with Displayable with SphereLike{
+class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with Displayable with SphereLike {
   override lazy val parent = container
   color = container.color
   opacity = container.opacity
@@ -67,27 +67,49 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
 }
 
-object Landmarks {
+object Landmarks extends FileIoMetadata {
   case class LandmarksChanged(source: AnyRef) extends Event
+  override val description = "Landmarks"
+  override val fileExtensions = Seq("csv")
 }
 
-trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with Publisher with Saveable {
-  override def addAll(lms: Seq[L]) = {
+trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with Publisher with Saveable with Loadable {
+  val saveableMetadata = Landmarks
+  val loadableMetadata = Landmarks
+
+  override def isCurrentlySaveable: Boolean = !children.isEmpty
+
+  def create(peer: Point3D, name: Option[String]): Unit
+
+  override def addAll(lms: Seq[L]): Unit = {
     super.addAll(lms)
     publish(Landmarks.LandmarksChanged(this))
   }
-  
+
   override def remove(lm: L) = {
     val changed = super.remove(lm)
     if (changed) publish(Landmarks.LandmarksChanged(this))
     changed
   }
-  
-  override def saveToFile(file: File) : Try[Unit] = Try {
-    val seq = children.map{ lm => (lm.name, lm.peer)}.toIndexedSeq
+
+  override def saveToFile(file: File): Try[Unit] = {
+    val seq = children.map { lm => (lm.name, lm.peer) }.toIndexedSeq
     LandmarkIO.writeLandmarks[ThreeD](file, seq)
   }
-} 
+
+  override def loadFromFile(file: File): Try[Unit] = {
+    this.removeAll
+    for {
+      saved <- LandmarkIO.readLandmarks3D(file)
+      val newLandmarks = {
+        saved.map {
+          case (name, point) =>
+            this.create(point, Some(name))
+        }
+      }
+    } yield {}
+  }
+}
 
 abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable {
   name = "Landmarks"
@@ -122,34 +144,43 @@ abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeOb
 
 }
 
-class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theObject) {
+class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
-  def addAt(position: Point3D) = {
-    val lm = new StaticLandmark(position, this)
-    lm.name = nameGenerator.nextName
+  def create(template: ReferenceLandmark): Unit = {
+    create(template.peer, Some(template.name))
+  }
+  def create(peer: Point3D, name: Option[String] = None): Unit = {
+    val lm = new ReferenceLandmark(peer)
+    lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
   }
 }
 
-class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
+class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
-  def create(template: ReferenceLandmark): ReferenceLandmark = {
-    val lm = new ReferenceLandmark(template.peer)
-    lm.name = template.name
+
+  def addAt(peer: Point3D) = create(peer)
+
+  def create(peer: Point3D, name: Option[String] = None): Unit = {
+    val lm = new StaticLandmark(peer, this)
+    lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
-    lm
   }
-  def create(peer: Point3D): ReferenceLandmark = {
-    val lm = new ReferenceLandmark(peer)
-    lm.name = nameGenerator.nextName
-    add(lm)
-    lm
-  }
+
 }
 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLandmarks(instance) {
-  def addAt(position: Point3D) = ??? // this is on purpose, it's not used.
   val ref = instance.parent.parent.landmarks
+
+  def addAt(peer: Point3D) = {
+    create(peer, None)
+  }
+
+  def create(peer: Point3D, name: Option[String]): Unit = {
+    val index = instance.meshRepresentation.triangleMesh.findClosestPoint(peer)._2
+    val refPoint = instance.model.peer.mesh.points(index).asInstanceOf[Point3D]
+    instance.model.landmarks.create(refPoint, name)
+  }
 
   listenTo(ref)
 

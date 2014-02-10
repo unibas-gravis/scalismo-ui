@@ -6,9 +6,10 @@ import scala.util.Try
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.geometry.Point3D
 
-object StaticMesh extends Loadable[StaticMesh] {
+object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata {
   val description = "Static Mesh"
   val fileExtensions = Seq("h5","vtk")
+  val metadata = this
   
   def apply(file: File)(implicit scene: Scene): Try[StaticMesh] = {
     for {

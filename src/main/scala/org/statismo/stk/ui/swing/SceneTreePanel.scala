@@ -1,39 +1,39 @@
 package org.statismo.stk.ui.swing
 
-import scala.swing.BorderPanel
-import scala.swing.BorderPanel.Position._
-import org.statismo.stk.ui.Workspace
-import javax.swing.tree.DefaultMutableTreeNode
-import scala.swing.Component
-import javax.swing.JTree
-import scala.swing.ScrollPane
-import scala.swing.Reactor
-import javax.swing.tree.DefaultTreeModel
-import javax.swing.tree.MutableTreeNode
-import javax.swing.tree.TreeSelectionModel
-import javax.swing.event.TreeSelectionListener
-import javax.swing.event.TreeSelectionEvent
-import org.statismo.stk.ui.SceneTreeObject
-import collection.JavaConversions.enumerationAsScalaIterator
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.Nameable
-import javax.swing.tree.TreePath
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
-import org.statismo.stk.ui.Removeable
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import java.util.EventObject
-import java.awt.PopupMenu
-import javax.swing.JPopupMenu
-import javax.swing.JMenuItem
+import scala.Array.canBuildFrom
+import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.mutable.ArrayBuffer
-import org.statismo.stk.ui.swing.actions.SceneTreePopupAction
+import scala.swing.BorderPanel
+import scala.swing.BorderPanel.Position.Center
+import scala.swing.Component
+import scala.swing.Reactor
+import scala.swing.ScrollPane
+import org.statismo.stk.ui.Nameable
+import org.statismo.stk.ui.Removeable
+import org.statismo.stk.ui.Scene
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.Workspace
 import org.statismo.stk.ui.swing.actions.SaveAction
+import org.statismo.stk.ui.swing.actions.SceneTreePopupAction
+import javax.swing.JPopupMenu
+import javax.swing.JTree
+import javax.swing.event.TreeSelectionEvent
+import javax.swing.event.TreeSelectionListener
+import javax.swing.tree.DefaultMutableTreeNode
+import javax.swing.tree.DefaultTreeModel
+import javax.swing.tree.TreePath
+import javax.swing.tree.TreeSelectionModel
+import org.statismo.stk.ui.swing.actions.LoadAction
 
 object SceneTreePanel {
   lazy val popupActions: ArrayBuffer[SceneTreePopupAction] = new ArrayBuffer[SceneTreePopupAction]() {
-    //this += new SaveAction
+    this += new LoadAction
+    this += new SaveAction
   }
 }
 
