@@ -9,8 +9,8 @@ import scala.swing.Component
 // and slightly extended
 class CardPanel extends Panel with LayoutContainer {
   type Constraints = String
-  def layoutManager = peer.getLayout.asInstanceOf[CardLayout]
   override lazy val peer = new javax.swing.JPanel(new CardLayout) with SuperMixin
+  def layoutManager = peer.getLayout.asInstanceOf[CardLayout]
 
   private var cards: Map[String, Component] = Map.empty
   private var _current: Constraints = ""

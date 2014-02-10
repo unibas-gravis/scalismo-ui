@@ -6,7 +6,7 @@ import java.io.File
 import scala.util.Try
 import org.statismo.stk.ui.Loadable
 
-class LoadAction extends SceneTreePopupAction("Load from file...") {
+class LoadLoadableAction extends SceneTreePopupAction("Load from file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context.isDefined && context.get.isInstanceOf[Loadable] && context.get.asInstanceOf[Loadable].isCurrentlyLoadable
   }

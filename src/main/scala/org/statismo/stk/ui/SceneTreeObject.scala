@@ -22,4 +22,8 @@ trait SceneTreeObject extends Nameable {
       this.asInstanceOf[Displayable] :: cd
     } else cd
   }
+  
+  def onDestroy() {
+    
+  }
 }

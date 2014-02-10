@@ -6,14 +6,10 @@ import org.statismo.stk.ui.Workspace
 import scala.swing.SplitPane
 import scala.swing.Orientation
 
-class WorkspacePanel(val workspace: Workspace) extends BorderPanel { //with SceneAdapter {
+class WorkspacePanel(val workspace: Workspace) extends BorderPanel {
   lazy val properties = new PropertiesPanel(workspace)
   lazy val viewports = new ViewportsPanel(workspace)
 
-  // FIXME
-//  val split = new SplitPane(Orientation.Vertical, properties, viewports)
-//  layout(split) = Center
   layout(properties) = West
   layout(viewports) = Center
-
 }

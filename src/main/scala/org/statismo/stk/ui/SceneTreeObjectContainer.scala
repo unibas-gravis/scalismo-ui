@@ -22,38 +22,44 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   }
 
   def apply(index: Int) = children(index)
-  
-  def removeAll = this.synchronized{
-    println("before removeAll: "+_children.length)
-    _children.foreach{ c =>
-      println ("removing "+c)
-      remove(c)
-    }
-    println("after removeAll: "+_children.length)
-    
+
+  def removeAll = {
+    val copy = _children.map({ c => c })
+    copy.foreach { c => remove(c) }
+
   }
 
-  protected def remove(child: Child): Boolean = {
-    println("trying to remove child, exists=" + children.exists(c=> c eq child))
-    val before = _children.length
-    val toRemove = _children.toIndexedSeq.zipWithIndex.filter { case (c,i) => c eq child }.map(_._2)
-    println("toRemove: "+toRemove)
-    toRemove.foreach{ idx =>
-    	val child = _children(idx)
-    	if (child.isInstanceOf[Removeable]) {
-    	  deafTo(child.asInstanceOf[Removeable])
-    	  child.asInstanceOf[Removeable].remove
-    	}
-    	_children.remove(idx)
+  protected[ui] def remove(child: Child, silent: Boolean): Boolean = {
+    val indexes = _children.toIndexedSeq.zipWithIndex.filter { case (c, i) => c eq child }.map(_._2)
+    if (indexes.isEmpty) {
+      false
+    } else {
+      if (!silent && child.isInstanceOf[Removeable]) {
+        child.asInstanceOf[Removeable].remove
+        true
+      } else {
+        val before = _children.length
+        indexes.foreach { idx =>
+          val child = _children(idx)
+          if (!silent && child.isInstanceOf[Removeable]) {
+            deafTo(child.asInstanceOf[Removeable])
+          }
+          _children.remove(idx)
+        }
+        val after = _children.length
+        before != after
+      }
     }
-    val after = _children.length
-    before != after
+  }
+
+  def remove(child: Child): Boolean = {
+    remove(child, false)
   }
 
   reactions += {
     case Removeable.Removed(c) => {
       val child = c.asInstanceOf[Child]
-      remove(child)
+      remove(child, true)
     }
   }
 
@@ -67,8 +73,8 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject
     publish(SceneTreeObject.ChildrenChanged(this))
   }
 
-  override def remove(child: Child): Boolean = {
-    val changed = super.remove(child)
+  override def remove(child: Child, silent: Boolean): Boolean = {
+    val changed = super.remove(child, silent)
     if (changed) {
       publish(SceneTreeObject.ChildrenChanged(this))
     }

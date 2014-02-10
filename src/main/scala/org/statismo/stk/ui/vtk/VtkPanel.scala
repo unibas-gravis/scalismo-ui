@@ -23,6 +23,9 @@ class VtkPanel(viewport: Viewport) extends Component with Reactor {
     case VtkContext.RenderRequest(s) => {
       ui.Render()
     }
+    case VtkContext.ViewportEmpty(v) => {
+      ui.setAsEmpty()
+    }
   }
   
 }

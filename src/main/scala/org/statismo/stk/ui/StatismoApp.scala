@@ -6,11 +6,15 @@ import scala.swing.MainFrame
 import scala.swing.MenuBar
 import scala.swing.Reactor
 import scala.swing.SimpleSwingApplication
-import org.statismo.stk.ui.swing.menu.MainMenuBar
 import org.statismo.stk.ui.swing.WorkspacePanel
 import javax.swing.UIManager
 import javax.swing.WindowConstants
+import org.statismo.stk.ui.swing.menu.MainMenuBar
 import scala.swing.Component
+import scala.swing.BorderPanel
+import org.statismo.stk.ui.swing.Toolbar
+import scala.swing.Action
+import org.statismo.stk.ui.swing.StatismoToolbar
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
@@ -55,10 +59,15 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
     }
   }
 
-  val workspace = new Workspace(scene)
+  lazy val workspace = new Workspace(scene)
   
-  lazy val workspacePanel: Component  = new WorkspacePanel(workspace)
-  contents = workspacePanel
+  lazy val workspacePanel: WorkspacePanel  = new WorkspacePanel(workspace)
+  lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
+  
+  contents = new BorderPanel {
+    layout(toolbar) = BorderPanel.Position.North
+    layout(workspacePanel) = BorderPanel.Position.Center
+  }
   menuBar = new MainMenuBar()(this)
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)

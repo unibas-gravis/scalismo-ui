@@ -18,6 +18,8 @@ import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.JPanel
 import java.awt.Graphics
+import javax.swing.event.ChangeListener
+import javax.swing.event.ChangeEvent
 
 class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Color"
@@ -52,11 +54,25 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
     peer.setPreferredSize(new Dimension(20, 20))
   }
 
-  val colorChooser = new Component with ColorPickerPanel.ColorListener {
-    override lazy val peer = new ColorPickerPanel(this)
+  val colorChooser = new Component with ChangeListener {
+    override lazy val peer = new ColorPickerPanel()
+    private var deaf = false
+    setColor(Color.WHITE)
+    peer.addChangeListener(this)
+    
 
-    def colorChanged(c: Color) = {
-      publish(ColorChosen(c))
+    def setColor(c: Color) = {
+    	deaf = true
+    	peer.setRGB(c.getRed(), c.getGreen, c.getBlue());
+    	deaf = false
+    }
+    
+    def stateChanged(event: ChangeEvent) = {
+      if (!deaf) {
+	      val rgb = peer.getRGB()
+	      val c: Color = new Color(rgb(0), rgb(1), rgb(2))
+	      publish(ColorChosen(c))
+      }
     }
     border = new javax.swing.border.EmptyBorder(10, 0, 0, 0)
 
@@ -135,6 +151,8 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   }
 
   def updateColorDisplayer() {
-    colorDisplayer.setColor(target.get.color, target.get.opacity)
+    val c = target.get.color
+    colorChooser.setColor(c)
+    colorDisplayer.setColor(c, target.get.opacity)
   }
 }

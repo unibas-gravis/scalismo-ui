@@ -20,6 +20,7 @@ import java.util.UUID
 import java.awt.Dimension
 import java.util.Date
 import scala.swing.Label
+import org.statismo.stk.ui.EdtPublisher
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
@@ -29,7 +30,7 @@ trait SceneObjectPropertyPanel extends Component {
   lazy val uniqueId = UUID.randomUUID().toString()
 }
 
-object SceneObjectPropertiesPanel extends Publisher {
+object SceneObjectPropertiesPanel extends EdtPublisher {
   private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
   val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, appearance)
 }

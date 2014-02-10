@@ -8,7 +8,7 @@ object Radius {
   case class RadiusChanged(source: Radius) extends Event
 }
 
-trait Radius extends Publisher {
+trait Radius extends EdtPublisher {
   
 	private var _radius: Float = 0
 	def radius = {_radius}

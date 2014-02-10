@@ -1,8 +1,7 @@
 package org.statismo.stk.ui
 
-import scala.swing.Publisher
-import scala.swing.Reactor
-import scala.swing.event.Event
+import org.statismo.stk.ui.EdtPublisher
+import org.statismo.stk.ui.Workspace
 
-class Viewport(val workspace: Workspace) extends Publisher {
+class Viewport(val workspace: Workspace) extends EdtPublisher {
 }

@@ -8,7 +8,7 @@ object Colorable {
   case class AppearanceChanged(source: Colorable) extends Event
 }
 
-trait Colorable extends Publisher {
+trait Colorable extends EdtPublisher {
   private var _color: Color = Color.WHITE
   
   def color = {_color}

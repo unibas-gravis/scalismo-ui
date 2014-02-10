@@ -5,7 +5,7 @@ import org.statismo.stk.ui.SceneTreeObject
 import java.io.File
 import scala.util.Try
 
-class SaveAction extends SceneTreePopupAction("Save to file...") {
+class SaveSaveableAction extends SceneTreePopupAction("Save to file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context.isDefined && context.get.isInstanceOf[Saveable] && context.get.asInstanceOf[Saveable].isCurrentlySaveable
   }

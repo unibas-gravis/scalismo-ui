@@ -14,7 +14,11 @@ trait Landmark extends Nameable with Removeable {
   def peer: Point3D
 }
 
-class ReferenceLandmark(val peer: Point3D) extends Landmark
+class ReferenceLandmark(val peer: Point3D) extends Landmark {
+  override def remove = {
+    super.remove
+  }
+}
 
 class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with Displayable with SphereLike {
   override lazy val parent = container
@@ -37,7 +41,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   override def remove = {
     // we simply forward the request to the source, which in turn publishes an event that all attached
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
-    source.remove
+	source.remove
   }
 
   reactions += {
@@ -51,7 +55,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
     }
     case Removeable.Removed(r) => {
       if (r eq source) {
-        super.remove()
+        parent.remove(this, true)
       }
     }
   }
@@ -73,7 +77,7 @@ object Landmarks extends FileIoMetadata {
   override val fileExtensions = Seq("csv")
 }
 
-trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with Publisher with Saveable with Loadable {
+trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublisher with Saveable with Loadable {
   val saveableMetadata = Landmarks
   val loadableMetadata = Landmarks
 
@@ -98,7 +102,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with Publisher 
   }
 
   override def loadFromFile(file: File): Try[Unit] = {
-    this.removeAll
+    Try {this.removeAll}
     for {
       saved <- LandmarkIO.readLandmarks3D(file)
       val newLandmarks = {
@@ -111,7 +115,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with Publisher 
   }
 }
 
-abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable {
+abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable with RemoveableChildren {
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject

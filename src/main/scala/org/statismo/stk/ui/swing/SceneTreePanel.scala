@@ -18,7 +18,7 @@ import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.swing.actions.SaveAction
+import org.statismo.stk.ui.swing.actions.SaveSaveableAction
 import org.statismo.stk.ui.swing.actions.SceneTreePopupAction
 import javax.swing.JPopupMenu
 import javax.swing.JTree
@@ -28,12 +28,22 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
-import org.statismo.stk.ui.swing.actions.LoadAction
+import org.statismo.stk.ui.swing.actions.LoadLoadableAction
+import org.statismo.stk.ui.swing.actions.LoadShapeModelLandmarksAction
+import org.statismo.stk.ui.swing.actions.SaveShapeModelLandmarksAction
+import org.statismo.stk.ui.swing.actions.LoadShapeModelAction
+import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
+import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
 
 object SceneTreePanel {
   lazy val popupActions: ArrayBuffer[SceneTreePopupAction] = new ArrayBuffer[SceneTreePopupAction]() {
-    this += new LoadAction
-    this += new SaveAction
+    this += new LoadShapeModelAction
+    this += new LoadShapeModelLandmarksAction
+    this += new SaveShapeModelLandmarksAction
+    this += new CreateShapeModelInstanceAction
+    this += new LoadLoadableAction
+    this += new SaveSaveableAction
+    this += new RemoveRemoveableAction
   }
 }
 
@@ -72,7 +82,10 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       if (event.getKeyChar == '\u007f') {
         val maybeRemoveable = getTreeObjectForEvent(event)
         if (maybeRemoveable.isDefined && maybeRemoveable.get.isInstanceOf[Removeable]) {
-          maybeRemoveable.get.asInstanceOf[Removeable].remove()
+          val r = maybeRemoveable.get.asInstanceOf[Removeable]
+          if (r.isCurrentlyRemoveable) {
+            r.remove()
+          }
         }
       }
     }

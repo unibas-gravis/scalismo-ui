@@ -9,7 +9,7 @@ object Nameable {
   case class NameChanged(source: Nameable) extends Event
 }
 
-trait Nameable extends Publisher {
+trait Nameable extends EdtPublisher {
 	private var _name: String = Nameable.DefaultName
 	def name = {_name}
 	def name_=(newName: String) = {

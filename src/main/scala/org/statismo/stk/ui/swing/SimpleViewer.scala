@@ -39,11 +39,11 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
     }
   }
 
-  override lazy val workspacePanel: Component = {{
-      val p =new WorkspacePanel(workspace)
-      p
-    }
-  }
+//  override lazy val workspacePanel: WorkspacePanel = {{
+//      val p =new WorkspacePanel(workspace)
+//      p
+//    }
+//  }
   
 }
 

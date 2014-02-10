@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.async.Async.{ async, await }
 import scala.swing.Reactor
 
-class ShapeModels(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModel] {
+class ShapeModels(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
   override lazy val parent = scene
   name = "Statistical Shape Models"
   override lazy val isNameUserModifiable = false
@@ -88,7 +88,7 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
 
 }
 
-class ShapeModelInstances(val model: ShapeModel)(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModelInstance] {
+class ShapeModelInstances(val model: ShapeModel)(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModelInstance] with RemoveableChildren {
   name = "Instances"
   override lazy val isNameUserModifiable = false
   override lazy val parent = model

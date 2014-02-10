@@ -7,12 +7,14 @@ import scala.swing.event.Event
 import org.statismo.stk.ui.Scene
 import scala.collection.immutable.HashMap
 import org.statismo.stk.ui.Displayable
+import org.statismo.stk.ui.EdtPublisher
 
-trait VtkContext extends Publisher {
+trait VtkContext extends EdtPublisher {
 
 }
 object VtkContext {
   case class RenderRequest(source: VtkContext) extends Event
+  case class ViewportEmpty(source: VtkViewport) extends Event
 }
 
 class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends VtkContext {
@@ -39,9 +41,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends Vtk
 
     // determine new actors
     val toCreate = backend.filterNot { d =>
-      actors.keys.exists{k => k eq d}
+      actors.keys.exists { k => k eq d }
     }
-    
+
     val created = toCreate.map(d => Tuple2(d, DisplayableActor(d)))
     created.foreach({
       case (back, front) =>
@@ -57,7 +59,11 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends Vtk
     if (changed) {
       // FIXME
       renderer.ResetCamera()
-      publish(VtkContext.RenderRequest(this))
+      if (actors.isEmpty) {
+        publish(VtkContext.ViewportEmpty(this))
+      } else {
+        publish(VtkContext.RenderRequest(this))
+      }
     }
   }
 
