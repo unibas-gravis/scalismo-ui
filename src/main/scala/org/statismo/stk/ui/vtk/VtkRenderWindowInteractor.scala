@@ -14,7 +14,7 @@ object VtkRenderWindowInteractor {
   case class PointClicked(point: Point3D) extends Event
 }
 
-class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
+class VtkRenderWindowInteractor(workspace: Workspace, viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
   val cellPicker = new vtkCellPicker
   SetPicker(cellPicker)
 
@@ -36,7 +36,7 @@ class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWind
   override def LeftButtonPressEvent() {
     super.LeftButtonPressEvent
 
-    if (viewport.workspace.landmarkClickMode) {
+    if (workspace.landmarkClickMode) {
       downX = x
       downY = y
     }
@@ -50,7 +50,7 @@ class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWind
   override def LeftButtonReleaseEvent() {
     super.LeftButtonReleaseEvent
 
-    if (viewport.workspace.landmarkClickMode) {
+    if (workspace.landmarkClickMode) {
       val threshold = 3 //(pixels)
       if (Math.abs(x - downX) < threshold && Math.abs(y - downY) < threshold) {
         val p = cellPicker.Pick(x, height - y - 1, 0.0, renderer);

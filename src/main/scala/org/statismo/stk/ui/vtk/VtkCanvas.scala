@@ -8,8 +8,8 @@ import org.statismo.stk.ui.Viewport
 import java.awt.Graphics
 import java.awt.Color
 
-class VtkCanvas(viewport: Viewport) extends vtkCanvas {
-  lazy val interactor = new VtkRenderWindowInteractor(viewport)
+class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
+  lazy val interactor = new VtkRenderWindowInteractor(workspace, viewport)
   iren = interactor
 
   iren.SetRenderWindow(rw);

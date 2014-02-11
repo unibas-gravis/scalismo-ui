@@ -10,6 +10,7 @@ import scala.util.Try
 
 object Scene {
   case class TreeTopologyChanged(scene: Scene) extends Event
+  case class PerspectiveChanged(scene: Scene) extends Event
 }
 
 class Scene extends SceneTreeObject {
@@ -43,6 +44,15 @@ class Scene extends SceneTreeObject {
       publish(m)
     }
   }
+  
+  private var _perspective: Perspective = Perspective.defaultPerspective(this)
+  def perspective = _perspective
+  def perspective_=(newPerspective: Perspective) = {
+    _perspective = newPerspective
+    publish(Scene.PerspectiveChanged(this))
+  }
+  
+  def viewports = perspective.viewports
 }
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends SceneTreeObjectContainer[Displayable] {

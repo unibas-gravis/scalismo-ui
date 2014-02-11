@@ -8,7 +8,7 @@ import scala.swing.GridPanel
 
 class ViewportsPanel(val workspace: Workspace) extends BorderPanel {
 	def onViewportsChanged = {
-	  val viewports = workspace.viewports.map(v => new ViewportPanel(v))
+	  val viewports = workspace.viewports.map(v => new ViewportPanel(workspace, v))
 	  val inner: Component = {
 	    if (viewports.length == 1) viewports.head
 	    else {

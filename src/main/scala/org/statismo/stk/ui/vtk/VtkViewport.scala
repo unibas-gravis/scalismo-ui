@@ -18,7 +18,7 @@ object VtkContext {
 }
 
 class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit val interactor: VtkRenderWindowInteractor) extends VtkContext {
-  val scene = viewport.workspace.scene
+  val scene = viewport.scene
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
   def refresh() {

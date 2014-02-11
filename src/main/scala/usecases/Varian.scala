@@ -17,6 +17,7 @@ import java.awt.Color
 import org.statismo.stk.ui.DisplayableLandmarks
 import org.statismo.stk.ui.swing.WorkspacePanel
 import org.statismo.stk.ui.Landmarks
+import scala.swing.Action
 
 class Varian(scene: Scene) extends StatismoFrame(scene) {
 
@@ -30,6 +31,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
   this.workspacePanel.asInstanceOf[WorkspacePanel].layout(new Button("X")) = BorderPanel.Position.East
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadMesh, "Open Mesh...", Seq(StaticMesh), false)))
   menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadModel, "Open Statistical Shape Model...", Seq(ShapeModel), false)))
+  
+  this.toolbar.add(new Action("Marcel's Action") {def apply() = println("Hello Toolbar :)")})
 
   private var meshLm: DisplayableLandmarks = null
   private var modelLm: DisplayableLandmarks = null
@@ -71,15 +74,18 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
             val refLms = lastModel.get.landmarks.children.map(_.peer).toIndexedSeq
             val targetLms = meshLm.children.map(_.peer).toIndexedSeq
             val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (refPt, tgtPt - refPt) }
-            val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, true)
-            val nm = ShapeModel(posteriorModel, orgModel)
+            println(trainingData)
+            val nm = if (!trainingData.isEmpty) {
+	            val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, true)
+	            ShapeModel(posteriorModel, orgModel)
+            } else ShapeModel(orgModel.get.peer, orgModel)
 
             if (lastModel.get eq orgModel.get) {
               orgModel.get.remove()
             } else {
-              lastModel.get.remove()
               nm.landmarks.children.foreach(_.remove)
               lastModel.get.landmarks.children.foreach { lm => nm.landmarks.create(lm.peer) }
+              lastModel.get.remove()
             }
             lastModel = Some(nm)
 
@@ -94,7 +100,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
 }
 
-object SimpleViewer {
+object Varian {
   def main(args: Array[String]): Unit = {
     StatismoApp(args, frame = { s: Scene => new Varian(s) })
   }

@@ -9,6 +9,7 @@ import java.io.File
 import scala.util.Try
 import org.statismo.stk.core.io.LandmarkIO
 import org.statismo.stk.core.geometry.ThreeD
+import scala.util.Success
 
 trait Landmark extends Nameable with Removeable {
   def peer: Point3D
@@ -90,8 +91,8 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     publish(Landmarks.LandmarksChanged(this))
   }
 
-  override def remove(lm: L) = {
-    val changed = super.remove(lm)
+  override def remove(lm: L, silent: Boolean) = {
+    val changed = super.remove(lm, silent)
     if (changed) publish(Landmarks.LandmarksChanged(this))
     changed
   }
@@ -112,6 +113,8 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
         }
       }
     } yield {}
+    publish(Landmarks.LandmarksChanged(this))
+    Success()
   }
 }
 
