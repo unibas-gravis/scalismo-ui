@@ -151,10 +151,10 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
       _mesh = newMesh
       Swing.onEDT(publish(Mesh.GeometryChanged(this)))
     }
-    override lazy val parent: ShapeModelInstance = ShapeModelInstance.this
+    override lazy val parent = ShapeModelInstance.this.representations
 
     def addLandmarkAt(point: Point3D) = {
-      parent.landmarks.addAt(point)
+      parent.parent.landmarks.addAt(point)
     }
   }
 }

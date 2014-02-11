@@ -6,5 +6,5 @@ class ThreeDRepresentations(theObject: ThreeDObject) extends SceneTreeObjectCont
   override lazy val parent = theObject
 }
 
-trait ThreeDRepresentation extends Displayable with Removeable {
+trait ThreeDRepresentation extends SceneTreeObject with Removeable {
 }

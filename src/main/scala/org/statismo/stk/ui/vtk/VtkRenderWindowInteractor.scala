@@ -5,8 +5,16 @@ import vtk.vtkCellPicker
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui.Workspace
 import org.statismo.stk.ui.Viewport
+import vtk.vtkOpenGLActor
+import vtk.vtkPainterPolyDataMapper
+import scala.swing.event.Event
+import org.statismo.stk.ui.EdtPublisher
 
-class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWindowInteractor {
+object VtkRenderWindowInteractor {
+  case class PointClicked(point: Point3D) extends Event
+}
+
+class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
   val cellPicker = new vtkCellPicker
   SetPicker(cellPicker)
 
@@ -50,9 +58,17 @@ class VtkRenderWindowInteractor(viewport: Viewport) extends vtkGenericRenderWind
           cellPicker.PickFromListOff()
           val pickpos = cellPicker.GetPickPosition()
           val prop = cellPicker.GetProp3D()
-          if (prop != null && prop.isInstanceOf[ClickableActor]) {
-            val clickable = prop.asInstanceOf[ClickableActor]
-            clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
+          if (prop != null) {
+            if (prop.isInstanceOf[ClickableActor]) {
+              val clickable = prop.asInstanceOf[ClickableActor]
+              clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
+            } else if (prop.isInstanceOf[DisplayableActor]) {
+              // do nothing. We found one of our own actors, but it doesn't react to clicks
+            } else {
+              // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
+              // we publish an event instead
+              publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+            }
           }
         }
       }

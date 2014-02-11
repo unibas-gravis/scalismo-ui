@@ -29,6 +29,7 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage] with FileIoMetada
 
 class StaticImage(override val peer: DiscreteScalarImage3D[Short], initialParent: Option[ThreeDRepresentations] = None, initialName: String = "(no name)")(implicit override val scene: Scene) extends ThreeDImage {
   name = initialName
+  
   override lazy val parent: ThreeDRepresentations = initialParent.getOrElse {
     val p = new StaticThreeDObject(Some(scene.statics), initialName)
     p.representations

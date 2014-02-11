@@ -10,7 +10,7 @@ object Mesh {
   case class GeometryChanged(source: Mesh) extends Event
 }
 
-trait Mesh extends ThreeDRepresentation with Colorable with Landmarkable with Saveable {
+trait Mesh extends ThreeDRepresentation with Displayable with Colorable with Landmarkable with Saveable {
   def triangleMesh: TriangleMesh
 
   override def saveToFile(file: File): Try[Unit] = {

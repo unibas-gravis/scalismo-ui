@@ -32,7 +32,7 @@ trait SceneObjectPropertyPanel extends Component {
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
   private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
-  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, appearance)
+  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, new ThreeDImagePanel, new ThreeDImagePlanePanel, appearance)
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {

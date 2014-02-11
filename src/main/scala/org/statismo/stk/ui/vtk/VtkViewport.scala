@@ -17,7 +17,7 @@ object VtkContext {
   case class ViewportEmpty(source: VtkViewport) extends Event
 }
 
-class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends VtkContext {
+class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit val interactor: VtkRenderWindowInteractor) extends VtkContext {
   val scene = viewport.workspace.scene
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
@@ -50,9 +50,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer) extends Vtk
         actors += Tuple2(back, front)
         if (front.isDefined) {
           listenTo(front.get)
+          changed = true
           front.get.vtkActors.foreach({ a =>
             renderer.AddActor(a)
-            changed = true
           })
         }
     })

@@ -26,11 +26,31 @@ trait Nameable extends EdtPublisher {
 }
 
 object NameGenerator {
-  def defaultGenerator = new NumberNameGenerator
+  def defaultGenerator = new AlphaNumericNameGenerator
 }
 
 trait NameGenerator {
   def nextName: String
+}
+
+
+object AlphaNumericNameGenerator {
+  val Prefixes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+}
+
+class AlphaNumericNameGenerator extends NameGenerator {
+  import AlphaNumericNameGenerator.Prefixes
+  private var prefix = 0
+  private var suffix = 0
+  
+  def nextName = this.synchronized {
+    val p = Prefixes(prefix)
+    val name = if (suffix == 0) p.toString else s"${p}_$suffix"
+    prefix = (prefix + 1) % Prefixes.length()
+    if (prefix == 0) suffix += 1
+    
+    name
+  }
 }
 
 class NumberNameGenerator extends NameGenerator {

@@ -131,7 +131,6 @@ class LoadSceneTreeObjectAction(val load: File => Try[Unit], val metadata: FileI
   
   def tryLoad(file: File) = {
       val ok = load(file)
-      println("LOAD RESULTED IN" + ok)
       ok match {
         case Success(_) => onSuccess(file)
         case Failure(ex) => onFailure(file, ex)

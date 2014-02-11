@@ -16,7 +16,7 @@ class VtkPanel(viewport: Viewport) extends Component with Reactor {
     panel.add(ui, BorderLayout.CENTER);
     panel
   }
-  lazy val vtk = new VtkViewport(viewport, ui.GetRenderer())
+  lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
   listenTo(vtk)
   
   reactions += {

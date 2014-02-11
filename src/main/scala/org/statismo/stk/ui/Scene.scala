@@ -23,7 +23,7 @@ class Scene extends SceneTreeObject {
   val statics = new StaticThreeDObjects
   val auxiliaries = new AuxiliaryObjects
   
-  override val children = List(models, statics, auxiliaries)
+  override val children = List(models, statics)//, auxiliaries)
 
   def load(paths: String*): Seq[SceneTreeObject] = {
     tryLoad(Seq(paths).flatten).filter(_.isSuccess).map(_.get)
