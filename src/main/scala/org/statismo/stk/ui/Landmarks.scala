@@ -102,7 +102,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 
   override def loadFromFile(file: File): Try[Unit] = {
-    Try {this.removeAll}
+    this.removeAll
     for {
       saved <- LandmarkIO.readLandmarks3D(file)
       val newLandmarks = {

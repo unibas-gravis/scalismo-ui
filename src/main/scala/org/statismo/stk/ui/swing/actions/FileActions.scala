@@ -125,12 +125,13 @@ class LoadSceneTreeObjectAction(val load: File => Try[Unit], val metadata: FileI
   
   def apply() = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {
-      load(chooser.selectedFile)
+      tryLoad(chooser.selectedFile)
     }
   }
   
   def tryLoad(file: File) = {
       val ok = load(file)
+      println("LOAD RESULTED IN" + ok)
       ok match {
         case Success(_) => onSuccess(file)
         case Failure(ex) => onFailure(file, ex)

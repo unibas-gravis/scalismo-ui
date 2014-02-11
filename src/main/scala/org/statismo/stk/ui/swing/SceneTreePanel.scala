@@ -36,6 +36,8 @@ import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
 import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
 import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromMeshAction
 import org.statismo.stk.ui.swing.actions.AddMeshRepresentationToStaticThreeDObjectAction
+import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromImageAction
+import org.statismo.stk.ui.swing.actions.AddImageRepresentationToStaticThreeDObjectAction
 
 object SceneTreePanel {
   lazy val popupActions: ArrayBuffer[SceneTreePopupAction] = new ArrayBuffer[SceneTreePopupAction]() {
@@ -44,7 +46,9 @@ object SceneTreePanel {
     this += new SaveShapeModelLandmarksAction
     this += new CreateShapeModelInstanceAction
     this += new CreateStaticThreeDObjectFromMeshAction
+    this += new CreateStaticThreeDObjectFromImageAction
     this += new AddMeshRepresentationToStaticThreeDObjectAction
+    this += new AddImageRepresentationToStaticThreeDObjectAction
     this += new LoadLoadableAction
     this += new SaveSaveableAction
     this += new RemoveRemoveableAction

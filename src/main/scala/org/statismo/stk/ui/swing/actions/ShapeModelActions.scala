@@ -8,6 +8,7 @@ import org.statismo.stk.ui.Loadable
 import org.statismo.stk.ui.ShapeModel
 import org.statismo.stk.ui.ShapeModels
 import org.statismo.stk.ui.ShapeModelInstances
+import scala.util.Success
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
@@ -50,7 +51,7 @@ class LoadShapeModelAction extends SceneTreePopupAction("Load Shape Model from f
     if (isContextSupported(context)) {
       val shapes = context.get.asInstanceOf[ShapeModels]
       def doLoad(file: File): Try[Unit] = {
-        for { m <- ShapeModel(file)(shapes.scene) } yield()
+        ShapeModel(file)(shapes.scene).map(ok => Success())
       }
       new LoadSceneTreeObjectAction(doLoad, ShapeModel).apply
     }

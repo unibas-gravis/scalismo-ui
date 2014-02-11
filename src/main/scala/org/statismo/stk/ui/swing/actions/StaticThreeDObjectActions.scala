@@ -10,8 +10,10 @@ import scala.util.Try
 import org.statismo.stk.ui.FileIoMetadata
 import org.statismo.stk.ui.ThreeDRepresentations
 import org.statismo.stk.ui.StaticThreeDObject
+import org.statismo.stk.ui.StaticImage
+import scala.util.Success
 
-private [actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name: String) extends SceneTreePopupAction(name) {
+private[actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name: String) extends SceneTreePopupAction(name) {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context.isDefined && context.get.isInstanceOf[StaticThreeDObjects]
   }
@@ -20,10 +22,10 @@ private [actions] abstract class CreateStaticThreeDObjectFromSomethingAction(nam
     if (isContextSupported(context)) {
       val parent = context.get.asInstanceOf[StaticThreeDObjects]
       def doLoad(file: File): Try[Unit] = load(file, parent)
-      new LoadSceneTreeObjectAction(doLoad, StaticMesh).apply
+      new LoadSceneTreeObjectAction(doLoad, metadata).apply
     }
   }
-  
+
   def load(file: File, parent: StaticThreeDObjects): Try[Unit]
   def metadata: FileIoMetadata
 }
@@ -31,11 +33,18 @@ private [actions] abstract class CreateStaticThreeDObjectFromSomethingAction(nam
 class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Mesh file...") {
   override val metadata = StaticMesh
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-        for (m <- StaticMesh(file)(parent.scene)) yield {}
+    StaticMesh(file)(parent.scene).map(ok => Success())
   }
 }
 
-private [actions] abstract class AddRepresentationToStaticThreeDObjectAction(name: String) extends SceneTreePopupAction(name) {
+class CreateStaticThreeDObjectFromImageAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Image file...") {
+  override val metadata = StaticImage
+  def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
+    StaticImage(file)(parent.scene).map(ok => Success())
+  }
+}
+
+private[actions] abstract class AddRepresentationToStaticThreeDObjectAction(name: String) extends SceneTreePopupAction(name) {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context.isDefined && context.get.isInstanceOf[ThreeDRepresentations] && context.get.asInstanceOf[ThreeDRepresentations].parent.isInstanceOf[StaticThreeDObject]
   }
@@ -44,10 +53,10 @@ private [actions] abstract class AddRepresentationToStaticThreeDObjectAction(nam
     if (isContextSupported(context)) {
       val parent = context.get.asInstanceOf[ThreeDRepresentations]
       def doLoad(file: File): Try[Unit] = load(file, parent)
-      new LoadSceneTreeObjectAction(doLoad, StaticMesh).apply
+      new LoadSceneTreeObjectAction(doLoad, metadata).apply
     }
   }
-  
+
   def load(file: File, parent: ThreeDRepresentations): Try[Unit]
   def metadata: FileIoMetadata
 }
@@ -55,7 +64,14 @@ private [actions] abstract class AddRepresentationToStaticThreeDObjectAction(nam
 class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add from Mesh file...") {
   override val metadata = StaticMesh
   def load(file: File, parent: ThreeDRepresentations): Try[Unit] = {
-        for (m <- StaticMesh(file, Some(parent), file.getName())(parent.scene)) yield {}
+    StaticMesh(file, Some(parent), file.getName())(parent.scene).map(ok => Success())
+  }
+}
+
+class AddImageRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add from Image file...") {
+  override val metadata = StaticImage
+  def load(file: File, parent: ThreeDRepresentations): Try[Unit] = {
+    StaticImage(file, Some(parent), file.getName())(parent.scene).map(ok => Success())
   }
 }
 

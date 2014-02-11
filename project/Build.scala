@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 object BuildSettings {
   val buildOrganization = "org.statismo"
   val buildVersion = "0.1.0-SNAPSHOT"
-  val buildScalaVersion = "2.10.2"
+  val buildScalaVersion = "2.10.3"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
