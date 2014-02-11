@@ -26,6 +26,8 @@ object DisplayableActor {
     }
   }
 }
+
 trait DisplayableActor extends VtkContext {
   def vtkActors: Seq[vtkActor]
+  def onDestroy(): Unit = ()
 }

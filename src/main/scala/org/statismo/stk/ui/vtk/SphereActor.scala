@@ -32,4 +32,9 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
       mapper.Modified()
       publish(VtkContext.RenderRequest(this))
     }
+	
+	 override def onDestroy() {
+		 deafTo(source)
+		 super.onDestroy()
+	 }
 }

@@ -28,22 +28,17 @@ class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWind
       widget.SetPlaneOrientationToZAxes()
     }
   }
-  
+
+  widget.SetSliceIndex(peer.position)
   widget.SetInteractor(interactor)
   widget.On()
-  
+
   listenTo(peer, interactor)
-  
+
   reactions += {
     case ThreeDImagePlane.PositionChanged(s) => {
       widget.SetSliceIndex(peer.position)
       publish(new VtkContext.RenderRequest(this))
-    }
-    case Removeable.Removed(r) => {
-      if (r eq peer) {
-        widget.Off()
-        widget.Delete()
-      }
     }
     case VtkRenderWindowInteractor.PointClicked(point) => {
       val own = widget.GetSlicePosition().toFloat
@@ -56,5 +51,13 @@ class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWind
         peer.addLandmarkAt(point)
       }
     }
+  }
+
+  override def onDestroy() = {
+    deafTo(peer, interactor)
+    widget.Off()
+    widget.Delete()
+    super.onDestroy()
+
   }
 }

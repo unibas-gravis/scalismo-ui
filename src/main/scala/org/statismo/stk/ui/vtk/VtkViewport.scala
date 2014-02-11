@@ -35,6 +35,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
             renderer.RemoveActor(a)
             changed = true
           })
+          front.get.onDestroy()
         }
       }
     })

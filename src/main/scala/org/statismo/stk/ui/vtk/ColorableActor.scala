@@ -10,7 +10,7 @@ trait ColorableActor extends SingleDisplayableActor {
   reactions += {
     case Colorable.AppearanceChanged(c) => setAppearance
   }
-  
+
   setAppearance
 
   def setAppearance() {
@@ -20,4 +20,8 @@ trait ColorableActor extends SingleDisplayableActor {
     publish(VtkContext.RenderRequest(this))
   }
 
+  override def onDestroy() {
+    deafTo(colorable)
+    super.onDestroy()
+  }
 }
