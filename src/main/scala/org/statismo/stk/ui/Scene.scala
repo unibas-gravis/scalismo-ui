@@ -11,6 +11,7 @@ import scala.util.Try
 object Scene {
   case class TreeTopologyChanged(scene: Scene) extends Event
   case class PerspectiveChanged(scene: Scene) extends Event
+  case class VisibilityChanged(scene: Scene) extends Event
 }
 
 class Scene extends SceneTreeObject {
@@ -36,8 +37,10 @@ class Scene extends SceneTreeObject {
 
   deafTo(this)
   reactions += {
+    case SceneTreeObject.VisibilityChanged(s) => {
+      publish(Scene.VisibilityChanged(this))
+    }
     case SceneTreeObject.ChildrenChanged(s) => {
-//      println("CC: " + s + " " + s.getClass().getSimpleName())
       publish(Scene.TreeTopologyChanged(this))
     }
     case m@Nameable.NameChanged(s) => {

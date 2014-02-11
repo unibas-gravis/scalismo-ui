@@ -22,7 +22,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
   def refresh() {
-    val backend = scene.displayables
+    val backend = scene.displayables.filter(_.isShownInViewport(viewport))
     var changed = false
 
     // remove obsolete actors
@@ -71,6 +71,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   deafTo(this)
   reactions += {
     case Scene.TreeTopologyChanged(s) => refresh()
+    case Scene.VisibilityChanged(s) => refresh()
     case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
   }
   refresh()
