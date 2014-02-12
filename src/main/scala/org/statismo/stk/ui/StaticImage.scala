@@ -10,7 +10,7 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 
 object StaticImage extends SceneTreeObjectFactory[StaticImage] with FileIoMetadata {
   val description = "Static 3D Image"
-  val fileExtensions = Seq("nii")
+  val fileExtensions = Seq("nii", "nia")
   val metadata = this
   
   def apply(file: File)(implicit scene: Scene): Try[StaticImage] = {

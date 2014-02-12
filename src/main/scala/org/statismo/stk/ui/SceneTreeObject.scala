@@ -24,10 +24,20 @@ trait SceneTreeObject extends Nameable {
       this.asInstanceOf[Displayable] :: cd
     } else cd
   }
+  
+  reactions += {
+    case Removeable.Removed(o) => { if (o eq this) destroy() }
+  }
+  
+  def destroy() {
+    children.foreach(_.destroy)
+    // make sure that we don't leak memory...
+    scene.deafTo(this)
+  }
 
   private var hidden: ArrayBuffer[Viewport] = new ArrayBuffer
 
-  def isHiddenInViewport(viewport: Viewport) = hidden.exists({ v => v eq viewport })
+  def isHiddenInViewport(viewport: Viewport) = hidden.exists({ v => v eq viewport }) || !scene.viewports.exists({v => v eq viewport})
   def isShownInViewport(viewport: Viewport) = !isHiddenInViewport(viewport)
 
   private def hideInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = {
@@ -65,4 +75,9 @@ trait SceneTreeObject extends Nameable {
 
   def hideInViewport(viewport: Viewport): Unit = hideInViewports(Seq(viewport))
   def showInViewport(viewport: Viewport): Unit = showInViewports(Seq(viewport))
+  
+  def onViewportsChanged(): Unit = {
+    children foreach (_.onViewportsChanged())
+    hidden.clear
+  }
 }

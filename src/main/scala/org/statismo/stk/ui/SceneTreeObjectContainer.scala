@@ -6,7 +6,7 @@ import scala.swing.Reactor
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   protected var _children: ArrayBuffer[Child] = new ArrayBuffer
-  def children: Seq[Child] = _children
+  def children: Seq[Child] = _children.map(c => c)
 
   def add(newChild: Child): Unit = {
     addAll(Seq(newChild))

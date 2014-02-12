@@ -9,7 +9,7 @@ object SceneTreeObjectFactory {
   def combineFileExtensions(filters: Seq[SceneTreeObjectFactory[SceneTreeObject]]) : Array[String] = {
     filters.map(_.metadata.fileExtensions).flatten.toSeq.sorted.toArray
   }
-  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh)
+  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage)
   
   def load(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))

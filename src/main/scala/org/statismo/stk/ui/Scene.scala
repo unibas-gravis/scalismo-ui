@@ -51,7 +51,9 @@ class Scene extends SceneTreeObject {
   private var _perspective: Perspective = Perspective.defaultPerspective(this)
   def perspective = _perspective
   def perspective_=(newPerspective: Perspective) = {
+    _perspective.viewports foreach (_.destroy())
     _perspective = newPerspective
+    onViewportsChanged()
     publish(Scene.PerspectiveChanged(this))
   }
   

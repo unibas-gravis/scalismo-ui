@@ -11,13 +11,13 @@ class LoadLoadableAction extends SceneTreePopupAction("Load from file...") {
     context.isDefined && context.get.isInstanceOf[Loadable] && context.get.asInstanceOf[Loadable].isCurrentlyLoadable
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val load = context.get.asInstanceOf[Loadable]
       def doLoad(file: File): Try[Unit] = {
         load.loadFromFile(file)
       }
-      new LoadSceneTreeObjectAction(doLoad, load.loadableMetadata).apply()
+      new LoadAction(doLoad, load.loadableMetadata).apply()
     }
   }
 

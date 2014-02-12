@@ -18,11 +18,11 @@ private[actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name
     context.isDefined && context.get.isInstanceOf[StaticThreeDObjects]
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val parent = context.get.asInstanceOf[StaticThreeDObjects]
       def doLoad(file: File): Try[Unit] = load(file, parent)
-      new LoadSceneTreeObjectAction(doLoad, metadata).apply
+      new LoadAction(doLoad, metadata).apply
     }
   }
 
@@ -49,11 +49,11 @@ private[actions] abstract class AddRepresentationToStaticThreeDObjectAction(name
     context.isDefined && context.get.isInstanceOf[ThreeDRepresentations] && context.get.asInstanceOf[ThreeDRepresentations].parent.isInstanceOf[StaticThreeDObject]
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val parent = context.get.asInstanceOf[ThreeDRepresentations]
       def doLoad(file: File): Try[Unit] = load(file, parent)
-      new LoadSceneTreeObjectAction(doLoad, metadata).apply
+      new LoadAction(doLoad, metadata).apply
     }
   }
 

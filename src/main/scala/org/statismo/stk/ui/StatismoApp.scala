@@ -32,7 +32,7 @@ object StatismoApp {
     if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName()
   }
   
-  val Version: String = "0.1.1"
+  val Version: String = "0.2.0"
 }
 
 class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
@@ -64,10 +64,11 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   lazy val workspacePanel: WorkspacePanel  = new WorkspacePanel(workspace)
   lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
   
-  contents = new BorderPanel {
+  lazy val mainPanel = new BorderPanel {
     layout(toolbar) = BorderPanel.Position.North
     layout(workspacePanel) = BorderPanel.Position.Center
   }
+  contents = mainPanel
   menuBar = new MainMenuBar()(this)
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)

@@ -22,7 +22,7 @@ class RemoveRemoveableAction extends SceneTreePopupAction("Remove") {
     }
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val r = context.get.asInstanceOf[Removeable]
       r.remove

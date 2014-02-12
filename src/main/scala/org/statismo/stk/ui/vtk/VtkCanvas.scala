@@ -19,17 +19,17 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
 
   private var isEmpty = true
 
-  override def Render() {
+  override def Render() = this.synchronized {
     isEmpty = false
     super.Render()
   }
 
-  def setAsEmpty() {
+  def setAsEmpty() = this.synchronized {
     isEmpty = true
     repaint
   }
 
-  override def paint(g: Graphics) {
+  override def paint(g: Graphics) = this.synchronized {
     if (isEmpty) {
       g.setColor(Color.BLACK)
       g.fillRect(0, 0, getWidth(), getHeight())

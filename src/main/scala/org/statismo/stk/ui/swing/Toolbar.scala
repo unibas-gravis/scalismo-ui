@@ -1,11 +1,11 @@
 package org.statismo.stk.ui.swing
 
-import scala.swing.Component
 import scala.swing.Action
 import scala.swing.Button
-import javax.swing.JComponent
+import scala.swing.Component
+import scala.swing.Orientable
 
-class Toolbar extends Component {
+class Toolbar extends Component  with Orientable.Wrapper {
   override lazy val peer = new javax.swing.JToolBar with SuperMixin
   
   def add(action: Action): Button  = {
@@ -24,4 +24,5 @@ class Toolbar extends Component {
   
   def rollover: Boolean = peer.isRollover()
   def rollover_=(b: Boolean) = peer.setRollover(b)
+  
 }

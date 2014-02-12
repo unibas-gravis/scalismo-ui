@@ -10,6 +10,13 @@ class WorkspacePanel(val workspace: Workspace) extends BorderPanel {
   lazy val properties = new PropertiesPanel(workspace)
   lazy val viewports = new ViewportsPanel(workspace)
 
-  layout(properties) = West
-  layout(viewports) = Center
+  setupUi
+  
+  def setupUi = {
+    val child = new BorderPanel {
+	  layout(properties) = West
+	  layout(viewports) = Center
+    }
+    layout(child) = Center
+  }
 }

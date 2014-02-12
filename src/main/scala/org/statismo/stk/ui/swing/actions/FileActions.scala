@@ -41,16 +41,16 @@ class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[SceneTreeObjectF
   }
 }
 
-object SaveSceneTreeObjectAction {
+object SaveAction {
   val DefaultName = "Save..."
 }
 
-class SaveSceneTreeObjectAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val name: String = SaveSceneTreeObjectAction.DefaultName) extends Action(name) {
+class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val name: String = SaveAction.DefaultName) extends Action(name) {
   lazy val confirmWhenExists = true
   lazy val verifyFileExtension = true
   lazy val chooserTitle = {
-    if (name != SaveSceneTreeObjectAction.DefaultName) name
-    else "Save " + metadata.description
+  if (name != SaveAction.DefaultName) name
+  else "Save " + metadata.description
   }
   lazy val parentComponent: Component = null
   
@@ -105,13 +105,13 @@ class SaveSceneTreeObjectAction(val save: File => Try[Unit], val metadata: FileI
   }
 }
 
-object LoadSceneTreeObjectAction {
+object LoadAction {
   val DefaultName = "Load..."
 }
 
-class LoadSceneTreeObjectAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadSceneTreeObjectAction.DefaultName) extends Action(name) {
+class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadAction.DefaultName) extends Action(name) {
   lazy val chooserTitle = {
-    if (name != LoadSceneTreeObjectAction.DefaultName) name
+    if (name != LoadAction.DefaultName) name
     else "Load " + metadata.description
   }
   lazy val parentComponent: Component = null

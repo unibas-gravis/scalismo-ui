@@ -10,7 +10,15 @@ class PropertiesPanel(val workspace: Workspace) extends BorderPanel {
 	val scene = new SceneTreePanel(workspace);
 	val details = new SceneObjectPropertiesPanel(workspace);
 	
-	val split = new SplitPane(Orientation.Horizontal, scene, details)
-	split.resizeWeight = 0.5
-	layout(split) = Center
+	setupUi
+	
+	def setupUi {
+	  val child = new BorderPanel {
+		val split = new SplitPane(Orientation.Horizontal, scene, details) {
+			resizeWeight = 0.5
+		}
+		layout(split) = Center
+	  }
+	  layout(child) = Center
+	}
 }

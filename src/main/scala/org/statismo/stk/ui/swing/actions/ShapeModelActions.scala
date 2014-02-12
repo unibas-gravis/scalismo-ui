@@ -15,13 +15,13 @@ class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks
     context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlyLoadable
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val load = context.get.asInstanceOf[ShapeModel].landmarks
       def doLoad(file: File): Try[Unit] = {
         load.loadFromFile(file)
       }
-      new LoadSceneTreeObjectAction(doLoad, load.loadableMetadata).apply()
+      new LoadAction(doLoad, load.loadableMetadata).apply()
     }
   }
 }
@@ -31,13 +31,13 @@ class SaveShapeModelLandmarksAction extends SceneTreePopupAction("Save landmarks
     context.isDefined && context.get.isInstanceOf[ShapeModel]  && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlySaveable
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val save = context.get.asInstanceOf[ShapeModel].landmarks
       def doSave(file: File): Try[Unit] = {
         save.saveToFile(file)
       }
-      new SaveSceneTreeObjectAction(doSave, save.saveableMetadata).apply()
+      new SaveAction(doSave, save.saveableMetadata).apply()
     }
   }
 }
@@ -47,13 +47,13 @@ class LoadShapeModelAction extends SceneTreePopupAction("Load Shape Model from f
     context.isDefined && context.get.isInstanceOf[ShapeModels]
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val shapes = context.get.asInstanceOf[ShapeModels]
       def doLoad(file: File): Try[Unit] = {
         ShapeModel(file)(shapes.scene).map(ok => Success())
       }
-      new LoadSceneTreeObjectAction(doLoad, ShapeModel).apply
+      new LoadAction(doLoad, ShapeModel).apply
     }
   }
 }
@@ -63,7 +63,7 @@ class CreateShapeModelInstanceAction extends SceneTreePopupAction("Create new In
     context.isDefined && context.get.isInstanceOf[ShapeModelInstances]
   }
 
-  def apply(context: Option[SceneTreeObject]) = {
+  override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val instances = context.get.asInstanceOf[ShapeModelInstances]
       instances.create()

@@ -6,6 +6,11 @@ import scala.swing.Reactor
 import org.statismo.stk.ui.Viewport
 import javax.swing.JPanel
 import org.statismo.stk.ui.Workspace
+import scala.swing.Swing
+import java.io.File
+import vtk.vtkWindowToImageFilter
+import vtk.vtkPNGWriter
+import scala.util.Try
 
 class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with Reactor {
   lazy val ui = new VtkCanvas(workspace, viewport)
@@ -15,9 +20,15 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
     panel
   }
   lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
-  listenTo(vtk)
-  
+  listenTo(viewport, vtk)
+  if (!workspace.scene.displayables.filter(d => d.isShownInViewport(viewport)).isEmpty) {
+    Swing.onEDT(ui.Render())
+  }
+
   reactions += {
+    case Viewport.Destroyed(v) => {
+      deafTo(viewport, vtk)
+    }
     case VtkContext.RenderRequest(s) => {
       ui.Render()
     }
@@ -25,5 +36,22 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
       ui.setAsEmpty()
     }
   }
-  
+
+  def resetCamera() = {
+    vtk.resetCamera()
+  }
+
+  def screenshot(file: File) = Try {
+    val filter = new vtkWindowToImageFilter
+    filter.SetInput(ui.GetRenderWindow())
+    filter.SetInputBufferTypeToRGBA()
+    filter.Update()
+
+    val writer = new vtkPNGWriter
+    writer.SetFileName(file.getAbsolutePath())
+    writer.SetInputConnection(filter.GetOutputPort())
+    writer.Write()
+    writer.Delete()
+    filter.Delete()
+  }
 }

@@ -1,5 +1,6 @@
 package org.statismo.stk.ui.swing
 
+import java.awt.{Component => AComponent}
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
 import java.awt.event.MouseAdapter
@@ -18,8 +19,19 @@ import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui.swing.actions.AddImageRepresentationToStaticThreeDObjectAction
+import org.statismo.stk.ui.swing.actions.AddMeshRepresentationToStaticThreeDObjectAction
+import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
+import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromImageAction
+import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromMeshAction
+import org.statismo.stk.ui.swing.actions.LoadLoadableAction
+import org.statismo.stk.ui.swing.actions.LoadShapeModelAction
+import org.statismo.stk.ui.swing.actions.LoadShapeModelLandmarksAction
+import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
 import org.statismo.stk.ui.swing.actions.SaveSaveableAction
+import org.statismo.stk.ui.swing.actions.SaveShapeModelLandmarksAction
 import org.statismo.stk.ui.swing.actions.SceneTreePopupAction
+import org.statismo.stk.ui.swing.actions.VisibilityAction
 import javax.swing.JPopupMenu
 import javax.swing.JTree
 import javax.swing.event.TreeSelectionEvent
@@ -28,18 +40,8 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
-import org.statismo.stk.ui.swing.actions.LoadLoadableAction
-import org.statismo.stk.ui.swing.actions.LoadShapeModelLandmarksAction
-import org.statismo.stk.ui.swing.actions.SaveShapeModelLandmarksAction
-import org.statismo.stk.ui.swing.actions.LoadShapeModelAction
-import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
-import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
-import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromMeshAction
-import org.statismo.stk.ui.swing.actions.AddMeshRepresentationToStaticThreeDObjectAction
-import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromImageAction
-import org.statismo.stk.ui.swing.actions.AddImageRepresentationToStaticThreeDObjectAction
-import org.statismo.stk.ui.swing.actions.ShowInAllViewportsAction
-import org.statismo.stk.ui.swing.actions.HideInAllViewportsAction
+import javax.swing.JRootPane
+import java.awt.Frame
 
 object SceneTreePanel {
   lazy val popupActions: ArrayBuffer[SceneTreePopupAction] = new ArrayBuffer[SceneTreePopupAction]() {
@@ -54,8 +56,7 @@ object SceneTreePanel {
     this += new LoadLoadableAction
     this += new SaveSaveableAction
     this += new RemoveRemoveableAction
-    this += new ShowInAllViewportsAction
-    this += new HideInAllViewportsAction
+    this += new VisibilityAction
   }
 }
 
@@ -71,7 +72,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   listenTo(scene)
 
   lazy val popupActions: ArrayBuffer[SceneTreePopupAction] = SceneTreePanel.popupActions.clone
-  
+
   val root = new TreeNode(scene)
   val tree = new DefaultTreeModel(root)
 
@@ -86,12 +87,10 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   }
   val listener = new KeyAdapter with TreeSelectionListener {
     def valueChanged(event: TreeSelectionEvent): Unit = {
-      val jtree = event.getSource().asInstanceOf[JTree]
-      val node = jtree.getLastSelectedPathComponent().asInstanceOf[TreeNode]
       workspace.selectedObject = getTreeObjectForEvent(event)
     }
     override def keyTyped(event: KeyEvent) {
-      if (event.getKeyChar == '\u007f') {
+      if (event.getKeyChar == '\u007f') { // delete
         val maybeRemoveable = getTreeObjectForEvent(event)
         if (maybeRemoveable.isDefined && maybeRemoveable.get.isInstanceOf[Removeable]) {
           val r = maybeRemoveable.get.asInstanceOf[Removeable]
@@ -104,8 +103,11 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   }
 
   val mouseListener = new MouseAdapter() {
-    override def mousePressed(event: MouseEvent) {
-      if (event.isPopupTrigger()) {
+    override def mousePressed(event: MouseEvent) = handle(event)
+    override def mouseReleased(event: MouseEvent) = handle(event)
+    
+    def handle(event: MouseEvent) = {
+      if (event.isPopupTrigger) {
         val jtree = event.getSource().asInstanceOf[JTree]
         val x = event.getX()
         val y = event.getY()
@@ -124,14 +126,21 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   def handlePopup(target: SceneTreeObject, x: Int, y: Int): Unit = {
     val applicable = popupActions.filter(a => a.setContext(Some(target)))
     if (!applicable.isEmpty) {
-	    val pop = new JPopupMenu()
-	    applicable.foreach { a=>
-	      pop.add(a.peer)
-	    }
-	    pop.show(jtree, x, y)
+      val pop = new JPopupMenu()
+      applicable.foreach { a =>
+        val menu = a.createMenuItem(Some(target))
+        if (menu.isDefined) {
+          pop.add(menu.get.peer)
+        } else {
+        	pop.add(a.peer)
+        }
+      }
+      pop.show(jtree, x, y)
+      // needed because otherwise the popup may be hidden by the renderer window
+      topmost.revalidate()
     }
   }
-
+  
   val jtree = new JTree(tree) {
     getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION)
     addTreeSelectionListener(listener)
@@ -139,6 +148,16 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     addMouseListener(mouseListener)
     setExpandsSelectedPaths(true)
   }
+  
+  lazy val topmost = {
+    import java.awt.{Component => AComponent}
+    def top(c: AComponent): AComponent = {
+      val p = c.getParent()
+      if (p == null || c.isInstanceOf[Frame]) c else top(p)
+    }
+    top(jtree)
+  }
+
   synchronizeTreeWithScene()
 
   val view: Component = {
@@ -165,37 +184,24 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
 
-    def frontendChildren = {
-      List.fromIterator(frontend.children().map(_.asInstanceOf[TreeNode]))
-    }
+    def frontendChildren = List.fromIterator(frontend.children.map(_.asInstanceOf[TreeNode]))
 
     val backendChildren = backend.children
-    val obsoleteNodes = {
-      frontendChildren.zipWithIndex.filterNot({ case (n, i) => backendChildren.exists({ _ eq n.getUserObject }) }).map(_._1)
-    }
-    obsoleteNodes.foreach({ n =>
-      tree.removeNodeFromParent(n)
-    });
+    val obsoleteIndexes = frontendChildren.zipWithIndex.filterNot({ case (n, i) => backendChildren.exists ( _ eq n.getUserObject )}).map(_._1)
+    obsoleteIndexes.foreach(tree.removeNodeFromParent(_));
+    
     val existingObjects = frontendChildren.map(_.getUserObject)
-    val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot({
-      case (o, i) => {
-        val x = existingObjects.exists({ _ eq o })
-        x
-      }
-    })
+    val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot { case (o, i) => existingObjects.exists(_ eq o )}
+    
     newObjectsWithIndex.foreach({
       case (obj, idx) => {
-        //println("creating node for " + obj)
         val node = new TreeNode(obj)
         tree.insertNodeInto(node, frontend, idx)
         val p = node.getPath().map(_.asInstanceOf[Object])
         jtree.setSelectionPath(new TreePath(p))
-        //jtree.expandPath(new TreePath(p))
       }
     })
 
-    backendChildren.zip(frontendChildren).foreach({
-      case (back, front) => synchronizeTreeNode(back, front)
-    })
+    backendChildren.zip(frontendChildren).foreach { case (back, front) => synchronizeTreeNode(back, front) }
   }
 }
