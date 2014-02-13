@@ -1,12 +1,13 @@
 package org.statismo.stk.ui.vtk
 
-import vtk.vtkCanvas
-import vtk.vtkGenericRenderWindowInteractor
-import vtk.vtkInteractorStyleTrackballCamera
-import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.Viewport
-import java.awt.Graphics
 import java.awt.Color
+import java.awt.Graphics
+
+import org.statismo.stk.ui.Viewport
+import org.statismo.stk.ui.Workspace
+
+import vtk.vtkCanvas
+import vtk.vtkInteractorStyleTrackballCamera
 
 class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   lazy val interactor = new VtkRenderWindowInteractor(workspace, viewport)

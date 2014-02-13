@@ -1,7 +1,6 @@
 package org.statismo.stk.ui
 
 import scala.swing.event.Event
-import scala.swing.Publisher
 
 object Workspace {
   case object SelectedObjectChanged extends Event
@@ -11,7 +10,7 @@ object Workspace {
 
 class Workspace(val scene: Scene) extends EdtPublisher {
   def viewports = scene.viewports
-  
+
   private var _landmarkClickMode = false
   def landmarkClickMode = _landmarkClickMode
   def landmarkClickMode_=(b: Boolean) {

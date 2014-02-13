@@ -1,16 +1,19 @@
 package org.statismo.stk.ui.vtk
 
 import java.awt.BorderLayout
+import java.io.File
+
 import scala.swing.Component
 import scala.swing.Reactor
-import org.statismo.stk.ui.Viewport
-import javax.swing.JPanel
-import org.statismo.stk.ui.Workspace
 import scala.swing.Swing
-import java.io.File
-import vtk.vtkWindowToImageFilter
-import vtk.vtkPNGWriter
 import scala.util.Try
+
+import org.statismo.stk.ui.Viewport
+import org.statismo.stk.ui.Workspace
+
+import javax.swing.JPanel
+import vtk.vtkPNGWriter
+import vtk.vtkWindowToImageFilter
 
 class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with Reactor {
   lazy val ui = new VtkCanvas(workspace, viewport)

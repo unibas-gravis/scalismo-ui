@@ -1,14 +1,14 @@
 package org.statismo.stk.ui.vtk
 
-import vtk.vtkGenericRenderWindowInteractor
-import vtk.vtkCellPicker
-import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.Viewport
-import vtk.vtkOpenGLActor
-import vtk.vtkPainterPolyDataMapper
 import scala.swing.event.Event
+
+import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui.EdtPublisher
+import org.statismo.stk.ui.Viewport
+import org.statismo.stk.ui.Workspace
+
+import vtk.vtkCellPicker
+import vtk.vtkGenericRenderWindowInteractor
 
 object VtkRenderWindowInteractor {
   case class PointClicked(point: Point3D) extends Event

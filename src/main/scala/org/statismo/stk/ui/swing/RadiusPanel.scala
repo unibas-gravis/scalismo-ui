@@ -1,24 +1,14 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.Colorable
-import scala.swing.Slider
 import scala.swing.BorderPanel
-import scala.swing.event.ValueChanged
-import scala.swing.Component
-import javax.swing.JColorChooser
-import scala.swing.Swing
-import java.awt.Color
-import scala.swing.event.Event
-import javax.swing.colorchooser.DefaultSwatchChooserPanel
-import org.statismo.stk.ui.swing.util.ColorPickerPanel
-import javax.swing.border.TitledBorder
 import scala.swing.Label
-import java.awt.BorderLayout
-import java.awt.Dimension
-import javax.swing.JPanel
-import java.awt.Graphics
+import scala.swing.Slider
+import scala.swing.event.ValueChanged
+
 import org.statismo.stk.ui.Radius
+import org.statismo.stk.ui.SceneTreeObject
+
+import javax.swing.border.TitledBorder
 
 class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Radius"
@@ -45,7 +35,6 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   listenToOwnEvents()
 
   reactions += {
-    case Colorable.AppearanceChanged(t) => updateUi()
     case ValueChanged(s) => {
       if (target.isDefined) {
         target.get.radius = (s.asInstanceOf[Slider].value.toFloat)
@@ -68,7 +57,7 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-      cleanup()
+    cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[Radius]) {
       target = Some(obj.get.asInstanceOf[Radius])
       updateUi()

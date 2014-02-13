@@ -1,9 +1,10 @@
 package org.statismo.stk.ui.swing
 
+import java.awt.CardLayout
+
+import scala.swing.Component
 import scala.swing.LayoutContainer
 import scala.swing.Panel
-import java.awt.CardLayout
-import scala.swing.Component
 
 // taken from https://issues.scala-lang.org/browse/SI-3933
 // and slightly extended
@@ -28,7 +29,7 @@ class CardPanel extends Panel with LayoutContainer {
     _current = l
     layoutManager.show(peer, l)
   }
-  
+
   def current: Constraints = _current
 
   protected def constraintsFor(comp: Component) = cards.iterator.find { case (_, c) => c eq comp }.map(_._1).orNull

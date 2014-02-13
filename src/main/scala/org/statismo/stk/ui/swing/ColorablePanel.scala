@@ -1,25 +1,24 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.Colorable
-import scala.swing.Slider
-import scala.swing.BorderPanel
-import scala.swing.event.ValueChanged
-import scala.swing.Component
-import javax.swing.JColorChooser
-import scala.swing.Swing
 import java.awt.Color
-import scala.swing.event.Event
-import javax.swing.colorchooser.DefaultSwatchChooserPanel
-import org.statismo.stk.ui.swing.util.ColorPickerPanel
-import javax.swing.border.TitledBorder
-import scala.swing.Label
-import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.JPanel
 import java.awt.Graphics
-import javax.swing.event.ChangeListener
+
+import scala.swing.BorderPanel
+import scala.swing.Component
+import scala.swing.Label
+import scala.swing.Slider
+import scala.swing.event.Event
+import scala.swing.event.ValueChanged
+
+import org.statismo.stk.ui.Colorable
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.swing.util.ColorPickerPanel
+
+import javax.swing.JPanel
+import javax.swing.border.TitledBorder
 import javax.swing.event.ChangeEvent
+import javax.swing.event.ChangeListener
 
 class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Color"
@@ -59,19 +58,18 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
     private var deaf = false
     setColor(Color.WHITE)
     peer.addChangeListener(this)
-    
 
     def setColor(c: Color) = {
-    	deaf = true
-    	peer.setRGB(c.getRed(), c.getGreen, c.getBlue());
-    	deaf = false
+      deaf = true
+      peer.setRGB(c.getRed(), c.getGreen, c.getBlue());
+      deaf = false
     }
-    
+
     def stateChanged(event: ChangeEvent) = {
       if (!deaf) {
-	      val rgb = peer.getRGB()
-	      val c: Color = new Color(rgb(0), rgb(1), rgb(2))
-	      publish(ColorChosen(c))
+        val rgb = peer.getRGB()
+        val c: Color = new Color(rgb(0), rgb(1), rgb(2))
+        publish(ColorChosen(c))
       }
     }
     border = new javax.swing.border.EmptyBorder(10, 0, 0, 0)
@@ -90,7 +88,6 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
         border = new TitledBorder(null, "Color", TitledBorder.LEADING, 0, null, null)
         layout(colorChooser) = BorderPanel.Position.Center
         layout(colorDisplayer) = BorderPanel.Position.North
-        //layoutManager.setHgap(10);
       }
       layout(colorPanel) = BorderPanel.Position.Center
       layout(opacityPanel) = BorderPanel.Position.South
@@ -100,7 +97,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   listenToOwnEvents()
 
   reactions += {
-    case Colorable.AppearanceChanged(t) => updateUi()
+    case Colorable.ColorChanged(t) => updateUi()
     case ColorChosen(c) => {
       if (target.isDefined) {
         target.get.color = c
@@ -130,7 +127,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-      cleanup()
+    cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[Colorable]) {
       target = Some(obj.get.asInstanceOf[Colorable])
       updateUi()

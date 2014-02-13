@@ -1,14 +1,14 @@
 package org.statismo.stk.ui.swing.actions
 
-import org.statismo.stk.ui.Saveable
-import org.statismo.stk.ui.SceneTreeObject
 import java.io.File
-import scala.util.Try
-import org.statismo.stk.ui.Loadable
-import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.ShapeModels
-import org.statismo.stk.ui.ShapeModelInstances
+
 import scala.util.Success
+import scala.util.Try
+
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.ShapeModel
+import org.statismo.stk.ui.ShapeModelInstances
+import org.statismo.stk.ui.ShapeModels
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
@@ -28,7 +28,7 @@ class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks
 
 class SaveShapeModelLandmarksAction extends SceneTreePopupAction("Save landmarks to file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel]  && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlySaveable
+    context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlySaveable
   }
 
   override def apply(context: Option[SceneTreeObject]) = {

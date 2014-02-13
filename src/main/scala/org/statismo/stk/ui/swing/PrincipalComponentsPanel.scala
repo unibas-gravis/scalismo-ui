@@ -1,27 +1,28 @@
 package org.statismo.stk.ui.swing
 
-import scala.swing.BorderPanel
-import scala.swing.BorderPanel.Position._
-import scala.swing.Button
-import scala.swing.Label
-import scala.swing.Slider
-import scala.swing.event.ValueChanged
-import scala.swing.event.ButtonClicked
-import scala.swing.GridBagPanel
-import scala.swing.GridBagPanel.Anchor
-import scala.swing.Component
-import breeze.stats.distributions.Gaussian
-import scala.swing.GridPanel
-import scala.swing.Reactions
-import scala.swing.event.Event
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.ShapeModelInstance
-import scala.collection.mutable.Buffer
-import scala.collection.mutable.ArrayBuffer
-import javax.swing.JSlider
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.Point
+
+import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.Buffer
+import scala.swing.BorderPanel
+import scala.swing.BorderPanel.Position.Center
+import scala.swing.BorderPanel.Position.North
+import scala.swing.Button
+import scala.swing.Component
+import scala.swing.GridBagPanel
+import scala.swing.GridBagPanel.Anchor
+import scala.swing.GridPanel
+import scala.swing.Label
+import scala.swing.Slider
+import scala.swing.event.ButtonClicked
+import scala.swing.event.ValueChanged
+
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.ShapeModelInstance
+
+import breeze.stats.distributions.Gaussian
+import javax.swing.JSlider
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Shape Parameters"
@@ -121,7 +122,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   def setCoefficient(index: Int, value: Float) = {
     if (model.isDefined) {
-      val coeffs = (model.get.coefficients.map(f => f)).toArray
+      val coeffs = model.get.coefficients.toArray
       if (index >= 0 && index < coeffs.length) {
         coeffs(index) = sanitize(value)
         model.get.coefficients = coeffs
@@ -144,11 +145,13 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
     if (model.isDefined) {
       val coeffs = model.get.coefficients
       0 until coeffs.size map { i =>
+
         deafTo(table.entries(i).slider)
 
         val v = coeffs(i)
         table.entries(i).slider.value = (v * granularity).toInt
         table.entries(i).value.text = labelFormat(v)
+
         listenTo(table.entries(i).slider)
       }
     }
@@ -160,8 +163,6 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
     }
     layout(tablePanel) = Center
   }
-
-  case object Cleanup extends Event
 
   reactions += {
     case ValueChanged(s) => {
@@ -180,16 +181,17 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
     case ShapeModelInstance.CoefficientsChanged(m) => {
       updateDisplayedCoefficients
     }
-    case Cleanup => {
-      if (model.isDefined) {
-        deafTo(model.get)
-        model = None
-      }
+  }
+
+  def cleanup = {
+    if (model.isDefined) {
+      deafTo(model.get)
+      model = None
     }
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-    publish(Cleanup)
+    cleanup
     if (obj.isDefined && obj.get.isInstanceOf[ShapeModelInstance]) {
       model = Some(obj.get.asInstanceOf[ShapeModelInstance])
       listenTo(model.get)

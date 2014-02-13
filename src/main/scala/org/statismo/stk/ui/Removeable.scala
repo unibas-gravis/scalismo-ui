@@ -1,6 +1,5 @@
 package org.statismo.stk.ui
 
-import scala.swing.Publisher
 import scala.swing.event.Event
 
 object Removeable {
@@ -19,7 +18,7 @@ trait RemoveableChildren extends Removeable {
   def children: Seq[Removeable]
   override def remove = {
     val copy = children.map { c => c }
-    copy.foreach { c => if (c.isCurrentlyRemoveable) c.remove }
+    copy.foreach { c => c.remove }
   }
 
   override def isCurrentlyRemoveable = {

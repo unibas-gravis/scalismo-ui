@@ -1,19 +1,17 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.Viewport
-import vtk.vtkRenderer
-import scala.swing.Publisher
-import scala.swing.event.Event
-import org.statismo.stk.ui.Scene
 import scala.collection.immutable.HashMap
+import scala.swing.event.Event
+
 import org.statismo.stk.ui.Displayable
 import org.statismo.stk.ui.EdtPublisher
-import java.io.File
-import scala.swing.Swing
+import org.statismo.stk.ui.Scene
+import org.statismo.stk.ui.Viewport
 
-trait VtkContext extends EdtPublisher {
+import vtk.vtkRenderer
 
-}
+trait VtkContext extends EdtPublisher
+
 object VtkContext {
   case class RenderRequest(source: VtkContext) extends Event
   case class ViewportEmpty(source: VtkViewport) extends Event
@@ -21,6 +19,8 @@ object VtkContext {
 
 class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit val interactor: VtkRenderWindowInteractor) extends VtkContext {
   val scene = viewport.scene
+  deafTo(this)
+  
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
   private var firstTime = true
@@ -76,16 +76,17 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   }
 
   listenTo(scene, viewport)
-  deafTo(this)
+  
   reactions += {
     case Viewport.Destroyed(v) => destroy()
     case Scene.TreeTopologyChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
     case Scene.VisibilityChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
     case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
   }
+  
   refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
 
-  def destroy() {
+  def destroy() = this.synchronized {
     deafTo(scene, viewport)
     refresh(Nil)
   }

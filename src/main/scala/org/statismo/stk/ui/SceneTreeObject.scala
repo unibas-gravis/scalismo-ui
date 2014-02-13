@@ -9,7 +9,7 @@ object SceneTreeObject {
 }
 
 trait SceneTreeObject extends Nameable {
-  lazy val parent: SceneTreeObject = ??? //you MUST override this. The exception that is thrown if you don't is intentional.
+  def parent: SceneTreeObject = ??? //you MUST override this. The exception that is thrown if you don't is intentional.
   def children: Seq[SceneTreeObject] = Nil
 
   def scene: Scene = {
@@ -35,15 +35,15 @@ trait SceneTreeObject extends Nameable {
     scene.deafTo(this)
   }
 
-  private var hidden: ArrayBuffer[Viewport] = new ArrayBuffer
+  private var hidden: List[Viewport] = Nil
 
   def isHiddenInViewport(viewport: Viewport) = hidden.exists({ v => v eq viewport }) || !scene.viewports.exists({v => v eq viewport})
   def isShownInViewport(viewport: Viewport) = !isHiddenInViewport(viewport)
 
-  private def hideInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = {
+  private def hideInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = this.synchronized {
     val changed = viewports.map { viewport =>
       if (isShownInViewport(viewport)) {
-        hidden += viewport
+        hidden ::= viewport
         true
       } else false
     }.foldLeft(false) { case (a, b) => a || b }
@@ -53,10 +53,10 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  private def showInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = {
+  private def showInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = this.synchronized {
     val changed = viewports.map { viewport =>
       if (isHiddenInViewport(viewport)) {
-        hidden -= viewport
+        hidden = hidden filterNot(_ eq viewport)
         true
       } else false
     }.foldLeft(false) { case (a, b) => a || b }
@@ -78,6 +78,6 @@ trait SceneTreeObject extends Nameable {
   
   def onViewportsChanged(): Unit = {
     children foreach (_.onViewportsChanged())
-    hidden.clear
+    hidden = Nil
   }
 }

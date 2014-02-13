@@ -7,6 +7,7 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import scala.swing.event.Event
 import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.common.ScalarValue
 
 object ThreeDImage {
 }

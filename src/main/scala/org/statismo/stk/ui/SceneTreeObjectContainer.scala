@@ -1,24 +1,16 @@
 package org.statismo.stk.ui
 
-import scala.collection.mutable.ArrayBuffer
-import scala.swing.Publisher
 import scala.swing.Reactor
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
-  protected var _children: ArrayBuffer[Child] = new ArrayBuffer
-  def children: Seq[Child] = _children.map(c => c)
+  protected var _children: IndexedSeq[Child] = Nil.toIndexedSeq
+  def children: Seq[Child] = _children
 
-  def add(newChild: Child): Unit = {
-    addAll(Seq(newChild))
-  }
-
-  def addAll(newChildren: Seq[Child]): Unit = {
-    newChildren foreach { c =>
-      if (c.isInstanceOf[Removeable]) {
-        listenTo(c.asInstanceOf[Removeable])
-      }
+  def add(child: Child): Unit = {
+    if (child.isInstanceOf[Removeable]) {
+      listenTo(child.asInstanceOf[Removeable])
     }
-    _children ++= newChildren
+    _children = _children.+:(child)
   }
 
   def apply(index: Int) = children(index)
@@ -26,29 +18,24 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   def removeAll = {
     val copy = _children.map({ c => c })
     copy.foreach { c => remove(c) }
-
   }
 
   protected[ui] def remove(child: Child, silent: Boolean): Boolean = {
-    val indexes = _children.toIndexedSeq.zipWithIndex.filter { case (c, i) => c eq child }.map(_._2)
-    if (indexes.isEmpty) {
-      false
+    if (!silent && child.isInstanceOf[Removeable]) {
+      // this will publish a message which is handled in the reactions
+      child.asInstanceOf[Removeable].remove
+      true
     } else {
-      if (!silent && child.isInstanceOf[Removeable]) {
-        child.asInstanceOf[Removeable].remove
-        true
-      } else {
-        val before = _children.length
-        indexes.foreach { idx =>
-          val child = _children(idx)
-          if (!silent && child.isInstanceOf[Removeable]) {
-            deafTo(child.asInstanceOf[Removeable])
-          }
-          _children.remove(idx)
+      val before = _children.length
+      val toRemove = _children filter (_ eq child)
+      toRemove foreach { child =>
+        if (!silent && child.isInstanceOf[Removeable]) {
+          deafTo(child.asInstanceOf[Removeable])
         }
-        val after = _children.length
-        before != after
       }
+      _children = _children.diff(toRemove)
+      val after = _children.length
+      before != after
     }
   }
 
@@ -66,10 +53,10 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 }
 
 trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with MutableObjectContainer[Child] {
-  override def children = super.children
+  override def children = super.children // required to prevent type conflict
 
-  override def addAll(newChildren: Seq[Child]): Unit = {
-    super.addAll(newChildren)
+  override def add(child: Child): Unit = {
+    super.add(child)
     publish(SceneTreeObject.ChildrenChanged(this))
   }
 

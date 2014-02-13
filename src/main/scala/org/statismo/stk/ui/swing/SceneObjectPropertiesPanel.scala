@@ -1,26 +1,20 @@
 package org.statismo.stk.ui.swing
 
+import java.awt.Dimension
+import java.util.UUID
 import scala.swing.BorderPanel
-import scala.swing.BorderPanel.Position._
-import scala.swing.Reactor
-import org.statismo.stk.ui.Workspace
-import scala.swing.Publisher
-import scala.swing.event.Event
+import scala.swing.BorderPanel.Position.Center
+import scala.swing.BorderPanel.Position.North
 import scala.swing.Component
-import javax.swing.DefaultComboBoxModel
+import scala.swing.Reactor
+import scala.swing.ScrollPane
 import scala.swing.Swing
 import scala.swing.event.SelectionChanged
-import scala.swing.event.SelectionChanged
-import scala.swing.ScrollPane
-import javax.swing.JComboBox
-import org.statismo.stk.ui.SceneTreeObject
-import scala.swing.LayoutContainer
-import scala.swing.Panel
-import java.util.UUID
-import java.awt.Dimension
-import java.util.Date
-import scala.swing.Label
 import org.statismo.stk.ui.EdtPublisher
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.Workspace
+import javax.swing.DefaultComboBoxModel
+import javax.swing.JComboBox
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
@@ -41,8 +35,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   private val emptyPanel = new BorderPanel {
     lazy val uniqueId = UUID.randomUUID().toString()
-    peer.setPreferredSize(new Dimension(1,1))
-    //layout(new Label("Gehen Sie bitte weiter, es gibt hier nichts zu sehen")) = BorderPanel.Position.North
+    peer.setPreferredSize(new Dimension(1, 1))
   }
 
   lazy val cards = new CardPanel {
@@ -107,7 +100,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
         }
       }
     } else {
-        cards.show(emptyPanel.uniqueId)
+      cards.show(emptyPanel.uniqueId)
     }
   }
 }

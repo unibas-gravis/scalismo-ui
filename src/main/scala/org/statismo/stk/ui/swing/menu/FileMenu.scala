@@ -2,8 +2,9 @@ package org.statismo.stk.ui.swing.menu
 
 import scala.swing.Menu
 import scala.swing.MenuItem
-import org.statismo.stk.ui.swing.actions.QuitAction
+
 import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.ui.swing.actions.QuitAction
 
 object FileMenu {
   val Name = "File"

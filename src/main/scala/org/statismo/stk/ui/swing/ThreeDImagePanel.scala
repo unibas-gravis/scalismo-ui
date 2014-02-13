@@ -1,31 +1,19 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.Colorable
-import scala.swing.Slider
 import scala.swing.BorderPanel
-import scala.swing.event.ValueChanged
-import scala.swing.Component
-import javax.swing.JColorChooser
-import scala.swing.Swing
-import java.awt.Color
-import scala.swing.event.Event
-import javax.swing.colorchooser.DefaultSwatchChooserPanel
-import org.statismo.stk.ui.swing.util.ColorPickerPanel
-import javax.swing.border.TitledBorder
 import scala.swing.Label
-import java.awt.BorderLayout
-import java.awt.Dimension
-import javax.swing.JPanel
-import java.awt.Graphics
-import javax.swing.event.ChangeListener
-import javax.swing.event.ChangeEvent
+import scala.swing.Slider
+import scala.swing.event.ValueChanged
+
+import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.ThreeDImagePlane
+
+import javax.swing.border.TitledBorder
 
 class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Slice position"
   private var target: Option[ThreeDImagePlane] = None
-  
+
   val minLabel = new Label("0")
   val maxLabel = new Label("1000")
 
@@ -75,7 +63,7 @@ class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-      cleanup()
+    cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane]) {
       target = Some(obj.get.asInstanceOf[ThreeDImagePlane])
       updateUi()
@@ -94,7 +82,7 @@ class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
       minLabel.text = target.get.minPosition.toString
       maxLabel.text = target.get.maxPosition.toString
       slider.value = target.get.position
-      title.setTitle(description+ " ("+target.get.name+")")
+      title.setTitle(description + " (" + target.get.name + ")")
       listenToOwnEvents()
     }
   }

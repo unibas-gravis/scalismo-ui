@@ -1,12 +1,8 @@
 package org.statismo.stk.ui.swing.actions
 
-import org.statismo.stk.ui.Saveable
-import org.statismo.stk.ui.SceneTreeObject
-import java.io.File
-import scala.util.Try
-import org.statismo.stk.ui.Loadable
 import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.RemoveableChildren
+import org.statismo.stk.ui.SceneTreeObject
 
 class RemoveRemoveableAction extends SceneTreePopupAction("Remove") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
@@ -28,5 +24,4 @@ class RemoveRemoveableAction extends SceneTreePopupAction("Remove") {
       r.remove
     }
   }
-
 }

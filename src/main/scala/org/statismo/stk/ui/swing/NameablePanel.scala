@@ -1,27 +1,15 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.Nameable
-import scala.swing.Slider
 import scala.swing.BorderPanel
-import scala.swing.event.ValueChanged
-import scala.swing.Component
-import javax.swing.JColorChooser
-import scala.swing.Swing
-import java.awt.Color
-import scala.swing.event.Event
-import javax.swing.colorchooser.DefaultSwatchChooserPanel
-import org.statismo.stk.ui.swing.util.ColorPickerPanel
-import javax.swing.border.TitledBorder
-import scala.swing.Label
-import java.awt.BorderLayout
-import java.awt.Dimension
-import javax.swing.JPanel
-import java.awt.Graphics
 import scala.swing.Button
+import scala.swing.GridPanel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
-import scala.swing.GridPanel
+
+import org.statismo.stk.ui.Nameable
+import org.statismo.stk.ui.SceneTreeObject
+
+import javax.swing.border.TitledBorder
 
 class NameablePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Name"

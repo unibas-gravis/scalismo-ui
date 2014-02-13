@@ -1,9 +1,11 @@
 package org.statismo.stk.ui.swing.actions
 
+import java.io.File
+
+import scala.util.Try
+
 import org.statismo.stk.ui.Saveable
 import org.statismo.stk.ui.SceneTreeObject
-import java.io.File
-import scala.util.Try
 
 class SaveSaveableAction extends SceneTreePopupAction("Save to file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
@@ -19,5 +21,4 @@ class SaveSaveableAction extends SceneTreePopupAction("Save to file...") {
       new SaveAction(doSave, save.saveableMetadata).apply()
     }
   }
-
 }

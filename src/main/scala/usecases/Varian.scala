@@ -77,9 +77,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
   //
   override def startup(args: Array[String]): Unit = {
     super.startup(args)
-    args foreach { arg =>
-      scene.load(arg)
-    }
+    args foreach { scene.tryLoad(_) }
   }
 
   this.toolbar.add(new Action("Compute Posterior") { def apply() = computeNewPosteriorModel(false) })
@@ -93,19 +91,19 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
   listenTo(scene)
   reactions += {
     case Scene.TreeTopologyChanged(s) => {
-      if (!scene.models.children.isEmpty) {
+      if (!scene.shapeModels.children.isEmpty) {
         if (!orgModel.isDefined) {
-          orgModel = Some(scene.models(0))
+          orgModel = Some(scene.shapeModels(0))
           //          orgModel.get.instances(0).meshRepresentation.color = Color.RED
           //          orgModel.get.instances(0).meshRepresentation.opacity = 0.75
-          lastModel = Some(scene.models(0))
+          lastModel = Some(orgModel.get)
           modelLm = Some(orgModel.get.landmarks)
           listenTo(modelLm.get)
         }
       }
-      if (!scene.statics.children.isEmpty) {
+      if (!scene.staticObjects.children.isEmpty) {
         if (!targetLm.isDefined) {
-          targetLm = Some(scene.statics(0).landmarks)
+          targetLm = Some(scene.staticObjects(0).landmarks)
           listenTo(targetLm.get)
         }
       }
@@ -160,7 +158,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0)),
         integrator = integr,
         metric = MeanSquaresMetric3D(integr),
-        transformationSpace = KernelTransformationSpace3D(KernelTransformationSpaceConfiguration[ThreeD](statmodel.gp, false)),
+        transformationSpace = KernelTransformationSpace3D(KernelTransformationSpaceConfiguration[ThreeD](statmodel.gaussianProcess, false)),
         regularizer = RKHSNormRegularizer,
         regularizationWeight = 0.01,
         initialParametersOrNone = None)
@@ -170,8 +168,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
     val refDm = Mesh.meshToDistanceImage(lastModel.get.peer.mesh)
 
     val targetDm: ContinuousScalarImage3D = {
-      scene.statics(0).representations(0) match {
-        case m: UiMesh => Mesh.meshToDistanceImage(m.triangleMesh)
+      scene.staticObjects(0).representations(0) match {
+        case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
         case imgUi: ThreeDImage => {
           val img = imgUi.peer
           val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)

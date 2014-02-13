@@ -1,14 +1,15 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.ThreeDImagePlane
-import vtk.vtkImagePlaneWidget
-import org.statismo.stk.ui.ThreeDImageAxis
+import scala.reflect.runtime.universe.TypeTag.Short
+
 import org.statismo.stk.core.utils.ImageConversion
-import vtk.vtkOpenGLActor
-import org.statismo.stk.ui.Removeable
+import org.statismo.stk.ui.ThreeDImageAxis
+import org.statismo.stk.ui.ThreeDImagePlane
+
+import vtk.vtkImagePlaneWidget
 
 class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWindowInteractor) extends DisplayableActor {
-  override val vtkActors = Seq()
+  override val vtkActors = Nil
 
   val widget = new vtkImagePlaneWidget
   val sp = ImageConversion.image3DTovtkStructuredPoints(peer.parent.peer)
@@ -36,11 +37,11 @@ class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWind
   listenTo(peer, interactor)
 
   reactions += {
-    case ThreeDImagePlane.PositionChanged(s) => {
+    case ThreeDImagePlane.PositionChanged(s) => this.synchronized {
       widget.SetSliceIndex(peer.position)
       publish(new VtkContext.RenderRequest(this))
     }
-    case VtkRenderWindowInteractor.PointClicked(point) => {
+    case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
       val own = widget.GetSlicePosition().toFloat
       val cmp = peer.axis match {
         case ThreeDImageAxis.X => point.x
@@ -53,11 +54,10 @@ class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWind
     }
   }
 
-  override def onDestroy() = {
+  override def onDestroy() = this.synchronized {
     deafTo(peer, interactor)
     widget.Off()
     widget.Delete()
     super.onDestroy()
-
   }
 }

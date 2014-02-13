@@ -7,4 +7,5 @@ class ThreeDRepresentations(theObject: ThreeDObject) extends SceneTreeObjectCont
 }
 
 trait ThreeDRepresentation extends SceneTreeObject with Removeable {
+//  override def parent: ThreeDRepresentations
 }

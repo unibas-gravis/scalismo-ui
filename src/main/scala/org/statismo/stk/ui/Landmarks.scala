@@ -1,25 +1,22 @@
 package org.statismo.stk.ui
 
-import org.statismo.stk.core.geometry.Point3D
 import java.awt.Color
-import breeze.linalg.DenseVector
-import scala.swing.Publisher
-import scala.swing.event.Event
 import java.io.File
+
+import scala.swing.event.Event
 import scala.util.Try
-import org.statismo.stk.core.io.LandmarkIO
+
+import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
-import scala.util.Success
+import org.statismo.stk.core.io.LandmarkIO
+
+import breeze.linalg.DenseVector
 
 trait Landmark extends Nameable with Removeable {
   def peer: Point3D
 }
 
-class ReferenceLandmark(val peer: Point3D) extends Landmark {
-  override def remove = {
-    super.remove
-  }
-}
+class ReferenceLandmark(val peer: Point3D) extends Landmark
 
 class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with Displayable with SphereLike {
   override lazy val parent = container
@@ -42,7 +39,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   override def remove = {
     // we simply forward the request to the source, which in turn publishes an event that all attached
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
-	source.remove
+    source.remove
   }
 
   reactions += {
@@ -64,10 +61,8 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   setCenter
 
   def setCenter = {
-    val mesh = container.instance.meshRepresentation.triangleMesh
     val coeffs = DenseVector(container.instance.coefficients.toArray)
-    val mappedPt = source.peer + container.instance.model.gp.instance(coeffs)(source.peer)
-    center = mappedPt
+    center = source.peer + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.peer)
   }
 
 }
@@ -86,8 +81,8 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   def create(peer: Point3D, name: Option[String]): Unit
 
-  override def addAll(lms: Seq[L]): Unit = {
-    super.addAll(lms)
+  override def add(lm: L): Unit = {
+    super.add(lm)
     publish(Landmarks.LandmarksChanged(this))
   }
 
@@ -104,7 +99,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def loadFromFile(file: File): Try[Unit] = {
     this.removeAll
-    for {
+    val status = for {
       saved <- LandmarkIO.readLandmarks3D(file)
       val newLandmarks = {
         saved.map {
@@ -114,7 +109,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
       }
     } yield {}
     publish(Landmarks.LandmarksChanged(this))
-    Success()
+    status
   }
 }
 
@@ -153,9 +148,11 @@ abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeOb
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
+
   def create(template: ReferenceLandmark): Unit = {
     create(template.peer, Some(template.name))
   }
+
   def create(peer: Point3D, name: Option[String] = None): Unit = {
     val lm = new ReferenceLandmark(peer)
     lm.name = name.getOrElse(nameGenerator.nextName)
@@ -177,38 +174,43 @@ class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theO
 }
 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLandmarks(instance) {
-  val ref = instance.parent.parent.landmarks
+  val peer = instance.parent.parent.landmarks
 
   def addAt(peer: Point3D) = {
     create(peer, None)
   }
 
   def create(peer: Point3D, name: Option[String]): Unit = {
-    val index = instance.meshRepresentation.triangleMesh.findClosestPoint(peer)._2
-    val refPoint = instance.model.peer.mesh.points(index).asInstanceOf[Point3D]
-    instance.model.landmarks.create(refPoint, name)
+    val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
+    val refPoint = instance.shapeModel.peer.mesh.points(index).asInstanceOf[Point3D]
+    instance.shapeModel.landmarks.create(refPoint, name)
   }
 
-  listenTo(ref)
+  listenTo(peer)
 
   reactions += {
-    case Landmarks.LandmarksChanged(s) => {
-      if (s eq ref) {
-        syncWithModel
+    case Landmarks.LandmarksChanged(source) => {
+      if (source eq peer) {
+        syncWithPeer
       }
     }
   }
 
-  syncWithModel
+  syncWithPeer
 
-  def syncWithModel = {
+  def syncWithPeer = {
     var changed = false
-    _children.length until ref.children.length foreach { i =>
+    _children.length until peer.children.length foreach { i =>
       changed = true
-      add(new MoveableLandmark(this, ref(i)))
+      add(new MoveableLandmark(this, peer(i)))
     }
     if (changed) {
       publish(SceneTreeObject.ChildrenChanged(this))
     }
+  }
+
+  override def remove {
+    deafTo(peer)
+    super.remove
   }
 }

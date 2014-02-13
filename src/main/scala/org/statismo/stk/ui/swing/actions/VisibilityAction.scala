@@ -1,17 +1,16 @@
 package org.statismo.stk.ui.swing.actions
 
-import org.statismo.stk.ui.Saveable
-import org.statismo.stk.ui.SceneTreeObject
-import java.io.File
-import scala.util.Try
-import scala.swing.Menu
-import scala.swing.CheckMenuItem
-import org.statismo.stk.ui.Viewport
-import javax.swing.JLabel
-import javax.swing.JCheckBox
-import java.awt.event.ItemListener
 import java.awt.event.ItemEvent
+import java.awt.event.ItemListener
+
+import scala.swing.CheckMenuItem
+import scala.swing.Menu
 import scala.swing.event.ButtonClicked
+
+import org.statismo.stk.ui.SceneTreeObject
+import org.statismo.stk.ui.Viewport
+
+import javax.swing.JCheckBox
 
 class VisibilityAction extends SceneTreePopupAction("Visible in...") {
   private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener {
