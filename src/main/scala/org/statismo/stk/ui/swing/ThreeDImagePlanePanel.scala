@@ -20,8 +20,8 @@ class ThreeDImagePanel extends BorderPanel with SceneObjectPropertyPanel {
   layout(box) = BorderPanel.Position.North
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImage]) {
-      val img = obj.get.asInstanceOf[ThreeDImage]
+    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImage[_]]) {
+      val img = obj.get.asInstanceOf[ThreeDImage[_]]
       x.setObject(Some(img.xPlane))
       y.setObject(Some(img.yPlane))
       z.setObject(Some(img.zPlane))

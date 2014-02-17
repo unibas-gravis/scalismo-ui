@@ -1,51 +1,38 @@
 package usecases
 
-import org.statismo.stk.ui.Scene
-import java.io.File
-import scala.swing.MenuItem
-import org.statismo.stk.ui.swing.actions.OpenSceneTreeObjectAction
-import org.statismo.stk.ui.SceneTreeObjectFactory
-import org.statismo.stk.ui.StatismoFrame
-import org.statismo.stk.ui.StatismoApp
-import scala.swing.BorderPanel
-import scala.swing.Button
-import scala.swing.Component
-import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.StaticMesh
-import java.awt.Color
-import org.statismo.stk.ui.DisplayableLandmarks
-import org.statismo.stk.ui.swing.WorkspacePanel
-import org.statismo.stk.ui.Landmarks
+import scala.async.Async.async
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.reflect.runtime.universe.TypeTag.Short
 import scala.swing.Action
-import org.statismo.stk.ui.ReferenceLandmarks
-import scala.collection.mutable.ArrayBuffer
-import org.statismo.stk.core.mesh.TriangleMesh
-import org.statismo.stk.core.numerics.Integrator
-import org.statismo.stk.core.registration.RegistrationConfiguration
-import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
+import org.statismo.stk.core.filters.DistanceTransform
+import org.statismo.stk.core.image.Interpolation
+import org.statismo.stk.core.mesh.Mesh
 import org.statismo.stk.core.numerics.FixedPointsUniformMeshSampler3D
-import org.statismo.stk.core.geometry.ThreeD
+import org.statismo.stk.core.numerics.Integrator
 import org.statismo.stk.core.numerics.IntegratorConfiguration
 import org.statismo.stk.core.numerics.LBFGSOptimizer
 import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
-import org.statismo.stk.core.registration.MeanSquaresMetric3D
-import org.statismo.stk.core.registration.RKHSNormRegularizer
 import org.statismo.stk.core.registration.KernelTransformationSpace3D
 import org.statismo.stk.core.registration.KernelTransformationSpaceConfiguration
-import org.statismo.stk.core.image.DiscreteImage3D
-import org.statismo.stk.core.image.DiscreteScalarImage3D
-import org.statismo.stk.core.filters.DistanceTransform
+import org.statismo.stk.core.registration.MeanSquaresMetric3D
+import org.statismo.stk.core.registration.RKHSNormRegularizer
 import org.statismo.stk.core.registration.Registration
-import org.statismo.stk.core.mesh.Mesh
+import org.statismo.stk.core.registration.RegistrationConfiguration
+import org.statismo.stk.ui.DisplayableLandmarks
+import org.statismo.stk.ui.Landmarks
+import org.statismo.stk.ui.ReferenceLandmarks
+import org.statismo.stk.ui.Scene
+import org.statismo.stk.ui.ShapeModel
+import org.statismo.stk.ui.StatismoApp
+import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.core.geometry.ThreeD
+import scala.collection.mutable.ArrayBuffer
 import org.statismo.stk.core.image.ContinuousScalarImage3D
-import org.statismo.stk.ui.{ Mesh => UiMesh }
 import org.statismo.stk.ui.ThreeDImage
+import org.statismo.stk.ui.{Mesh => UiMesh}
 import org.statismo.stk.core.image.DiscreteScalarImage3D
-import org.statismo.stk.core.image.Interpolation
-import org.statismo.stk.core.io.ImageIO
 
-class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
+class Varian(scene: Scene) extends StatismoFrame(scene) {
 
   //  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadMesh, "Open Mesh...", Seq(StaticMesh), false)))
   //  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadModel, "Open Statistical Shape Model...", Seq(ShapeModel), false)))
@@ -170,8 +157,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
     val targetDm: ContinuousScalarImage3D = {
       scene.staticObjects(0).representations(0) match {
         case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
-        case imgUi: ThreeDImage => {
-          val img = imgUi.peer
+        case imgUi: ThreeDImage[_] => {
+          val img = imgUi.asInstanceOf[ThreeDImage[Short]].peer
           val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))
@@ -185,7 +172,6 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
       lastModel.get.instances(0).coefficients = regstate.optimizerState.parameters.toArray
     }
   }
-
 }
 
 object Varian {

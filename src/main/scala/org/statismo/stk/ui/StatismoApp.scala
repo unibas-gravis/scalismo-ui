@@ -41,6 +41,8 @@ class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
     super.startup(args)
   }
 
+  def scene = top.scene
+  
 }
 
 class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {

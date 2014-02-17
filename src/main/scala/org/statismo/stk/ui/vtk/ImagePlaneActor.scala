@@ -1,19 +1,20 @@
 package org.statismo.stk.ui.vtk
 
-import scala.reflect.runtime.universe.TypeTag.Short
+import scala.reflect.runtime.universe.TypeTag.Double
 
+import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui.ThreeDImageAxis
 import org.statismo.stk.ui.ThreeDImagePlane
 
 import vtk.vtkImagePlaneWidget
 
-class ImagePlaneActor(peer: ThreeDImagePlane)(implicit interactor: VtkRenderWindowInteractor) extends DisplayableActor {
-  override val vtkActors = Nil
+class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderWindowInteractor) extends DisplayableActor {
+  override val vtkActors = Seq()
 
   val widget = new vtkImagePlaneWidget
-  val sp = ImageConversion.image3DTovtkStructuredPoints(peer.parent.peer)
-  sp.GetInformation()
+  val img: DiscreteScalarImage3D[Double] = peer.parent.peer.map(v => peer.parent.scalarValue.toDouble(v))
+  val sp = ImageConversion.image3DTovtkStructuredPoints(img)
   widget.SetInputData(sp)
   peer.axis match {
     case ThreeDImageAxis.X => {
