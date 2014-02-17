@@ -7,12 +7,16 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import scala.swing.event.Event
 import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.common.ScalarValue
+import scala.util.Success
+import scala.reflect.ClassTag
+import reflect.runtime.universe.{ TypeTag, typeOf }
 
 object ThreeDImage {
 }
 
-trait ThreeDImage extends ThreeDRepresentation with Saveable {
-  def peer: DiscreteScalarImage3D[Short]
+abstract class ThreeDImage[S](implicit val scalarValue : ScalarValue[S], implicit val tt : TypeTag[S], implicit val ct : ClassTag[S]) extends ThreeDRepresentation with Saveable {
+  def peer: DiscreteScalarImage3D[S]
 
   override def saveToFile(file: File): Try[Unit] = {
     ImageIO.writeImage(peer, file)
@@ -38,11 +42,11 @@ object ThreeDImageAxis extends Enumeration {
 }
 
 object ThreeDImagePlane {
-  case class PositionChanged(source: ThreeDImagePlane) extends Event
+  case class PositionChanged(source: ThreeDImagePlane[_]) extends Event
 }
 
-class ThreeDImagePlane(val image: ThreeDImage, val axis: ThreeDImageAxis.Value) extends Displayable with Landmarkable with Removeable {
-  override lazy val parent: ThreeDImage = image
+class ThreeDImagePlane[A](val image: ThreeDImage[A], val axis: ThreeDImageAxis.Value)(implicit val ev : ScalarValue[A]) extends Displayable with Landmarkable with Removeable {
+  override lazy val parent: ThreeDImage[A] = image
   name = axis.toString()
   
   val minPosition = 0

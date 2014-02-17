@@ -172,8 +172,10 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
     val targetDm: ContinuousScalarImage3D = {
       scene.statics(0).representations(0) match {
         case m: UiMesh => Mesh.meshToDistanceImage(m.triangleMesh)
-        case imgUi: ThreeDImage => {
-          val img = imgUi.peer
+        case imgUi: ThreeDImage[_] => {
+          val simg = imgUi.asInstanceOf[ThreeDImage[Short]]
+//          println(imgUi.scalarValue.)
+          val img = simg.peer
           val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))
@@ -187,6 +189,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) { self =>
       lastModel.get.instances(0).coefficients = regstate.optimizerState.parameters.toArray
     }
   }
+  
+  scene.models(0).instances(0).representations(0)
 
 }
 

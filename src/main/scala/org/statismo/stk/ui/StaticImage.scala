@@ -7,17 +7,20 @@ import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.common.ScalarValue
+import scala.reflect.ClassTag
+import reflect.runtime.universe.{ TypeTag, typeOf }
 
-object StaticImage extends SceneTreeObjectFactory[StaticImage] with FileIoMetadata {
+object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMetadata {
   val description = "Static 3D Image"
   val fileExtensions = Seq("nii", "nia")
   val metadata = this
   
-  def apply(file: File)(implicit scene: Scene): Try[StaticImage] = {
+  def apply(file: File)(implicit scene: Scene): Try[StaticImage[_]] = {
       apply(file, None, file.getName())
   }
   
-  def apply(file: File, parent: Option[ThreeDRepresentations], name: String)(implicit scene: Scene): Try[StaticImage] = {
+  def apply(file: File, parent: Option[ThreeDRepresentations], name: String)(implicit scene: Scene): Try[StaticImage[_]] = {
     for {
       raw <- ImageIO.read3DScalarImage[Short](file)
     } yield {
@@ -27,7 +30,7 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage] with FileIoMetada
   }
 }
 
-class StaticImage(override val peer: DiscreteScalarImage3D[Short], initialParent: Option[ThreeDRepresentations] = None, initialName: String = "(no name)")(implicit override val scene: Scene) extends ThreeDImage {
+class StaticImage[A: ScalarValue : TypeTag: ClassTag](override val peer: DiscreteScalarImage3D[A], initialParent: Option[ThreeDRepresentations] = None, initialName: String = "(no name)")(implicit override val scene: Scene) extends ThreeDImage[A] {
   name = initialName
   
   override lazy val parent: ThreeDRepresentations = initialParent.getOrElse {

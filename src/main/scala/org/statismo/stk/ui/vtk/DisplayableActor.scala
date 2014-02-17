@@ -6,18 +6,19 @@ import org.statismo.stk.ui.Mesh
 import org.statismo.stk.ui.Sphere
 import org.statismo.stk.ui.SphereLike
 import org.statismo.stk.ui.ThreeDImagePlane
+import org.statismo.stk.core.common.ScalarValue
 
 object DisplayableActor {
   def apply(displayable: Displayable)(implicit interactor: VtkRenderWindowInteractor): Option[DisplayableActor] = {
     displayable match {
-      case _: Mesh => {
-        Some(new MeshActor(displayable.asInstanceOf[Mesh]))
+      case m: Mesh => {
+        Some(new MeshActor(m))
       }
-      case _: SphereLike => {
-        Some(new SphereActor(displayable.asInstanceOf[SphereLike]))
+      case s: SphereLike => {
+        Some(new SphereActor(s))
       }
-      case _: ThreeDImagePlane => {
-        Some(new ImagePlaneActor(displayable.asInstanceOf[ThreeDImagePlane]))
+      case i: ThreeDImagePlane[_] => {
+        Some(new ImagePlaneActor(i))
       }
       case _ => {
         println("DisplayableActor: Dunno what to do with " + displayable.getClass())
@@ -25,6 +26,7 @@ object DisplayableActor {
       }
     }
   }
+  
 }
 
 trait DisplayableActor extends VtkContext {

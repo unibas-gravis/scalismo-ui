@@ -24,7 +24,7 @@ import org.statismo.stk.ui.ThreeDImagePlane
 
 class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Slice position"
-  private var target: Option[ThreeDImagePlane] = None
+  private var target: Option[ThreeDImagePlane[_]] = None
   
   val minLabel = new Label("0")
   val maxLabel = new Label("1000")
@@ -76,8 +76,8 @@ class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
       cleanup()
-    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane]) {
-      target = Some(obj.get.asInstanceOf[ThreeDImagePlane])
+    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane[_]]) {
+      target = Some(obj.get.asInstanceOf[ThreeDImagePlane[_]])
       updateUi()
       listenTo(target.get)
       true

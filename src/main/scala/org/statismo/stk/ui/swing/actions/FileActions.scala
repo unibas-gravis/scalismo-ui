@@ -141,6 +141,7 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
   
   def onFailure(file: File, exception: Throwable) {
+    exception.printStackTrace()
     Dialog.showMessage(parentComponent, "ERROR:\n"+exception.getMessage(), "Load failed", Dialog.Message.Error)
   }
 }
