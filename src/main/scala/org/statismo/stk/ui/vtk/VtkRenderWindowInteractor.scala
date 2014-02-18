@@ -14,7 +14,7 @@ object VtkRenderWindowInteractor {
   case class PointClicked(point: Point3D) extends Event
 }
 
-class VtkRenderWindowInteractor(workspace: Workspace, viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
+class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
   val cellPicker = new vtkCellPicker
   SetPicker(cellPicker)
 
@@ -33,22 +33,25 @@ class VtkRenderWindowInteractor(workspace: Workspace, viewport: Viewport) extend
 
   def renderer = GetRenderWindow().GetRenderers().GetFirstRenderer()
 
-  override def LeftButtonPressEvent() {
-    super.LeftButtonPressEvent
-
+  override def LeftButtonPressEvent = {
     if (workspace.landmarkClickMode) {
       downX = x
       downY = y
     }
+    if (viewport.isMouseSensitive) {
+    	super.LeftButtonPressEvent
+    }
   }
 
-  override def SetSize(width: Int, height: Int) {
+  override def SetSize(width: Int, height: Int) = {
     this.height = height
     super.SetSize(width, height)
   }
 
-  override def LeftButtonReleaseEvent() {
-    super.LeftButtonReleaseEvent
+  override def LeftButtonReleaseEvent = {
+    if (viewport.isMouseSensitive) {
+    	super.LeftButtonReleaseEvent
+    }
 
     if (workspace.landmarkClickMode) {
       val threshold = 3 //(pixels)
@@ -72,6 +75,30 @@ class VtkRenderWindowInteractor(workspace: Workspace, viewport: Viewport) extend
           }
         }
       }
+    }
+  }
+  
+  override def MiddleButtonPressEvent = {
+    if (viewport.isMouseSensitive) {
+    	super.MiddleButtonPressEvent
+    }
+  }
+  
+  override def MiddleButtonReleaseEvent = {
+    if (viewport.isMouseSensitive) {
+    	super.MiddleButtonReleaseEvent
+    }
+  }
+  
+  override def RightButtonPressEvent = {
+    if (viewport.isMouseSensitive) {
+    	super.RightButtonPressEvent
+    }
+  }
+  
+  override def RightButtonReleaseEvent = {
+    if (viewport.isMouseSensitive) {
+    	super.RightButtonReleaseEvent
     }
   }
 }

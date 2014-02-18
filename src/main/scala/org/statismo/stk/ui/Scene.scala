@@ -19,6 +19,20 @@ class Scene extends SceneTreeObject {
 
   override implicit lazy val parent = this
 
+  private var _perspective: Perspective = Perspective.defaultPerspective(this)
+
+  def perspective = _perspective
+  def perspective_=(newPerspective: Perspective) = {
+    if (newPerspective ne _perspective) {
+      _perspective.viewports foreach (_.destroy())
+      _perspective = newPerspective
+      onViewportsChanged(newPerspective.viewports)
+      publish(Scene.PerspectiveChanged(this))
+    }
+  }
+
+  def viewports = perspective.viewports
+
   val shapeModels = new ShapeModels
   val staticObjects = new StaticThreeDObjects
   val auxiliaryObjects = new AuxiliaryObjects
@@ -41,18 +55,6 @@ class Scene extends SceneTreeObject {
     }
   }
 
-  private var _perspective: Perspective = Perspective.defaultPerspective(this)
-  def perspective = _perspective
-  def perspective_=(newPerspective: Perspective) = {
-    if (newPerspective ne _perspective) {
-      _perspective.viewports foreach (_.destroy())
-      _perspective = newPerspective
-      onViewportsChanged()
-      publish(Scene.PerspectiveChanged(this))
-    }
-  }
-
-  def viewports = perspective.viewports
 }
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[Displayable] {

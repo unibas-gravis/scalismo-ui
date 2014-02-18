@@ -13,6 +13,7 @@ import vtk.vtkRenderer
 trait VtkContext extends EdtPublisher
 
 object VtkContext {
+  case class ResetCameraRequest(source: VtkContext) extends Event
   case class RenderRequest(source: VtkContext) extends Event
   case class ViewportEmpty(source: VtkViewport) extends Event
 }
@@ -66,6 +67,12 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
         } else {
           if (firstTime) {
             firstTime = false
+            val camMod = viewport.initialCameraChange
+            val cam = renderer.GetActiveCamera()
+            camMod.yaw.map(v => cam.Azimuth(v))
+            camMod.pitch.map(v => cam.Elevation(v))
+            camMod.roll.map(v => cam.Roll(v))
+            cam.OrthogonalizeViewUp()
             resetCamera()
           } else {
             publish(VtkContext.RenderRequest(this))
@@ -81,6 +88,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
     case Viewport.Destroyed(v) => destroy()
     case Scene.TreeTopologyChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
     case Scene.VisibilityChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
+    case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
     case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
   }
   

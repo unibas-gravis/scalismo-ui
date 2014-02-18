@@ -1,13 +1,12 @@
 package org.statismo.stk.ui.vtk
 
 import scala.reflect.runtime.universe.TypeTag.Double
-
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui.ThreeDImageAxis
 import org.statismo.stk.ui.ThreeDImagePlane
-
 import vtk.vtkImagePlaneWidget
+import org.statismo.stk.ui.SliceViewport
 
 class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderWindowInteractor) extends DisplayableActor {
   override val vtkActors = Seq()
@@ -40,7 +39,11 @@ class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderW
   reactions += {
     case ThreeDImagePlane.PositionChanged(s) => this.synchronized {
       widget.SetSliceIndex(peer.position)
-      publish(new VtkContext.RenderRequest(this))
+      if (interactor.viewport.isInstanceOf[SliceViewport]) {
+    	  publish(new VtkContext.ResetCameraRequest(this))
+      } else {
+    	  publish(new VtkContext.RenderRequest(this))
+      }
     }
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
       val own = widget.GetSlicePosition().toFloat
