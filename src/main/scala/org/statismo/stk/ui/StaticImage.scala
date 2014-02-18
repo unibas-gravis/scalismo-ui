@@ -23,10 +23,8 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMet
 
   def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage[_]] = {
     for {
-      raw2 <- ImageIO.read3DScalarImage[Float](file)
       raw <- ImageIO.read3DScalarImage[Short](file)
     } yield {
-      println(raw2)
       new StaticImage(raw, parent, Some(name))
     }
   }
