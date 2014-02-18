@@ -6,6 +6,7 @@ import scala.async.Async.async
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.event.Event
 import scala.util.Try
+import scala.collection.immutable.IndexedSeq
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD

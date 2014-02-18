@@ -31,7 +31,7 @@ object SceneObjectPropertiesPanel extends EdtPublisher {
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
-  private val applicableViews = new DefaultComboBoxModel[SceneObjectPropertyPanel]
+  private val applicableViews = new DefaultComboBoxModel//[SceneObjectPropertyPanel]
 
   private val emptyPanel = new BorderPanel {
     lazy val uniqueId = UUID.randomUUID().toString()

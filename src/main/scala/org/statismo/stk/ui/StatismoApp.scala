@@ -10,12 +10,8 @@ import org.statismo.stk.ui.swing.WorkspacePanel
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import org.statismo.stk.ui.swing.menu.MainMenuBar
-import scala.swing.Component
 import scala.swing.BorderPanel
-import org.statismo.stk.ui.swing.Toolbar
-import scala.swing.Action
 import org.statismo.stk.ui.swing.StatismoToolbar
-import scala.swing.Label
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
@@ -23,11 +19,11 @@ object StatismoApp {
 
   def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
     UIManager.setLookAndFeel(lookAndFeel)
-    val laf = UIManager.getLookAndFeel()
-    if (laf.getClass().getSimpleName().startsWith("Nimbus")) {
-      val defaults = laf.getDefaults()
-      defaults.put("Tree.drawHorizontalLines", true);
-      defaults.put("Tree.drawVerticalLines", true);
+    val laf = UIManager.getLookAndFeel
+    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
+      val defaults = laf.getDefaults
+      defaults.put("Tree.drawHorizontalLines", true)
+      defaults.put("Tree.drawVerticalLines", true)
     }
     val app = new StatismoApp(frame(scene))
     app.main(args)
@@ -35,8 +31,8 @@ object StatismoApp {
   }
 
   def defaultLookAndFeelClassName: String = {
-    val nimbus = UIManager.getInstalledLookAndFeels().filter(_.getName().equalsIgnoreCase("nimbus")).map(i => i.getClassName())
-    if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName()
+    val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
+    if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
 
   val Version: String = "0.2.0"
@@ -81,8 +77,8 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   menuBar = new MainMenuBar()(this)
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
-  override def closeOperation = {
-    dispose
+  override def closeOperation() = {
+    dispose()
   }
 
   def startup(args: Array[String]): Unit = {
@@ -94,11 +90,10 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   // this is a hack...
   listenTo(workspace)
   reactions += {
-    case Workspace.PleaseLayoutAgain => {
+    case Workspace.PleaseLayoutAgain =>
       val d = this.size
       this.size = new Dimension(d.width - 1, this.size.height - 1)
       this.size = d
-    }
   }
 }
 

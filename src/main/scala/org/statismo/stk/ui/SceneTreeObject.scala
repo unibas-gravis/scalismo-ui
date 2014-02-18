@@ -2,6 +2,7 @@ package org.statismo.stk.ui
 
 import scala.swing.event.Event
 import scala.collection.mutable.ArrayBuffer
+import scala.util.Try
 
 object SceneTreeObject {
   case class ChildrenChanged(source: SceneTreeObject) extends Event
@@ -17,7 +18,7 @@ trait SceneTreeObject extends Nameable {
     else parent.scene
   }
   scene.listenTo(this)
-
+  
   def displayables: List[Displayable] = {
     val cd = List(children.map(_.displayables).flatten).flatten
     if (this.isInstanceOf[Displayable]) {
@@ -35,7 +36,7 @@ trait SceneTreeObject extends Nameable {
     scene.deafTo(this)
   }
 
-  private var hidden: List[Viewport] = Nil
+  private var hidden: List[Viewport] = if (this.isInstanceOf[Scene]) Nil else scene.viewports.filterNot(v => v.supportsShowingObject(this)).toList
 
   def isHiddenInViewport(viewport: Viewport) = hidden.exists({ v => v eq viewport }) || !scene.viewports.exists({v => v eq viewport})
   def isShownInViewport(viewport: Viewport) = !isHiddenInViewport(viewport)
@@ -76,8 +77,8 @@ trait SceneTreeObject extends Nameable {
   def hideInViewport(viewport: Viewport): Unit = hideInViewports(Seq(viewport))
   def showInViewport(viewport: Viewport): Unit = showInViewports(Seq(viewport))
   
-  def onViewportsChanged(): Unit = {
-    children foreach (_.onViewportsChanged())
-    hidden = Nil
+  def onViewportsChanged(viewports: Seq[Viewport]): Unit = {
+    hidden = viewports.filterNot(v => v.supportsShowingObject(this)).toList
+    Try {children foreach (_.onViewportsChanged(viewports))}
   }
 }

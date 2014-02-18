@@ -35,6 +35,9 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
     case VtkContext.RenderRequest(s) => {
       ui.Render()
     }
+    case VtkContext.ResetCameraRequest(s) => {
+      resetCamera()
+    }
     case VtkContext.ViewportEmpty(v) => {
       ui.setAsEmpty()
     }

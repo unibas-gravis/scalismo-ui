@@ -1,7 +1,7 @@
 package org.statismo.stk.ui
 
 object Perspective {
-  def defaultPerspective(scene: Scene) = new SingleViewportPerspective(scene)
+  def defaultPerspective(scene: Scene) = new SlicerPerspective(scene) //new SingleViewportPerspective(scene)
 }
 
 trait Perspective extends Nameable {
@@ -60,5 +60,5 @@ object SlicerPerspective extends PerspectiveFactory {
 class SlicerPerspective(val scene: Scene) extends Perspective {
   override val factory = SlicerPerspective
   name = factory.name
-  def createViewports = Seq(new ThreeDViewport(scene, Some("3D")), new ThreeDViewport(scene, Some("X")), new ThreeDViewport(scene, Some("Y")), new ThreeDViewport(scene, Some("Z")))
+  def createViewports = Seq(new ThreeDViewport(scene, Some("3D")), new SliceViewport(scene, ThreeDImageAxis.X, Some("X")), new SliceViewport(scene, ThreeDImageAxis.Y, Some("Y")), new SliceViewport(scene, ThreeDImageAxis.Z, Some("Z")))
 }

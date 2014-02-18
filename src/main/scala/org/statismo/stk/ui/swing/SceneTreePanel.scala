@@ -139,7 +139,8 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       }
       pop.show(jtree, x, y)
       // needed because otherwise the popup may be hidden by the renderer window
-      topmost.revalidate()
+      topmost.invalidate()
+      topmost.validate()
     }
   }
 

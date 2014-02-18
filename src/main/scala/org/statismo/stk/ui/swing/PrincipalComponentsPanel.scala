@@ -3,6 +3,7 @@ package org.statismo.stk.ui.swing
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 
+import scala.collection.immutable.IndexedSeq
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.Buffer
 import scala.swing.BorderPanel
@@ -125,7 +126,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       val coeffs = model.get.coefficients.toArray
       if (index >= 0 && index < coeffs.length) {
         coeffs(index) = sanitize(value)
-        model.get.coefficients = coeffs
+        model.get.coefficients = coeffs.toIndexedSeq
       }
     }
   }
@@ -141,11 +142,10 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   private val table = new Table
 
-  def updateDisplayedCoefficients() = {
+  def updateDisplayedCoefficients() = this.synchronized {
     if (model.isDefined) {
       val coeffs = model.get.coefficients
       0 until coeffs.size map { i =>
-
         deafTo(table.entries(i).slider)
 
         val v = coeffs(i)

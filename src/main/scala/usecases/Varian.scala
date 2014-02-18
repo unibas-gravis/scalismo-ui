@@ -169,7 +169,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
     }
     for (regstate <- Registration.iterations(config)(refDm, targetDm)) {
       println("regstate: " + regstate.optimizerState.value)
-      lastModel.get.instances(0).coefficients = regstate.optimizerState.parameters.toArray
+      lastModel.get.instances(0).coefficients = regstate.optimizerState.parameters.toArray.toIndexedSeq
     }
   }
 }
