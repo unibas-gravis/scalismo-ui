@@ -10,6 +10,8 @@ import javax.swing.SwingConstants
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
+import org.statismo.stk.ui.swing.util.MultiOutputStream
+import java.io.PrintStream
 
 class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
   val icfg = Interpreter.Config()
@@ -21,8 +23,6 @@ class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
   val split = MSplitPane(InterpreterPane.Config().build, icfg.build, codeCfg.build)
   split.component.setResizeWeight(0.5)
   layout(Component.wrap(split.component)) = BorderPanel.Position.Center
-
-  println("WHAT IS GOING ON")
 }
 
 object MSplitPane {
@@ -31,7 +31,18 @@ object MSplitPane {
     codePaneConfig: CodePane.Config = CodePane.Config().build): MSplitPane = {
     val fac = new ThreadFactory { def newThread(r: Runnable): Thread = { new Thread(r) { setDaemon(true) } } }
     val exec = ExecutionContext fromExecutorService Executors.newSingleThreadExecutor(fac)
-    val lp = LogPane()
+    
+    // FIXME: There must be a better way to do this.
+    val sysout = System.out
+    val syserr = System.err
+
+    val lp = LogPane().makeDefault(true)
+
+    val mout = new MultiOutputStream(System.out, sysout)
+    val merr = new MultiOutputStream(System.err, syserr)
+    System.setOut(new PrintStream(mout))
+    System.setErr(new PrintStream(merr))
+    
     val intCfg = Interpreter.ConfigBuilder(interpreterConfig)
     intCfg.out = Some(lp.writer)
     val ip = InterpreterPane(paneConfig, intCfg.build, codePaneConfig)(exec)

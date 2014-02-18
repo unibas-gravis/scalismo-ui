@@ -23,6 +23,12 @@ object StatismoApp {
 
   def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
     UIManager.setLookAndFeel(lookAndFeel)
+    val laf = UIManager.getLookAndFeel()
+    if (laf.getClass().getSimpleName().startsWith("Nimbus")) {
+      val defaults = laf.getDefaults()
+      defaults.put("Tree.drawHorizontalLines", true);
+      defaults.put("Tree.drawVerticalLines", true);
+    }
     val app = new StatismoApp(frame(scene))
     app.main(args)
     app
@@ -32,7 +38,7 @@ object StatismoApp {
     val nimbus = UIManager.getInstalledLookAndFeels().filter(_.getName().equalsIgnoreCase("nimbus")).map(i => i.getClassName())
     if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName()
   }
-  
+
   val Version: String = "0.2.0"
 }
 
@@ -43,7 +49,7 @@ class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
   }
 
   def scene = top.scene
-  
+
 }
 
 class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
@@ -63,17 +69,17 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   lazy val workspace = new Workspace(scene)
-  
-  lazy val workspacePanel: WorkspacePanel  = new WorkspacePanel(workspace)(this)
+
+  lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)(this)
   lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
-  
+
   lazy val mainPanel = new BorderPanel {
     layout(toolbar) = BorderPanel.Position.North
     layout(workspacePanel) = BorderPanel.Position.Center
   }
   contents = mainPanel
   menuBar = new MainMenuBar()(this)
-  
+
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
   override def closeOperation = {
     dispose
@@ -84,7 +90,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
     // center on screen
     peer.setLocationRelativeTo(null)
   }
-  
+
   // this is a hack...
   listenTo(workspace)
   reactions += {
