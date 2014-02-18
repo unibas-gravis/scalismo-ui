@@ -52,20 +52,27 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 
 }
 
-trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with MutableObjectContainer[Child] {
-  override def children = super.children // required to prevent type conflict
+trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectContainer[Child] {
+//  override def children = super.children // required to prevent type conflict
 
+  def publisher: SceneTreeObject
+  
   override def add(child: Child): Unit = {
     super.add(child)
-    publish(SceneTreeObject.ChildrenChanged(this))
+    publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
   }
 
   override def remove(child: Child, silent: Boolean): Boolean = {
     val changed = super.remove(child, silent)
     if (changed) {
-      publish(SceneTreeObject.ChildrenChanged(this))
+      publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
     }
     changed
   }
+}
+
+trait StandaloneSceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with SceneTreeObjectContainer[Child] {
+  override def children = super.children // required to prevent type conflict
+  override lazy val publisher = this
 }
 

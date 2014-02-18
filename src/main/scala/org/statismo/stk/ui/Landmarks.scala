@@ -113,7 +113,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 }
 
-abstract class DisplayableLandmarks(theObject: ThreeDObject) extends SceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable with RemoveableChildren {
+abstract class DisplayableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable with RemoveableChildren {
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
@@ -174,7 +174,7 @@ class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theO
 }
 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLandmarks(instance) {
-  val peer = instance.parent.parent.landmarks
+  val peer = instance.shapeModel.landmarks
 
   def addAt(peer: Point3D) = {
     create(peer, None)

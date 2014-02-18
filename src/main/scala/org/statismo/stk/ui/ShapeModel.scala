@@ -16,7 +16,7 @@ import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
 
 import breeze.linalg.DenseVector
 
-class ShapeModels(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
+class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
   override lazy val parent = scene
   name = "Statistical Shape Models"
   override lazy val isNameUserModifiable = false
@@ -60,7 +60,7 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
   override lazy val parent: ShapeModels = scene.shapeModels
 
   val instances = new ShapeModelInstances(this)
-  override val children = Seq(instances)
+  override def children = instances.children
 
   lazy val landmarkNameGenerator: NameGenerator = NameGenerator.defaultGenerator
   val landmarks = new ReferenceLandmarks(this)
@@ -82,10 +82,11 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
   parent.add(this)
 }
 
-class ShapeModelInstances(val shapeModel: ShapeModel)(implicit override val scene: Scene) extends SceneTreeObjectContainer[ShapeModelInstance] with RemoveableChildren {
-  name = "Instances"
-  override lazy val isNameUserModifiable = false
-  override lazy val parent = shapeModel
+class ShapeModelInstances(val shapeModel: ShapeModel)(implicit val scene: Scene) extends SceneTreeObjectContainer[ShapeModelInstance] with RemoveableChildren {
+//  name = "Instances"
+//  override lazy val isNameUserModifiable = false
+//  override lazy val parent = shapeModel
+  override lazy val publisher = shapeModel
 
   def create(name: Option[String] = None): ShapeModelInstance = {
     val child = new ShapeModelInstance(this)
@@ -116,8 +117,8 @@ object ShapeModelInstance {
 }
 
 class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
-  override lazy val parent: ShapeModelInstances = container
-  lazy val shapeModel = parent.shapeModel
+  lazy val shapeModel = container.shapeModel
+  override lazy val parent = shapeModel
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.gaussianProcess.rank)(0.0f)
 
   val meshRepresentation = new ShapeModelInstanceMeshRepresentation
@@ -147,10 +148,10 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
       _mesh = newMesh
       publish(Mesh.GeometryChanged(this))
     }
-    override lazy val parent = ShapeModelInstance.this.representations
+    override lazy val parent = ShapeModelInstance.this
 
     def addLandmarkAt(point: Point3D) = {
-      parent.parent.landmarks.addAt(point)
+      parent.landmarks.addAt(point)
     }
   }
 }

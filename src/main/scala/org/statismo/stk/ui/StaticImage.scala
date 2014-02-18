@@ -21,7 +21,7 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMet
     apply(file, None, file.getName())
   }
 
-  def apply(file: File, parent: Option[ThreeDRepresentations], name: String)(implicit scene: Scene): Try[StaticImage[_]] = {
+  def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage[_]] = {
     for {
       raw2 <- ImageIO.read3DScalarImage[Float](file)
       raw <- ImageIO.read3DScalarImage[Short](file)
@@ -32,17 +32,13 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMet
   }
 }
 
-class StaticImage[A: ScalarValue : TypeTag: ClassTag](override val peer: DiscreteScalarImage3D[A], initialParent: Option[ThreeDRepresentations] = None, name: Option[String] = None)(implicit override val scene: Scene) extends ThreeDImage[A] {
+class StaticImage[A: ScalarValue : TypeTag: ClassTag](override val peer: DiscreteScalarImage3D[A], initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends ThreeDImage[A] {
   name_=(name.getOrElse(Nameable.NoName))
-  override lazy val parent: ThreeDRepresentations = initialParent.getOrElse {
-    val p = new StaticThreeDObject(Some(scene.staticObjects), name)
-    p.representations
-  }
+  override lazy val parent: ThreeDObject = initialParent.getOrElse (new StaticThreeDObject(Some(scene.staticObjects), name))
 
   def addLandmarkAt(point: Point3D) = {
-    val landmarks = parent.parent.landmarks
-    landmarks.addAt(point)
+    parent.landmarks.addAt(point)
   }
 
-  parent.add(this)
+  parent.representations.add(this)
 }

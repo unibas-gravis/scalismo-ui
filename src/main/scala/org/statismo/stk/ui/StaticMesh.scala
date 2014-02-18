@@ -17,7 +17,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
     apply(file, None, file.getName())
   }
 
-  def apply(file: File, parent: Option[ThreeDRepresentations], name: String)(implicit scene: Scene): Try[StaticMesh] = {
+  def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
     for {
       raw <- MeshIO.readMesh(file)
     } yield {
@@ -26,17 +26,14 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   }
 }
 
-class StaticMesh(override val peer: TriangleMesh, initialParent: Option[ThreeDRepresentations] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
+class StaticMesh(override val peer: TriangleMesh, initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
   name_=(name.getOrElse(Nameable.NoName))
-  override lazy val parent: ThreeDRepresentations = initialParent.getOrElse {
-    val p = new StaticThreeDObject(Some(scene.staticObjects), name)
-    p.representations
-  }
+  override lazy val parent: ThreeDObject = initialParent.getOrElse (new StaticThreeDObject(Some(scene.staticObjects), name))
 
   def addLandmarkAt(point: Point3D) = {
-    val landmarks = parent.parent.landmarks
+    val landmarks = parent.landmarks
     landmarks.addAt(point)
   }
 
-  parent.add(this)
+  parent.representations.add(this)
 }

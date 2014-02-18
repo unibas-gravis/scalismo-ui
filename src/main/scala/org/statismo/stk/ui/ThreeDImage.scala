@@ -66,8 +66,9 @@ class ThreeDImagePlane[A](val image: ThreeDImage[A], val axis: ThreeDImageAxis.V
   }
   
   def addLandmarkAt(point: Point3D) = {
-    val obj = parent.parent.asInstanceOf[ThreeDRepresentations].parent
-    obj.landmarks.addAt(point)
+    val obj = parent.parent
+    //.parent.asInstanceOf[ThreeDRepresentations].parent
+    //obj.landmarks.addAt(point)
   }
   
   override val isCurrentlyRemoveable = false 

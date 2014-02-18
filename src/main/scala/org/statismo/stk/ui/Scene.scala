@@ -55,7 +55,7 @@ class Scene extends SceneTreeObject {
   def viewports = perspective.viewports
 }
 
-class AuxiliaryObjects()(implicit override val scene: Scene) extends SceneTreeObjectContainer[Displayable] {
+class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[Displayable] {
   name = "Auxiliary Objects"
   override lazy val isNameUserModifiable = false
   override lazy val parent = scene
