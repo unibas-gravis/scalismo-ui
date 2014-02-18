@@ -10,7 +10,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     if (child.isInstanceOf[Removeable]) {
       listenTo(child.asInstanceOf[Removeable])
     }
-    _children = _children.+:(child)
+    _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
   }
 
   def apply(index: Int) = children(index)

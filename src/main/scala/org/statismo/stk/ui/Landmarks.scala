@@ -202,6 +202,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
     var changed = false
     _children.length until peer.children.length foreach { i =>
       changed = true
+      val p = peer(i)
       add(new MoveableLandmark(this, peer(i)))
     }
     if (changed) {

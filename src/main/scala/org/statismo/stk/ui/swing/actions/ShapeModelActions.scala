@@ -60,13 +60,26 @@ class LoadShapeModelAction extends SceneTreePopupAction("Load Shape Model from f
 
 class CreateShapeModelInstanceAction extends SceneTreePopupAction("Create new Instance") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModelInstances]
+    context.isDefined && context.get.isInstanceOf[ShapeModel]
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val instances = context.get.asInstanceOf[ShapeModelInstances]
-      instances.create()
+      val model = context.get.asInstanceOf[ShapeModel]
+      model.instances.create()
+    }
+  }
+}
+
+class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove all Instances") {
+  def isContextSupported(context: Option[SceneTreeObject]) = {
+    context.isDefined && context.get.isInstanceOf[ShapeModel] && !context.get.asInstanceOf[ShapeModel].instances.children.isEmpty
+  }
+
+  override def apply(context: Option[SceneTreeObject]) = {
+    if (isContextSupported(context)) {
+      val model = context.get.asInstanceOf[ShapeModel]
+      model.instances.removeAll
     }
   }
 }

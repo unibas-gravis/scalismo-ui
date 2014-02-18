@@ -21,10 +21,15 @@ import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui.swing.actions.AddImageRepresentationToStaticThreeDObjectAction
+import org.statismo.stk.ui.swing.actions.AddMeshRepresentationToStaticThreeDObjectAction
 import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
+import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromImageAction
+import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromMeshAction
 import org.statismo.stk.ui.swing.actions.LoadLoadableAction
 import org.statismo.stk.ui.swing.actions.LoadShapeModelAction
 import org.statismo.stk.ui.swing.actions.LoadShapeModelLandmarksAction
+import org.statismo.stk.ui.swing.actions.RemoveAllShapeModelInstancesAction
 import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
 import org.statismo.stk.ui.swing.actions.SaveSaveableAction
 import org.statismo.stk.ui.swing.actions.SaveShapeModelLandmarksAction
@@ -46,10 +51,11 @@ object SceneTreePanel {
     new LoadShapeModelLandmarksAction,
     new SaveShapeModelLandmarksAction,
     new CreateShapeModelInstanceAction,
-//    new CreateStaticThreeDObjectFromMeshAction,
-//    new CreateStaticThreeDObjectFromImageAction,
-//    new AddMeshRepresentationToStaticThreeDObjectAction,
-//    new AddImageRepresentationToStaticThreeDObjectAction,
+    new RemoveAllShapeModelInstancesAction,
+    new CreateStaticThreeDObjectFromMeshAction,
+    new CreateStaticThreeDObjectFromImageAction,
+    new AddMeshRepresentationToStaticThreeDObjectAction,
+    new AddImageRepresentationToStaticThreeDObjectAction,
     new LoadLoadableAction,
     new SaveSaveableAction,
     new RemoveRemoveableAction,

@@ -83,9 +83,6 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
 }
 
 class ShapeModelInstances(val shapeModel: ShapeModel)(implicit val scene: Scene) extends SceneTreeObjectContainer[ShapeModelInstance] with RemoveableChildren {
-//  name = "Instances"
-//  override lazy val isNameUserModifiable = false
-//  override lazy val parent = shapeModel
   override lazy val publisher = shapeModel
 
   def create(name: Option[String] = None): ShapeModelInstance = {
