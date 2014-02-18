@@ -15,6 +15,7 @@ import scala.swing.BorderPanel
 import org.statismo.stk.ui.swing.Toolbar
 import scala.swing.Action
 import org.statismo.stk.ui.swing.StatismoToolbar
+import scala.swing.Label
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
@@ -63,7 +64,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   lazy val workspace = new Workspace(scene)
   
-  lazy val workspacePanel: WorkspacePanel  = new WorkspacePanel(workspace)
+  lazy val workspacePanel: WorkspacePanel  = new WorkspacePanel(workspace)(this)
   lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
   
   lazy val mainPanel = new BorderPanel {
@@ -72,7 +73,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
   contents = mainPanel
   menuBar = new MainMenuBar()(this)
-
+  
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
   override def closeOperation = {
     dispose

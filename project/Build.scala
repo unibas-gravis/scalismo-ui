@@ -59,6 +59,7 @@ object Dependencies {
   val twitterUtilCollection = "com.twitter" % "util-collection" % "5.3.10"
   val twitterUtilEval = "com.twitter" %% "util-eval" % "6.2.4"
   val stkCore = "org.statismo" %% "stkcore" % "0.2.0-SNAPSHOT"
+  val scalaInterpreterPanel= "de.sciss" %% "scalainterpreterpane" % "1.6.+"
 }
 
 object STKBuild extends Build {
@@ -74,7 +75,8 @@ object STKBuild extends Build {
     scalaReflect,
     scalaSwing,
     scalaAsync,
-    stkCore)
+    stkCore,
+    scalaInterpreterPanel)
 
   lazy val cdap2 = Project(
     "stk-ui",
