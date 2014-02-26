@@ -18,7 +18,7 @@ class WorkspacePanel(val workspace: Workspace)(implicit frame: StatismoFrame) ex
     val child = new BorderPanel {
       layout(properties) = West
       layout(viewports) = Center
-      layout(console) = BorderPanel.Position.East
+      //layout(console) = BorderPanel.Position.East
     }
     layout(child) = Center
   }
