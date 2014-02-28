@@ -44,15 +44,12 @@ class Scene extends SceneTreeObject {
   }
 
   reactions += {
-    case SceneTreeObject.VisibilityChanged(s) => {
+    case SceneTreeObject.VisibilityChanged(s) =>
       publish(Scene.VisibilityChanged(this))
-    }
-    case SceneTreeObject.ChildrenChanged(s) => {
+    case SceneTreeObject.ChildrenChanged(s) =>
       publish(Scene.TreeTopologyChanged(this))
-    }
-    case m @ Nameable.NameChanged(s) => {
+    case m @ Nameable.NameChanged(s) =>
       publish(m)
-    }
   }
 
 }

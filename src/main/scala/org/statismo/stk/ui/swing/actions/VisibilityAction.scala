@@ -47,14 +47,12 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
       val item = new CheckMenuItem(title) {
         selected = obj.isShownInViewport(viewports.head)
         reactions += {
-          case ButtonClicked(b) => {
+          case ButtonClicked(b) =>
             if (selected) {
               obj.showInViewport(viewports.head)
             } else {
               obj.hideInViewport(viewports.head)
             }
-
-          }
         }
       }
       Some(item)

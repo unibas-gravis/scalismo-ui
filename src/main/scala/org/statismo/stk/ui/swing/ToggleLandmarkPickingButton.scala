@@ -7,8 +7,7 @@ import org.statismo.stk.ui.Workspace
 
 class ToggleLandmarkPickingButton(val workspace: Workspace) extends ToggleButton("LM") {
   reactions += {
-    case ButtonClicked(s) => {
+    case ButtonClicked(s) =>
       workspace.landmarkClickMode = peer.isSelected
-    }
   }
 }

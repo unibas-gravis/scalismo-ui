@@ -13,9 +13,9 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   lazy val interactor = new VtkRenderWindowInteractor(workspace, viewport)
   iren = interactor
 
-  iren.SetRenderWindow(rw);
-  iren.SetSize(this.getSize().width, this.getSize().height);
-  iren.ConfigureEvent();
+  iren.SetRenderWindow(rw)
+  iren.SetSize(this.getSize().width, this.getSize().height)
+  iren.ConfigureEvent()
   iren.SetInteractorStyle(new vtkInteractorStyleTrackballCamera)
 
   private var isEmpty = true

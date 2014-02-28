@@ -35,12 +35,11 @@ class ViewportPanel(val workspace: Workspace, val viewport: Viewport) extends Bo
   layout(vtk) = Center
 
   reactions += {
-    case Nameable.NameChanged(v) => {
+    case Nameable.NameChanged(v) =>
       if (v eq viewport) {
         title.setTitle(viewport.name)
         revalidate
       }
-    }
   }
 
   val toolbar = new Toolbar {

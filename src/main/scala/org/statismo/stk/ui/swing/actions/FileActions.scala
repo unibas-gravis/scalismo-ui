@@ -70,7 +70,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
         val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName() + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
         result match {
           case Dialog.Result.Ok => verifyThenSave(chooser.selectedFile)
-          case _ => {}
+          case _ =>
         }
       } else verifyThenSave(chooser.selectedFile)
     }

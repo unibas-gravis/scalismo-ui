@@ -8,8 +8,8 @@ import scala.swing.SplitPane
 import org.statismo.stk.ui.Workspace
 
 class PropertiesPanel(val workspace: Workspace) extends BorderPanel {
-  val scene = new SceneTreePanel(workspace);
-  val details = new SceneObjectPropertiesPanel(workspace);
+  val scene = new SceneTreePanel(workspace)
+  val details = new SceneObjectPropertiesPanel(workspace)
 
   setupUi
 

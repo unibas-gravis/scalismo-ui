@@ -15,13 +15,14 @@ object SceneTreeObjectFactory {
   def load(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))
     val file = new File(filename)
-    val errors = candidates map ({ f =>
-      val so = f.apply(file)
-      if (so.isSuccess) {
-        return so
-      }
-      so
-    })
+    val errors = candidates map {
+      f =>
+        val so = f.apply(file)
+        if (so.isSuccess) {
+          return so
+        }
+        so
+    }
     val allErrors = errors.map(f => f match { case Failure(ex) => ex.getMessage; case _ => "" }).mkString
     Failure(new IOException(allErrors))
   }

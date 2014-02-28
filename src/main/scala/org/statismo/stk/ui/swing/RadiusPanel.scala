@@ -35,11 +35,10 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   listenToOwnEvents()
 
   reactions += {
-    case ValueChanged(s) => {
+    case ValueChanged(s) =>
       if (target.isDefined) {
-        target.get.radius = (s.asInstanceOf[Slider].value.toFloat)
+        target.get.radius = s.asInstanceOf[Slider].value.toFloat
       }
-    }
   }
   def listenToOwnEvents() = {
     listenTo(slider)
@@ -71,7 +70,7 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   def updateUi() = {
     if (target.isDefined) {
       deafToOwnEvents()
-      slider.value = (target.get.radius).toInt
+      slider.value = target.get.radius.toInt
       listenToOwnEvents()
     }
   }

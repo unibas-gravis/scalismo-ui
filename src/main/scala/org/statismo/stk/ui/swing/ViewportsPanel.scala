@@ -15,7 +15,7 @@ import org.statismo.stk.ui.Workspace
 class ViewportsPanel(val workspace: Workspace) extends BorderPanel {
   listenTo(workspace.scene)
   reactions += {
-    case Scene.PerspectiveChanged(s) => { updateUi(); revalidate }
+    case Scene.PerspectiveChanged(s) => updateUi(); revalidate
   }
 
   updateUi()

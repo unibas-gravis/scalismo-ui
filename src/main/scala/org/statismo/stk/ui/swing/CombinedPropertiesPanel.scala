@@ -21,8 +21,8 @@ class CombinedPropertiesPanel(override val description: String, delegates: Scene
 
   delegates.reverse.foldLeft(panel)({ (panel, comp) =>
     val child = new BorderPanel
-    child layout (comp) = BorderPanel.Position.Center
-    panel layout (child) = BorderPanel.Position.North
+    child layout comp = BorderPanel.Position.Center
+    panel layout child = BorderPanel.Position.North
     child
   })
 }

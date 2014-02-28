@@ -31,7 +31,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
 
       // remove obsolete actors
       actors.filterNot({ case (back, front) => backend.exists({ _ eq back }) }).foreach({
-        case (back, front) => {
+        case (back, front) =>
           actors -= back
           if (front.isDefined) {
             deafTo(front.get)
@@ -41,7 +41,6 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
             })
             front.get.onDestroy()
           }
-        }
       })
 
       // determine new actors

@@ -16,18 +16,15 @@ class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderW
   val sp = ImageConversion.image3DTovtkStructuredPoints(img)
   widget.SetInputData(sp)
   peer.axis match {
-    case ThreeDImageAxis.X => {
+    case ThreeDImageAxis.X =>
       peer.maxPosition = sp.GetDimensions()(0)
       widget.SetPlaneOrientationToXAxes()
-    }
-    case ThreeDImageAxis.Y => {
+    case ThreeDImageAxis.Y =>
       peer.maxPosition = sp.GetDimensions()(1)
       widget.SetPlaneOrientationToYAxes()
-    }
-    case ThreeDImageAxis.Z => {
+    case ThreeDImageAxis.Z =>
       peer.maxPosition = sp.GetDimensions()(2)
       widget.SetPlaneOrientationToZAxes()
-    }
   }
 
   widget.SetSliceIndex(peer.position)

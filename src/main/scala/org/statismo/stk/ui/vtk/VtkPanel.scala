@@ -19,7 +19,7 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
   lazy val ui = new VtkCanvas(workspace, viewport)
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
-    panel.add(ui, BorderLayout.CENTER);
+    panel.add(ui, BorderLayout.CENTER)
     panel
   }
   lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
@@ -29,18 +29,14 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
   }
 
   reactions += {
-    case Viewport.Destroyed(v) => {
+    case Viewport.Destroyed(v) =>
       deafTo(viewport, vtk)
-    }
-    case VtkContext.RenderRequest(s) => {
+    case VtkContext.RenderRequest(s) =>
       ui.Render()
-    }
-    case VtkContext.ResetCameraRequest(s) => {
+    case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
-    }
-    case VtkContext.ViewportEmpty(v) => {
+    case VtkContext.ViewportEmpty(v) =>
       ui.setAsEmpty()
-    }
   }
 
   def resetCamera() = {

@@ -40,14 +40,13 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   }
 
   def remove(child: Child): Boolean = {
-    remove(child, false)
+    remove(child, silent = false)
   }
 
   reactions += {
-    case Removeable.Removed(c) => {
+    case Removeable.Removed(c) =>
       val child = c.asInstanceOf[Child]
-      remove(child, true)
-    }
+      remove(child, silent = true)
   }
 
 }

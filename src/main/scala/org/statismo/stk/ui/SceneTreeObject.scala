@@ -27,7 +27,7 @@ trait SceneTreeObject extends Nameable {
   }
   
   reactions += {
-    case Removeable.Removed(o) => { if (o eq this) destroy() }
+    case Removeable.Removed(o) => if (o eq this) destroy()
   }
   
   def destroy() {
@@ -71,8 +71,8 @@ trait SceneTreeObject extends Nameable {
   def showInAllViewports: Unit = showInViewports(scene.viewports)
   def hideInAllViewports: Unit = hideInViewports(scene.viewports)
   
-  def hideInViewports(viewports: Seq[Viewport]): Unit = hideInViewports(viewports, true)
-  def showInViewports(viewports: Seq[Viewport]): Unit = showInViewports(viewports, true)
+  def hideInViewports(viewports: Seq[Viewport]): Unit = hideInViewports(viewports, notify = true)
+  def showInViewports(viewports: Seq[Viewport]): Unit = showInViewports(viewports, notify = true)
 
   def hideInViewport(viewport: Viewport): Unit = hideInViewports(Seq(viewport))
   def showInViewport(viewport: Viewport): Unit = showInViewports(Seq(viewport))

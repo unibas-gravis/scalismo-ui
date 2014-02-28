@@ -56,7 +56,7 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
     if (workspace.landmarkClickMode) {
       val threshold = 3 //(pixels)
       if (Math.abs(x - downX) < threshold && Math.abs(y - downY) < threshold) {
-        val p = cellPicker.Pick(x, height - y - 1, 0.0, renderer);
+        val p = cellPicker.Pick(x, height - y - 1, 0.0, renderer)
         if (p == 1) {
           cellPicker.PickFromListOff()
           val pickpos = cellPicker.GetPickPosition()

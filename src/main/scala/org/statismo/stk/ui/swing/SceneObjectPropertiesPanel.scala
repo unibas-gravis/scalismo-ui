@@ -60,18 +60,18 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   reactions += {
     case SelectionChanged(e) => updateContent
-    case Workspace.SelectedObjectChanged => {
+    case Workspace.SelectedObjectChanged =>
       updateListAndContent
-    }
   }
 
   def updateListAndContent() {
     val currentObject = workspace.selectedObject
     val applicable = availableProviders.filter(_.setObject(currentObject))
     applicableViews.removeAllElements()
-    applicable foreach ({ v =>
-      applicableViews.addElement(v)
-    })
+    applicable foreach {
+      v =>
+        applicableViews.addElement(v)
+    }
     applicable.foreach { p =>
       if (cards.current == p.uniqueId) {
         applicableViews.setSelectedItem(p)

@@ -26,11 +26,10 @@ class PerspectiveMenu(implicit app: StatismoFrame) extends Menu(PerspectiveMenu.
   private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.name) {
     listenTo(app.scene)
     reactions += {
-      case ButtonClicked(b) => {
+      case ButtonClicked(b) =>
         if (app.scene.perspective.factory != factory) {
           app.scene.perspective = factory.apply(app.scene)
         }
-      }
       case Scene.PerspectiveChanged(s) => updateUi
     }
     updateUi

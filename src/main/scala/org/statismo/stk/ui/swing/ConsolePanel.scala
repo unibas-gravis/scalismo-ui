@@ -36,7 +36,7 @@ object MSplitPane {
     val sysout = System.out
     val syserr = System.err
 
-    val lp = LogPane().makeDefault(true)
+    val lp = LogPane().makeDefault(error = true)
 
     val mout = new MultiOutputStream(System.out, sysout)
     val merr = new MultiOutputStream(System.err, syserr)

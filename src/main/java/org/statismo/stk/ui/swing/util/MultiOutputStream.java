@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 public class MultiOutputStream extends OutputStream
 {
-	OutputStream[] outputStreams;
+	private final OutputStream[] outputStreams;
 	
 	public MultiOutputStream(OutputStream... outputStreams)
 	{

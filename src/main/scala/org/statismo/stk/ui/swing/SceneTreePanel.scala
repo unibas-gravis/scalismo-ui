@@ -172,7 +172,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   reactions += {
     case Scene.TreeTopologyChanged(s) => synchronizeTreeWithScene
-    case Nameable.NameChanged(s) => { jtree.treeDidChange(); }
+    case Nameable.NameChanged(s) => jtree.treeDidChange()
   }
 
   def synchronizeTreeWithScene() {
@@ -187,22 +187,21 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
 
-    def frontendChildren = List.fromIterator(frontend.children.map(_.asInstanceOf[TreeNode]))
+    def frontendChildren = frontend.children.map(_.asInstanceOf[TreeNode]).toList
 
     val backendChildren = backend.children
     val obsoleteIndexes = frontendChildren.zipWithIndex.filterNot({ case (n, i) => backendChildren.exists(_ eq n.getUserObject) }).map(_._1)
-    obsoleteIndexes.foreach(tree.removeNodeFromParent(_));
+    obsoleteIndexes.foreach(tree.removeNodeFromParent(_))
 
     val existingObjects = frontendChildren.map(_.getUserObject)
     val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot { case (o, i) => existingObjects.exists(_ eq o) }
 
     newObjectsWithIndex.foreach({
-      case (obj, idx) => {
+      case (obj, idx) =>
         val node = new TreeNode(obj)
         tree.insertNodeInto(node, frontend, idx)
         val p = node.getPath().map(_.asInstanceOf[Object])
         jtree.setSelectionPath(new TreePath(p))
-      }
     })
 
     backendChildren.zip(frontendChildren).foreach { case (back, front) => synchronizeTreeNode(back, front) }

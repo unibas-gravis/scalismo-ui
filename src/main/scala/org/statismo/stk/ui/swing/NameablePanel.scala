@@ -42,7 +42,7 @@ class NameablePanel extends BorderPanel with SceneObjectPropertyPanel {
 
   reactions += {
     case Nameable.NameChanged(s) => updateUi
-    case ButtonClicked(b) => {
+    case ButtonClicked(b) =>
       if (target.isDefined) {
         if (b == cancelButton) {
           nameField.text = target.get.name
@@ -50,7 +50,6 @@ class NameablePanel extends BorderPanel with SceneObjectPropertyPanel {
           target.get.name = nameField.text
         }
       }
-    }
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {

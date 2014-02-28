@@ -44,18 +44,16 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
   reactions += {
     case Mesh.GeometryChanged(m) => setCenter
-    case Nameable.NameChanged(n) => {
+    case Nameable.NameChanged(n) =>
       if (n == source) {
         this.name = source.name
       } else if (n == this) {
         source.name = this.name
       }
-    }
-    case Removeable.Removed(r) => {
+    case Removeable.Removed(r) =>
       if (r eq source) {
-        parent.remove(this, true)
+        parent.remove(this, silent = true)
       }
-    }
   }
 
   setCenter
@@ -189,11 +187,10 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
   listenTo(peer)
 
   reactions += {
-    case Landmarks.LandmarksChanged(source) => {
+    case Landmarks.LandmarksChanged(source) =>
       if (source eq peer) {
         syncWithPeer
       }
-    }
   }
 
   syncWithPeer

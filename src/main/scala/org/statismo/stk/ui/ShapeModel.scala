@@ -128,7 +128,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
       _coefficients = newCoeffs
       publish(ShapeModelInstance.CoefficientsChanged(this))
       async {
-        meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs);
+        meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
       }
     }
   }

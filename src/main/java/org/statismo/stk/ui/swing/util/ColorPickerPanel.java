@@ -92,6 +92,7 @@ import javax.swing.event.MouseInputListener;
  * the height of this component: depending on which is smaller.
  *
  */
+@SuppressWarnings("ALL")
 public class ColorPickerPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
@@ -228,14 +229,13 @@ public class ColorPickerPanel extends JPanel {
 	protected void fireChangeListeners() {
 		if(changeListeners==null)
 			return;
-		for(int a = 0; a<changeListeners.size(); a++) {
-			ChangeListener l = changeListeners.get(a);
-			try {
-				l.stateChanged(new ChangeEvent(this));
-			} catch(RuntimeException e) {
-				e.printStackTrace();
-			}
-		}
+        for (ChangeListener l : changeListeners) {
+            try {
+                l.stateChanged(new ChangeEvent(this));
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 	
 	Insets imagePadding = new Insets(6,6,6,6);

@@ -40,20 +40,20 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   layout(buttons) = North
 
-  private case class Entry(val index: Int) {
+  private case class Entry(index: Int) {
     val label = new Label(index.toString)
     val slider = new Slider() {
       override lazy val peer = new JSlider with SuperMixin {
         addMouseListener(new MouseAdapter() {
           override def mousePressed(e: MouseEvent) = {
-            val p = e.getPoint();
-            val percent = p.x / (getWidth().toDouble);
-            val range = getMaximum() - getMinimum();
-            val newVal = range * percent;
+            val p = e.getPoint()
+            val percent = p.x / getWidth().toDouble
+            val range = getMaximum() - getMinimum()
+            val newVal = range * percent
             val result = (getMinimum() + newVal).toInt
-            setValue(result);
+            setValue(result)
           }
-        });
+        })
       }
       min = (minValue * granularity).toInt
       max = (maxValue * granularity).toInt
@@ -68,7 +68,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
     var entries: Buffer[Entry] = new ArrayBuffer
 
     // need to redefine because add() is protected in superclass
-    def add(comp: Component, position: Tuple2[Int, Int]) = {
+    def add(comp: Component, position: (Int, Int)) = {
       val const = pair2Constraints(position)
       const.ipadx = 10
       if (position._1 == 0) {
@@ -165,22 +165,19 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   }
 
   reactions += {
-    case ValueChanged(s) => {
+    case ValueChanged(s) =>
       val slider = s.asInstanceOf[Slider]
       val index = slider.name.toInt
-      val value = (slider.value / granularity).toFloat
+      val value = slider.value / granularity
       setCoefficient(index, value)
-    }
-    case ButtonClicked(b) => {
+    case ButtonClicked(b) =>
       if (b == reset) {
         resetValues
       } else if (b == random) {
         randomizeValues
       }
-    }
-    case ShapeModelInstance.CoefficientsChanged(m) => {
+    case ShapeModelInstance.CoefficientsChanged(m) =>
       updateDisplayedCoefficients
-    }
   }
 
   def cleanup = {
