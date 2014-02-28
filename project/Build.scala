@@ -9,6 +9,7 @@ object BuildSettings {
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
