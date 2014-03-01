@@ -10,7 +10,7 @@ import scala.collection.immutable.IndexedSeq
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
-import org.statismo.stk.core.io.StatismoIO
+import org.statismo.stk.core.io.{MeshIO, StatismoIO}
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
 import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
@@ -57,8 +57,13 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
   }
 }
 
-class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Removeable {
+class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
   override lazy val parent: ShapeModels = scene.shapeModels
+
+  override lazy val saveableMetadata = ShapeModel
+  override def saveToFile(file: File): Try[Unit] = {
+    StatismoIO.writeStatismoMeshModel(peer, file)
+  }
 
   val instances = new ShapeModelInstances(this)
   override def children = instances.children

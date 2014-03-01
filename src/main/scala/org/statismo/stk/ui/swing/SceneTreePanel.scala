@@ -47,6 +47,9 @@ import javax.swing.tree.TreeSelectionModel
 
 object SceneTreePanel {
   lazy val popupActions: Seq[SceneTreePopupAction] = Seq(
+    new LoadLoadableAction,
+    new SaveSaveableAction,
+    new RemoveRemoveableAction,
     new LoadShapeModelAction,
     new LoadShapeModelLandmarksAction,
     new SaveShapeModelLandmarksAction,
@@ -56,9 +59,6 @@ object SceneTreePanel {
     new CreateStaticThreeDObjectFromImageAction,
     new AddMeshRepresentationToStaticThreeDObjectAction,
     new AddImageRepresentationToStaticThreeDObjectAction,
-    new LoadLoadableAction,
-    new SaveSaveableAction,
-    new RemoveRemoveableAction,
     new VisibilityAction)
 }
 
