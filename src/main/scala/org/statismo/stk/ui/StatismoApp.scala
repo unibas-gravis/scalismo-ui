@@ -38,7 +38,7 @@ object StatismoApp {
     if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
 
-  val Version: String = "0.2.1"
+  val Version: String = "0.2.2"
 }
 
 class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
