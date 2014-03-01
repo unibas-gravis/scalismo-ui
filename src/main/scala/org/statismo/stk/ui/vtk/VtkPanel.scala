@@ -50,7 +50,7 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
     filter.Update()
 
     val writer = new vtkPNGWriter
-    writer.SetFileName(file.getAbsolutePath())
+    writer.SetFileName(file.getAbsolutePath)
     writer.SetInputConnection(filter.GetOutputPort())
     writer.Write()
     writer.Delete()

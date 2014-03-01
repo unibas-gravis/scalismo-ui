@@ -79,12 +79,14 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   val tree = new DefaultTreeModel(root)
 
   def getTreeObjectForEvent(event: EventObject): Option[SceneTreeObject] = {
-    val jtree = event.getSource().asInstanceOf[JTree]
-    val node = jtree.getLastSelectedPathComponent().asInstanceOf[TreeNode]
+    val jtree = event.getSource.asInstanceOf[JTree]
+    val node = jtree.getLastSelectedPathComponent.asInstanceOf[TreeNode]
     if (node == null) None else {
       val obj = node.getUserObject()
-      if (obj.isInstanceOf[SceneTreeObject]) Some(obj.asInstanceOf[SceneTreeObject])
-      else None
+      obj match {
+        case sceneTreeObject: SceneTreeObject => Some(sceneTreeObject)
+        case _ => None
+      }
     }
   }
   val listener = new KeyAdapter with TreeSelectionListener {
@@ -110,9 +112,9 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
     def handle(event: MouseEvent) = {
       if (event.isPopupTrigger) {
-        val jtree = event.getSource().asInstanceOf[JTree]
-        val x = event.getX()
-        val y = event.getY()
+        val jtree = event.getSource.asInstanceOf[JTree]
+        val x = event.getX
+        val y = event.getY
         val path = jtree.getPathForLocation(x, y)
         if (path != null) {
           jtree.setSelectionPath(path)
@@ -145,7 +147,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   }
 
   val jtree = new JTree(tree) {
-    getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION)
+    getSelectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION)
     addTreeSelectionListener(listener)
     addKeyListener(listener)
     addMouseListener(mouseListener)
@@ -155,7 +157,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   lazy val topmost = {
     import java.awt.{ Component => AComponent }
     def top(c: AComponent): AComponent = {
-      val p = c.getParent()
+      val p = c.getParent
       if (p == null || c.isInstanceOf[Frame]) c else top(p)
     }
     top(jtree)
@@ -171,12 +173,12 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   layout(view) = Center
 
   reactions += {
-    case Scene.TreeTopologyChanged(s) => synchronizeTreeWithScene
+    case Scene.TreeTopologyChanged(s) => synchronizeTreeWithScene()
     case Nameable.NameChanged(s) => jtree.treeDidChange()
   }
 
   def synchronizeTreeWithScene() {
-    val path = jtree.getSelectionPath()
+    val path = jtree.getSelectionPath
     synchronizeTreeNode(scene, root)
     if (path != null) {
       jtree.setSelectionPath(path)
@@ -185,7 +187,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     }
   }
 
-  def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
+  protected def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
 
     def frontendChildren = frontend.children.map(_.asInstanceOf[TreeNode]).toList
 
@@ -200,7 +202,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       case (obj, idx) =>
         val node = new TreeNode(obj)
         tree.insertNodeInto(node, frontend, idx)
-        val p = node.getPath().map(_.asInstanceOf[Object])
+        val p = node.getPath.map(_.asInstanceOf[Object])
         jtree.setSelectionPath(new TreePath(p))
     })
 

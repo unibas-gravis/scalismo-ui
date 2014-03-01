@@ -16,7 +16,7 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
   private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener {
     setSelected(context.isShownInViewport(viewport))
     def itemStateChanged(event: ItemEvent) = {
-      if (isSelected()) {
+      if (isSelected) {
         context.showInViewport(viewport)
       } else {
         context.hideInViewport(viewport)

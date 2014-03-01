@@ -16,9 +16,9 @@ trait Removeable extends EdtPublisher {
 
 trait RemoveableChildren extends Removeable {
   def children: Seq[Removeable]
-  override def remove = {
+  override def remove() = {
     val copy = children.map { c => c }
-    copy.foreach { c => c.remove }
+    copy.foreach { c => c.remove() }
   }
 
   override def isCurrentlyRemoveable = {

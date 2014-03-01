@@ -38,7 +38,7 @@ class ViewportPanel(val workspace: Workspace, val viewport: Viewport) extends Bo
     case Nameable.NameChanged(v) =>
       if (v eq viewport) {
         title.setTitle(viewport.name)
-        revalidate
+        revalidate()
       }
   }
 
@@ -51,7 +51,7 @@ class ViewportPanel(val workspace: Workspace, val viewport: Viewport) extends Bo
   toolbar.add(new Action("SS") {
     def doSave(file: File): Try[Unit] = vtk.screenshot(file)
     override def apply() = {
-      new SaveAction(doSave, PngFileIoMetadata).apply
+      new SaveAction(doSave, PngFileIoMetadata).apply()
     }
   })
 

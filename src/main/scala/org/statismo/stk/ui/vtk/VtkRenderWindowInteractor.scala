@@ -33,13 +33,13 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
 
   def renderer = GetRenderWindow().GetRenderers().GetFirstRenderer()
 
-  override def LeftButtonPressEvent = {
+  override def LeftButtonPressEvent() = {
     if (workspace.landmarkClickMode) {
       downX = x
       downY = y
     }
     if (viewport.isMouseSensitive) {
-    	super.LeftButtonPressEvent
+    	super.LeftButtonPressEvent()
     }
   }
 
@@ -48,9 +48,9 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
     super.SetSize(width, height)
   }
 
-  override def LeftButtonReleaseEvent = {
+  override def LeftButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.LeftButtonReleaseEvent
+    	super.LeftButtonReleaseEvent()
     }
 
     if (workspace.landmarkClickMode) {
@@ -62,15 +62,15 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
           val pickpos = cellPicker.GetPickPosition()
           val prop = cellPicker.GetProp3D()
           if (prop != null) {
-            if (prop.isInstanceOf[ClickableActor]) {
-              val clickable = prop.asInstanceOf[ClickableActor]
-              clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
-            } else if (prop.isInstanceOf[DisplayableActor]) {
+            prop match {
+              case clickable: ClickableActor =>
+                clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
+              case _: DisplayableActor =>
               // do nothing. We found one of our own actors, but it doesn't react to clicks
-            } else {
-              // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
-              // we publish an event instead
-              publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+              case _ =>
+                // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
+                // we publish an event instead
+                publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
             }
           }
         }
@@ -78,27 +78,27 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
     }
   }
   
-  override def MiddleButtonPressEvent = {
+  override def MiddleButtonPressEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.MiddleButtonPressEvent
+    	super.MiddleButtonPressEvent()
     }
   }
   
-  override def MiddleButtonReleaseEvent = {
+  override def MiddleButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.MiddleButtonReleaseEvent
+    	super.MiddleButtonReleaseEvent()
     }
   }
   
-  override def RightButtonPressEvent = {
+  override def RightButtonPressEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.RightButtonPressEvent
+    	super.RightButtonPressEvent()
     }
   }
   
-  override def RightButtonReleaseEvent = {
+  override def RightButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.RightButtonReleaseEvent
+    	super.RightButtonReleaseEvent()
     }
   }
 }

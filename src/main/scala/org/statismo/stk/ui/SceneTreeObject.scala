@@ -14,16 +14,20 @@ trait SceneTreeObject extends Nameable {
   def children: Seq[SceneTreeObject] = Nil
 
   def scene: Scene = {
-    if (parent.isInstanceOf[Scene]) parent.asInstanceOf[Scene]
-    else parent.scene
+    parent match {
+      case scene: Scene => scene
+      case _ => parent.scene
+    }
   }
   scene.listenTo(this)
   
   def displayables: List[Displayable] = {
-    val cd = List(children.map(_.displayables).flatten).flatten
-    if (this.isInstanceOf[Displayable]) {
-      this.asInstanceOf[Displayable] :: cd
-    } else cd
+    val childDisplayables = List(children.map(_.displayables).flatten).flatten
+    this match {
+      case displayable: Displayable =>
+        displayable :: childDisplayables
+      case _ => childDisplayables
+    }
   }
   
   reactions += {
@@ -31,7 +35,7 @@ trait SceneTreeObject extends Nameable {
   }
   
   def destroy() {
-    children.foreach(_.destroy)
+    children.foreach(_.destroy())
     // make sure that we don't leak memory...
     scene.deafTo(this)
   }
@@ -68,8 +72,8 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  def showInAllViewports: Unit = showInViewports(scene.viewports)
-  def hideInAllViewports: Unit = hideInViewports(scene.viewports)
+  def showInAllViewports(): Unit = showInViewports(scene.viewports)
+  def hideInAllViewports(): Unit = hideInViewports(scene.viewports)
   
   def hideInViewports(viewports: Seq[Viewport]): Unit = hideInViewports(viewports, notify = true)
   def showInViewports(viewports: Seq[Viewport]): Unit = showInViewports(viewports, notify = true)

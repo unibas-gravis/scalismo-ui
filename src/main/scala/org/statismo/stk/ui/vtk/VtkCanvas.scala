@@ -14,7 +14,7 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   iren = interactor
 
   iren.SetRenderWindow(rw)
-  iren.SetSize(this.getSize().width, this.getSize().height)
+  iren.SetSize(this.getSize.width, this.getSize.height)
   iren.ConfigureEvent()
   iren.SetInteractorStyle(new vtkInteractorStyleTrackballCamera)
 
@@ -27,13 +27,13 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
 
   def setAsEmpty() = this.synchronized {
     isEmpty = true
-    repaint
+    repaint()
   }
 
   override def paint(g: Graphics) = this.synchronized {
     if (isEmpty) {
       g.setColor(Color.BLACK)
-      g.fillRect(0, 0, getWidth(), getHeight())
+      g.fillRect(0, 0, getWidth, getHeight)
     } else {
       super.paint(g)
     }

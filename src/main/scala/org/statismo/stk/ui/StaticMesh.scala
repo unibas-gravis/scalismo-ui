@@ -14,7 +14,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   val ioMetadata = this
 
   def apply(file: File)(implicit scene: Scene): Try[StaticMesh] = {
-    apply(file, None, file.getName())
+    apply(file, None, file.getName)
   }
 
   def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {

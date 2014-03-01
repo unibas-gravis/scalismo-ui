@@ -67,7 +67,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   def apply() = {
     if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {
       if (chooser.selectedFile.exists && confirmWhenExists) {
-        val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName() + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
+        val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
         result match {
           case Dialog.Result.Ok => verifyThenSave(chooser.selectedFile)
           case _ =>
@@ -77,10 +77,10 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def verifyThenSave(file: File) = {
-    def candidateName = file.getName().toLowerCase()
+    def candidateName = file.getName.toLowerCase
     var verified = true
     if (verifyFileExtension) {
-      val matching = metadata.fileExtensions.filter { ext => candidateName.endsWith("." + ext.toLowerCase()) }
+      val matching = metadata.fileExtensions.filter { ext => candidateName.endsWith("." + ext.toLowerCase) }
       if (matching.isEmpty) {
         val msg = s"The file name that you provided (${file.getName}) seems to have an unsupported file extension.\nDo you still wish to create the file?"
         val result = Dialog.showConfirmation(parentComponent, msg, "Create file with unsupported extension?", Dialog.Options.OkCancel)
@@ -99,11 +99,11 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onSuccess(file: File) {
-    Dialog.showMessage(parentComponent, "Successfully saved: " + file.getName(), "File saved")
+    Dialog.showMessage(parentComponent, "Successfully saved: " + file.getName, "File saved")
   }
 
   def onFailure(file: File, exception: Throwable) {
-    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage(), "Save failed", Dialog.Message.Error)
+    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Save failed", Dialog.Message.Error)
   }
 }
 
@@ -144,6 +144,6 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
 
   def onFailure(file: File, exception: Throwable) {
     exception.printStackTrace()
-    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage(), "Load failed", Dialog.Message.Error)
+    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Load failed", Dialog.Message.Error)
   }
 }

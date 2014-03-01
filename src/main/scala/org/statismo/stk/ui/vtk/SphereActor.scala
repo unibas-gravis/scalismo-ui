@@ -14,8 +14,8 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
   setGeometry()
 
   reactions += {
-    case SphereLike.CenterChanged(s) => setGeometry
-    case Radius.RadiusChanged(r) => setGeometry
+    case SphereLike.CenterChanged(s) => setGeometry()
+    case Radius.RadiusChanged(r) => setGeometry()
   }
 
   def setGeometry() = this.synchronized {

@@ -36,7 +36,7 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
       raw <- StatismoIO.readStatismoMeshModel(file)
     } yield {
       val shape = new ShapeModel(raw)
-      shape.name = file.getName()
+      shape.name = file.getName
       0 until numberOfInstancesToCreate foreach { i => shape.instances.create() }
       shape
     }

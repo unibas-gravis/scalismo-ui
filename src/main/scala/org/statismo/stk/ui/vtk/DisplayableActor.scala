@@ -15,7 +15,7 @@ object DisplayableActor {
       case s: SphereLike => Some(new SphereActor(s))
       case i: ThreeDImagePlane[_] => Some(new ImagePlaneActor(i))
       case _ =>
-        println("DisplayableActor: Dunno what to do with " + displayable.getClass())
+        println("DisplayableActor: Dunno what to do with " + displayable.getClass)
         None
     }
   }

@@ -7,7 +7,7 @@ import org.statismo.stk.ui.SceneTreeObject
 class CombinedPropertiesPanel(override val description: String, delegates: SceneObjectPropertyPanel*) extends BorderPanel with SceneObjectPropertyPanel {
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
     val ok = delegates.map(d => delegatedSetObject(d, obj)).foldLeft(false)({ (x, y) => x || y })
-    revalidate
+    revalidate()
     ok
   }
 

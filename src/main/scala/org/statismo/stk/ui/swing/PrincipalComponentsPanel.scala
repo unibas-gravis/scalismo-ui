@@ -46,11 +46,11 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       override lazy val peer = new JSlider with SuperMixin {
         addMouseListener(new MouseAdapter() {
           override def mousePressed(e: MouseEvent) = {
-            val p = e.getPoint()
-            val percent = p.x / getWidth().toDouble
-            val range = getMaximum() - getMinimum()
+            val p = e.getPoint
+            val percent = p.x / getWidth.toDouble
+            val range = getMaximum - getMinimum
             val newVal = range * percent
-            val result = (getMinimum() + newVal).toInt
+            val result = (getMinimum + newVal).toInt
             setValue(result)
           }
         })
@@ -104,7 +104,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
         entries.insert(idx, e)
         PrincipalComponentsPanel.this.listenTo(e.slider)
       }
-      if (changed) revalidate
+      if (changed) revalidate()
     }
   }
 
@@ -177,10 +177,10 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
         randomizeValues
       }
     case ShapeModelInstance.CoefficientsChanged(m) =>
-      updateDisplayedCoefficients
+      updateDisplayedCoefficients()
   }
 
-  def cleanup = {
+  def cleanup() = {
     if (model.isDefined) {
       deafTo(model.get)
       model = None
@@ -188,12 +188,12 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   }
 
   def setObject(obj: Option[SceneTreeObject]): Boolean = {
-    cleanup
+    cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[ShapeModelInstance]) {
       model = Some(obj.get.asInstanceOf[ShapeModelInstance])
       listenTo(model.get)
       table.setEntryCount(model.get.coefficients.length)
-      updateDisplayedCoefficients
+      updateDisplayedCoefficients()
       true
     } else {
       false

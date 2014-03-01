@@ -15,13 +15,14 @@ import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
 import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
+import scala.language.reflectiveCalls
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
   def description: String
   override def toString(): String = { description }
 
-  lazy val uniqueId = UUID.randomUUID().toString()
+  lazy val uniqueId = UUID.randomUUID().toString
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
@@ -34,7 +35,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   private val applicableViews = new DefaultComboBoxModel//[SceneObjectPropertyPanel]
 
   private val emptyPanel = new BorderPanel {
-    lazy val uniqueId = UUID.randomUUID().toString()
+    lazy val uniqueId = UUID.randomUUID().toString
     peer.setPreferredSize(new Dimension(1, 1))
   }
 
@@ -59,9 +60,9 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   updateListAndContent()
 
   reactions += {
-    case SelectionChanged(e) => updateContent
+    case SelectionChanged(e) => updateContent()
     case Workspace.SelectedObjectChanged =>
-      updateListAndContent
+      updateListAndContent()
   }
 
   def updateListAndContent() {
@@ -78,7 +79,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
       }
     }
     combo.enabled = !applicable.isEmpty
-    updateContent
+    updateContent()
   }
 
   val scroll = new ScrollPane() {
@@ -90,7 +91,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   layout(scroll) = Center
 
   def updateContent() {
-    val view = applicableViews.getSelectedItem().asInstanceOf[SceneObjectPropertyPanel]
+    val view = applicableViews.getSelectedItem.asInstanceOf[SceneObjectPropertyPanel]
     if (view != null) {
       if (cards.current != view.uniqueId) {
         cards.show(view.uniqueId)

@@ -7,15 +7,17 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   def children: Seq[Child] = _children
 
   def add(child: Child): Unit = {
-    if (child.isInstanceOf[Removeable]) {
-      listenTo(child.asInstanceOf[Removeable])
+    child match {
+      case removeable: Removeable =>
+        listenTo(removeable)
+      case _ =>
     }
     _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
   }
 
   def apply(index: Int) = children(index)
 
-  def removeAll = {
+  def removeAll() = {
     val copy = _children.map({ c => c })
     copy.foreach { c => remove(c) }
   }
@@ -23,7 +25,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   protected[ui] def remove(child: Child, silent: Boolean): Boolean = {
     if (!silent && child.isInstanceOf[Removeable]) {
       // this will publish a message which is handled in the reactions
-      child.asInstanceOf[Removeable].remove
+      child.asInstanceOf[Removeable].remove()
       true
     } else {
       val before = _children.length

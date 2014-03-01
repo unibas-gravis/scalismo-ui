@@ -109,12 +109,12 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
         val newModel = if (!trainingData.isEmpty) {
           val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, computeMeanOnly)
           val nm = ShapeModel(posteriorModel, orgModel)
-          nm.landmarks.children.foreach { l => l.remove }
+          nm.landmarks.children.foreach { l => l.remove() }
           lastModel.get.landmarks.children.foreach { lm => nm.landmarks.create(lm.peer) }
           nm
         } else {
           val nm = ShapeModel(orgModel.get.peer, orgModel)
-          nm.landmarks.children.foreach(_.remove)
+          nm.landmarks.children.foreach(_.remove())
           nm
         }
 

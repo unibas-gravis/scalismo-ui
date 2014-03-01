@@ -15,7 +15,7 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
   setGeometry()
 
   reactions += {
-    case Mesh.GeometryChanged(m) => setGeometry
+    case Mesh.GeometryChanged(m) => setGeometry()
   }
 
   def setGeometry() = this.synchronized {

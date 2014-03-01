@@ -18,7 +18,7 @@ object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMet
   val ioMetadata = this
 
   def apply(file: File)(implicit scene: Scene): Try[StaticImage[_]] = {
-    apply(file, None, file.getName())
+    apply(file, None, file.getName)
   }
 
   def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage[_]] = {

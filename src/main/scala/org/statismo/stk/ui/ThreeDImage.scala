@@ -11,6 +11,7 @@ import org.statismo.stk.core.common.ScalarValue
 import scala.util.Success
 import scala.reflect.ClassTag
 import reflect.runtime.universe.{ TypeTag, typeOf }
+import scala.language.existentials
 
 object ThreeDImage {
 }
@@ -29,9 +30,9 @@ abstract class ThreeDImage[S](implicit val scalarValue : ScalarValue[S], implici
   override lazy val children = Seq(xPlane, yPlane, zPlane)
   override lazy val saveableMetadata = StaticImage
   
-  override def remove = {
-    super.remove
-    children.foreach(_.remove)
+  override def remove() = {
+    super.remove()
+    children.foreach(_.remove())
   }
 }
 
@@ -47,7 +48,7 @@ object ThreeDImagePlane {
 
 class ThreeDImagePlane[A](val image: ThreeDImage[A], val axis: ThreeDImageAxis.Value)(implicit val ev : ScalarValue[A]) extends Displayable with Landmarkable with Removeable {
   override lazy val parent: ThreeDImage[A] = image
-  name = axis.toString()
+  name = axis.toString
   
   val minPosition = 0
   private var _maxPosition = 0

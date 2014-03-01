@@ -12,9 +12,9 @@ class WorkspacePanel(val workspace: Workspace)(implicit frame: StatismoFrame) ex
   lazy val viewports = new ViewportsPanel(workspace)
   lazy val console = new ConsolePanel
 
-  setupUi
+  setupUi()
 
-  def setupUi = {
+  def setupUi() = {
     val child = new BorderPanel {
       layout(properties) = West
       layout(viewports) = Center

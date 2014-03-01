@@ -20,6 +20,8 @@ import javax.swing.border.TitledBorder
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 
+import scala.language.reflectiveCalls
+
 class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   val description = "Color"
   private var target: Option[Colorable] = None
@@ -35,10 +37,12 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   val colorDisplayer = new Component {
     override lazy val peer = new JPanel {
       override def paintComponent(g: Graphics) {
+        val dim: Dimension = getSize
         g.setColor(Color.GRAY); // this approximates what you'll see when rendering in a black panel
-        g.fillRect(0, 0, getSize().width, getSize().height)
-        g.setColor(getBackground())
-        g.fillRect(0, 0, getSize().width, getSize().height)
+        g.fillRect(0, 0, dim.width, dim.height)
+        // now paint the selected color on the gray background
+        g.setColor(getBackground)
+        g.fillRect(0, 0, dim.width, dim.height)
       }
     }
     def setColor(color: Color, opacity: Double) = {
@@ -46,8 +50,8 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
       val c = new Color(comp(0), comp(1), comp(2), opacity.toFloat)
       peer.setBackground(c)
       peer.setForeground(c)
-      revalidate
-      repaint
+      revalidate()
+      repaint()
     }
     peer.setOpaque(false)
     peer.setPreferredSize(new Dimension(20, 20))
@@ -61,13 +65,13 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
 
     def setColor(c: Color) = {
       deaf = true
-      peer.setRGB(c.getRed(), c.getGreen, c.getBlue())
+      peer.setRGB(c.getRed, c.getGreen, c.getBlue)
       deaf = false
     }
 
     def stateChanged(event: ChangeEvent) = {
       if (!deaf) {
-        val rgb = peer.getRGB()
+        val rgb = peer.getRGB
         val c: Color = new Color(rgb(0), rgb(1), rgb(2))
         publish(ColorChosen(c))
       }
@@ -101,12 +105,12 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
     case ColorChosen(c) =>
       if (target.isDefined) {
         target.get.color = c
-        updateColorDisplayer
+        updateColorDisplayer()
       }
     case ValueChanged(s) =>
       if (target.isDefined) {
         target.get.opacity = s.asInstanceOf[Slider].value.toDouble / 100.0
-        updateColorDisplayer
+        updateColorDisplayer()
       }
   }
   def listenToOwnEvents() = {
@@ -140,7 +144,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
     if (target.isDefined) {
       deafToOwnEvents()
       opacitySlider.value = (target.get.opacity * 100).toInt
-      updateColorDisplayer
+      updateColorDisplayer()
       listenToOwnEvents()
     }
   }

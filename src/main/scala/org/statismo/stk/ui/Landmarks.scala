@@ -36,14 +36,14 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
-  override def remove = {
+  override def remove() = {
     // we simply forward the request to the source, which in turn publishes an event that all attached
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
-    source.remove
+    source.remove()
   }
 
   reactions += {
-    case Mesh.GeometryChanged(m) => setCenter
+    case Mesh.GeometryChanged(m) => setCenter()
     case Nameable.NameChanged(n) =>
       if (n == source) {
         this.name = source.name
@@ -56,9 +56,9 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
       }
   }
 
-  setCenter
+  setCenter()
 
-  def setCenter = {
+  def setCenter() = {
     val coeffs = DenseVector(container.instance.coefficients.toArray)
     center = source.peer + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.peer)
   }
@@ -96,10 +96,10 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 
   override def loadFromFile(file: File): Try[Unit] = {
-    this.removeAll
+    this.removeAll()
     val status = for {
       saved <- LandmarkIO.readLandmarks3D(file)
-      val newLandmarks = {
+      newLandmarks = {
         saved.map {
           case (name, point) =>
             this.create(point, Some(name))
@@ -189,13 +189,13 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
   reactions += {
     case Landmarks.LandmarksChanged(source) =>
       if (source eq peer) {
-        syncWithPeer
+        syncWithPeer()
       }
   }
 
-  syncWithPeer
+  syncWithPeer()
 
-  def syncWithPeer = {
+  def syncWithPeer() = {
     var changed = false
     _children.length until peer.children.length foreach { i =>
       changed = true
@@ -207,8 +207,8 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
     }
   }
 
-  override def remove {
+  override def remove() {
     deafTo(peer)
-    super.remove
+    super.remove()
   }
 }

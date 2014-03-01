@@ -31,8 +31,8 @@ object SceneTreeObjectFactory {
 trait SceneTreeObjectFactory[+T <: SceneTreeObject] {
   def ioMetadata: FileIoMetadata
   def canPotentiallyHandleFile(filename: String): Boolean = {
-    val lc = filename.toLowerCase()
-    ioMetadata.fileExtensions.map(ext => lc.endsWith("." + ext.toLowerCase())).filter(_ == true).size != 0
+    val lc = filename.toLowerCase
+    ioMetadata.fileExtensions.map(ext => lc.endsWith("." + ext.toLowerCase)).count(_ == true) != 0
   }
 
   def apply(filename: String)(implicit scene: Scene): Try[T] = {

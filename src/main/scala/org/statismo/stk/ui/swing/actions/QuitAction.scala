@@ -6,6 +6,6 @@ import org.statismo.stk.ui.StatismoFrame
 
 class QuitAction(name: String, app: StatismoFrame) extends Action(name) {
   def apply() = {
-    app.closeOperation
+    app.closeOperation()
   }
 }

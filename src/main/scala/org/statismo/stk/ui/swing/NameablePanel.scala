@@ -41,7 +41,7 @@ class NameablePanel extends BorderPanel with SceneObjectPropertyPanel {
   }
 
   reactions += {
-    case Nameable.NameChanged(s) => updateUi
+    case Nameable.NameChanged(s) => updateUi()
     case ButtonClicked(b) =>
       if (target.isDefined) {
         if (b == cancelButton) {

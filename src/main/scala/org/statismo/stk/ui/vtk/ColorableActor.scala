@@ -8,10 +8,10 @@ trait ColorableActor extends SingleDisplayableActor {
   listenTo(colorable)
 
   reactions += {
-    case Colorable.ColorChanged(c) => setAppearance
+    case Colorable.ColorChanged(c) => setAppearance()
   }
 
-  setAppearance
+  setAppearance()
 
   def setAppearance() = this.synchronized {
     vtkActor.GetProperty().SetOpacity(colorable.opacity)

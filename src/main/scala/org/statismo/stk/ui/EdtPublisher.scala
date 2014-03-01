@@ -8,7 +8,7 @@ import javax.swing.SwingUtilities
 
 trait EdtPublisher extends Publisher {
   override def publish(e: Event) = {
-    if (SwingUtilities.isEventDispatchThread()) {
+    if (SwingUtilities.isEventDispatchThread) {
       super.publish(e)
     } else {
       Swing.onEDT(super.publish(e))
