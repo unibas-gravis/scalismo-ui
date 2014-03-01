@@ -10,7 +10,7 @@ import org.statismo.stk.core.mesh.TriangleMesh
 
 object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata {
   val description = "Static Mesh"
-  val fileExtensions = Seq("h5", "vtk")
+  val fileExtensions = Seq("vtk")
   val ioMetadata = this
 
   def apply(file: File)(implicit scene: Scene): Try[StaticMesh] = {

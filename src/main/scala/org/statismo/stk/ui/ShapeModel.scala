@@ -25,7 +25,7 @@ class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTre
 
 object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata {
   override val ioMetadata = this
-  override val description = "Statistical Shape Model (.h5)"
+  override val description = "Statistical Shape Model"
   override val fileExtensions = Seq("h5")
 
   override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 1)
