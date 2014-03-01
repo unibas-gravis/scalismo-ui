@@ -9,7 +9,9 @@ import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
 
 object Mesh {
+
   case class GeometryChanged(source: Mesh) extends Event
+
 }
 
 trait Mesh extends ThreeDRepresentation with Displayable with Colorable with Landmarkable with Saveable {

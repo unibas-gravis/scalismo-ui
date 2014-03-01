@@ -81,7 +81,8 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   def getTreeObjectForEvent(event: EventObject): Option[SceneTreeObject] = {
     val jtree = event.getSource.asInstanceOf[JTree]
     val node = jtree.getLastSelectedPathComponent.asInstanceOf[TreeNode]
-    if (node == null) None else {
+    if (node == null) None
+    else {
       val obj = node.getUserObject()
       obj match {
         case sceneTreeObject: SceneTreeObject => Some(sceneTreeObject)
@@ -89,12 +90,15 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       }
     }
   }
+
   val listener = new KeyAdapter with TreeSelectionListener {
     def valueChanged(event: TreeSelectionEvent): Unit = {
       workspace.selectedObject = getTreeObjectForEvent(event)
     }
+
     override def keyTyped(event: KeyEvent) {
-      if (event.getKeyChar == '\u007f') { // delete
+      if (event.getKeyChar == '\u007f') {
+        // delete
         val maybeRemoveable = getTreeObjectForEvent(event)
         if (maybeRemoveable.isDefined && maybeRemoveable.get.isInstanceOf[Removeable]) {
           val r = maybeRemoveable.get.asInstanceOf[Removeable]
@@ -108,6 +112,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   val mouseListener = new MouseAdapter() {
     override def mousePressed(event: MouseEvent) = handle(event)
+
     override def mouseReleased(event: MouseEvent) = handle(event)
 
     def handle(event: MouseEvent) = {
@@ -131,13 +136,14 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     val applicable = popupActions.filter(a => a.setContext(Some(target)))
     if (!applicable.isEmpty) {
       val pop = new JPopupMenu()
-      applicable.foreach { a =>
-        val menu = a.createMenuItem(Some(target))
-        if (menu.isDefined) {
-          pop.add(menu.get.peer)
-        } else {
-          pop.add(a.peer)
-        }
+      applicable.foreach {
+        a =>
+          val menu = a.createMenuItem(Some(target))
+          if (menu.isDefined) {
+            pop.add(menu.get.peer)
+          } else {
+            pop.add(a.peer)
+          }
       }
       pop.show(jtree, x, y)
       // needed because otherwise the popup may be hidden by the renderer window
@@ -155,7 +161,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   }
 
   lazy val topmost = {
-    import java.awt.{ Component => AComponent }
+    import java.awt.{Component => AComponent}
     def top(c: AComponent): AComponent = {
       val p = c.getParent
       if (p == null || c.isInstanceOf[Frame]) c else top(p)
@@ -166,7 +172,9 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   synchronizeTreeWithScene()
 
   val view: Component = {
-    val ctree = new Component { override lazy val peer = jtree }
+    val ctree = new Component {
+      override lazy val peer = jtree
+    }
     val scroll = new ScrollPane(ctree)
     scroll
   }
@@ -192,11 +200,15 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     def frontendChildren = frontend.children.map(_.asInstanceOf[TreeNode]).toList
 
     val backendChildren = backend.children
-    val obsoleteIndexes = frontendChildren.zipWithIndex.filterNot({ case (n, i) => backendChildren.exists(_ eq n.getUserObject) }).map(_._1)
+    val obsoleteIndexes = frontendChildren.zipWithIndex.filterNot({
+      case (n, i) => backendChildren.exists(_ eq n.getUserObject)
+    }).map(_._1)
     obsoleteIndexes.foreach(tree.removeNodeFromParent(_))
 
     val existingObjects = frontendChildren.map(_.getUserObject)
-    val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot { case (o, i) => existingObjects.exists(_ eq o) }
+    val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot {
+      case (o, i) => existingObjects.exists(_ eq o)
+    }
 
     newObjectsWithIndex.foreach({
       case (obj, idx) =>
@@ -206,6 +218,8 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
         jtree.setSelectionPath(new TreePath(p))
     })
 
-    backendChildren.zip(frontendChildren).foreach { case (back, front) => synchronizeTreeNode(back, front) }
+    backendChildren.zip(frontendChildren).foreach {
+      case (back, front) => synchronizeTreeNode(back, front)
+    }
   }
 }

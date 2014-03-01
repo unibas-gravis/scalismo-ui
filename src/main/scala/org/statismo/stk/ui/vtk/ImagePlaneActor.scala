@@ -11,7 +11,9 @@ class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderW
   override val vtkActors = Seq()
 
   val widget = new vtkImagePlaneWidget
-  val img: DiscreteScalarImage3D[Double] = peer.parent.peer.map(v => peer.parent.scalarValue.toDouble(v))
+  val img: DiscreteScalarImage3D[Double] = peer.parent.peer.map {
+    v => peer.parent.scalarValue.toDouble(v)
+  }
   val sp = ImageConversion.image3DTovtkStructuredPoints(img)
   widget.SetInputData(sp)
   peer.axis match {
@@ -36,9 +38,9 @@ class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderW
     case ThreeDImagePlane.PositionChanged(s) => this.synchronized {
       widget.SetSliceIndex(peer.position)
       if (interactor.viewport.isInstanceOf[SliceViewport]) {
-    	  publish(new VtkContext.ResetCameraRequest(this))
+        publish(new VtkContext.ResetCameraRequest(this))
       } else {
-    	  publish(new VtkContext.RenderRequest(this))
+        publish(new VtkContext.RenderRequest(this))
       }
     }
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {

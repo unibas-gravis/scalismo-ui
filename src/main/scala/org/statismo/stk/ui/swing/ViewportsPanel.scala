@@ -34,14 +34,18 @@ class ViewportsPanel(val workspace: Workspace) extends BorderPanel {
 
   def gridViewportsPanel(perspective: Perspective, rows: Int, columns: Int) = {
     val panel = new GridPanel(rows, columns)
-    perspective.viewports.foreach { v => panel.contents += ViewportPanel(workspace, v) }
+    perspective.viewports.foreach {
+      v => panel.contents += ViewportPanel(workspace, v)
+    }
     panel
   }
 
   def slicerPanel(perspective: Perspective) = {
     val upper = ViewportPanel(workspace, perspective.viewports.head)
     val lower = new GridPanel(1, 3)
-    perspective.viewports.drop(1).foreach { v => lower.contents += ViewportPanel(workspace, v) }
+    perspective.viewports.drop(1).foreach {
+      v => lower.contents += ViewportPanel(workspace, v)
+    }
     new BorderPanel {
       layout(lower) = BorderPanel.Position.South
       layout(upper) = BorderPanel.Position.Center

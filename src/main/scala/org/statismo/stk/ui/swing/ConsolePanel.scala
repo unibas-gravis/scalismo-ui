@@ -26,11 +26,17 @@ class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
 
 object MSplitPane {
   def apply(paneConfig: InterpreterPane.Config = InterpreterPane.Config().build,
-    interpreterConfig: Interpreter.Config = Interpreter.Config().build,
-    codePaneConfig: CodePane.Config = CodePane.Config().build): MSplitPane = {
-    val fac = new ThreadFactory { def newThread(r: Runnable): Thread = { new Thread(r) { setDaemon(true) } } }
+            interpreterConfig: Interpreter.Config = Interpreter.Config().build,
+            codePaneConfig: CodePane.Config = CodePane.Config().build): MSplitPane = {
+    val fac = new ThreadFactory {
+      def newThread(r: Runnable): Thread = {
+        new Thread(r) {
+          setDaemon(true)
+        }
+      }
+    }
     val exec = ExecutionContext fromExecutorService Executors.newSingleThreadExecutor(fac)
-    
+
     // FIXME: There must be a better way to do this.
     val sysout = System.out
     val syserr = System.err
@@ -41,7 +47,7 @@ object MSplitPane {
     val merr = new MultiOutputStream(System.err, syserr)
     System.setOut(new PrintStream(mout))
     System.setErr(new PrintStream(merr))
-    
+
     val intCfg = Interpreter.ConfigBuilder(interpreterConfig)
     intCfg.out = Some(lp.writer)
     val ip = InterpreterPane(paneConfig, intCfg.build, codePaneConfig)(exec)
@@ -55,9 +61,11 @@ object MSplitPane {
     extends MSplitPane {
     override def toString = "SplitPane@" + hashCode.toHexString
   }
+
 }
 
 sealed trait MSplitPane {
   def component: JSplitPane
+
   def interpreter: InterpreterPane
 }

@@ -13,8 +13,10 @@ import org.statismo.stk.ui.Viewport
 import javax.swing.JCheckBox
 
 class VisibilityAction extends SceneTreePopupAction("Visible in...") {
+
   private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener {
     setSelected(context.isShownInViewport(viewport))
+
     def itemStateChanged(event: ItemEvent) = {
       if (isSelected) {
         context.showInViewport(viewport)
@@ -22,6 +24,7 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
         context.hideInViewport(viewport)
       }
     }
+
     addItemListener(this)
   }
 
@@ -58,8 +61,9 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
       Some(item)
     } else {
       val item = new Menu(this.title) {
-        viewports foreach { v =>
-          peer.add(new VCheckBox(obj, v))
+        viewports foreach {
+          v =>
+            peer.add(new VCheckBox(obj, v))
         }
       }
       Some(item)

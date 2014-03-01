@@ -40,6 +40,7 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
         target.get.radius = s.asInstanceOf[Slider].value.toFloat
       }
   }
+
   def listenToOwnEvents() = {
     listenTo(slider)
   }

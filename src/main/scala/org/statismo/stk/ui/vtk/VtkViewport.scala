@@ -13,39 +13,52 @@ import vtk.vtkRenderer
 trait VtkContext extends EdtPublisher
 
 object VtkContext {
+
   case class ResetCameraRequest(source: VtkContext) extends Event
+
   case class RenderRequest(source: VtkContext) extends Event
+
   case class ViewportEmpty(source: VtkViewport) extends Event
+
 }
 
 class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit val interactor: VtkRenderWindowInteractor) extends VtkContext {
   val scene = viewport.scene
   deafTo(this)
-  
+
   private var actors = new HashMap[Displayable, Option[DisplayableActor]]
 
   private var firstTime = true
+
   def refresh(backend: List[Displayable]) = /*Swing.onEDT*/ {
     this.synchronized {
       var changed = false
 
       // remove obsolete actors
-      actors.filterNot({ case (back, front) => backend.exists({ _ eq back }) }).foreach({
+      actors.filterNot({
+        case (back, front) => backend.exists({
+          _ eq back
+        })
+      }).foreach({
         case (back, front) =>
           actors -= back
           if (front.isDefined) {
             deafTo(front.get)
-            front.get.vtkActors.foreach({ a =>
-              renderer.RemoveActor(a)
-              changed = true
+            front.get.vtkActors.foreach({
+              a =>
+                renderer.RemoveActor(a)
+                changed = true
             })
             front.get.onDestroy()
           }
       })
 
       // determine new actors
-      val toCreate = backend.filterNot { d =>
-        actors.keys.exists { k => k eq d }
+      val toCreate = backend.filterNot {
+        d =>
+          actors.keys.exists {
+            k => k eq d
+          }
       }
 
       val created = toCreate.map(d => Tuple2(d, DisplayableActor(d)))
@@ -55,8 +68,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
           if (front.isDefined) {
             listenTo(front.get)
             changed = true
-            front.get.vtkActors.foreach({ a =>
-              renderer.AddActor(a)
+            front.get.vtkActors.foreach({
+              a =>
+                renderer.AddActor(a)
             })
           }
       })
@@ -82,7 +96,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   }
 
   listenTo(scene, viewport)
-  
+
   reactions += {
     case Viewport.Destroyed(v) => destroy()
     case Scene.TreeTopologyChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
@@ -90,7 +104,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
     case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
     case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
   }
-  
+
   refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
 
   def destroy() = this.synchronized {

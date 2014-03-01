@@ -28,7 +28,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
 
 class StaticMesh(override val peer: TriangleMesh, initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
   name_=(name.getOrElse(Nameable.NoName))
-  override lazy val parent: ThreeDObject = initialParent.getOrElse (new StaticThreeDObject(Some(scene.staticObjects), name))
+  override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
   def addLandmarkAt(point: Point3D) = {
     val landmarks = parent.landmarks

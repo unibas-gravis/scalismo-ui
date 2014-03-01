@@ -4,12 +4,18 @@ import scala.swing.event.Event
 
 object Nameable {
   val NoName = "(no name)"
+
   case class NameChanged(source: Nameable) extends Event
+
 }
 
 trait Nameable extends EdtPublisher {
   private var _name: String = Nameable.NoName
-  def name = { _name }
+
+  def name = {
+    _name
+  }
+
   def name_=(newName: String) = {
     if (newName != _name) {
       _name = newName
@@ -18,6 +24,7 @@ trait Nameable extends EdtPublisher {
   }
 
   def isNameUserModifiable = true
+
   override def toString: String = {
     if (name.trim().length() > 0) name else Nameable.NoName
   }
@@ -36,7 +43,9 @@ object AlphaNumericNameGenerator {
 }
 
 class AlphaNumericNameGenerator extends NameGenerator {
+
   import AlphaNumericNameGenerator.Prefixes
+
   private var prefix = 0
   private var suffix = 0
 

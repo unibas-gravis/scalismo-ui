@@ -23,6 +23,7 @@ class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with
   color = container.color
   opacity = container.opacity
   radius = container.radius
+
   def peer = center
 }
 
@@ -66,7 +67,9 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 }
 
 object Landmarks extends FileIoMetadata {
+
   case class LandmarksChanged(source: AnyRef) extends Event
+
   override val description = "Landmarks"
   override val fileExtensions = Seq("csv")
 }
@@ -91,7 +94,9 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 
   override def saveToFile(file: File): Try[Unit] = {
-    val seq = children.map { lm => (lm.name, lm.peer) }.toIndexedSeq
+    val seq = children.map {
+      lm => (lm.name, lm.peer)
+    }.toIndexedSeq
     LandmarkIO.writeLandmarks[ThreeD](file, seq)
   }
 
@@ -115,6 +120,7 @@ abstract class DisplayableLandmarks(theObject: ThreeDObject) extends StandaloneS
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
+
   def addAt(position: Point3D)
 
   color = Color.BLUE
@@ -123,22 +129,25 @@ abstract class DisplayableLandmarks(theObject: ThreeDObject) extends StandaloneS
 
   override def opacity_=(newOpacity: Double) {
     super.opacity_=(newOpacity)
-    children.foreach { c =>
-      c.opacity = newOpacity
+    children.foreach {
+      c =>
+        c.opacity = newOpacity
     }
   }
 
   override def color_=(newColor: Color) {
     super.color_=(newColor)
-    children.foreach { c =>
-      c.color = newColor
+    children.foreach {
+      c =>
+        c.color = newColor
     }
   }
 
   override def radius_=(newRadius: Float) {
     super.radius_=(newRadius)
-    children.foreach { c =>
-      c.radius = newRadius
+    children.foreach {
+      c =>
+        c.radius = newRadius
     }
   }
 
@@ -197,10 +206,11 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
 
   def syncWithPeer() = {
     var changed = false
-    _children.length until peer.children.length foreach { i =>
-      changed = true
-      val p = peer(i)
-      add(new MoveableLandmark(this, peer(i)))
+    _children.length until peer.children.length foreach {
+      i =>
+        changed = true
+        val p = peer(i)
+        add(new MoveableLandmark(this, peer(i)))
     }
     if (changed) {
       publish(SceneTreeObject.ChildrenChanged(this))

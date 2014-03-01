@@ -11,7 +11,9 @@ import vtk.vtkCellPicker
 import vtk.vtkGenericRenderWindowInteractor
 
 object VtkRenderWindowInteractor {
+
   case class PointClicked(point: Point3D) extends Event
+
 }
 
 class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
@@ -39,7 +41,7 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
       downY = y
     }
     if (viewport.isMouseSensitive) {
-    	super.LeftButtonPressEvent()
+      super.LeftButtonPressEvent()
     }
   }
 
@@ -50,7 +52,7 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
 
   override def LeftButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.LeftButtonReleaseEvent()
+      super.LeftButtonReleaseEvent()
     }
 
     if (workspace.landmarkClickMode) {
@@ -77,28 +79,28 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
       }
     }
   }
-  
+
   override def MiddleButtonPressEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.MiddleButtonPressEvent()
+      super.MiddleButtonPressEvent()
     }
   }
-  
+
   override def MiddleButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.MiddleButtonReleaseEvent()
+      super.MiddleButtonReleaseEvent()
     }
   }
-  
+
   override def RightButtonPressEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.RightButtonPressEvent()
+      super.RightButtonPressEvent()
     }
   }
-  
+
   override def RightButtonReleaseEvent() = {
     if (viewport.isMouseSensitive) {
-    	super.RightButtonReleaseEvent()
+      super.RightButtonReleaseEvent()
     }
   }
 }

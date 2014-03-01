@@ -78,6 +78,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       }
       super.add(comp, const)
     }
+
     add(new Label("Index"), (0, 0))
     add(new Label("Control"), (1, 0))
     add(new Label("Value"), (2, 0))
@@ -86,23 +87,27 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
     def setEntryCount(count: Int) {
       var changed = false;
-      { count until entries.length }.reverse.foreach { idx =>
-        changed = true
-        val e = entries(idx)
-        PrincipalComponentsPanel.this.deafTo(e.slider)
-        peer.remove(e.value.peer)
-        peer.remove(e.slider.peer)
-        peer.remove(e.label.peer)
-        entries.remove(idx)
+      {
+        count until entries.length
+      }.reverse.foreach {
+        idx =>
+          changed = true
+          val e = entries(idx)
+          PrincipalComponentsPanel.this.deafTo(e.slider)
+          peer.remove(e.value.peer)
+          peer.remove(e.slider.peer)
+          peer.remove(e.label.peer)
+          entries.remove(idx)
       }
-      entries.length until count foreach { idx =>
-        changed = true
-        val e = Entry(idx)
-        add(e.label, (0, idx + 1))
-        add(e.slider, (1, idx + 1))
-        add(e.value, (2, idx + 1))
-        entries.insert(idx, e)
-        PrincipalComponentsPanel.this.listenTo(e.slider)
+      entries.length until count foreach {
+        idx =>
+          changed = true
+          val e = Entry(idx)
+          add(e.label, (0, idx + 1))
+          add(e.slider, (1, idx + 1))
+          add(e.value, (2, idx + 1))
+          entries.insert(idx, e)
+          PrincipalComponentsPanel.this.listenTo(e.slider)
       }
       if (changed) revalidate()
     }
@@ -133,8 +138,9 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   def randomizeValues = {
     if (model.isDefined) {
-      val coeffs = model.get.coefficients.map { v =>
-        sanitize(Gaussian(0, 1).draw().toFloat)
+      val coeffs = model.get.coefficients.map {
+        v =>
+          sanitize(Gaussian(0, 1).draw().toFloat)
       }
       model.get.coefficients = coeffs
     }
@@ -145,14 +151,15 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   def updateDisplayedCoefficients() = this.synchronized {
     if (model.isDefined) {
       val coeffs = model.get.coefficients
-      0 until coeffs.size map { i =>
-        deafTo(table.entries(i).slider)
+      0 until coeffs.size map {
+        i =>
+          deafTo(table.entries(i).slider)
 
-        val v = coeffs(i)
-        table.entries(i).slider.value = (v * granularity).toInt
-        table.entries(i).value.text = labelFormat(v)
+          val v = coeffs(i)
+          table.entries(i).slider.value = (v * granularity).toInt
+          table.entries(i).value.text = labelFormat(v)
 
-        listenTo(table.entries(i).slider)
+          listenTo(table.entries(i).slider)
       }
     }
   }

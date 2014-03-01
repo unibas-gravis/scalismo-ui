@@ -5,9 +5,13 @@ import scala.swing.event.Event
 import scala.util.Try
 
 object Scene {
+
   case class TreeTopologyChanged(scene: Scene) extends Event
+
   case class PerspectiveChanged(scene: Scene) extends Event
+
   case class VisibilityChanged(scene: Scene) extends Event
+
 }
 
 class Scene extends SceneTreeObject {
@@ -22,6 +26,7 @@ class Scene extends SceneTreeObject {
   private var _perspective: Perspective = Perspective.defaultPerspective(this)
 
   def perspective = _perspective
+
   def perspective_=(newPerspective: Perspective) = {
     if (newPerspective ne _perspective) {
       _perspective.viewports foreach (_.destroy())
@@ -48,7 +53,7 @@ class Scene extends SceneTreeObject {
       publish(Scene.VisibilityChanged(this))
     case SceneTreeObject.ChildrenChanged(s) =>
       publish(Scene.TreeTopologyChanged(this))
-    case m @ Nameable.NameChanged(s) =>
+    case m@Nameable.NameChanged(s) =>
       publish(m)
   }
 

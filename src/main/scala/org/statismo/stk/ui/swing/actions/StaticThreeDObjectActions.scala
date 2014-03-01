@@ -24,11 +24,13 @@ private[actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name
   }
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit]
+
   def metadata: FileIoMetadata
 }
 
 class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Mesh file...") {
   override val metadata = StaticMesh
+
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
     StaticMesh(file)(parent.scene).map(ok => Success(()))
   }
@@ -36,6 +38,7 @@ class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFro
 
 class CreateStaticThreeDObjectFromImageAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Image file...") {
   override val metadata = StaticImage
+
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
     StaticImage(file)(parent.scene).map(ok => Success(()))
   }
@@ -55,11 +58,13 @@ private[actions] abstract class AddRepresentationToStaticThreeDObjectAction(name
   }
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit]
+
   def metadata: FileIoMetadata
 }
 
 class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add Representation from Mesh file...") {
   override val metadata = StaticMesh
+
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
     StaticMesh(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
@@ -67,6 +72,7 @@ class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationT
 
 class AddImageRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add Representation from Image file...") {
   override val metadata = StaticImage
+
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
     StaticImage(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }

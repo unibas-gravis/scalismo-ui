@@ -10,7 +10,7 @@ import scala.collection.immutable.IndexedSeq
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
-import org.statismo.stk.core.io.{MeshIO, StatismoIO}
+import org.statismo.stk.core.io.StatismoIO
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
 import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
@@ -31,13 +31,16 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
   override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 1)
 
   def apply(filename: String, numberOfInstancesToCreate: Int = 1)(implicit scene: Scene): Try[ShapeModel] = apply(new File(filename), numberOfInstancesToCreate)
+
   def apply(file: File, numberOfInstancesToCreate: Int)(implicit scene: Scene): Try[ShapeModel] = {
     for {
       raw <- StatismoIO.readStatismoMeshModel(file)
     } yield {
       val shape = new ShapeModel(raw)
       shape.name = file.getName
-      0 until numberOfInstancesToCreate foreach { i => shape.instances.create() }
+      0 until numberOfInstancesToCreate foreach {
+        i => shape.instances.create()
+      }
       shape
     }
   }
@@ -46,11 +49,13 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
     val nm = new ShapeModel(peer)
     if (template.isDefined) {
       nm.name = template.get.name
-      template.get.instances.children.foreach { inst =>
-        nm.instances.create(inst)
+      template.get.instances.children.foreach {
+        inst =>
+          nm.instances.create(inst)
       }
-      template.get.landmarks.children.foreach { lm =>
-        nm.landmarks.create(lm)
+      template.get.landmarks.children.foreach {
+        lm =>
+          nm.landmarks.create(lm)
       }
     }
     nm
@@ -61,11 +66,13 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
   override lazy val parent: ShapeModels = scene.shapeModels
 
   override lazy val saveableMetadata = ShapeModel
+
   override def saveToFile(file: File): Try[Unit] = {
     StatismoIO.writeStatismoMeshModel(peer, file)
   }
 
   val instances = new ShapeModelInstances(this)
+
   override def children = instances.children
 
   lazy val landmarkNameGenerator: NameGenerator = NameGenerator.defaultGenerator
@@ -116,7 +123,9 @@ class ShapeModelInstances(val shapeModel: ShapeModel)(implicit val scene: Scene)
 }
 
 object ShapeModelInstance {
+
   case class CoefficientsChanged(source: ShapeModelInstance) extends Event
+
 }
 
 class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
@@ -125,7 +134,10 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.gaussianProcess.rank)(0.0f)
 
   val meshRepresentation = new ShapeModelInstanceMeshRepresentation
-  def coefficients: IndexedSeq[Float] = { _coefficients }
+
+  def coefficients: IndexedSeq[Float] = {
+    _coefficients
+  }
 
   def coefficients_=(newCoeffs: IndexedSeq[Float]) = {
 
@@ -137,6 +149,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
       }
     }
   }
+
   representations.add(meshRepresentation)
 
   override val landmarks = new MoveableLandmarks(this)
@@ -146,15 +159,21 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
     override lazy val isNameUserModifiable = false
     override lazy val isCurrentlyRemoveable = false
     private var _mesh: TriangleMesh = shapeModel.calculateMesh(_coefficients)
-    def peer = { _mesh }
+
+    def peer = {
+      _mesh
+    }
+
     private[ShapeModelInstance] def peer_=(newMesh: TriangleMesh) = {
       _mesh = newMesh
       publish(Mesh.GeometryChanged(this))
     }
+
     override lazy val parent = ShapeModelInstance.this
 
     def addLandmarkAt(point: Point3D) = {
       parent.landmarks.addAt(point)
     }
   }
+
 }

@@ -11,16 +11,20 @@ import scala.swing.Panel
 class CardPanel extends Panel with LayoutContainer {
   type Constraints = String
   override lazy val peer = new javax.swing.JPanel(new CardLayout) with SuperMixin
+
   def layoutManager = peer.getLayout.asInstanceOf[CardLayout]
 
   private var cards: Map[String, Component] = Map.empty
   private var _current: Constraints = ""
 
   protected def areValid(c: Constraints) = (true, "")
+
   protected def add(comp: Component, l: Constraints) = {
     // we need to remove previous components with the same constraints as the new one,
     // otherwise the layout manager loses track of the old one
-    cards.get(l).foreach { old => cards -= l; peer.remove(old.peer) }
+    cards.get(l).foreach {
+      old => cards -= l; peer.remove(old.peer)
+    }
     cards += (l -> comp)
     peer.add(comp.peer, l)
   }
@@ -32,5 +36,7 @@ class CardPanel extends Panel with LayoutContainer {
 
   def current: Constraints = _current
 
-  protected def constraintsFor(comp: Component) = cards.iterator.find { case (_, c) => c eq comp }.map(_._1).orNull
+  protected def constraintsFor(comp: Component) = cards.iterator.find {
+    case (_, c) => c eq comp
+  }.map(_._1).orNull
 }

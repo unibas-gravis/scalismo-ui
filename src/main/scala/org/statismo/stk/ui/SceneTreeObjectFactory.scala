@@ -10,6 +10,7 @@ object SceneTreeObjectFactory {
   def combineFileExtensions(filters: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Array[String] = {
     filters.map(_.ioMetadata.fileExtensions).flatten.toSeq.sorted.toArray
   }
+
   val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage)
 
   def load(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
@@ -23,13 +24,17 @@ object SceneTreeObjectFactory {
         }
         so
     }
-    val allErrors = errors.map(f => f match { case Failure(ex) => ex.getMessage; case _ => "" }).mkString
+    val allErrors = errors.map(f => f match {
+      case Failure(ex) => ex.getMessage
+      case _ => ""
+    }).mkString
     Failure(new IOException(allErrors))
   }
 }
 
 trait SceneTreeObjectFactory[+T <: SceneTreeObject] {
   def ioMetadata: FileIoMetadata
+
   def canPotentiallyHandleFile(filename: String): Boolean = {
     val lc = filename.toLowerCase
     ioMetadata.fileExtensions.map(ext => lc.endsWith("." + ext.toLowerCase)).count(_ == true) != 0

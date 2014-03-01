@@ -45,6 +45,7 @@ class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
     case ThreeDImagePlane.PositionChanged(s) =>
       updateUi()
   }
+
   def listenToOwnEvents() = {
     listenTo(slider)
   }

@@ -33,13 +33,15 @@ class PerspectiveMenu(implicit app: StatismoFrame) extends Menu(PerspectiveMenu.
       case Scene.PerspectiveChanged(s) => updateUi()
     }
     updateUi()
+
     def updateUi() = {
       selected = app.scene.perspective.factory == factory
     }
   }
 
-  Perspectives.availablePerspectives.foreach { pf =>
-    contents += new PerspectiveMenuItem(pf)
+  Perspectives.availablePerspectives.foreach {
+    pf =>
+      contents += new PerspectiveMenuItem(pf)
   }
 
 }

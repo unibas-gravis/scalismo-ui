@@ -19,8 +19,12 @@ import scala.language.reflectiveCalls
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
+
   def description: String
-  override def toString(): String = { description }
+
+  override def toString(): String = {
+    description
+  }
 
   lazy val uniqueId = UUID.randomUUID().toString
 }
@@ -32,7 +36,7 @@ object SceneObjectPropertiesPanel extends EdtPublisher {
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
-  private val applicableViews = new DefaultComboBoxModel//[SceneObjectPropertyPanel]
+  private val applicableViews = new DefaultComboBoxModel //[SceneObjectPropertyPanel]
 
   private val emptyPanel = new BorderPanel {
     lazy val uniqueId = UUID.randomUUID().toString
@@ -41,16 +45,18 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   lazy val cards = new CardPanel {
     add(emptyPanel, emptyPanel.uniqueId)
-    availableProviders.foreach { p =>
-      add(p, p.uniqueId)
+    availableProviders.foreach {
+      p =>
+        add(p, p.uniqueId)
     }
   }
 
   lazy val combo = new Component {
     override lazy val peer = new JComboBox(applicableViews) {
     }
-    peer.addActionListener(Swing.ActionListener { e =>
-      publish(SelectionChanged(this))
+    peer.addActionListener(Swing.ActionListener {
+      e =>
+        publish(SelectionChanged(this))
     })
   }
   layout(combo) = North
@@ -73,10 +79,11 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
       v =>
         applicableViews.addElement(v)
     }
-    applicable.foreach { p =>
-      if (cards.current == p.uniqueId) {
-        applicableViews.setSelectedItem(p)
-      }
+    applicable.foreach {
+      p =>
+        if (cards.current == p.uniqueId) {
+          applicableViews.setSelectedItem(p)
+        }
     }
     combo.enabled = !applicable.isEmpty
     updateContent()

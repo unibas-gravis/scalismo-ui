@@ -25,7 +25,8 @@ class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[SceneTreeObjectF
     multiSelectionEnabled = multipleSelection
     peer.setAcceptAllFileFilterUsed(false)
     val combinedFilter: Option[FileNameExtensionFilter] = {
-      if (factories.size <= 1) None else {
+      if (factories.size <= 1) None
+      else {
         Some(new FileNameExtensionFilterWrapper().create(allSupportedDescription, SceneTreeObjectFactory.combineFileExtensions(factories)))
       }
     }
@@ -33,6 +34,7 @@ class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[SceneTreeObjectF
     fileFilter = combinedFilter.getOrElse(fnfilters.head)
     fnfilters.drop(if (combinedFilter.isDefined) 0 else 1).foreach(peer.addChoosableFileFilter(_))
   }
+
   def apply() = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {
       if (chooser.multiSelectionEnabled) {
@@ -80,7 +82,9 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     def candidateName = file.getName.toLowerCase
     var verified = true
     if (verifyFileExtension) {
-      val matching = metadata.fileExtensions.filter { ext => candidateName.endsWith("." + ext.toLowerCase) }
+      val matching = metadata.fileExtensions.filter {
+        ext => candidateName.endsWith("." + ext.toLowerCase)
+      }
       if (matching.isEmpty) {
         val msg = s"The file name that you provided (${file.getName}) seems to have an unsupported file extension.\nDo you still wish to create the file?"
         val result = Dialog.showConfirmation(parentComponent, msg, "Create file with unsupported extension?", Dialog.Options.OkCancel)

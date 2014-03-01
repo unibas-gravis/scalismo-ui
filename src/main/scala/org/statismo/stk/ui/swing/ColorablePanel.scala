@@ -45,6 +45,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
         g.fillRect(0, 0, dim.width, dim.height)
       }
     }
+
     def setColor(color: Color, opacity: Double) = {
       val comp = color.getColorComponents(null)
       val c = new Color(comp(0), comp(1), comp(2), opacity.toFloat)
@@ -53,6 +54,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
       revalidate()
       repaint()
     }
+
     peer.setOpaque(false)
     peer.setPreferredSize(new Dimension(20, 20))
   }
@@ -76,6 +78,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
         publish(ColorChosen(c))
       }
     }
+
     border = new javax.swing.border.EmptyBorder(10, 0, 0, 0)
 
   }
@@ -113,6 +116,7 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
         updateColorDisplayer()
       }
   }
+
   def listenToOwnEvents() = {
     listenTo(opacitySlider, colorChooser)
   }

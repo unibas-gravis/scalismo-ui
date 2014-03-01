@@ -4,6 +4,7 @@ import scala.swing.Reactor
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   protected var _children: IndexedSeq[Child] = Nil.toIndexedSeq
+
   def children: Seq[Child] = _children
 
   def add(child: Child): Unit = {
@@ -18,8 +19,12 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   def apply(index: Int) = children(index)
 
   def removeAll() = {
-    val copy = _children.map({ c => c })
-    copy.foreach { c => remove(c) }
+    val copy = _children.map({
+      c => c
+    })
+    copy.foreach {
+      c => remove(c)
+    }
   }
 
   protected[ui] def remove(child: Child, silent: Boolean): Boolean = {
@@ -30,10 +35,11 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     } else {
       val before = _children.length
       val toRemove = _children filter (_ eq child)
-      toRemove foreach { child =>
-        if (!silent && child.isInstanceOf[Removeable]) {
-          deafTo(child.asInstanceOf[Removeable])
-        }
+      toRemove foreach {
+        child =>
+          if (!silent && child.isInstanceOf[Removeable]) {
+            deafTo(child.asInstanceOf[Removeable])
+          }
       }
       _children = _children.diff(toRemove)
       val after = _children.length
@@ -54,10 +60,10 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 }
 
 trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectContainer[Child] {
-//  override def children = super.children // required to prevent type conflict
+  //  override def children = super.children // required to prevent type conflict
 
   def publisher: SceneTreeObject
-  
+
   override def add(child: Child): Unit = {
     super.add(child)
     publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
@@ -73,7 +79,9 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectCo
 }
 
 trait StandaloneSceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with SceneTreeObjectContainer[Child] {
-  override def children = super.children // required to prevent type conflict
+  override def children = super.children
+
+  // required to prevent type conflict
   override lazy val publisher = this
 }
 

@@ -15,7 +15,10 @@ import org.statismo.stk.ui.swing.StatismoToolbar
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
-  def defaultFrameConstructor: FrameConstructor = { s: Scene => new StatismoFrame(s) }
+
+  def defaultFrameConstructor: FrameConstructor = {
+    s: Scene => new StatismoFrame(s)
+  }
 
   def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
     UIManager.setLookAndFeel(lookAndFeel)
@@ -77,6 +80,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   menuBar = new MainMenuBar()(this)
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
+
   override def closeOperation() = {
     dispose()
   }

@@ -5,8 +5,9 @@ import scala.swing.Component
 import org.statismo.stk.ui.Workspace
 
 object StatismoToolbar {
-  val DefaultContentsFactory: Workspace => Seq[Component] = { ws: Workspace =>
-    Seq(new ToggleLandmarkPickingButton(ws))
+  val DefaultContentsFactory: Workspace => Seq[Component] = {
+    ws: Workspace =>
+      Seq(new ToggleLandmarkPickingButton(ws))
   }
 }
 
@@ -15,5 +16,7 @@ class StatismoToolbar(val workspace: Workspace) extends Toolbar {
 
   floatable = false
   rollover = true
-  initialContentsFactory(workspace).foreach({ c => add(c) })
+  initialContentsFactory(workspace).foreach({
+    c => add(c)
+  })
 }
