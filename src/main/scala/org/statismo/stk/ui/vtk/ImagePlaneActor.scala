@@ -1,6 +1,5 @@
 package org.statismo.stk.ui.vtk
 
-import scala.reflect.runtime.universe.TypeTag.Double
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui.ThreeDImageAxis

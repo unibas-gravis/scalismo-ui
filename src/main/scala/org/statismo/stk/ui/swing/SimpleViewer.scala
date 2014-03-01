@@ -3,7 +3,6 @@ package org.statismo.stk.ui.swing
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.StatismoApp
 import org.statismo.stk.ui.StatismoFrame
-import org.statismo.stk.ui.StaticMesh
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 

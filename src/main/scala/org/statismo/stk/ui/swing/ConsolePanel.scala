@@ -1,6 +1,5 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.StatismoApp
 import scala.swing.BorderPanel
 import de.sciss.scalainterpreter._
 import scala.swing.Component

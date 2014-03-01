@@ -7,7 +7,6 @@ import scala.util.Try
 
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.ShapeModelInstances
 import org.statismo.stk.ui.ShapeModels
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {

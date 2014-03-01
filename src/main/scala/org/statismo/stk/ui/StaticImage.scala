@@ -2,7 +2,6 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.reflect.runtime.universe.TypeTag.Short
 import scala.util.Try
 
 import org.statismo.stk.core.geometry.Point3D
@@ -10,7 +9,7 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
-import reflect.runtime.universe.{ TypeTag, typeOf }
+import reflect.runtime.universe.TypeTag
 
 object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMetadata {
   val description = "Static 3D Image"

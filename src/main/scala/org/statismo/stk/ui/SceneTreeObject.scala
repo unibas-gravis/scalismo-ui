@@ -1,7 +1,6 @@
 package org.statismo.stk.ui
 
 import scala.swing.event.Event
-import scala.collection.mutable.ArrayBuffer
 import scala.util.Try
 
 object SceneTreeObject {

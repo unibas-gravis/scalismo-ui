@@ -7,10 +7,7 @@ import org.statismo.stk.ui.FileIoMetadata
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.StaticImage
 import org.statismo.stk.ui.StaticMesh
-import org.statismo.stk.ui.StaticThreeDObject
 import org.statismo.stk.ui.StaticThreeDObjects
-import org.statismo.stk.ui.ThreeDRepresentations
-import org.statismo.stk.ui.ThreeDObject
 import org.statismo.stk.ui.StaticThreeDObject
 
 private[actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name: String) extends SceneTreePopupAction(name) {

@@ -4,7 +4,6 @@ import scala.swing.BorderPanel
 import scala.swing.BorderPanel.Position.Center
 import scala.swing.BorderPanel.Position.West
 import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.StatismoApp
 import org.statismo.stk.ui.StatismoFrame
 
 class WorkspacePanel(val workspace: Workspace)(implicit frame: StatismoFrame) extends BorderPanel {

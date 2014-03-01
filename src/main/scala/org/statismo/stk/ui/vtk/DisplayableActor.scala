@@ -4,7 +4,6 @@ import org.statismo.stk.ui.Displayable
 import org.statismo.stk.ui.Mesh
 import org.statismo.stk.ui.SphereLike
 import org.statismo.stk.ui.ThreeDImagePlane
-import org.statismo.stk.core.common.ScalarValue
 
 import vtk.vtkActor
 

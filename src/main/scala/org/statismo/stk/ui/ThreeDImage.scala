@@ -1,16 +1,14 @@
 package org.statismo.stk.ui
 
 import java.io.File
-import scala.reflect.runtime.universe.TypeTag.Short
 import scala.util.Try
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import scala.swing.event.Event
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.common.ScalarValue
-import scala.util.Success
 import scala.reflect.ClassTag
-import reflect.runtime.universe.{ TypeTag, typeOf }
+import reflect.runtime.universe.TypeTag
 import scala.language.existentials
 
 object ThreeDImage {
