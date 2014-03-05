@@ -13,9 +13,10 @@ import scala.swing.event.SelectionChanged
 import org.statismo.stk.ui.EdtPublisher
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
-import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
+import scala.language.existentials
 import scala.language.reflectiveCalls
+import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
 
 trait SceneObjectPropertyPanel extends Component {
   def setObject(obj: Option[SceneTreeObject]): Boolean
@@ -36,7 +37,7 @@ object SceneObjectPropertiesPanel extends EdtPublisher {
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
-  private val applicableViews = new DefaultComboBoxModel //[SceneObjectPropertyPanel]
+  private val applicableViews = new UntypedComboBoxModel
 
   private val emptyPanel = new BorderPanel {
     lazy val uniqueId = UUID.randomUUID().toString
@@ -52,8 +53,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   }
 
   lazy val combo = new Component {
-    override lazy val peer = new JComboBox(applicableViews) {
-    }
+    override lazy val peer = new JComboBox(applicableViews.model)
     peer.addActionListener(Swing.ActionListener {
       e =>
         publish(SelectionChanged(this))
@@ -74,7 +74,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   def updateListAndContent() {
     val currentObject = workspace.selectedObject
     val applicable = availableProviders.filter(_.setObject(currentObject))
-    applicableViews.removeAllElements()
+    applicableViews.model.removeAllElements()
     applicable foreach {
       v =>
         applicableViews.addElement(v)
@@ -82,7 +82,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     applicable.foreach {
       p =>
         if (cards.current == p.uniqueId) {
-          applicableViews.setSelectedItem(p)
+          applicableViews.model.setSelectedItem(p)
         }
     }
     combo.enabled = !applicable.isEmpty
@@ -98,7 +98,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   layout(scroll) = Center
 
   def updateContent() {
-    val view = applicableViews.getSelectedItem.asInstanceOf[SceneObjectPropertyPanel]
+    val view = applicableViews.model.getSelectedItem.asInstanceOf[SceneObjectPropertyPanel]
     if (view != null) {
       if (cards.current != view.uniqueId) {
         cards.show(view.uniqueId)
