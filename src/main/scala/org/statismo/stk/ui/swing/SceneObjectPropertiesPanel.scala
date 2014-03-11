@@ -18,7 +18,7 @@ import scala.language.existentials
 import scala.language.reflectiveCalls
 import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
 
-trait SceneObjectPropertyPanel extends Component {
+trait SceneObjectPropertyPanel extends CardPanel.CardableComponent {
   def setObject(obj: Option[SceneTreeObject]): Boolean
 
   def description: String
@@ -26,8 +26,6 @@ trait SceneObjectPropertyPanel extends Component {
   override def toString(): String = {
     description
   }
-
-  lazy val uniqueId = UUID.randomUUID().toString
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
@@ -39,17 +37,13 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
   private val applicableViews = new UntypedComboBoxModel
 
-  private val emptyPanel = new BorderPanel {
-    lazy val uniqueId = UUID.randomUUID().toString
+  private val emptyPanel = new BorderPanel with CardPanel.CardableComponent {
     peer.setPreferredSize(new Dimension(1, 1))
   }
 
   lazy val cards = new CardPanel {
     add(emptyPanel, emptyPanel.uniqueId)
-    availableProviders.foreach {
-      p =>
-        add(p, p.uniqueId)
-    }
+    availableProviders.foreach { add(_) }
   }
 
   lazy val combo = new Component {
@@ -101,14 +95,14 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     val view = applicableViews.model.getSelectedItem.asInstanceOf[SceneObjectPropertyPanel]
     if (view != null) {
       if (cards.current != view.uniqueId) {
-        cards.show(view.uniqueId)
+        cards.show(view)
         // this is a hack...
         if (cards.preferredSize.width > cards.size.width) {
           workspace.publish(Workspace.PleaseLayoutAgain)
         }
       }
     } else {
-      cards.show(emptyPanel.uniqueId)
+      cards.show(emptyPanel)
     }
   }
 }

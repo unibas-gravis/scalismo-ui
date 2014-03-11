@@ -2,16 +2,11 @@ package org.statismo.stk.ui
 
 import java.awt.Dimension
 import scala.Array.canBuildFrom
-import scala.swing.MainFrame
-import scala.swing.MenuBar
-import scala.swing.Reactor
-import scala.swing.SimpleSwingApplication
-import org.statismo.stk.ui.swing.WorkspacePanel
+import scala.swing._
+import org.statismo.stk.ui.swing.{StatismoLookAndFeel, WorkspacePanel, StatismoToolbar}
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import org.statismo.stk.ui.swing.menu.MainMenuBar
-import scala.swing.BorderPanel
-import org.statismo.stk.ui.swing.StatismoToolbar
 
 object StatismoApp {
   type FrameConstructor = (Scene => StatismoFrame)
@@ -20,14 +15,8 @@ object StatismoApp {
     s: Scene => new StatismoFrame(s)
   }
 
-  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
-    UIManager.setLookAndFeel(lookAndFeel)
-    val laf = UIManager.getLookAndFeel
-    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-      val defaults = laf.getDefaults
-      defaults.put("Tree.drawHorizontalLines", true)
-      defaults.put("Tree.drawVerticalLines", true)
-    }
+  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeelClassName: String = defaultLookAndFeelClassName): StatismoApp = {
+    StatismoLookAndFeel.initializeWith(lookAndFeelClassName)
     val app = new StatismoApp(frame(scene))
     app.main(args)
     app
@@ -68,14 +57,14 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   lazy val workspace = new Workspace(scene)
+  private lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)
 
-  lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)(this)
-  lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
+  def toolbar: StatismoToolbar = workspacePanel.toolbar
 
-  lazy val mainPanel = new BorderPanel {
-    layout(toolbar) = BorderPanel.Position.North
+  lazy val mainPanel: Component = new BorderPanel {
     layout(workspacePanel) = BorderPanel.Position.Center
   }
+
   contents = mainPanel
   menuBar = new MainMenuBar()(this)
 

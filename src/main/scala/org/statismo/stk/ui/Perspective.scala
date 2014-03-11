@@ -1,7 +1,7 @@
 package org.statismo.stk.ui
 
 object Perspective {
-  def defaultPerspective(scene: Scene) = new SlicerPerspective(scene) //new SingleViewportPerspective(scene)
+  def defaultPerspective(scene: Scene) = new SingleViewportPerspective(scene)
 }
 
 trait Perspective extends Nameable {
