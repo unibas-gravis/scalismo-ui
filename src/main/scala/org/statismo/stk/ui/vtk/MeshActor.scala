@@ -28,7 +28,6 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
     normals.ComputeCellNormalsOff()
     normals.Update()
     mapper.SetInputData(normals.GetOutput())
-
     mapper.Modified()
     publish(VtkContext.RenderRequest(this))
   }
