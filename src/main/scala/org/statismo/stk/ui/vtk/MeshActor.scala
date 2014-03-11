@@ -12,6 +12,7 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
 
   private var polyMesh: Option[vtkPolyData] = None
 
+  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   reactions += {
@@ -20,7 +21,14 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
 
   def setGeometry() = this.synchronized {
     polyMesh = Some(MeshConversion.meshToVTKPolyData(source.peer, polyMesh))
-    mapper.SetInputData(polyMesh.get)
+
+    val normals = new vtk.vtkPolyDataNormals()
+    normals.SetInputData(polyMesh.get)
+    normals.ComputePointNormalsOn()
+    normals.ComputeCellNormalsOff()
+    normals.Update()
+    mapper.SetInputData(normals.GetOutput())
+
     mapper.Modified()
     publish(VtkContext.RenderRequest(this))
   }

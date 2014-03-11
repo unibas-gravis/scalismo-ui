@@ -11,6 +11,7 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
   listenTo(source)
 
   mapper.SetInputConnection(sphere.GetOutputPort())
+  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   reactions += {
