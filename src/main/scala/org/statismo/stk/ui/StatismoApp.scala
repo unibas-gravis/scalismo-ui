@@ -21,6 +21,8 @@ object StatismoApp {
   }
 
   def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
+    UIManager.put("FileChooser.readOnly", true)
+
     UIManager.setLookAndFeel(lookAndFeel)
     val laf = UIManager.getLookAndFeel
     if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
