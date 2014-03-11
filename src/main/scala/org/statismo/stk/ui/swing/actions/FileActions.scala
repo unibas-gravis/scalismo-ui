@@ -1,26 +1,25 @@
 package org.statismo.stk.ui.swing.actions
 
 import java.io.File
-
 import scala.swing.Action
+import java.awt.{Component => AComponent}
 import scala.swing.Component
 import scala.swing.Dialog
 import scala.swing.FileChooser
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import org.statismo.stk.ui.FileIoMetadata
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.SceneTreeObjectFactory
 import org.statismo.stk.ui.swing.util.FileNameExtensionFilterWrapper
-
 import javax.swing.filechooser.FileNameExtensionFilter
+import org.statismo.stk.ui.swing.util.EnhancedFileChooser
 
 class OpenSceneTreeObjectAction(val onSelected: (Seq[File], Seq[SceneTreeObjectFactory[SceneTreeObject]]) => Unit, val name: String = "Open...", val factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = SceneTreeObjectFactory.DefaultFactories, val multipleSelection: Boolean = true) extends Action(name) {
   val parentComponent: Component = null
   val allSupportedDescription = "All supported files"
-  val chooser = new FileChooser() {
+  val chooser = new EnhancedFileChooser() {
     title = name
     multiSelectionEnabled = multipleSelection
     peer.setAcceptAllFileFilterUsed(false)
@@ -59,7 +58,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
   lazy val parentComponent: Component = null
 
-  lazy val chooser = new FileChooser() {
+  lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
     multiSelectionEnabled = false
     peer.setAcceptAllFileFilterUsed(false)
@@ -122,7 +121,7 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
   lazy val parentComponent: Component = null
 
-  lazy val chooser = new FileChooser() {
+  lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
     multiSelectionEnabled = false
     peer.setAcceptAllFileFilterUsed(false)
