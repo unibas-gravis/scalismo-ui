@@ -2,6 +2,7 @@ package org.statismo.stk.ui
 
 import scala.swing.event.Event
 import scala.util.Try
+import scala.reflect.ClassTag
 
 object SceneTreeObject {
 
@@ -43,6 +44,24 @@ trait SceneTreeObject extends Nameable {
     children.foreach(_.destroy())
     // make sure that we don't leak memory...
     scene.deafTo(this)
+  }
+
+  def find[A <: SceneTreeObject : ClassTag](filter: A => Boolean = {o:A => true}, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = doFind(filter, maxDepth, minDepth, 0)
+
+  private def doFind[A <: SceneTreeObject : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
+    if (maxDepth.isDefined && maxDepth.get > curDepth) {
+      Nil
+    } else {
+      val tail = children.map({c=>
+        c.doFind[A](filter, maxDepth, minDepth, curDepth + 1)
+      }).flatten
+      val clazz = implicitly[ClassTag[A]].runtimeClass
+      val head: Seq[A] = if (curDepth >= minDepth && clazz.isInstance(this)) {
+        val candidate = this.asInstanceOf[A]
+        if (filter(candidate)) Seq(candidate) else Nil
+      } else { Nil }
+      Seq(head, tail).flatten
+    }
   }
 
   private var hidden: List[Viewport] = if (this.isInstanceOf[Scene]) Nil else scene.viewports.filterNot(v => v.supportsShowingObject(this)).toList
