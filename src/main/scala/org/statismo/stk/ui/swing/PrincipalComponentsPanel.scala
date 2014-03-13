@@ -117,7 +117,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   def labelFormat(value: Float) = f"$value%1.1f"
 
-  def resetValues = {
+  def resetValues() = {
     if (model.isDefined)
       model.get.coefficients = IndexedSeq.fill(model.get.coefficients.length)(0.0f)
   }
@@ -129,14 +129,14 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   def setCoefficient(index: Int, value: Float) = {
     if (model.isDefined) {
       val coeffs = model.get.coefficients.toArray
-      if (index >= 0 && index < coeffs.length) {
+      if (index >= 0 && index < coeffs.length && coeffs(index) != value) {
         coeffs(index) = sanitize(value)
         model.get.coefficients = coeffs.toIndexedSeq
       }
     }
   }
 
-  def randomizeValues = {
+  def randomizeValues() = {
     if (model.isDefined) {
       val coeffs = model.get.coefficients.map {
         v =>
@@ -179,9 +179,9 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       setCoefficient(index, value)
     case ButtonClicked(b) =>
       if (b == reset) {
-        resetValues
+        resetValues()
       } else if (b == random) {
-        randomizeValues
+        randomizeValues()
       }
     case ShapeModelInstance.CoefficientsChanged(m) =>
       updateDisplayedCoefficients()

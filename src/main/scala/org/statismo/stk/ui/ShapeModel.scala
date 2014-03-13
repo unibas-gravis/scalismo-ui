@@ -2,8 +2,6 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.async.Async.async
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.event.Event
 import scala.util.Try
 import scala.collection.immutable.IndexedSeq
@@ -143,10 +141,8 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
 
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
+      meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
       publish(ShapeModelInstance.CoefficientsChanged(this))
-      async {
-        meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
-      }
     }
   }
 

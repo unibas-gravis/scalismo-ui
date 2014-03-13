@@ -8,7 +8,7 @@ hs_err*.log
 /.worksheet/
 /.idea
 /*.iml
-/playground/
+playground/
 /project/target/
 /project/project/target/
 /target/

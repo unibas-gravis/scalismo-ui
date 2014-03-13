@@ -1,6 +1,7 @@
 package org.statismo.stk.ui
 
 import scala.swing.Reactor
+import scala.collection.immutable.IndexedSeq
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   protected var _children: IndexedSeq[Child] = Nil.toIndexedSeq
