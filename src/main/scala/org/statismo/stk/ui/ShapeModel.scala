@@ -4,7 +4,7 @@ import java.io.File
 
 import scala.swing.event.Event
 import scala.util.Try
-import scala.collection.immutable.IndexedSeq
+import scala.collection.immutable.{HashMap, IndexedSeq}
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
@@ -85,9 +85,9 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
 
   def calculateMesh(coefficients: IndexedSeq[Float]) = {
     val vector = DenseVector[Float](coefficients.toArray)
-    val ptdefs = gaussianProcess.instanceAtPoints(vector)
-    val newptseq = for ((pt, df) <- ptdefs) yield pt + df
-    new TriangleMesh(newptseq, peer.mesh.cells)
+    val ptdefs = gaussianProcess.instanceAtPoints(vector).toMap
+
+    peer.mesh.warp({p => p + ptdefs(p)})
   }
 
   parent.add(this)

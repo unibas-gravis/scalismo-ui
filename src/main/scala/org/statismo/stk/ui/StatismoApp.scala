@@ -89,5 +89,10 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
       this.size = new Dimension(d.width - 1, this.size.height - 1)
       this.size = d
   }
+
+  override def dispose() = {
+    console.dispose()
+    super.dispose()
+  }
 }
 

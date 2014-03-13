@@ -40,13 +40,22 @@ object Console {
 
 class Console(implicit statismo: StatismoFrame) extends EdtPublisher {
   lazy val frame = new ConsoleFrame(this)
+  private var needToDispose = false
+
   private var _visible = false
   def visible = _visible
   def visible_=(v: Boolean) = this.synchronized{
     if (_visible != v) {
       _visible = v
+      needToDispose = true
       frame.visible = v
       publish(Console.VisibilityChanged(this))
+    }
+  }
+
+  def dispose() = {
+    if (needToDispose) {
+      frame.dispose()
     }
   }
 }
