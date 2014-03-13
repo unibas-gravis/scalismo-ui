@@ -1,9 +1,8 @@
 package org.statismo.stk.ui
 
-import java.awt.Dimension
 import scala.Array.canBuildFrom
 import scala.swing._
-import org.statismo.stk.ui.swing.{StatismoLookAndFeel, WorkspacePanel, StatismoToolbar}
+import org.statismo.stk.ui.swing._
 import javax.swing.UIManager
 import javax.swing.WindowConstants
 import org.statismo.stk.ui.swing.menu.MainMenuBar
@@ -56,6 +55,8 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
     }
   }
 
+  lazy val console = new Console()(this)
+
   lazy val workspace = new Workspace(scene)
   private lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)
 
@@ -77,7 +78,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   def startup(args: Array[String]): Unit = {
     size = new Dimension(1024, 768)
     // center on screen
-    peer.setLocationRelativeTo(null)
+    centerOnScreen()
   }
 
   // this is a hack...
