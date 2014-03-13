@@ -1,9 +1,8 @@
 package org.statismo.stk.ui.swing
 
-import scala.swing.BorderPanel
+import scala.swing.{Frame, BorderPanel, Component}
 import de.sciss.scalainterpreter._
-import scala.swing.Component
-import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.ui.{EdtPublisher, StatismoFrame}
 import javax.swing.JSplitPane
 import javax.swing.SwingConstants
 import scala.concurrent.ExecutionContext
@@ -11,6 +10,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ThreadFactory
 import org.statismo.stk.ui.swing.util.MultiOutputStream
 import java.io.PrintStream
+import scala.swing.event.Event
 
 class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
   val icfg = Interpreter.Config()
@@ -22,6 +22,33 @@ class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
   val split = MSplitPane(InterpreterPane.Config().build, icfg.build, codeCfg.build)
   split.component.setResizeWeight(0.5)
   layout(Component.wrap(split.component)) = BorderPanel.Position.Center
+}
+
+class ConsoleFrame(parent: Console) (implicit statismo: StatismoFrame) extends Frame {
+  title = "Statismo Console"
+  contents = new ConsolePanel()
+
+  override def closeOperation() = {
+    // this will take care of sending the appropriate message
+    parent.visible = false
+  }
+}
+
+object Console {
+  case class VisibilityChanged(source: Console) extends Event
+}
+
+class Console(implicit statismo: StatismoFrame) extends EdtPublisher {
+  lazy val frame = new ConsoleFrame(this)
+  private var _visible = false
+  def visible = _visible
+  def visible_=(v: Boolean) = this.synchronized{
+    if (_visible != v) {
+      _visible = v
+      frame.visible = v
+      publish(Console.VisibilityChanged(this))
+    }
+  }
 }
 
 object MSplitPane {
