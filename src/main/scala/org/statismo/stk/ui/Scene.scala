@@ -3,6 +3,7 @@ package org.statismo.stk.ui
 import scala.collection.immutable.List
 import scala.swing.event.Event
 import scala.util.Try
+import org.statismo.stk.ui.visualization.Visualizations
 
 object Scene {
 
@@ -57,6 +58,7 @@ class Scene extends SceneTreeObject {
       publish(m)
   }
 
+  lazy val visualizations: Visualizations = new Visualizations
 }
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[Displayable] {
