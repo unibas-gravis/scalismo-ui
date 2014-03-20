@@ -18,7 +18,7 @@ object ThreeDImage extends SimpleVisualizationFactory[ThreeDImage[_]]{
 abstract class ThreeDImage[S](implicit val scalarValue: ScalarValue[S], implicit val tt: TypeTag[S], implicit val ct: ClassTag[S]) extends ThreeDRepresentation[ThreeDImage[S]] with Saveable {
   def peer: DiscreteScalarImage3D[S]
 
-  override def parentVisualizationProvider: VisualizationProvider[ThreeDImage[S]] = ???
+  override def visualizationProvider: VisualizationProvider[ThreeDImage[S]] = ???
 
   override def saveToFile(file: File): Try[Unit] = {
     ImageIO.writeImage(peer, file)

@@ -23,7 +23,7 @@ class Visualizations {
               case Left(viewport) => Visualizations.this.tryGet(key, viewport.getClass.getCanonicalName)
               case Right(vpClass) => Try{fac.instantiate(vpClass)}
             }
-          case _ => tryGet(key.parentVisualizationProvider)
+          case _ => tryGet(key.visualizationProvider)
         }
         existing match {
           case Success(ok) => Try{ok.derive()}
@@ -47,7 +47,7 @@ class Visualizations {
 }
 
 trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A] {
-  override final val parentVisualizationProvider = null
+  override final val visualizationProvider = null
 
   def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
   final def instantiate(viewportClassName: String): Visualization[A] = {
@@ -64,7 +64,7 @@ trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFact
 }
 
 trait VisualizationProvider[A <: Visualizable[_]] {
-  def parentVisualizationProvider: VisualizationProvider[A]
+  def visualizationProvider: VisualizationProvider[A]
 }
 
 trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {

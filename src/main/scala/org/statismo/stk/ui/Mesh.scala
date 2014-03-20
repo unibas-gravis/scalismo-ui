@@ -17,8 +17,8 @@ object Mesh extends SimpleVisualizationFactory[Mesh] {
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualization(None)))
 
   class ThreeDVisualization(from: Option[ThreeDVisualization]) extends Visualization[Mesh] with HasColorAndOpacity {
-    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty
-    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty
+    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(None)
+    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(None)
 
     protected def createDerived() = new ThreeDVisualization(Some(this))
 
@@ -40,5 +40,5 @@ trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable {
 
   override lazy val saveableMetadata = StaticMesh
 
-  override def parentVisualizationProvider: VisualizationProvider[Mesh] = Mesh
+  override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
 }

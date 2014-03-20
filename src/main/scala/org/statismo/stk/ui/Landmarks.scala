@@ -15,6 +15,7 @@ import org.statismo.stk.core.geometry.Point3D
 import scala.Some
 import scala.Tuple2
 import org.statismo.stk.ui.visualization.props.{RadiusProperty, ColorProperty, OpacityProperty}
+import java.awt.Color
 
 trait Landmark extends Nameable with Removeable {
   def point: Point3D
@@ -26,9 +27,9 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
 
   class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
-    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty
-    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty
-    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty
+    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
+    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
+    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
 
 
     override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
@@ -51,7 +52,7 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
 
 abstract class VisualizableLandmark(container: VisualizableLandmarks) extends SceneTreeObject with Landmark with Visualizable[VisualizableLandmark]{
   override def parent = container
-  override def parentVisualizationProvider = container
+  override def visualizationProvider = container
 }
 
 class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
@@ -154,7 +155,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
 
   def addAt(position: Point3D)
 
-  override def parentVisualizationProvider = VisualizableLandmark
+  override def visualizationProvider = VisualizableLandmark
 }
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
