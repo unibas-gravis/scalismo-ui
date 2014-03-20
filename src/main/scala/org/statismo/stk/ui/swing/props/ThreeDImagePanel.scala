@@ -7,7 +7,7 @@ import scala.swing.Orientation
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.ThreeDImage
 
-class ThreeDImagePanel extends BorderPanel with SceneObjectPropertyPanel {
+class ThreeDImagePanel extends BorderPanel with PropertyPanel {
   val description = "Slice positions"
 
   val x = new ThreeDImagePlanePanel
@@ -19,7 +19,7 @@ class ThreeDImagePanel extends BorderPanel with SceneObjectPropertyPanel {
 
   layout(box) = BorderPanel.Position.North
 
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+  def setObject(obj: Option[AnyRef]): Boolean = {
     if (obj.isDefined && obj.get.isInstanceOf[ThreeDImage[_]]) {
       val img = obj.get.asInstanceOf[ThreeDImage[_]]
       x.setObject(Some(img.xPlane))

@@ -11,7 +11,6 @@ import scala.swing.Slider
 import scala.swing.event.Event
 import scala.swing.event.ValueChanged
 
-import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.swing.util.ColorPickerPanel
 
 import javax.swing.JPanel
@@ -20,12 +19,15 @@ import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 
 import scala.language.reflectiveCalls
-import org.statismo.stk.ui.visualization.VisualizationProperty
+import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
 import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
+import scala.collection.immutable
 
-class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
+class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
+  type Target = Visualization[_] with HasColorAndOpacity
+  type TargetSeq = immutable.Seq[Target]
   val description = "Color"
-  private var target: Option[HasColorAndOpacity] = None
+  private var target: Option[TargetSeq] = None
 
   private val opacitySlider = new Slider() {
     min = 0
@@ -108,12 +110,12 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
     case VisualizationProperty.ValueChanged(_) => updateUi()
     case ColorChosen(c) =>
       if (target.isDefined) {
-        target.get.color.value = c
+        target.get.foreach(t => t.color.value = c)
         updateColorDisplayer()
       }
     case ValueChanged(s) =>
       if (target.isDefined) {
-        target.get.opacity.value = s.asInstanceOf[Slider].value.toDouble / 100.0
+        target.get.foreach(t => t.opacity.value = s.asInstanceOf[Slider].value.toDouble / 100.0)
         updateColorDisplayer()
       }
   }
@@ -128,17 +130,18 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
 
   def cleanup() = {
     if (target.isDefined) {
-      deafTo(target.get.color)
+      target.get.foreach{t => deafTo(t.color); deafTo(t.opacity)}
       target = None
     }
   }
 
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+  override def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean = {
     cleanup()
-    if (obj.isDefined && obj.get.isInstanceOf[HasColorAndOpacity]) {
-      target = Some(obj.get.asInstanceOf[HasColorAndOpacity])
+    val usable = visualizations.filter(v => v.isInstanceOf[Target]).asInstanceOf[TargetSeq]
+    if (!usable.isEmpty) {
+      target = Some(usable)
       updateUi()
-      listenTo(target.get.color)
+      target.get.foreach{t => listenTo(t.color); listenTo(t.opacity)}
       true
     } else {
       false
@@ -148,15 +151,15 @@ class ColorablePanel extends BorderPanel with SceneObjectPropertyPanel {
   def updateUi() = {
     if (target.isDefined) {
       deafToOwnEvents()
-      opacitySlider.value = (target.get.opacity.value * 100).toInt
+      opacitySlider.value = (target.get.head.opacity.value * 100).toInt
       updateColorDisplayer()
       listenToOwnEvents()
     }
   }
 
   def updateColorDisplayer() {
-    val c = target.get.color.value
+    val c = target.get.head.color.value
     colorChooser.setColor(c)
-    colorDisplayer.setColor(c, target.get.opacity.value)
+    colorDisplayer.setColor(c, target.get.head.opacity.value)
   }
 }

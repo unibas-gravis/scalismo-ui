@@ -10,7 +10,7 @@ import org.statismo.stk.ui.ThreeDImagePlane
 
 import javax.swing.border.TitledBorder
 
-class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
+class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
   val description = "Slice position"
   private var target: Option[ThreeDImagePlane[_]] = None
 
@@ -61,7 +61,7 @@ class ThreeDImagePlanePanel extends BorderPanel with SceneObjectPropertyPanel {
     }
   }
 
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+  def setObject(obj: Option[AnyRef]): Boolean = {
     cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane[_]]) {
       target = Some(obj.get.asInstanceOf[ThreeDImagePlane[_]])

@@ -8,12 +8,16 @@ import scala.swing.event.ValueChanged
 import org.statismo.stk.ui.SceneTreeObject
 
 import javax.swing.border.TitledBorder
-import org.statismo.stk.ui.visualization.props.HasRadius
-import org.statismo.stk.ui.visualization.VisualizationProperty
+import org.statismo.stk.ui.visualization.props.{HasColorAndOpacity, HasRadius}
+import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
+import scala.collection.immutable
 
-class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
+class RadiusPanel extends BorderPanel with VisualizationsPropertyPanel {
+  type Target = Visualization[_] with HasRadius
+  type TargetSeq = immutable.Seq[Target]
+
   val description = "Radius"
-  private var target: Option[HasRadius] = None
+  private var target: Option[TargetSeq] = None
 
   private val slider = new Slider() {
     min = 1
@@ -38,7 +42,7 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   reactions += {
     case ValueChanged(s) =>
       if (target.isDefined) {
-        target.get.radius.value = s.asInstanceOf[Slider].value.toFloat
+        target.get.foreach(_.radius.value = s.asInstanceOf[Slider].value.toFloat)
       }
     case VisualizationProperty.ValueChanged(_) => updateUi()
   }
@@ -53,17 +57,19 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
 
   def cleanup() = {
     if (target.isDefined) {
-      deafTo(target.get.radius)
+      target.get.foreach(t => deafTo(t.radius))
       target = None
     }
   }
 
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+  override def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean = {
     cleanup()
-    if (obj.isDefined && obj.get.isInstanceOf[HasRadius]) {
-      target = Some(obj.get.asInstanceOf[HasRadius])
+    val usable = visualizations.filter(v => v.isInstanceOf[Target]).asInstanceOf[TargetSeq]
+
+    if (!usable.isEmpty) {
+      target = Some(usable)
       updateUi()
-      listenTo(target.get.radius)
+      target.get.foreach(t => listenTo(t.radius))
       true
     } else {
       false
@@ -73,7 +79,7 @@ class RadiusPanel extends BorderPanel with SceneObjectPropertyPanel {
   def updateUi() = {
     if (target.isDefined) {
       deafToOwnEvents()
-      slider.value = target.get.radius.value.toInt
+      slider.value = target.get.head.radius.value.toInt
       listenToOwnEvents()
     }
   }

@@ -25,7 +25,7 @@ import org.statismo.stk.ui.ShapeModelInstance
 import breeze.stats.distributions.Gaussian
 import javax.swing.JSlider
 
-class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with SceneObjectPropertyPanel {
+class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with PropertyPanel {
   val description = "Shape Parameters"
 
   val reset = new Button("Mean")
@@ -194,7 +194,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
     }
   }
 
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+  def setObject(obj: Option[AnyRef]): Boolean = {
     cleanup()
     if (obj.isDefined && obj.get.isInstanceOf[ShapeModelInstance]) {
       model = Some(obj.get.asInstanceOf[ShapeModelInstance])

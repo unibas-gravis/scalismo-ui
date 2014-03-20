@@ -11,7 +11,7 @@ trait ColorableActor extends SingleRenderableActor {
   listenTo(color, opacity)
 
   reactions += {
-    case VisualizationProperty.ValueChanged(s) => if (s eq color) setAppearance()
+    case VisualizationProperty.ValueChanged(s) => if (s.eq(color) || s.eq(opacity)) setAppearance()
   }
 
   setAppearance()

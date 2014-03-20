@@ -9,7 +9,6 @@ import scala.swing.Reactor
 import scala.swing.ScrollPane
 import scala.swing.Swing
 import org.statismo.stk.ui.EdtPublisher
-import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
 import javax.swing.JComboBox
 import scala.language.existentials
@@ -18,8 +17,8 @@ import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
 import org.statismo.stk.ui.swing._
 import scala.swing.event.SelectionChanged
 
-trait SceneObjectPropertyPanel extends CardPanel.CardableComponent {
-  def setObject(obj: Option[SceneTreeObject]): Boolean
+trait PropertyPanel extends CardPanel.CardableComponent {
+  def setObject(obj: Option[AnyRef]): Boolean
 
   def description: String
 
@@ -29,8 +28,8 @@ trait SceneObjectPropertyPanel extends CardPanel.CardableComponent {
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
-  private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel)
-  val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, new ThreeDImagePanel, new ThreeDImagePlanePanel, appearance)
+  private val appearance = new VisualizationPanel("Appearance", new RadiusPanel, new ColorablePanel)
+  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new PrincipalComponentsPanel, new ThreeDImagePanel, new ThreeDImagePlanePanel, appearance)
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
@@ -92,7 +91,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   layout(scroll) = Center
 
   def updateContent() {
-    val view = applicableViews.model.getSelectedItem.asInstanceOf[SceneObjectPropertyPanel]
+    val view = applicableViews.model.getSelectedItem.asInstanceOf[PropertyPanel]
     if (view != null) {
       if (cards.current != view.uniqueId) {
         cards.show(view)

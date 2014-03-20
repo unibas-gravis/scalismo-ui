@@ -4,8 +4,8 @@ import scala.swing.BorderPanel
 
 import org.statismo.stk.ui.SceneTreeObject
 
-class CombinedPropertiesPanel(override val description: String, delegates: SceneObjectPropertyPanel*) extends BorderPanel with SceneObjectPropertyPanel {
-  def setObject(obj: Option[SceneTreeObject]): Boolean = {
+class CombinedPropertiesPanel(override val description: String, delegates: PropertyPanel*) extends BorderPanel with PropertyPanel {
+  def setObject(obj: Option[AnyRef]): Boolean = {
     val ok = delegates.map(d => delegatedSetObject(d, obj)).foldLeft(false)({
       (x, y) => x || y
     })
@@ -13,7 +13,7 @@ class CombinedPropertiesPanel(override val description: String, delegates: Scene
     ok
   }
 
-  def delegatedSetObject(del: SceneObjectPropertyPanel, obj: Option[SceneTreeObject]): Boolean = {
+  def delegatedSetObject(del: PropertyPanel, obj: Option[AnyRef]): Boolean = {
     val ok = del.setObject(obj)
     del.visible = ok
     ok
