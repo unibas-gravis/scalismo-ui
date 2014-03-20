@@ -22,6 +22,7 @@ class VisualizationTests  extends FunSpec with Matchers {
   }
 
   class TestVisualizable extends Visualizable[TestVisualizable] {
+    override def parent = new Scene()
     override def visualizationProvider: VisualizationProvider[TestVisualizable] = TestVisualizableFactory
   }
 

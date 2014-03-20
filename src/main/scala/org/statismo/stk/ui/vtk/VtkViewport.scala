@@ -33,7 +33,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   private var firstTime = true
 
   def refresh(): Unit = {
-    val renderables = scene.visualizables.flatMap {obj =>
+    val renderables = scene.visualizables(f => f.visible(viewport)).flatMap {obj =>
       scene.visualizations.tryGet(obj, viewport) match {
         case Failure(f) => {
           f.printStackTrace()

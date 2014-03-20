@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.visualization
 
-import org.statismo.stk.ui.{EdtPublisher, Viewport}
+import org.statismo.stk.ui.{SceneTreeObject, EdtPublisher, Viewport}
 import scala.util.{Failure, Success, Try}
 import scala.ref.WeakReference
 import scala.swing.event.Event
@@ -67,7 +67,7 @@ trait VisualizationProvider[A <: Visualizable[_]] {
   def visualizationProvider: VisualizationProvider[A]
 }
 
-trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
+trait Visualizable[X <: Visualizable[X]] extends SceneTreeObject with VisualizationProvider[X] {
 }
 
 trait Derivable[A <: AnyRef] {

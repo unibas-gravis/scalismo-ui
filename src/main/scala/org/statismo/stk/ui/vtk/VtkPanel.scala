@@ -24,7 +24,7 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
   }
   lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
   listenTo(viewport, vtk)
-  if (true) { // FIXME !workspace.scene.displayables.filter(d => d.isShownInViewport(viewport)).isEmpty) {
+  if (!workspace.scene.visualizables(d => d.visible(viewport)).isEmpty) {
     Swing.onEDT(ui.Render())
   }
 

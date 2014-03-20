@@ -9,20 +9,17 @@ import scala.swing.event.ButtonClicked
 
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Viewport
+import scala.language.reflectiveCalls
 
 import javax.swing.JCheckBox
 
 class VisibilityAction extends SceneTreePopupAction("Visible in...") {
 
   private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener {
-    setSelected(context.isShownInViewport(viewport))
+    setSelected(context.visible(viewport))
 
     def itemStateChanged(event: ItemEvent) = {
-      if (isSelected) {
-        context.showInViewport(viewport)
-      } else {
-        context.hideInViewport(viewport)
-      }
+      context.visible(viewport) = isSelected
     }
 
     addItemListener(this)
@@ -48,14 +45,10 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
     val viewports = obj.scene.viewports
     if (hasSingleViewport(obj)) {
       val item = new CheckMenuItem(title) {
-        selected = obj.isShownInViewport(viewports.head)
+        selected = obj.visible(viewports.head)
         reactions += {
           case ButtonClicked(b) =>
-            if (selected) {
-              obj.showInViewport(viewports.head)
-            } else {
-              obj.hideInViewport(viewports.head)
-            }
+            context.get.visible(viewports.head) = selected
         }
       }
       Some(item)
