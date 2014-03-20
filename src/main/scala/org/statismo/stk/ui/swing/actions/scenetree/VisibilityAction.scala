@@ -9,7 +9,6 @@ import scala.swing.event.ButtonClicked
 
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Viewport
-import scala.language.reflectiveCalls
 
 import javax.swing.JCheckBox
 
