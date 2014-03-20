@@ -17,42 +17,42 @@ class Visualizations {
   private val perviewport = new WeakHashMap[ViewportOrClassName, PerViewport]
 
   private class PerViewport(val context: ViewportOrClassName) {
-    private val mappings = new WeakHashMap[VisualizationProvider[_], Try[VisualizationOld[_]]]
+    private val mappings = new WeakHashMap[VisualizationProvider[_], Try[Visualization[_]]]
 
-    def apply[A <: Visualizable[A]] (key: VisualizationProvider[A]) : Try[VisualizationOld[A]] = {
+    def tryGet[A <: Visualizable[A]] (key: VisualizationProvider[A]) : Try[Visualization[A]] = {
       val value = mappings.getOrElseUpdate(key, {
-        val existing: Try[VisualizationOld[A]] = key match {
+        val existing: Try[Visualization[A]] = key match {
           case fac: VisualizationFactory[A] => {
             context match {
-              case Left(viewport) => Visualizations.this.apply(key, viewport.getClass.getCanonicalName)
+              case Left(viewport) => Visualizations.this.tryGet(key, viewport.getClass.getCanonicalName)
               case Right(vpClass) => Try{fac.instantiate(vpClass)}
             }
           }
-          case _ => apply(key.parentVisualizationProvider)
+          case _ => tryGet(key.parentVisualizationProvider)
         }
         existing match {
           case Success(ok) => Try{ok.derive()}
           case f@Failure(e) => f
         }
       })
-      value.asInstanceOf[Try[VisualizationOld[A]]]
+      value.asInstanceOf[Try[Visualization[A]]]
     }
   }
 
-  private def apply[A <: Visualizable[A]] (key: VisualizationProvider[A], context: ViewportOrClassName): Try[VisualizationOld[A]] = {
+  private def tryGet[A <: Visualizable[A]] (key: VisualizationProvider[A], context: ViewportOrClassName): Try[Visualization[A]] = {
     val delegate = perviewport.getOrElseUpdate(context, new PerViewport(context))
-    delegate(key)
+    delegate.tryGet(key)
   }
 
-  def apply[A <: Visualizable[A]] (key: VisualizationProvider[A], context: Viewport): Try[VisualizationOld[A]] = apply(key, Left(context))
-  def apply[A <: Visualizable[A]] (key: VisualizationProvider[A], context: String): Try[VisualizationOld[A]] = apply(key, Right(context))
+  def tryGet[A <: Visualizable[A]] (key: VisualizationProvider[A], context: Viewport): Try[Visualization[A]] = tryGet(key, Left(context))
+  def tryGet[A <: Visualizable[A]] (key: VisualizationProvider[A], context: String): Try[Visualization[A]] = tryGet(key, Right(context))
 }
 
 trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A] {
   override final val parentVisualizationProvider = null
 
-  def visualizationsFor(viewportClassName: String): Seq[VisualizationOld[A]]
-  final def instantiate(viewportClassName: String): VisualizationOld[A] = {
+  def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
+  final def instantiate(viewportClassName: String): Visualization[A] = {
     visualizationsFor(viewportClassName).headOption match {
       case Some(v) => v
       case None => throw new RuntimeException(getClass+ " did not provide any Visualization options for viewport class "+viewportClassName)
@@ -61,8 +61,8 @@ trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A
 }
 
 trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFactory[A] {
-  protected var visualizations = new HashMap[String, Seq[VisualizationOld[A]]]
-  final override def visualizationsFor(viewportClassName: String): Seq[VisualizationOld[A]] = visualizations.getOrElse(viewportClassName, Nil)
+  protected var visualizations = new HashMap[String, Seq[Visualization[A]]]
+  final override def visualizationsFor(viewportClassName: String): Seq[Visualization[A]] = visualizations.getOrElse(viewportClassName, Nil)
 }
 
 trait VisualizationProvider[A <: Visualizable[_]] {
@@ -73,34 +73,6 @@ trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
 }
 
 trait Renderable
-
-abstract class VisualizationOld[A <: Visualizable[_]](template: Option[VisualizationOld[A]]) extends DerivableOld[VisualizationOld[A]](template) {
-  private val mappings = new WeakHashMap[A, Seq[Renderable]]
-  final def apply(target: A) = mappings.getOrElseUpdate(target, renderablesFor(target))
-  def renderablesFor(target: A): Seq[Renderable]
-  //protected val properties: Seq[VisualizationProperty[_]]
-}
-
-abstract class DerivableOld[A <: DerivableOld[A]](template: Option[A]) {
-  protected [visualization] var children: Seq[WeakReference[A]] = Nil
-  private [visualization] final def derive(): A = this.synchronized {
-    val child = instantiateNew(Some(this.asInstanceOf[A]))
-    purgeChildren()
-    children :+= new WeakReference[A](child)
-    child
-  }
-
-  protected [visualization] def purgeChildren(): Unit = this.synchronized {
-    val purged = children.filter(w => w.get != None)
-    if (purged.length != children.length) {
-      //FIXME
-      println("purged children: " + children.length + " -> "+purged.length)
-      children = purged
-    }
-  }
-
-  protected def instantiateNew(template: Option[A]):A
-}
 
 trait Derivable[A <: AnyRef] {
   protected val self:A = this.asInstanceOf[A]
@@ -125,11 +97,14 @@ trait Derivable[A <: AnyRef] {
   protected def createDerived() :A
 }
 
-trait Visualization[A <: Visualizable[_], C <: Visualization[A,C]] extends Derivable[C] {
+trait Visualization[A <: Visualizable[_]] extends Derivable[Visualization[A]] {
   private val mappings = new WeakHashMap[A, Seq[Renderable]]
   final def apply(target: A) = mappings.getOrElseUpdate(target, renderablesFor(target))
   def renderablesFor(target: A): Seq[Renderable]
   //protected val properties: Seq[VisualizationProperty[_]]
+}
+
+trait ConcreteVisualization[A <: Visualizable[_], C <: ConcreteVisualization[A,C]] extends Visualization[A] {
 }
 
 object VisualizationProperty {
@@ -137,7 +112,7 @@ object VisualizationProperty {
 }
 
 trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivable[C] with EdtPublisher {
-  def defaultValue: V
+  private var _value: Option[V] = None
   final def value: V = _value.getOrElse(defaultValue)
   final def value_=(newValue: V): Unit = this.synchronized {
     if (newValue != value) {
@@ -155,33 +130,35 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivabl
       }
     }
   }
+
+  def defaultValue: V
+
   final override protected def createDerived(): C = {
-    val child = this.getClass.newInstance().asInstanceOf[C]
+    val child = newInstance()
     child.value = this.value
     child
   }
-  private var _value: Option[V] = None
+
+  def newInstance(): C
 }
 
 class ColorProperty extends VisualizationProperty[Color, ColorProperty] {
   override lazy val defaultValue = Color.WHITE
+  def newInstance() = new ColorProperty
 }
 
-class LMVisualizationOld(template: Option[LMVisualizationOld]) extends VisualizationOld[LM](template) {
+class LMVisualizationOne(template: Option[LMVisualizationOne]) extends ConcreteVisualization[LM, LMVisualizationOne] {
+  def this() = this(None)
   val color: ColorProperty = if (template.isDefined) template.get.color.derive() else new ColorProperty
-  //override val properties = Seq(color)
   def renderablesFor(target: LM) = Nil
-  //  def instantiateNew(template: Option[LMVisualization]) = new LMVisualization(template)
-  override protected def instantiateNew(template: Option[VisualizationOld[LM]]): LMVisualizationOld = new LMVisualizationOld(template.asInstanceOf[Option[LMVisualizationOld]])
+  override protected def createDerived(): LMVisualizationOne = new LMVisualizationOne(Some(this))
 }
 
-class LMVisualization(template: Option[LMVisualization]) extends Visualization[LM, LMVisualization] {
+class LMVisualizationTwo(template: Option[LMVisualizationTwo]) extends ConcreteVisualization[LM, LMVisualizationTwo] {
+  def this() = this(None)
   val color: ColorProperty = if (template.isDefined) template.get.color.derive() else new ColorProperty
-  //override val properties = Seq(color)
   def renderablesFor(target: LM) = Nil
-  //  def instantiateNew(template: Option[LMVisualization]) = new LMVisualization(template)
-//  override protected def instantiateNew(template: Option[Visualization[LM]]): LMVisualization = new LMVisualization(template.asInstanceOf[Option[LMVisualization]])
-  override protected def createDerived(): LMVisualization = {
+  override protected def createDerived(): LMVisualizationTwo = {
     ???
   }
 }
@@ -193,7 +170,7 @@ object X extends Viewport {
 }
 
 object LMS extends SimpleVisualizationFactory[LM] {
-  visualizations += Tuple2("org.statismo.stk.ui.visualization.X$", Seq(new LMVisualizationOld(None)))
+  visualizations += Tuple2("org.statismo.stk.ui.visualization.X$", Seq(new LMVisualizationOne))
 }
 
 class LMS extends VisualizationProvider[LM] {
@@ -210,9 +187,9 @@ object VisTest extends App {
 
   val v = new Visualizations
   val lm = new LM
-  val v3 = v(lm.lms, p).get.asInstanceOf[LMVisualizationOld]
+  val v3 = v.tryGet(lm.lms, p).get.asInstanceOf[LMVisualizationOne]
   v3.color.value = Color.BLUE
-  val v4 = v(lm, p).get.asInstanceOf[LMVisualizationOld]
+  val v4 = v.tryGet(lm, p).get.asInstanceOf[LMVisualizationOne]
   //v(lm, p.getClass).get.asInstanceOf[LMVisualization]
   //v(lm.lms, p.getClass).get.asInstanceOf[LMVisualization]
 
