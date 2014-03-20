@@ -14,9 +14,9 @@ object SceneTreeObject {
 }
 
 trait SceneTreeObject extends Nameable {
+  //you MUST override this. The exception that is thrown if you don't is intentional.
   def parent: SceneTreeObject = ???
 
-  //you MUST override this. The exception that is thrown if you don't is intentional.
   def children: Seq[SceneTreeObject] = Nil
 
   def scene: Scene = {
@@ -28,23 +28,7 @@ trait SceneTreeObject extends Nameable {
 
   scene.listenTo(this)
 
-  def displayables: List[Displayable] = {
-    val childDisplayables = List(children.map(_.displayables).flatten).flatten
-    this match {
-      case displayable: Displayable =>
-        displayable :: childDisplayables
-      case _ => childDisplayables
-    }
-  }
-
-  def visualizables: List[Visualizable[_]] = {
-    val childList = List(children.map(_.visualizables).flatten).flatten
-    this match {
-      case visualizable: Visualizable[_] =>
-        visualizable :: childList
-      case _ => childList
-    }
-  }
+  def visualizables: Seq[Visualizable[_]] = find[Visualizable[_]]()
 
   reactions += {
     case Removeable.Removed(o) => if (o eq this) destroy()
@@ -56,9 +40,9 @@ trait SceneTreeObject extends Nameable {
     scene.deafTo(this)
   }
 
-  def find[A <: SceneTreeObject : ClassTag](filter: A => Boolean = {o:A => true}, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = doFind(filter, maxDepth, minDepth, 0)
+  def find[A <: AnyRef : ClassTag](filter: A => Boolean = {o:A => true}, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = doFind(filter, maxDepth, minDepth, 0)
 
-  private def doFind[A <: SceneTreeObject : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
+  private def doFind[A <: AnyRef : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
     if (maxDepth.isDefined && maxDepth.get > curDepth) {
       Nil
     } else {
@@ -74,7 +58,7 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  private var hidden: List[Viewport] = if (this.isInstanceOf[Scene]) Nil else scene.viewports.filterNot(v => v.supportsShowingObject(this)).toList
+  private var hidden: List[Viewport] = Nil
 
   def isHiddenInViewport(viewport: Viewport) = hidden.exists({
     v => v eq viewport
@@ -134,7 +118,6 @@ trait SceneTreeObject extends Nameable {
   def showInViewport(viewport: Viewport): Unit = showInViewports(Seq(viewport))
 
   def onViewportsChanged(viewports: Seq[Viewport]): Unit = {
-    hidden = viewports.filterNot(v => v.supportsShowingObject(this)).toList
     Try {
       children foreach (_.onViewportsChanged(viewports))
     }

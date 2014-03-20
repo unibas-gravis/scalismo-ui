@@ -5,7 +5,7 @@ import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui.ThreeDImageAxis
 import org.statismo.stk.ui.ThreeDImagePlane
 import vtk.vtkImagePlaneWidget
-import org.statismo.stk.ui.SliceViewport
+import org.statismo.stk.ui.TwoDViewport
 
 class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderWindowInteractor) extends RenderableActor {
   override val vtkActors = Seq()
@@ -37,7 +37,7 @@ class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderW
   reactions += {
     case ThreeDImagePlane.PositionChanged(s) => this.synchronized {
       widget.SetSliceIndex(peer.position)
-      if (interactor.viewport.isInstanceOf[SliceViewport]) {
+      if (interactor.viewport.isInstanceOf[TwoDViewport]) {
         publish(new VtkContext.ResetCameraRequest(this))
       } else {
         publish(new VtkContext.RenderRequest(this))

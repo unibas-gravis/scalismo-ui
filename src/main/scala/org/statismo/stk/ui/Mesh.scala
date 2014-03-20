@@ -10,26 +10,28 @@ import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.ui.visualization._
 import scala.collection.immutable.Seq
 import scala.Tuple2
-import org.statismo.stk.ui.visualization.props.ColorProperty
+import org.statismo.stk.ui.visualization.props.{OpacityProperty, HasColorAndOpacity, ColorProperty}
 
 object Mesh extends SimpleVisualizationFactory[Mesh] {
   case class GeometryChanged(source: Mesh) extends Event
-  visualizations += Tuple2("org.statismo.stk.ui.ThreeDViewport", Seq(new ThreeDVisualization(None)))
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualization(None)))
 
-  class ThreeDVisualization(from: Option[ThreeDVisualization]) extends Visualization[Mesh] {
-    val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty
+  class ThreeDVisualization(from: Option[ThreeDVisualization]) extends Visualization[Mesh] with HasColorAndOpacity {
+    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty
+    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty
+
     protected def createDerived() = new ThreeDVisualization(Some(this))
 
     protected def instantiateRenderables(source: Mesh) = {
-      Seq(new MeshRenderable(source, color))
+      Seq(new ThreeDMeshRenderable(source, color, opacity))
     }
   }
 
-  class MeshRenderable(val mesh: Mesh, val color: ColorProperty) extends Renderable
+  class ThreeDMeshRenderable(val mesh: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
 }
 
 
-trait Mesh extends ThreeDRepresentation[Mesh] with Displayable with Colorable with Landmarkable with Saveable {
+trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable {
   def peer: TriangleMesh
 
   override def saveToFile(file: File): Try[Unit] = {

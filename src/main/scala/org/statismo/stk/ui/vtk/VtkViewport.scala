@@ -44,7 +44,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
     }
     refresh(renderables)
   }
-  def refresh(backend: List[Renderable]): Unit = /*Swing.onEDT*/ {
+  def refresh(backend: Seq[Renderable]): Unit = /*Swing.onEDT*/ {
     this.synchronized {
       var changed = false
 

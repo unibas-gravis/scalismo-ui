@@ -109,12 +109,8 @@ class ShapeModelInstances(val shapeModel: ShapeModel)(implicit val scene: Scene)
     if (child.coefficients.length == template.coefficients.length) {
       child.coefficients = template.coefficients
     }
-    child.landmarks.color = template.landmarks.color
-    child.landmarks.radius = template.landmarks.radius
     child.landmarks.name = template.landmarks.name
     child.meshRepresentation.name = template.meshRepresentation.name
-    child.meshRepresentation.color = template.meshRepresentation.color
-    child.meshRepresentation.opacity = template.meshRepresentation.opacity
     add(child)
     child
   }

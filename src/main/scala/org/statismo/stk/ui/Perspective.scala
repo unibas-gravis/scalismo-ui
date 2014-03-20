@@ -71,5 +71,5 @@ class SlicerPerspective(val scene: Scene) extends Perspective {
   override val factory = SlicerPerspective
   name = factory.name
 
-  def createViewports = Seq(new ThreeDViewport(scene, Some("3D")), new SliceViewport(scene, ThreeDImageAxis.X, Some("X")), new SliceViewport(scene, ThreeDImageAxis.Y, Some("Y")), new SliceViewport(scene, ThreeDImageAxis.Z, Some("Z")))
+  def createViewports = Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, ThreeDImageAxis.X, Some("X")), new TwoDViewport(scene, ThreeDImageAxis.Y, Some("Y")), new TwoDViewport(scene, ThreeDImageAxis.Z, Some("Z")))
 }

@@ -1,32 +1,28 @@
 package org.statismo.stk.ui.visualization
 
-import org.statismo.stk.ui.{EdtPublisher, Viewport, Scene}
+import org.statismo.stk.ui.{EdtPublisher, Viewport}
 import scala.util.{Failure, Success, Try}
-import java.awt.Color
 import scala.ref.WeakReference
 import scala.swing.event.Event
 import scala.language.existentials
-import scala.collection.immutable.Seq
-import scala.collection.immutable.HashMap
-import scala.collection.mutable.WeakHashMap
+import scala.collection.{mutable, immutable}
 
 class Visualizations {
   private type ViewportOrClassName = Either[Viewport, String]
 
-  private val perviewport = new WeakHashMap[ViewportOrClassName, PerViewport]
+  private val perviewport = new mutable.WeakHashMap[ViewportOrClassName, PerViewport]
 
   private class PerViewport(val context: ViewportOrClassName) {
-    private val mappings = new WeakHashMap[VisualizationProvider[_], Try[Visualization[_]]]
+    private val mappings = new mutable.WeakHashMap[VisualizationProvider[_], Try[Visualization[_]]]
 
     def tryGet(key: VisualizationProvider[_]) : Try[Visualization[_]] = {
       val value = mappings.getOrElseUpdate(key, {
         val existing: Try[Visualization[_]] = key match {
-          case fac: VisualizationFactory[_] => {
+          case fac: VisualizationFactory[_] =>
             context match {
               case Left(viewport) => Visualizations.this.tryGet(key, viewport.getClass.getCanonicalName)
               case Right(vpClass) => Try{fac.instantiate(vpClass)}
             }
-          }
           case _ => tryGet(key.parentVisualizationProvider)
         }
         existing match {
@@ -63,7 +59,7 @@ trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A
 }
 
 trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFactory[A] {
-  protected var visualizations = new HashMap[String, Seq[Visualization[A]]]
+  protected var visualizations = new immutable.HashMap[String, Seq[Visualization[A]]]
   final override def visualizationsFor(viewportClassName: String): Seq[Visualization[A]] = visualizations.getOrElse(viewportClassName, Nil)
 }
 
@@ -98,7 +94,7 @@ trait Derivable[A <: AnyRef] {
 }
 
 trait Visualization[A <: Visualizable[_]] extends Derivable[Visualization[A]] {
-  private val mappings = new WeakHashMap[A, Seq[Renderable]]
+  private val mappings = new mutable.WeakHashMap[A, Seq[Renderable]]
   final def apply(target: Visualizable[_]) = {
     val typed: A = target.asInstanceOf[A]
     mappings.getOrElseUpdate(typed, instantiateRenderables(typed))

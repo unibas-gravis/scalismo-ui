@@ -5,10 +5,11 @@ import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
 
 import vtk.vtkPolyData
-import org.statismo.stk.ui.Mesh.MeshRenderable
+import org.statismo.stk.ui.Mesh.ThreeDMeshRenderable
 
-class MeshActor(source: MeshRenderable) extends PolyDataActor with ColorableActor with ClickableActor {
-  override lazy val colorprop = source.color
+class MeshActor(source: ThreeDMeshRenderable) extends PolyDataActor with ColorableActor with ClickableActor {
+  override lazy val color = source.color
+  override lazy val opacity = source.opacity
   listenTo(source.mesh)
 
   private var polyMesh: Option[vtkPolyData] = None

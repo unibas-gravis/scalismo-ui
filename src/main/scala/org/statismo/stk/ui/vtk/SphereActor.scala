@@ -1,14 +1,14 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.Radius
-import org.statismo.stk.ui.SphereLike
-
 import vtk.vtkSphereSource
+import org.statismo.stk.ui.visualization.{VisualizationProperty, SphereLike}
 
 class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor {
   private lazy val sphere = new vtkSphereSource
-  override lazy val colorprop = ???
-  listenTo(source)
+  override lazy val color = source.color
+  override lazy val opacity = source.opacity
+  lazy val radius = source.radius
+  listenTo(source, radius)
 
   mapper.SetInputConnection(sphere.GetOutputPort())
   this.GetProperty().SetInterpolationToGouraud()
@@ -16,19 +16,19 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
 
   reactions += {
     case SphereLike.CenterChanged(s) => setGeometry()
-    case Radius.RadiusChanged(r) => setGeometry()
+    case VisualizationProperty.ValueChanged(s) => if (s eq radius) setGeometry()
   }
 
   def setGeometry() = this.synchronized {
     sphere.SetCenter(source.center.x, source.center.y, source.center.z)
-    sphere.SetRadius(source.radius)
+    sphere.SetRadius(source.radius.value)
     sphere.Modified()
     mapper.Modified()
     publish(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(source)
+    deafTo(source, radius)
     super.onDestroy()
   }
 }

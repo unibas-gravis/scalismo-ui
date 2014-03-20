@@ -14,13 +14,13 @@ import org.statismo.stk.ui.Workspace
 import org.statismo.stk.ui.swing.actions.SaveAction
 import org.statismo.stk.ui.vtk.VtkPanel
 import javax.swing.border.TitledBorder
-import org.statismo.stk.ui.SliceViewport
+import org.statismo.stk.ui.TwoDViewport
 
 object ViewportPanel {
   def apply(workspace: Workspace, viewport: Viewport): ViewportPanel = {
     viewport match {
       case v: ThreeDViewport => new ThreeDViewportPanel(workspace, v)
-      case v: SliceViewport => new SliceViewportPanel(workspace, v)
+      case v: TwoDViewport => new SliceViewportPanel(workspace, v)
       case v => new ViewportPanel(workspace, v)
     }
   }
@@ -67,6 +67,6 @@ class ThreeDViewportPanel(workspace: Workspace, viewport: ThreeDViewport) extend
   layout(toolbar) = BorderPanel.Position.North
 }
 
-class SliceViewportPanel(workspace: Workspace, viewport: SliceViewport) extends ViewportPanel(workspace, viewport) {
+class SliceViewportPanel(workspace: Workspace, viewport: TwoDViewport) extends ViewportPanel(workspace, viewport) {
   layout(toolbar) = BorderPanel.Position.North
 }
