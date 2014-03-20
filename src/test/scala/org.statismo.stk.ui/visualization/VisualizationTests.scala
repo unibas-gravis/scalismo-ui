@@ -1,13 +1,11 @@
-package org.statismo.stk.core.io
+package org.statismo.stk.ui.visualization
 
-import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
-import org.statismo.stk.ui.visualization._
+import org.scalatest._
 import org.statismo.stk.ui.{Scene, Viewport}
-import scala.collection.immutable.Seq
 import scala.collection.immutable
+import scala.util.{Failure, Success}
 
-class VisualizationTests  extends FunSpec with ShouldMatchers {
+class VisualizationTests  extends FunSpec with Matchers {
 
   class TestProp extends VisualizationProperty[String, TestProp] {
     val defaultValue: String = "DEFAULT"
@@ -25,8 +23,12 @@ class VisualizationTests  extends FunSpec with ShouldMatchers {
     override protected def createDerived(): TestLandmarkVisualization1 = new TestLandmarkVisualization1(Some(this))
   }
 
-  trait TestVisualizable extends Visualizable[TestVisualizable] {
+  object TestVisualizableFactory extends SimpleVisualizationFactory[TestVisualizable] {
+    def put(kv: (String, immutable.Seq[Visualization[TestVisualizable]])) = visualizations += kv
+  }
 
+  class TestVisualizable extends Visualizable[TestVisualizable] {
+    override def parentVisualizationProvider: VisualizationProvider[TestVisualizable] = TestVisualizableFactory
   }
 
   class TestViewport1 extends DummyViewport
@@ -80,23 +82,24 @@ class VisualizationTests  extends FunSpec with ShouldMatchers {
       child.value should equal(childValue)
       grandchild.value should equal(grandChildValue)
     }
-
-
-    /*
-    it("publishes change events") {
-      //FIXME
-      println("FIXME: don't know how to do this yet")
-    }
-    */
   }
 
-  describe("A SimpleVisualizationFactory") {
+  describe("A Visualizations object") {
 
-    it("can be instantiated") {
-      val context = new TestVisualizable {
-        //FIXME
-        override def parentVisualizationProvider: VisualizationProvider[VisualizationTests.this.type#TestVisualizable] = ???
+    it("returns visualizations only for registered viewport classes") {
+      class TestVisualization extends Visualization[TestVisualizable] {
+        override protected def createDerived()  = new TestVisualization
+
+        override def renderablesFor(target: TestVisualizable) = Nil
       }
+
+      val target = new TestVisualizable
+      val vis = new Visualizations
+      val vp1 = new TestViewport1
+      val vp2 = new TestViewport2
+      TestVisualizableFactory.put((vp1.getClass.getCanonicalName, immutable.Seq(new TestVisualization)))
+      vis.tryGet(target, vp1) shouldBe a [Success[_]]
+      vis.tryGet(target, vp2) shouldBe a [Failure[_]]
     }
   }
 }
