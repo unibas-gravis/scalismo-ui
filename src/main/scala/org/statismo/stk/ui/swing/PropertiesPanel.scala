@@ -6,6 +6,7 @@ import scala.swing.Orientation
 import scala.swing.SplitPane
 
 import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui.swing.props.SceneObjectPropertiesPanel
 
 class PropertiesPanel(val workspace: Workspace) extends BorderPanel {
   val scene = new SceneTreePanel(workspace)

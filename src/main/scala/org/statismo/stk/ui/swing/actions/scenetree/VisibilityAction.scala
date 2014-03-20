@@ -1,4 +1,4 @@
-package org.statismo.stk.ui.swing.actions
+package org.statismo.stk.ui.swing.actions.scenetree
 
 import java.awt.event.ItemEvent
 import java.awt.event.ItemListener

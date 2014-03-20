@@ -1,4 +1,4 @@
-package org.statismo.stk.ui.swing
+package org.statismo.stk.ui.swing.props
 
 import scala.swing.BorderPanel
 import scala.swing.BoxPanel

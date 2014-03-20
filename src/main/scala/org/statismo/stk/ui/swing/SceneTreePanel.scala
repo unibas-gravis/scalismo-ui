@@ -21,20 +21,6 @@ import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.swing.actions.AddImageRepresentationToStaticThreeDObjectAction
-import org.statismo.stk.ui.swing.actions.AddMeshRepresentationToStaticThreeDObjectAction
-import org.statismo.stk.ui.swing.actions.CreateShapeModelInstanceAction
-import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromImageAction
-import org.statismo.stk.ui.swing.actions.CreateStaticThreeDObjectFromMeshAction
-import org.statismo.stk.ui.swing.actions.LoadLoadableAction
-import org.statismo.stk.ui.swing.actions.LoadShapeModelAction
-import org.statismo.stk.ui.swing.actions.LoadShapeModelLandmarksAction
-import org.statismo.stk.ui.swing.actions.RemoveAllShapeModelInstancesAction
-import org.statismo.stk.ui.swing.actions.RemoveRemoveableAction
-import org.statismo.stk.ui.swing.actions.SaveSaveableAction
-import org.statismo.stk.ui.swing.actions.SaveShapeModelLandmarksAction
-import org.statismo.stk.ui.swing.actions.SceneTreePopupAction
-import org.statismo.stk.ui.swing.actions.VisibilityAction
 
 import javax.swing.JPopupMenu
 import javax.swing.JTree
@@ -44,6 +30,17 @@ import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
+import org.statismo.stk.ui.swing.actions.scenetree._
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
+import scala.Some
 
 object SceneTreePanel {
   lazy val popupActions: Seq[SceneTreePopupAction] = Seq(
@@ -59,7 +56,8 @@ object SceneTreePanel {
     new CreateStaticThreeDObjectFromImageAction,
     new AddMeshRepresentationToStaticThreeDObjectAction,
     new AddImageRepresentationToStaticThreeDObjectAction,
-    new VisibilityAction)
+    new VisibilityAction,
+    new RenameNameableAction)
 }
 
 class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor {

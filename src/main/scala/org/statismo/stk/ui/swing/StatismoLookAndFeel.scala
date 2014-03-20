@@ -12,6 +12,7 @@ object StatismoLookAndFeel {
       defaults.put("Tree.drawHorizontalLines", true)
       defaults.put("Tree.drawVerticalLines", true)
     }
+    UIManager.put("FileChooser.readOnly", true)
   }
 }
 

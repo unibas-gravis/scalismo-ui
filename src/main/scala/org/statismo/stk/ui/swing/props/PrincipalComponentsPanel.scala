@@ -1,4 +1,4 @@
-package org.statismo.stk.ui.swing
+package org.statismo.stk.ui.swing.props
 
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent

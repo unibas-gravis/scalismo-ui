@@ -1,7 +1,6 @@
-package org.statismo.stk.ui.swing
+package org.statismo.stk.ui.swing.props
 
 import java.awt.Dimension
-import java.util.UUID
 import scala.swing.BorderPanel
 import scala.swing.BorderPanel.Position.Center
 import scala.swing.BorderPanel.Position.North
@@ -9,7 +8,6 @@ import scala.swing.Component
 import scala.swing.Reactor
 import scala.swing.ScrollPane
 import scala.swing.Swing
-import scala.swing.event.SelectionChanged
 import org.statismo.stk.ui.EdtPublisher
 import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.Workspace
@@ -17,6 +15,8 @@ import javax.swing.JComboBox
 import scala.language.existentials
 import scala.language.reflectiveCalls
 import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
+import org.statismo.stk.ui.swing._
+import scala.swing.event.SelectionChanged
 
 trait SceneObjectPropertyPanel extends CardPanel.CardableComponent {
   def setObject(obj: Option[SceneTreeObject]): Boolean
@@ -29,7 +29,7 @@ trait SceneObjectPropertyPanel extends CardPanel.CardableComponent {
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
-  private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel, new NameablePanel)
+  private val appearance = new CombinedPropertiesPanel("Appearance", new RadiusPanel, new ColorablePanel)
   val DefaultViewProviders: Seq[SceneObjectPropertyPanel] = Seq(new PrincipalComponentsPanel, new ThreeDImagePanel, new ThreeDImagePlanePanel, appearance)
 }
 

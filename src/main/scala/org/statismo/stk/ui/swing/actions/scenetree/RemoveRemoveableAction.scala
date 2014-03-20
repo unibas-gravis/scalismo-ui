@@ -1,4 +1,4 @@
-package org.statismo.stk.ui.swing.actions
+package org.statismo.stk.ui.swing.actions.scenetree
 
 import org.statismo.stk.ui.Removeable
 import org.statismo.stk.ui.RemoveableChildren
