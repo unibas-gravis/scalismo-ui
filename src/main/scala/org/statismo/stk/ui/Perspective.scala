@@ -1,19 +1,21 @@
 package org.statismo.stk.ui
 
+import scala.collection.immutable
+
 object Perspective {
   def defaultPerspective(scene: Scene) = new SingleViewportPerspective(scene)
 }
 
 trait Perspective extends Nameable {
-  final lazy val viewports: Seq[Viewport] = createViewports
+  final lazy val viewports: immutable.Seq[Viewport] = createViewports
 
-  def createViewports: Seq[Viewport]
+  def createViewports: immutable.Seq[Viewport]
 
   def factory: PerspectiveFactory
 }
 
 object Perspectives {
-  lazy val availablePerspectives: Seq[PerspectiveFactory] = Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, SlicerPerspective)
+  lazy val availablePerspectives: immutable.Seq[PerspectiveFactory] = immutable.Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, SlicerPerspective)
 }
 
 trait PerspectiveFactory {
@@ -32,7 +34,7 @@ class SingleViewportPerspective(val scene: Scene) extends Perspective {
   override val factory = SingleViewportPerspective
   name = factory.name
 
-  def createViewports = Seq(new ThreeDViewport(scene, Some("3D View")))
+  def createViewports = immutable.Seq(new ThreeDViewport(scene, Some("3D View")))
 }
 
 object TwoViewportsPerspective extends PerspectiveFactory {
@@ -45,7 +47,7 @@ class TwoViewportsPerspective(val scene: Scene) extends Perspective {
   override val factory = TwoViewportsPerspective
   name = factory.name
 
-  def createViewports = Seq(new ThreeDViewport(scene, Some("Left")), new ThreeDViewport(scene, Some("Right")))
+  def createViewports = immutable.Seq(new ThreeDViewport(scene, Some("Left")), new ThreeDViewport(scene, Some("Right")))
 }
 
 object FourViewportsPerspective extends PerspectiveFactory {
@@ -58,7 +60,7 @@ class FourViewportsPerspective(val scene: Scene) extends Perspective {
   override val factory = FourViewportsPerspective
   name = factory.name
 
-  def createViewports = Seq(new ThreeDViewport(scene, Some("One")), new ThreeDViewport(scene, Some("Two")), new ThreeDViewport(scene, Some("Three")), new ThreeDViewport(scene, Some("Four")))
+  def createViewports = immutable.Seq(new ThreeDViewport(scene, Some("One")), new ThreeDViewport(scene, Some("Two")), new ThreeDViewport(scene, Some("Three")), new ThreeDViewport(scene, Some("Four")))
 }
 
 object SlicerPerspective extends PerspectiveFactory {
@@ -71,5 +73,5 @@ class SlicerPerspective(val scene: Scene) extends Perspective {
   override val factory = SlicerPerspective
   name = factory.name
 
-  def createViewports = Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, ThreeDImageAxis.X, Some("X")), new TwoDViewport(scene, ThreeDImageAxis.Y, Some("Y")), new TwoDViewport(scene, ThreeDImageAxis.Z, Some("Z")))
+  def createViewports = immutable.Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, ThreeDImageAxis.X, Some("X")), new TwoDViewport(scene, ThreeDImageAxis.Y, Some("Y")), new TwoDViewport(scene, ThreeDImageAxis.Z, Some("Z")))
 }
