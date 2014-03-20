@@ -7,7 +7,7 @@ import vtk.vtkSphereSource
 
 class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor {
   private lazy val sphere = new vtkSphereSource
-  override lazy val colorable = source
+  override lazy val colorprop = ???
   listenTo(source)
 
   mapper.SetInputConnection(sphere.GetOutputPort())

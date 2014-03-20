@@ -5,10 +5,11 @@ import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
 
 import vtk.vtkPolyData
+import org.statismo.stk.ui.Mesh.MeshRenderable
 
-class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with ClickableActor {
-  override lazy val colorable = source
-  listenTo(source)
+class MeshActor(source: MeshRenderable) extends PolyDataActor with ColorableActor with ClickableActor {
+  override lazy val colorprop = source.color
+  listenTo(source.mesh)
 
   private var polyMesh: Option[vtkPolyData] = None
 
@@ -20,7 +21,7 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
   }
 
   def setGeometry() = this.synchronized {
-    polyMesh = Some(MeshConversion.meshToVTKPolyData(source.peer, polyMesh))
+    polyMesh = Some(MeshConversion.meshToVTKPolyData(source.mesh.peer, polyMesh))
 
     val normals = new vtk.vtkPolyDataNormals()
     normals.SetInputData(polyMesh.get)
@@ -33,11 +34,12 @@ class MeshActor(source: Mesh) extends PolyDataActor with ColorableActor with Cli
   }
 
   def clicked(point: Point3D) = {
-    source.addLandmarkAt(point)
+    source.mesh.addLandmarkAt(point)
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(source)
+    deafTo(source.mesh)
     super.onDestroy()
   }
+
 }

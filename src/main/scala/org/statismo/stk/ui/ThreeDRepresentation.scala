@@ -1,8 +1,10 @@
 package org.statismo.stk.ui
 
-class ThreeDRepresentations(override val publisher: ThreeDObject) extends SceneTreeObjectContainer[ThreeDRepresentation] with RemoveableChildren {
+import org.statismo.stk.ui.visualization.Visualizable
+
+class ThreeDRepresentations(override val publisher: ThreeDObject) extends SceneTreeObjectContainer[ThreeDRepresentation[_]] with RemoveableChildren {
 }
 
-trait ThreeDRepresentation extends SceneTreeObject with Removeable {
+trait ThreeDRepresentation[C <: Visualizable[C]] extends SceneTreeObject with Removeable with Visualizable[C] {
   def threeDObject = parent.asInstanceOf[ThreeDObject]
 }

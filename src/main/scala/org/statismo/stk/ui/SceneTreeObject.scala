@@ -3,6 +3,7 @@ package org.statismo.stk.ui
 import scala.swing.event.Event
 import scala.util.Try
 import scala.reflect.ClassTag
+import org.statismo.stk.ui.visualization.Visualizable
 
 object SceneTreeObject {
 
@@ -33,6 +34,15 @@ trait SceneTreeObject extends Nameable {
       case displayable: Displayable =>
         displayable :: childDisplayables
       case _ => childDisplayables
+    }
+  }
+
+  def visualizables: List[Visualizable[_]] = {
+    val childList = List(children.map(_.visualizables).flatten).flatten
+    this match {
+      case visualizable: Visualizable[_] =>
+        visualizable :: childList
+      case _ => childList
     }
   }
 

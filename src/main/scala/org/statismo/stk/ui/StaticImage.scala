@@ -10,6 +10,7 @@ import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
 import reflect.runtime.universe.TypeTag
+import org.statismo.stk.ui.visualization.SimpleVisualizationFactory
 
 object StaticImage extends SceneTreeObjectFactory[StaticImage[_]] with FileIoMetadata {
   val description = "Static 3D Image"

@@ -17,12 +17,6 @@ class VisualizationTests  extends FunSpec with Matchers {
     override def isMouseSensitive: Boolean = ???
   }
 
-  class TestLandmarkVisualization1(template: Option[TestLandmarkVisualization1]) extends ConcreteVisualization[LM, TestLandmarkVisualization1] {
-    def this() = this(None)
-    def renderablesFor(target: LM) = Nil
-    override protected def createDerived(): TestLandmarkVisualization1 = new TestLandmarkVisualization1(Some(this))
-  }
-
   object TestVisualizableFactory extends SimpleVisualizationFactory[TestVisualizable] {
     def put(kv: (String, immutable.Seq[Visualization[TestVisualizable]])) = visualizations += kv
   }
@@ -90,7 +84,7 @@ class VisualizationTests  extends FunSpec with Matchers {
       class TestVisualization extends Visualization[TestVisualizable] {
         override protected def createDerived()  = new TestVisualization
 
-        override def renderablesFor(target: TestVisualizable) = Nil
+        override def instantiateRenderables(target: TestVisualizable) = Nil
       }
 
       val target = new TestVisualizable
@@ -100,6 +94,12 @@ class VisualizationTests  extends FunSpec with Matchers {
       TestVisualizableFactory.put((vp1.getClass.getCanonicalName, immutable.Seq(new TestVisualization)))
       vis.tryGet(target, vp1) shouldBe a [Success[_]]
       vis.tryGet(target, vp2) shouldBe a [Failure[_]]
+
+      val check: TestVisualization = vis.getUnsafe(target, vp1)
+      check should not be null
+
+      val generic = target.asInstanceOf[Visualizable[_]]
+      vis.tryGet(generic, vp1.getClass.getCanonicalName) shouldBe a [Success[_]]
     }
   }
 }

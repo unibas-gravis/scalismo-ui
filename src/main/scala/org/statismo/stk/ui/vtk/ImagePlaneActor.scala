@@ -7,7 +7,7 @@ import org.statismo.stk.ui.ThreeDImagePlane
 import vtk.vtkImagePlaneWidget
 import org.statismo.stk.ui.SliceViewport
 
-class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderWindowInteractor) extends DisplayableActor {
+class ImagePlaneActor(peer: ThreeDImagePlane[_])(implicit interactor: VtkRenderWindowInteractor) extends RenderableActor {
   override val vtkActors = Seq()
 
   val widget = new vtkImagePlaneWidget

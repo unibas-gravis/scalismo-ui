@@ -2,7 +2,7 @@ package org.statismo.stk.ui.vtk
 
 import vtk.vtkActor
 
-trait SingleDisplayableActor extends DisplayableActor {
+trait SingleRenderableActor extends RenderableActor {
   lazy val vtkActor: vtkActor = ???
   // this MUST be overridden. You'll get an exception if you don't.
   override lazy val vtkActors = Seq(vtkActor)

@@ -9,6 +9,8 @@ import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.Viewport
 
 import vtk.vtkRenderer
+import org.statismo.stk.ui.visualization.{Renderable, Visualizable}
+import scala.util.{Success, Failure}
 
 trait VtkContext extends EdtPublisher
 
@@ -26,11 +28,23 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   val scene = viewport.scene
   deafTo(this)
 
-  private var actors = new HashMap[Displayable, Option[DisplayableActor]]
+  private var actors = new HashMap[Renderable, Option[RenderableActor]]
 
   private var firstTime = true
 
-  def refresh(backend: List[Displayable]) = /*Swing.onEDT*/ {
+  def refresh(): Unit = {
+    val renderables = scene.visualizables.flatMap {obj =>
+      scene.visualizations.tryGet(obj, viewport) match {
+        case Failure(f) => {
+          f.printStackTrace()
+          Nil
+        }
+        case Success(vis) => vis(obj)
+      }
+    }
+    refresh(renderables)
+  }
+  def refresh(backend: List[Renderable]): Unit = /*Swing.onEDT*/ {
     this.synchronized {
       var changed = false
 
@@ -61,7 +75,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
           }
       }
 
-      val created = toCreate.map(d => Tuple2(d, DisplayableActor(d)))
+      val created = toCreate.map(d => Tuple2(d, RenderableActor(d)))
       created.foreach({
         case (back, front) =>
           actors += Tuple2(back, front)
@@ -99,13 +113,13 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
 
   reactions += {
     case Viewport.Destroyed(v) => destroy()
-    case Scene.TreeTopologyChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
-    case Scene.VisibilityChanged(s) => refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
+    case Scene.TreeTopologyChanged(s) => refresh()
+    case Scene.VisibilityChanged(s) => refresh()
     case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
     case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
   }
 
-  refresh(scene.displayables.filter(_.isShownInViewport(viewport)))
+  refresh()
 
   def destroy() = this.synchronized {
     deafTo(scene, viewport)

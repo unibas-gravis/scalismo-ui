@@ -10,12 +10,15 @@ import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
 import reflect.runtime.universe.TypeTag
 import scala.language.existentials
+import org.statismo.stk.ui.visualization.{VisualizationProvider, SimpleVisualizationFactory}
 
-object ThreeDImage {
+object ThreeDImage extends SimpleVisualizationFactory[ThreeDImage[_]]{
 }
 
-abstract class ThreeDImage[S](implicit val scalarValue: ScalarValue[S], implicit val tt: TypeTag[S], implicit val ct: ClassTag[S]) extends ThreeDRepresentation with Saveable {
+abstract class ThreeDImage[S](implicit val scalarValue: ScalarValue[S], implicit val tt: TypeTag[S], implicit val ct: ClassTag[S]) extends ThreeDRepresentation[ThreeDImage[S]] with Saveable {
   def peer: DiscreteScalarImage3D[S]
+
+  override def parentVisualizationProvider: VisualizationProvider[ThreeDImage[S]] = ???
 
   override def saveToFile(file: File): Try[Unit] = {
     ImageIO.writeImage(peer, file)
@@ -32,6 +35,7 @@ abstract class ThreeDImage[S](implicit val scalarValue: ScalarValue[S], implicit
     super.remove()
     children.foreach(_.remove())
   }
+
 }
 
 object ThreeDImageAxis extends Enumeration {

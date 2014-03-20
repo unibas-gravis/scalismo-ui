@@ -67,7 +67,7 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
             prop match {
               case clickable: ClickableActor =>
                 clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
-              case _: DisplayableActor =>
+              case _: RenderableActor =>
               // do nothing. We found one of our own actors, but it doesn't react to clicks
               case _ =>
                 // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
