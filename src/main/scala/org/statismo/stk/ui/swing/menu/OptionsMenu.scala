@@ -28,7 +28,7 @@ class PerspectiveMenu(implicit app: StatismoFrame) extends Menu(PerspectiveMenu.
     reactions += {
       case ButtonClicked(b) =>
         if (app.scene.perspective.factory != factory) {
-          app.scene.perspective = factory.apply(app.scene)
+          app.scene.perspective = factory.apply()(app.scene)
         }
       case Scene.PerspectiveChanged(s) => updateUi()
     }
