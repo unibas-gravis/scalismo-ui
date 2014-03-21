@@ -23,12 +23,12 @@ trait Viewport extends Nameable {
   def initialCameraChange = Viewport.NoInitialCameraChange
 }
 
-class ThreeDViewport(override val scene: Scene, name: Option[String]) extends Viewport {
+class ThreeDViewport(override val scene: Scene, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
   override val isMouseSensitive = true
 }
 
-class TwoDViewport(override val scene: Scene, val axis: ThreeDImageAxis.Value, name: Option[String]) extends Viewport {
+class TwoDViewport(override val scene: Scene, val axis: ThreeDImageAxis.Value, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
   override val isMouseSensitive = false
 
