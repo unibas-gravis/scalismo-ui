@@ -3,14 +3,25 @@ package org.statismo.stk.ui
 import scala.collection.immutable
 
 object Perspective {
-  def defaultPerspective(scene: Scene) = new SingleViewportPerspective(scene, None)
+  def defaultPerspective(scene: Scene) = new SingleViewportPerspective(None)(scene)
 }
 
 abstract class Perspective(template: Option[Perspective]) extends Nameable {
   final lazy val viewports: immutable.Seq[Viewport] = createViewports()
+
   def createViewports(): immutable.Seq[Viewport]
+
   val factory: PerspectiveFactory
   name = factory.name
+
+  def reuseOrInstantiate[A](existing: immutable.Seq[A], index: Int, instantiate: Scene => A)(implicit scene: Scene): A = {
+    if (existing.length > index) {
+      existing(index)
+    } else {
+      instantiate(scene)
+    }
+  }
+
 }
 
 object Perspectives {
@@ -26,12 +37,25 @@ trait PerspectiveFactory {
 object SingleViewportPerspective extends PerspectiveFactory {
   override lazy val name = "Single 3D Window"
 
-  def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(scene, Some(scene.perspective))
+  def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
 }
 
-class SingleViewportPerspective(val scene: Scene, template: Option[Perspective]) extends Perspective(template) {
+class SingleViewportPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = SingleViewportPerspective
-  override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("3D View")))
+
+  override def createViewports() = {
+    val name = "3D View"
+    template match {
+      case Some(p: Perspective) =>
+        def instantiate(scene: Scene): ThreeDViewport = new ThreeDViewport(scene)
+        val existing = p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[Seq[ThreeDViewport]].toList
+        val only = reuseOrInstantiate(existing, 0, instantiate)
+        only.name = name
+        List(only)
+      case None =>
+        immutable.Seq(new ThreeDViewport(scene, Some(name)))
+    }
+  }
 }
 
 object TwoViewportsPerspective extends PerspectiveFactory {
@@ -42,23 +66,21 @@ object TwoViewportsPerspective extends PerspectiveFactory {
 
 class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = TwoViewportsPerspective
+
   override def createViewports() = {
+    val leftName = "Left"
+    val rightName = "Right"
     template match {
       case Some(p: Perspective) =>
-        //FIXME: this (or a similar) method should probably be used for all perspectives
-        def reuseOrCreate(existing: immutable.Seq[ThreeDViewport], index: Int)(implicit scene: Scene) :ThreeDViewport = {
-          if (existing.length > index) {
-            existing(index)
-          } else {
-            new ThreeDViewport(scene)
-          }
-        }
         val existing = p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[Seq[ThreeDViewport]].toList
-        val left = reuseOrCreate(existing, 0)
-        val right = reuseOrCreate(existing, 1)
+        def instantiate(scene: Scene): ThreeDViewport = new ThreeDViewport(scene)
+        val left = reuseOrInstantiate(existing, 0, instantiate)
+        left.name = leftName
+        val right = reuseOrInstantiate(existing, 1, instantiate)
+        right.name = rightName
         immutable.Seq(left, right)
       case None =>
-        immutable.Seq(new ThreeDViewport(scene, Some("Left")), new ThreeDViewport(scene, Some("Right")))
+        immutable.Seq(new ThreeDViewport(scene, Some(leftName)), new ThreeDViewport(scene, Some(rightName)))
 
     }
   }
@@ -67,12 +89,35 @@ class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene:
 object FourViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Four 3D Windows"
 
-  def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(scene, Some(scene.perspective))
+  def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
 }
 
-class FourViewportsPerspective(val scene: Scene, template: Option[Perspective]) extends Perspective(template) {
+class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
   override lazy val factory = FourViewportsPerspective
-  override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("One")), new ThreeDViewport(scene, Some("Two")), new ThreeDViewport(scene, Some("Three")), new ThreeDViewport(scene, Some("Four")))
+
+  override def createViewports() = {
+    val nameOne = "One"
+    val nameTwo = "Two"
+    val nameThree = "Three"
+    val nameFour = "Four"
+    template match {
+      case Some(p: Perspective) =>
+        val existing = p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[Seq[ThreeDViewport]].toList
+        def instantiate(scene: Scene): ThreeDViewport = new ThreeDViewport(scene)
+        val one = reuseOrInstantiate(existing, 0, instantiate)
+        val two = reuseOrInstantiate(existing, 1, instantiate)
+        val three = reuseOrInstantiate(existing, 2, instantiate)
+        val four = reuseOrInstantiate(existing, 3, instantiate)
+        one.name = nameOne
+        two.name = nameTwo
+        three.name = nameThree
+        four.name = nameFour
+        immutable.Seq(one, two, three, four)
+      case None =>
+        immutable.Seq(new ThreeDViewport(scene, Some(nameOne)), new ThreeDViewport(scene, Some(nameTwo)), new ThreeDViewport(scene, Some(nameThree)), new ThreeDViewport(scene, Some(nameFour)))
+
+    }
+  }
 }
 
 object SlicerPerspective extends PerspectiveFactory {
@@ -83,5 +128,6 @@ object SlicerPerspective extends PerspectiveFactory {
 
 class SlicerPerspective(val scene: Scene, template: Option[Perspective]) extends Perspective(template) {
   override lazy val factory = SlicerPerspective
+
   override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, ThreeDImageAxis.X, Some("X")), new TwoDViewport(scene, ThreeDImageAxis.Y, Some("Y")), new TwoDViewport(scene, ThreeDImageAxis.Z, Some("Z")))
 }
