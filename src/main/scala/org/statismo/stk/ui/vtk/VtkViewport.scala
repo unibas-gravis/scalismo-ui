@@ -3,7 +3,6 @@ package org.statismo.stk.ui.vtk
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
 
-import org.statismo.stk.ui.Displayable
 import org.statismo.stk.ui.EdtPublisher
 import org.statismo.stk.ui.Scene
 import org.statismo.stk.ui.Viewport

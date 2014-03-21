@@ -50,7 +50,7 @@ object ThreeDImagePlane {
 
 }
 
-class ThreeDImagePlane[A](val image: ThreeDImage[A], val axis: ThreeDImageAxis.Value)(implicit val ev: ScalarValue[A]) extends Displayable with Landmarkable with Removeable {
+class ThreeDImagePlane[A](val image: ThreeDImage[A], val axis: ThreeDImageAxis.Value)(implicit val ev: ScalarValue[A]) extends SceneTreeObject with Landmarkable with Removeable {
   override lazy val parent: ThreeDImage[A] = image
   name = axis.toString
 

@@ -3,7 +3,7 @@ package org.statismo.stk.ui
 import scala.collection.immutable.List
 import scala.swing.event.Event
 import scala.util.Try
-import org.statismo.stk.ui.visualization.Visualizations
+import org.statismo.stk.ui.visualization.{Visualizable, Visualizations}
 
 object Scene {
 
@@ -61,7 +61,7 @@ class Scene extends SceneTreeObject {
   lazy val visualizations: Visualizations = new Visualizations
 }
 
-class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[Displayable] {
+class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[Visualizable[_]] {
   name = "Auxiliary Objects"
   override lazy val isNameUserModifiable = false
   override lazy val parent = scene
