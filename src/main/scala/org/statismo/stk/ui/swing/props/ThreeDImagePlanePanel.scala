@@ -6,13 +6,12 @@ import scala.swing.Slider
 import scala.swing.event.ValueChanged
 
 import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.ThreeDImagePlane
 
 import javax.swing.border.TitledBorder
 
 class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
   val description = "Slice position"
-  private var target: Option[ThreeDImagePlane[_]] = None
+  private var target: Option[Boolean] = None
 
   val minLabel = new Label("0")
   val maxLabel = new Label("1000")
@@ -37,14 +36,14 @@ class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
   }
   listenToOwnEvents()
 
-  reactions += {
-    case ValueChanged(s) =>
-      if (target.isDefined) {
-        target.get.position = s.asInstanceOf[Slider].value
-      }
-    case ThreeDImagePlane.PositionChanged(s) =>
-      updateUi()
-  }
+//  reactions += {
+//    case ValueChanged(s) =>
+//      if (target.isDefined) {
+//        target.get.position = s.asInstanceOf[Slider].value
+//      }
+//    case ThreeDImagePlane.PositionChanged(s) =>
+//      updateUi()
+//  }
 
   def listenToOwnEvents() = {
     listenTo(slider)
@@ -56,33 +55,34 @@ class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
 
   def cleanup() = {
     if (target.isDefined) {
-      deafTo(target.get)
+//      deafTo(target.get)
       target = None
     }
   }
 
   def setObject(obj: Option[AnyRef]): Boolean = {
-    cleanup()
-    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane[_]]) {
-      target = Some(obj.get.asInstanceOf[ThreeDImagePlane[_]])
-      updateUi()
-      listenTo(target.get)
-      true
-    } else {
-      false
-    }
+//    cleanup()
+//    if (obj.isDefined && obj.get.isInstanceOf[ThreeDImagePlane]) {
+//      target = Some(obj.get.asInstanceOf[ThreeDImagePlane])
+//      updateUi()
+//      listenTo(target.get)
+//      true
+//    } else {
+//      false
+//    }
+    false
   }
 
   def updateUi() = {
     if (target.isDefined) {
-      deafToOwnEvents()
-      slider.min = target.get.minPosition
-      slider.max = target.get.maxPosition
-      minLabel.text = target.get.minPosition.toString
-      maxLabel.text = target.get.maxPosition.toString
-      slider.value = target.get.position
-      title.setTitle(description + " (" + target.get.name + ")")
-      listenToOwnEvents()
+//      deafToOwnEvents()
+//      slider.min = target.get.minPosition
+//      slider.max = target.get.maxPosition
+//      minLabel.text = target.get.minPosition.toString
+//      maxLabel.text = target.get.maxPosition.toString
+//      slider.value = target.get.position
+//      title.setTitle(description + " (" + target.get.name + ")")
+//      listenToOwnEvents()
     }
   }
 }

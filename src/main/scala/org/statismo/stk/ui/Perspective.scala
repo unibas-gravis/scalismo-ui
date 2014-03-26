@@ -129,5 +129,5 @@ object SlicerPerspective extends PerspectiveFactory {
 class SlicerPerspective(val scene: Scene, template: Option[Perspective]) extends Perspective(template) {
   override lazy val factory = SlicerPerspective
 
-  override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, ThreeDImageAxis.X, Some("X")), new TwoDViewport(scene, ThreeDImageAxis.Y, Some("Y")), new TwoDViewport(scene, ThreeDImageAxis.Z, Some("Z")))
+  override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, Axis.X, Some("X")), new TwoDViewport(scene, Axis.Y, Some("Y")), new TwoDViewport(scene, Axis.Z, Some("Z")))
 }

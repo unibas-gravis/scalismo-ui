@@ -63,7 +63,7 @@ trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFact
   final override def visualizationsFor(viewportClassName: String): Seq[Visualization[A]] = visualizations.getOrElse(viewportClassName, Nil)
 }
 
-trait VisualizationProvider[A <: Visualizable[_]] {
+trait VisualizationProvider[-A <: Visualizable[_]] {
   def visualizationProvider: VisualizationProvider[A]
 }
 

@@ -28,14 +28,14 @@ class ThreeDViewport(override val scene: Scene, name: Option[String] = None) ext
   override val isMouseSensitive = true
 }
 
-class TwoDViewport(override val scene: Scene, val axis: ThreeDImageAxis.Value, name: Option[String] = None) extends Viewport {
+class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
   override val isMouseSensitive = false
 
   override lazy val initialCameraChange = axis match {
-    case ThreeDImageAxis.Z => Viewport.NoInitialCameraChange
-    case ThreeDImageAxis.Y => Viewport.InitialCameraChange(Some(90), None, None)
-    case ThreeDImageAxis.X => Viewport.InitialCameraChange(None, None, Some(90))
+    case Axis.Z => Viewport.NoInitialCameraChange
+    case Axis.Y => Viewport.InitialCameraChange(Some(90), None, None)
+    case Axis.X => Viewport.InitialCameraChange(None, None, Some(90))
   }
 }
 

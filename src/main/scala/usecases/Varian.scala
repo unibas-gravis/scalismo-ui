@@ -18,19 +18,23 @@ import org.statismo.stk.core.registration.MeanSquaresMetric3D
 import org.statismo.stk.core.registration.RKHSNormRegularizer
 import org.statismo.stk.core.registration.Registration
 import org.statismo.stk.core.registration.RegistrationConfiguration
-import org.statismo.stk.ui.VisualizableLandmarks
-import org.statismo.stk.ui.Landmarks
-import org.statismo.stk.ui.ReferenceLandmarks
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.StatismoApp
-import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.ui.{Mesh => UiMesh, _}
 import org.statismo.stk.core.geometry.ThreeD
 import scala.collection.mutable.ArrayBuffer
 import org.statismo.stk.core.image.ContinuousScalarImage3D
-import org.statismo.stk.ui.ThreeDImage
-import org.statismo.stk.ui.{Mesh => UiMesh}
 import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.registration.KernelTransformationSpace3D
+import scala.Some
+import org.statismo.stk.core.numerics.LBFGSOptimizer
+import org.statismo.stk.core.registration.KernelTransformationSpaceConfiguration
+import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
+import org.statismo.stk.core.registration.RegistrationConfiguration
+import org.statismo.stk.core.numerics.Integrator
+import org.statismo.stk.core.numerics.FixedPointsUniformMeshSampler3D
+import org.statismo.stk.core.numerics.IntegratorConfiguration
+import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.image.ContinuousScalarImage3D
+import org.statismo.stk.core.registration.MeanSquaresMetric3D
 
 class Varian(scene: Scene) extends StatismoFrame(scene) {
 
@@ -153,8 +157,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
     val targetDm: ContinuousScalarImage3D = {
       scene.staticObjects(0).representations(0) match {
         case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
-        case imgUi: ThreeDImage[_] =>
-          val img = imgUi.asInstanceOf[ThreeDImage[Short]].peer
+        case imgUi: Image3D[_] =>
+          val img = imgUi.peer.asInstanceOf[DiscreteScalarImage3D[Short]]
           val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))

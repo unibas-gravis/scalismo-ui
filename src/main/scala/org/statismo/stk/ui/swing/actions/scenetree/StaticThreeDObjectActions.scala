@@ -5,7 +5,7 @@ import scala.util.Success
 import scala.util.Try
 import org.statismo.stk.ui.FileIoMetadata
 import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.StaticImage
+import org.statismo.stk.ui.StaticImage3D
 import org.statismo.stk.ui.StaticMesh
 import org.statismo.stk.ui.StaticThreeDObjects
 import org.statismo.stk.ui.StaticThreeDObject
@@ -38,10 +38,10 @@ class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFro
 }
 
 class CreateStaticThreeDObjectFromImageAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Image file...") {
-  override val metadata = StaticImage
+  override val metadata = StaticImage3D
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-    StaticImage(file)(parent.scene).map(ok => Success(()))
+    StaticImage3D(file)(parent.scene).map(ok => Success(()))
   }
 }
 
@@ -72,10 +72,10 @@ class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationT
 }
 
 class AddImageRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add Representation from Image file...") {
-  override val metadata = StaticImage
+  override val metadata = StaticImage3D
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
-    StaticImage(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
+    StaticImage3D(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
 }
 
