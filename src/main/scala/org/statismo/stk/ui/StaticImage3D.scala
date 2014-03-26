@@ -51,9 +51,5 @@ class StaticImage3D[S: ScalarValue: ClassTag : TypeTag](override val peer: Discr
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
-  def addLandmarkAt(point: Point3D) = {
-    parent.landmarks.addAt(point)
-  }
-
   parent.representations.add(this)
 }

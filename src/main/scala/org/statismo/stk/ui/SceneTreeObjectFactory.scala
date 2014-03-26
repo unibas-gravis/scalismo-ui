@@ -24,10 +24,10 @@ object SceneTreeObjectFactory {
         }
         so
     }
-    val allErrors = errors.map(f => f match {
+    val allErrors = errors.map {
       case Failure(ex) => ex.getMessage
       case _ => ""
-    }).mkString
+    }.mkString
     Failure(new IOException(allErrors))
   }
 }
