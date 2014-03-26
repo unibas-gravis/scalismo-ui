@@ -4,6 +4,7 @@ import scala.swing.event.Event
 
 object Viewport {
   case class Destroyed(source: Viewport) extends Event
+  case class BoundingBoxChanged(source: Viewport) extends Event
   case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
   val NoInitialCameraChange = InitialCameraChange(None, None, None)
 
@@ -19,6 +20,15 @@ trait Viewport extends Nameable {
   }
 
   def isMouseSensitive: Boolean
+
+  private var _currentBoundingBox = BoundingBox.Zero
+  def currentBoundingBox = _currentBoundingBox
+  private [ui] def currentBoundingBox_=(nb: BoundingBox) = {
+    if (currentBoundingBox != nb) {
+      _currentBoundingBox = nb
+    }
+    publish(Viewport.BoundingBoxChanged(this))
+  }
 
   def initialCameraChange = Viewport.NoInitialCameraChange
 }
