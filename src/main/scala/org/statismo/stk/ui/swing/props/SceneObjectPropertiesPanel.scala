@@ -29,7 +29,7 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
   private val appearance = new VisualizationPanel("Appearance", new RadiusPanel, new ColorablePanel)
-  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new PrincipalComponentsPanel, new ThreeDImagePanel, new ThreeDImagePlanePanel, appearance)
+  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance)
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {

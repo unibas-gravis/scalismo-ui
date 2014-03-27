@@ -4,11 +4,12 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.utils.ImageConversion
 import scala.collection.{mutable, immutable}
 import org.statismo.stk.core.geometry.Point3D
+import scala.swing.event.Event
 
 //import org.statismo.stk.ui.ThreeDImageAxis
 //import org.statismo.stk.ui.ThreeDImagePlane
 import vtk.vtkImagePlaneWidget
-import org.statismo.stk.ui.{Axis, Image3D, TwoDViewport}
+import org.statismo.stk.ui.{Scene, Axis, Image3D, TwoDViewport}
 
 class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRenderWindowInteractor) extends RenderableActor {
   override val vtkActors = Seq()
@@ -39,27 +40,26 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
       }
       return Math.abs(own - cmp) < 0.001
     }
+
+    def setSlicePoint(where: Point3D) : Unit = {
+      val np: Float = axis match {
+        case Axis.X => where.x
+        case Axis.Y => where.y
+        case Axis.Z => where.z
+      }
+      SetSlicePosition(np)
+      publish (VtkContext.RenderRequest(ImageWidgetActor.this))
+    }
   }
 
-  val widgets: immutable.Seq[Widget] = {
-    val buf = new mutable.ArrayBuffer[Widget]
-    if (true) buf += new Widget(Axis.X)
-    if (true) buf += new Widget(Axis.Y)
-    if (true) buf += new Widget(Axis.Z)
-    buf.to[immutable.Seq]
-  }
+  val x = new Widget(Axis.X)
+  val y = new Widget(Axis.Y)
+  val z = new Widget(Axis.Z)
+  val widgets: immutable.Seq[Widget] = immutable.Seq(x,y,z)
 
-  listenTo(interactor)
+  listenTo(interactor, peer.source.scene)
 
   reactions += {
-//    case ThreeDImagePlane.PositionChanged(s) => this.synchronized {
-//      widget.SetSliceIndex(peer.position)
-//      if (interactor.viewport.isInstanceOf[TwoDViewport]) {
-//        publish(new VtkContext.ResetCameraRequest(this))
-//      } else {
-//        publish(new VtkContext.RenderRequest(this))
-//      }
-//    }
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
       def in(v: Double, min: Double, max: Double) = {
         min <= v && v <= max
@@ -71,13 +71,24 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
         }
       }
     }
+    case Scene.SlicingPosition.BoundingBoxChanged(s) => {
+      println("FIXME: Handle Bounding Box Changes in ImageWidgetActor")
+    }
+    case Scene.SlicingPosition.PrecisionChanged(s) => {
+      println("FIXME: Handle Precision Changes in ImageWidgetActor")
+    }
+    case Scene.SlicingPosition.PointChanged(s) => {
+      widgets.foreach {_.setSlicePoint(s.point)}
+    }
   }
   override def onDestroy() = this.synchronized {
-    deafTo(interactor)
+    deafTo(interactor, peer.source.scene)
     widgets.foreach { widget =>
       widget.Off()
       widget.Delete()
     }
     super.onDestroy()
   }
+
+  override def currentBoundingBox = VtkUtils.bounds2BoundingBox(points.GetBounds())
 }

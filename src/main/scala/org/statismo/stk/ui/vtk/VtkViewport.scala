@@ -3,9 +3,7 @@ package org.statismo.stk.ui.vtk
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
 
-import org.statismo.stk.ui.EdtPublisher
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.Viewport
+import org.statismo.stk.ui.{BoundingBox, EdtPublisher, Scene, Viewport}
 
 import vtk.vtkRenderer
 import org.statismo.stk.ui.visualization.{Renderable, Visualizable}
@@ -104,6 +102,8 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
             publish(VtkContext.RenderRequest(this))
           }
         }
+        val boundingBox = actors.values.foldLeft(BoundingBox.Zero)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.Zero)).get)})
+        viewport.currentBoundingBox = boundingBox
       }
     }
   }

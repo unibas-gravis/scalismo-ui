@@ -4,7 +4,7 @@ package org.statismo.stk.ui.vtk
 import vtk.vtkActor
 import org.statismo.stk.ui.visualization.{SphereLike, Renderable}
 import org.statismo.stk.ui.Mesh.ThreeDMeshRenderable
-import org.statismo.stk.ui.Image3D
+import org.statismo.stk.ui.{BoundingBox, Image3D}
 import scala.None
 
 object RenderableActor {
@@ -42,6 +42,6 @@ object RenderableActor {
 
 trait RenderableActor extends VtkContext {
   def vtkActors: Seq[vtkActor]
-
+  def currentBoundingBox: BoundingBox
   def onDestroy(): Unit = ()
 }
