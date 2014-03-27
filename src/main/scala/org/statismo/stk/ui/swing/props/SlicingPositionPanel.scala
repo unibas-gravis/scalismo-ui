@@ -16,7 +16,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
   private [SlicingPositionPanel] class Dimension (axis: Axis.Value) {
     val nameLabel = new Label(axis.toString +":")
-    val valueLabel = new Label(format(0))
+    val current = new Label(format(0))
     val minimum = new Label(format(0))
     val maximum = new Label(format(0))
     val slider = new Slider {
@@ -61,7 +61,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     }
 
     private def setValueText(actual: Float) : Unit = {
-      valueLabel.text = format(actual)
+      current.text = format(actual)
     }
   }
 
@@ -90,14 +90,14 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     }
 
     add(new Label("Dim."), (0, 0))
-    add(new Label("Value"), (1, 0))
+    add(new Label("Current"), (1, 0))
     add(new Label("Min."), (2, 0))
     add(new Label("Control"), (3, 0))
     add(new Label("Max."), (4, 0))
 
     def add(dim: Dimension, row: Int): Unit = {
       add(dim.nameLabel, (0, row))
-      add(dim.valueLabel, (1, row))
+      add(dim.current, (1, row))
       add(dim.minimum, (2, row))
       add(dim.slider, (3, row))
       add(dim.maximum, (4, row))

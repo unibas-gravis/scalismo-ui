@@ -25,6 +25,7 @@ object Scene {
       val MmWhole = new Val("1 mm", {value => f"$value%1.0f"}, {f => Math.round(f)}, {i => i.toFloat} )
       val MmTenth = new Val("1/10 mm", {value => f"$value%1.1f"}, {f => Math.round(f * 10)}, {i => i.toFloat / 10f})
       val MmHundredth = new Val("1/100 mm", {value => f"$value%1.2f"}, {f => Math.round(f * 100)}, {i => i.toFloat  / 100f})
+      val MmThousandth = new Val("1/1000 mm", {value => f"$value%1.3f"}, {f => Math.round(f * 1000)}, {i => i.toFloat  / 1000f})
     }
   }
 
