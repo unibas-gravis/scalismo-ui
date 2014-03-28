@@ -22,8 +22,18 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 
   def description: String
 
+  private [props] var workspace: Option[Workspace] = None
+
   override def toString(): String = {
     description
+  }
+
+  override def revalidate() = {
+    super.revalidate()
+    if (preferredSize.width > size.width) {
+      // this is a hack :-D
+      workspace.map(_.publish(Workspace.PleaseLayoutAgain))
+    }
   }
 }
 
@@ -42,7 +52,10 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   lazy val cards = new CardPanel {
     add(emptyPanel, emptyPanel.uniqueId)
-    availableProviders.foreach { add(_) }
+    availableProviders.foreach { p=>
+      add(p)
+      p.workspace = Some(workspace)
+    }
   }
 
   lazy val combo = new Component {

@@ -3,7 +3,7 @@ package org.statismo.stk.ui
 import scala.collection.immutable
 
 object Perspective {
-  def defaultPerspective(scene: Scene) = new SingleViewportPerspective(None)(scene)
+  def defaultPerspective(scene: Scene) = new SlicerPerspective(None)(scene)//SingleViewportPerspective(None)(scene)
 }
 
 abstract class Perspective(template: Option[Perspective]) extends Nameable {
@@ -123,11 +123,29 @@ class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Sc
 object SlicerPerspective extends PerspectiveFactory {
   override lazy val name = "Slicer"
 
-  def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(scene, Some(scene.perspective))
+  def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
 }
 
-class SlicerPerspective(val scene: Scene, template: Option[Perspective]) extends Perspective(template) {
+class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
   override lazy val factory = SlicerPerspective
 
-  override def createViewports() = immutable.Seq(new ThreeDViewport(scene, Some("3D")), new TwoDViewport(scene, Axis.X, Some("X")), new TwoDViewport(scene, Axis.Y, Some("Y")), new TwoDViewport(scene, Axis.Z, Some("Z")))
+  override def createViewports() = {
+    val nameOne = "3D"
+    val nameTwo = "X"
+    val nameThree = "Y"
+    val nameFour = "Z"
+    template match {
+      case Some(p: Perspective) =>
+        val existing = p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[Seq[ThreeDViewport]].toList
+        def instantiate(scene: Scene): ThreeDViewport = new ThreeDViewport(scene)
+        val one = reuseOrInstantiate(existing, 0, instantiate)
+        one.name = nameOne
+        val two = new TwoDViewport(scene, Axis.X, Some(nameTwo))
+        val three = new TwoDViewport(scene, Axis.Y, Some(nameThree))
+        val four = new TwoDViewport(scene, Axis.Z, Some(nameFour))
+        immutable.Seq(one, two, three, four)
+      case None =>
+        immutable.Seq(new ThreeDViewport(scene, Some(nameOne)), new TwoDViewport(scene, Axis.X, Some(nameTwo)), new TwoDViewport(scene, Axis.Y, Some(nameThree)), new TwoDViewport(scene, Axis.Z, Some(nameFour)))
+    }
+  }
 }

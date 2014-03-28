@@ -18,8 +18,7 @@ object Scene {
 
     object Precision extends Enumeration {
       import scala.language.implicitConversions
-      protected case class Val(name: String, format: Float => String, toInteger: Float => Int, fromInteger: Int => Float) extends super.Val(nextId, name) {
-      }
+      case class Val(name: String, format: Float => String, toIntValue: Float => Int, fromInt: Int => Float) extends super.Val(nextId, name)
       implicit def valueToPrecisionVal(x: Value) = x.asInstanceOf[Val]
 
       val MmWhole = new Val("1 mm", {value => f"$value%1.0f"}, {f => Math.round(f)}, {i => i.toFloat} )
@@ -74,7 +73,7 @@ object Scene {
       }
     }
 
-    private var _boundingBox = BoundingBox.Zero
+    private var _boundingBox = BoundingBox.None
     def boundingBox = this.synchronized(_boundingBox)
     private[Scene] def boundingBox_=(nb: BoundingBox) = this.synchronized {
       if (boundingBox != nb) {
@@ -84,7 +83,7 @@ object Scene {
     }
 
     private[Scene] def updateBoundingBox() = {
-      boundingBox = scene.viewports.foldLeft(BoundingBox.Zero)({case (bb, vp) => bb.union(vp.currentBoundingBox)})
+      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) => bb.union(vp.currentBoundingBox)})
     }
   }
 }

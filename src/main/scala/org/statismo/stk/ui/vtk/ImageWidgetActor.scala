@@ -5,6 +5,7 @@ import org.statismo.stk.core.utils.ImageConversion
 import scala.collection.{mutable, immutable}
 import org.statismo.stk.core.geometry.Point3D
 import scala.swing.event.Event
+import scala.swing.Swing
 
 //import org.statismo.stk.ui.ThreeDImageAxis
 //import org.statismo.stk.ui.ThreeDImagePlane
@@ -18,6 +19,10 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
   lazy val (xmin , xmax, ymin, ymax, zmin, zmax) = {
     val b = points.GetBounds()
     (b(0),b(1),b(2),b(3),b(4),b(5))
+  }
+
+  def in(v: Double, min: Double, max: Double) = {
+    min <= v && v <= max
   }
 
   private [ImageWidgetActor] class Widget(val axis: Axis.Value) extends vtkImagePlaneWidget {
@@ -42,13 +47,32 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
     }
 
     def setSlicePoint(where: Point3D) : Unit = {
-      val np: Float = axis match {
-        case Axis.X => where.x
-        case Axis.Y => where.y
-        case Axis.Z => where.z
+      val (np, min, max) = axis match {
+        case Axis.X => (where.x, xmin, xmax)
+        case Axis.Y => (where.y, ymin, ymax)
+        case Axis.Z => (where.z, zmin, zmax)
       }
-      SetSlicePosition(np)
+      if (in(np, min, max)) {
+        On()
+        SetSlicePosition(np)
+      } else {
+        Off()
+      }
       publish (VtkContext.RenderRequest(ImageWidgetActor.this))
+    }
+
+    private var on = false
+    override def On() = this.synchronized{
+      if (!on) {
+        on = true
+        super.On()
+      }
+    }
+    override def Off() = this.synchronized{
+//      if (on) {
+//        on = false
+//        super.Off()
+//      }
     }
   }
 
@@ -61,9 +85,6 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
 
   reactions += {
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
-      def in(v: Double, min: Double, max: Double) = {
-        min <= v && v <= max
-      }
       if (in(point.x, xmin, xmax) && in(point.y, ymin, ymax) && in (point.z, zmin, zmax)) {
         // point can in principle qualify.
         if (widgets.foldLeft(false){case (b,w) => b || w.contains(point)}) {
@@ -77,7 +98,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
     case Scene.SlicingPosition.PrecisionChanged(s) => {
       println("FIXME: Handle Precision Changes in ImageWidgetActor")
     }
-    case Scene.SlicingPosition.PointChanged(s) => {
+    case Scene.SlicingPosition.PointChanged(s) => Swing.onEDT{
       widgets.foreach {_.setSlicePoint(s.point)}
     }
   }

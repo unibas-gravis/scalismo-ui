@@ -21,7 +21,7 @@ trait Viewport extends Nameable {
 
   def isMouseSensitive: Boolean
 
-  private var _currentBoundingBox = BoundingBox.Zero
+  private var _currentBoundingBox = BoundingBox.None
   def currentBoundingBox = _currentBoundingBox
   private [ui] def currentBoundingBox_=(nb: BoundingBox) = {
     if (currentBoundingBox != nb) {

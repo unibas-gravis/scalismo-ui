@@ -102,7 +102,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
             publish(VtkContext.RenderRequest(this))
           }
         }
-        val boundingBox = actors.values.foldLeft(BoundingBox.Zero)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.Zero)).get)})
+        val boundingBox = actors.values.foldLeft(BoundingBox.None)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.None)).get)})
         viewport.currentBoundingBox = boundingBox
       }
     }

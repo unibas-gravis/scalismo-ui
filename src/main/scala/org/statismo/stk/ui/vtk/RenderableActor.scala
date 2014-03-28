@@ -3,7 +3,7 @@ package org.statismo.stk.ui.vtk
 
 import vtk.vtkActor
 import org.statismo.stk.ui.visualization.{SphereLike, Renderable}
-import org.statismo.stk.ui.Mesh.ThreeDMeshRenderable
+import org.statismo.stk.ui.Mesh.MeshRenderable3D
 import org.statismo.stk.ui.{BoundingBox, Image3D}
 import scala.None
 
@@ -26,7 +26,7 @@ object RenderableActor {
   val DefaultRenderableToActorFunction: RenderableToActor = { case (renderable, interactor) =>
     implicit val _interactor = interactor
     renderable match {
-      case m: ThreeDMeshRenderable => Some(new MeshActor(m))
+      case m: MeshRenderable3D => Some(new MeshActor(m))
       case s: SphereLike => Some(new SphereActor(s))
       case i: Image3D.Renderable3D => Some(new ImageWidgetActor(i))
       case _ => None

@@ -14,20 +14,21 @@ import org.statismo.stk.ui.visualization.props.{OpacityProperty, HasColorAndOpac
 
 object Mesh extends SimpleVisualizationFactory[Mesh] {
   case class GeometryChanged(source: Mesh) extends Event
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualization(None)))
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D(None)))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization3D(None)))
 
-  class ThreeDVisualization(from: Option[ThreeDVisualization]) extends Visualization[Mesh] with HasColorAndOpacity {
+  class Visualization3D(from: Option[Visualization3D]) extends Visualization[Mesh] with HasColorAndOpacity {
     override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(None)
     override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(None)
 
-    protected def createDerived() = new ThreeDVisualization(Some(this))
+    protected def createDerived() = new Visualization3D(Some(this))
 
     protected def instantiateRenderables(source: Mesh) = {
-      Seq(new ThreeDMeshRenderable(source, color, opacity))
+      Seq(new MeshRenderable3D(source, color, opacity))
     }
   }
 
-  class ThreeDMeshRenderable(val mesh: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
+  class MeshRenderable3D(val mesh: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
 }
 
 

@@ -8,6 +8,7 @@ import org.statismo.stk.ui.Workspace
 
 import vtk.vtkCanvas
 import vtk.vtkInteractorStyleTrackballCamera
+import scala.swing.Swing
 
 class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   lazy val interactor = new VtkRenderWindowInteractor(workspace, viewport)
@@ -22,7 +23,8 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
 
   override def Render() = this.synchronized {
     isEmpty = false
-    super.Render()
+    //println(Thread.currentThread())
+    Swing.onEDT{super.Render()}
   }
 
   def setAsEmpty() = this.synchronized {
@@ -37,5 +39,10 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
     } else {
       super.paint(g)
     }
+  }
+
+  override def finalize() = {
+    println("Finalizing")
+    super.finalize()
   }
 }

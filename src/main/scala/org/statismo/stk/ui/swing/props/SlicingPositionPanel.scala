@@ -5,9 +5,9 @@ import scala.swing._
 import org.statismo.stk.ui._
 import scala.swing.GridBagPanel.Anchor
 import scala.Some
-import org.statismo.stk.core.geometry.Point3D
 import javax.swing.border.TitledBorder
 import scala.swing.event.{ValueChanged, ButtonClicked}
+import org.statismo.stk.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
 
 class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   val description = "Slicing Position"
@@ -27,7 +27,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
     def value: Float = {
       if (slicingPosition.isDefined) {
-        slicingPosition.get.precision.fromInteger(slider.value)
+        slicingPosition.get.precision.fromInt(slider.value)
       } else 0
     }
 
@@ -39,30 +39,21 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       }
     }
 
-    def updateBounds(boundingBox: BoundingBox) = {
-      val (min, max) = axis match {
-        case Axis.X => (boundingBox.xMin, boundingBox.xMax)
-        case Axis.Y => (boundingBox.yMin, boundingBox.yMax)
-        case Axis.Z => (boundingBox.zMin, boundingBox.zMax)
+    def update() = {
+      val sp = slicingPosition.get
+      val (min, max, value) = axis match {
+        case Axis.X => (sp.boundingBox.xMin, sp.boundingBox.xMax, sp.x)
+        case Axis.Y => (sp.boundingBox.yMin, sp.boundingBox.yMax, sp.y)
+        case Axis.Z => (sp.boundingBox.zMin, sp.boundingBox.zMax, sp.z)
       }
       minimum.text = format(min)
       maximum.text = format(max)
-      slider.min = slicingPosition.get.precision.toInteger(min)
-      slider.max = slicingPosition.get.precision.toInteger(max)
+      slider.min = sp.precision.toIntValue(min)
+      slider.max = sp.precision.toIntValue(max)
+      slider.value = sp.precision.toIntValue(value)
+      current.text = format(value)
     }
 
-    def updatePoint(point: Point3D) = {
-      val actual = axis match {
-        case Axis.X => point.x
-        case Axis.Y => point.y
-        case Axis.Z => point.z
-      }
-      setValueText(actual)
-    }
-
-    private def setValueText(actual: Float) : Unit = {
-      current.text = format(actual)
-    }
   }
 
   val x = new Dimension(Axis.X)
@@ -108,9 +99,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   position.add(y, 2)
   position.add(z, 3)
 
-  listenTo(x.slider)
-  listenTo(y.slider)
-  listenTo(z.slider)
+  listenToOwnEvents()
 
   val precision = new GridPanel(1, Scene.SlicingPosition.Precision.values.size) {
     border = new TitledBorder(null, "Precision", TitledBorder.LEADING, 0, null, null)
@@ -159,23 +148,29 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   }
 
   def updateUi() : Unit = {
+    deafToOwnEvents()
     slicingPosition.map { sp =>
       precision.set(sp.precision)
       dimensions.foreach { d =>
-        d.updatePoint(sp.point)
-        d.updateBounds(sp.boundingBox)
+        d.update()
       }
     }
+    revalidate()
+    listenToOwnEvents()
+  }
+
+  def deafToOwnEvents() = {
+    deafTo(x.slider, y.slider, z.slider)
+  }
+
+  def listenToOwnEvents() = {
+    listenTo(x.slider, y.slider, z.slider)
   }
 
   reactions += {
-    case Scene.SlicingPosition.PrecisionChanged(sp) =>
-      updateUi()
-    case Scene.SlicingPosition.PointChanged(sp) =>
-      dimensions.foreach { d =>
-        d.updatePoint(sp.point)
-        d.updateBounds(sp.boundingBox)
-      }
+    case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
+    case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
+    case Scene.SlicingPosition.PointChanged(sp) => updateUi()
     case ValueChanged(slider: Slider) =>
       slider match {
         case x.slider => slicingPosition.map{_.x = x.value}
