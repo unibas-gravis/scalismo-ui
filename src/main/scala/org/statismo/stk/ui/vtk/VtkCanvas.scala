@@ -23,8 +23,9 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
 
   override def Render() = this.synchronized {
     isEmpty = false
-    //println(Thread.currentThread())
-    Swing.onEDT{super.Render()}
+    Swing.onEDT{
+      super.Render()
+    }
   }
 
   def setAsEmpty() = this.synchronized {

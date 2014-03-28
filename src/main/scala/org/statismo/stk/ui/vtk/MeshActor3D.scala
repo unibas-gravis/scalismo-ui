@@ -7,7 +7,7 @@ import org.statismo.stk.ui.Mesh
 import vtk.vtkPolyData
 import org.statismo.stk.ui.Mesh.MeshRenderable3D
 
-class MeshActor(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
+class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
   override lazy val color = source.color
   override lazy val opacity = source.opacity
   listenTo(source.mesh)

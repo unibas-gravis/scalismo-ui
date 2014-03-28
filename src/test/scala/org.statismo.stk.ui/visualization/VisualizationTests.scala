@@ -21,7 +21,7 @@ class VisualizationTests  extends FunSpec with Matchers {
     def put(kv: (String, immutable.Seq[Visualization[TestVisualizable]])) = visualizations += kv
   }
 
-  class TestVisualizable extends Visualizable[TestVisualizable] {
+  class TestVisualizable extends VisualizableSceneTreeObject[TestVisualizable] {
     override def parent = new Scene()
     override def visualizationProvider: VisualizationProvider[TestVisualizable] = TestVisualizableFactory
   }

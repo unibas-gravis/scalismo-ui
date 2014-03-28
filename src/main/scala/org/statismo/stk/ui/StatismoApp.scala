@@ -3,12 +3,11 @@ package org.statismo.stk.ui
 import scala.Array.canBuildFrom
 import scala.swing._
 import org.statismo.stk.ui.swing._
-import javax.swing.UIManager
-import javax.swing.WindowConstants
+import javax.swing.{SwingUtilities, UIManager, WindowConstants}
 import org.statismo.stk.ui.swing.menu.MainMenuBar
 
 object StatismoApp {
-  type FrameConstructor = (Scene => StatismoFrame)
+  import StatismoFrame.FrameConstructor
 
   def defaultFrameConstructor: FrameConstructor = {
     s: Scene => new StatismoFrame(s)
@@ -16,7 +15,7 @@ object StatismoApp {
 
   def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeelClassName: String = defaultLookAndFeelClassName): StatismoApp = {
     StatismoLookAndFeel.initializeWith(lookAndFeelClassName)
-    val app = new StatismoApp(frame(scene))
+    val app = new StatismoApp(StatismoFrame(frame, scene))
     app.main(args)
     app
   }
@@ -39,7 +38,21 @@ class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
 
 }
 
-class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
+object StatismoFrame {
+  type FrameConstructor = (Scene => StatismoFrame)
+  def apply(constructor: FrameConstructor, scene: Scene = new Scene): StatismoFrame = {
+    var result: Option[StatismoFrame] = None
+    Swing.onEDTWait {
+      val theFrame = constructor(scene)
+      result = Some(theFrame)
+    }
+    result.get
+  }
+}
+protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
+  if (!SwingUtilities.isEventDispatchThread) {
+    sys.error("StatismoFrame constructor must be invoked in the Swing EDT. See StatismoFrame.apply()")
+  }
 
   title = "Statismo Viewer"
 

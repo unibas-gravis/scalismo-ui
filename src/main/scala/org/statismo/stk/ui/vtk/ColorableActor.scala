@@ -16,7 +16,7 @@ trait ColorableActor extends SingleRenderableActor {
 
   setAppearance()
 
-  def setAppearance() = this.synchronized {
+  private def setAppearance() = this.synchronized {
     vtkActor.GetProperty().SetOpacity(opacity.value)
     val c = color.value.getColorComponents(null)
     vtkActor.GetProperty().SetColor(c(0), c(1), c(2))

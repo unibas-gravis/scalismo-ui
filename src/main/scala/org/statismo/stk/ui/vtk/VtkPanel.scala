@@ -14,6 +14,7 @@ import org.statismo.stk.ui.Workspace
 import javax.swing.JPanel
 import vtk.vtkPNGWriter
 import vtk.vtkWindowToImageFilter
+import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
 
 class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with Reactor {
   lazy val ui = new VtkCanvas(workspace, viewport)
@@ -24,8 +25,11 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
   }
   lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
   listenTo(viewport, vtk)
-  if (!workspace.scene.visualizables(d => d.visible(viewport)).isEmpty) {
-    ui.Render()
+
+  {
+    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
+      ui.Render()
+    }
   }
 
   reactions += {

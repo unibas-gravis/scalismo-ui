@@ -12,7 +12,7 @@ import scala.swing.Swing
 import vtk.vtkImagePlaneWidget
 import org.statismo.stk.ui.{Scene, Axis, Image3D, TwoDViewport}
 
-class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRenderWindowInteractor) extends RenderableActor {
+class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewport) extends RenderableActor {
   override val vtkActors = Seq()
 
   val points = ImageConversion.image3DTovtkStructuredPoints(peer.source.asFloatImage)
@@ -33,7 +33,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
       case Axis.Z => SetPlaneOrientationToZAxes()
     }
     SetSliceIndex(0)
-    SetInteractor(interactor)
+    SetInteractor(viewport.interactor)
     On()
 
     def contains(point: Point3D) : Boolean = {
@@ -81,7 +81,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
   val z = new Widget(Axis.Z)
   val widgets: immutable.Seq[Widget] = immutable.Seq(x,y,z)
 
-  listenTo(interactor, peer.source.scene)
+  listenTo(viewport.interactor, peer.source.scene)
 
   reactions += {
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
@@ -103,7 +103,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit interactor: VtkRende
     }
   }
   override def onDestroy() = this.synchronized {
-    deafTo(interactor, peer.source.scene)
+    deafTo(viewport.interactor, peer.source.scene)
     widgets.foreach { widget =>
       widget.Off()
       widget.Delete()

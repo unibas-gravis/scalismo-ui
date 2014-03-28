@@ -21,8 +21,9 @@ object VtkContext {
 
 }
 
-class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit val interactor: VtkRenderWindowInteractor) extends VtkContext {
+class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interactor: VtkRenderWindowInteractor) extends VtkContext {
   val scene = viewport.scene
+  private implicit val myself: VtkViewport  = this
   deafTo(this)
 
   private var actors = new HashMap[Renderable, Option[RenderableActor]]
@@ -30,7 +31,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
   private var firstTime = true
 
   def refresh(): Unit = {
-    val renderables = scene.visualizables(f => f.visible(viewport)).flatMap {obj =>
+    val renderables = scene.visualizables(f => f.isVisibleIn(viewport)).flatMap {obj =>
       scene.visualizations.tryGet(obj, viewport) match {
         case Failure(f) => {
           f.printStackTrace()
@@ -86,6 +87,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
           }
       })
       if (changed) {
+        updateBoundingBox()
         if (actors.isEmpty) {
           publish(VtkContext.ViewportEmpty(this))
         } else {
@@ -102,12 +104,14 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
             publish(VtkContext.RenderRequest(this))
           }
         }
-        val boundingBox = actors.values.foldLeft(BoundingBox.None)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.None)).get)})
-        viewport.currentBoundingBox = boundingBox
       }
     }
   }
 
+  def updateBoundingBox() = {
+    val boundingBox = actors.values.foldLeft(BoundingBox.None)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.None)).get)})
+    viewport.currentBoundingBox = boundingBox
+  }
   listenTo(scene, viewport)
 
   reactions += {
@@ -115,7 +119,10 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, implicit va
     case Scene.TreeTopologyChanged(s) => refresh()
     case Scene.VisibilityChanged(s) => refresh()
     case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
-    case VtkContext.RenderRequest(s) => publish(VtkContext.RenderRequest(this))
+    case VtkContext.RenderRequest(s) => {
+      updateBoundingBox()
+      publish(VtkContext.RenderRequest(this))
+    }
   }
 
   refresh()

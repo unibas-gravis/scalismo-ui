@@ -67,7 +67,12 @@ trait VisualizationProvider[-A <: Visualizable[_]] {
   def visualizationProvider: VisualizationProvider[A]
 }
 
-trait Visualizable[X <: Visualizable[X]] extends SceneTreeObject with VisualizationProvider[X] {
+trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
+  def isVisibleIn(viewport: Viewport) : Boolean
+}
+
+trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends SceneTreeObject with Visualizable[X] {
+  override def isVisibleIn(viewport: Viewport) : Boolean = visible(viewport)
 }
 
 trait Derivable[A <: AnyRef] {
@@ -100,11 +105,15 @@ trait Visualization[A <: Visualizable[_]] extends Derivable[Visualization[A]] {
     mappings.getOrElseUpdate(typed, instantiateRenderables(typed))
   }
   protected def instantiateRenderables(source: A): Seq[Renderable]
-  //protected val properties: Seq[VisualizationProperty[_]]
 }
 
-trait ConcreteVisualization[A <: Visualizable[_], C <: ConcreteVisualization[A,C]] extends Visualization[A] {
+final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
+  override protected def createDerived() = new NullVisualization[A]
+  override protected def instantiateRenderables(source: A) = Nil
 }
+
+//trait ConcreteVisualization[A <: Visualizable[_], C <: ConcreteVisualization[A,C]] extends Visualization[A] {
+//}
 
 object VisualizationProperty {
   case class ValueChanged[V, C <: VisualizationProperty[V,C]](source: VisualizationProperty[V,C]) extends Event

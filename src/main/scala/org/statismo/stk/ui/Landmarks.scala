@@ -50,7 +50,7 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
   }
 }
 
-abstract class VisualizableLandmark(container: VisualizableLandmarks) extends SceneTreeObject with Landmark with Visualizable[VisualizableLandmark]{
+abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark]{
   override def parent = container
   override def visualizationProvider = container
 }
