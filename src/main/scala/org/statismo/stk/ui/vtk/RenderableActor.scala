@@ -26,12 +26,13 @@ object RenderableActor {
   val DefaultRenderableToActorFunction: RenderableToActor = { case (renderable, interactor) =>
     implicit val _interactor = interactor
     renderable match {
-      case bb: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb))
-      case s: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(s))
-      case m: MeshRenderable3D => Some(new MeshActor3D(m))
-      case m: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m))
+      case bb3d: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb3d))
+      case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
+      case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
+      case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
+      case img3d: Image3D.Renderable3D => Some(new ImageActor3D(img3d))
+      case img2d: Image3D.Renderable2D => Some(new ImageActor2D(img2d))
       case s: SphereLike => Some(new SphereActor(s))
-      case i: Image3D.Renderable3D => Some(new ImageWidgetActor(i))
       case _ => None
     }
   }

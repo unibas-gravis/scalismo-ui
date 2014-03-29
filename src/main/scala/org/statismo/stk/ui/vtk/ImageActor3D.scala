@@ -12,7 +12,7 @@ import scala.swing.Swing
 import vtk.vtkImagePlaneWidget
 import org.statismo.stk.ui.{Scene, Axis, Image3D, TwoDViewport}
 
-class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewport) extends RenderableActor {
+class ImageActor3D(peer: Image3D.Renderable3D)(implicit viewport: VtkViewport) extends RenderableActor {
   override val vtkActors = Seq()
 
   val points = ImageConversion.image3DTovtkStructuredPoints(peer.source.asFloatImage)
@@ -25,7 +25,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
     min <= v && v <= max
   }
 
-  private [ImageWidgetActor] class Widget(val axis: Axis.Value) extends vtkImagePlaneWidget {
+  private [ImageActor3D] class Widget(val axis: Axis.Value) extends vtkImagePlaneWidget {
     println("Widget creation started in thread "+Thread.currentThread())
     SetInputData(points)
     axis match {
@@ -58,7 +58,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
       } else {
         Off()
       }
-      publish (VtkContext.RenderRequest(ImageWidgetActor.this))
+      publish (VtkContext.RenderRequest(ImageActor3D.this))
     }
 
     private var on = false
