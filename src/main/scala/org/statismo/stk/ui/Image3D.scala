@@ -10,10 +10,15 @@ import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
 import reflect.runtime.universe.{TypeTag, typeOf}
 import scala.language.existentials
-import org.statismo.stk.ui.visualization.{Renderable, Visualization, VisualizationProvider, SimpleVisualizationFactory}
+import org.statismo.stk.ui.visualization._
+import org.statismo.stk.core.image.DiscreteScalarImage3D
+import scala.Tuple2
+import org.statismo.stk.core.geometry.Point3D
 
 object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
+  //visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new NullVisualization[Image3D[_]]))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
 
   class Visualization3D extends Visualization[Image3D[_]] {
     override protected def createDerived() = new Visualization3D
@@ -23,7 +28,18 @@ object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
     }
   }
 
+  class Visualization2D extends Visualization[Image3D[_]] {
+    override protected def createDerived() = new Visualization2D
+
+    override protected def instantiateRenderables(source: Image3D[_]) = {
+      Seq(new Renderable2D(source))
+    }
+  }
+
   class Renderable3D(val source: Image3D[_]) extends Renderable {
+  }
+
+  class Renderable2D(val source: Image3D[_]) extends Renderable {
   }
 }
 

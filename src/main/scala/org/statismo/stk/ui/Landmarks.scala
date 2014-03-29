@@ -25,6 +25,7 @@ class ReferenceLandmark(val point: Point3D) extends Landmark
 
 object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
   class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
     override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))

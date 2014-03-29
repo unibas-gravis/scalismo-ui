@@ -7,7 +7,7 @@ import org.statismo.stk.ui.{BoundingBox, Scene}
 class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends PolyDataActor {
   val scene = source.source.scene
 
-  this.GetProperty().SetColor(1,0,0)
+  this.GetProperty().SetColor(1,1,1)
   listenTo(scene)
   update(false)
 
@@ -28,6 +28,11 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
     outline.SetInputData(poly)
     mapper.SetInputConnection(outline.GetOutputPort())
     mapper.Modified()
+
+    outline.Delete()
+    poly.Delete()
+    points.Delete()
+
     if (withEvent) {
       publish(VtkContext.RenderRequest(this))
     }

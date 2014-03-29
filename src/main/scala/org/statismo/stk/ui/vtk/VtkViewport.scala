@@ -17,7 +17,7 @@ object VtkContext {
 
   case class RenderRequest(source: VtkContext) extends Event
 
-  case class ViewportEmpty(source: VtkViewport) extends Event
+  case class ViewportEmptyStatus(source: VtkViewport, isEmpty: Boolean) extends Event
 
 }
 
@@ -59,9 +59,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interac
             front.get.vtkActors.foreach({
               a =>
                 renderer.RemoveActor(a)
-                changed = true
             })
             front.get.onDestroy()
+            changed = true
           }
       })
 
@@ -88,8 +88,11 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interac
       })
       if (changed) {
         updateBoundingBox()
-        if (actors.isEmpty) {
-          publish(VtkContext.ViewportEmpty(this))
+        if (viewport.currentBoundingBox eq BoundingBox.None) {
+          // this is a safe way of determining whether there are any "real" actors.
+          // "helper" actors (like the BoundingBox itself) are not taken into account
+          // while calculating the boundingbox.
+          publish(VtkContext.ViewportEmptyStatus(this, true))
         } else {
           if (firstTime) {
             firstTime = false

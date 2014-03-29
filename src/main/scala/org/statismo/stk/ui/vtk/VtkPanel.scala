@@ -36,11 +36,12 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
     case Viewport.Destroyed(v) =>
       deafTo(viewport, vtk)
     case VtkContext.RenderRequest(s) =>
+      ui.empty = false
       ui.Render()
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
-    case VtkContext.ViewportEmpty(v) =>
-      ui.setAsEmpty()
+    case VtkContext.ViewportEmptyStatus(v, empty) =>
+      ui.empty = empty
   }
 
   def resetCamera() = {

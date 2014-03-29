@@ -26,6 +26,7 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
   }
 
   private [ImageWidgetActor] class Widget(val axis: Axis.Value) extends vtkImagePlaneWidget {
+    println("Widget creation started in thread "+Thread.currentThread())
     SetInputData(points)
     axis match {
       case Axis.X => SetPlaneOrientationToXAxes()
@@ -34,7 +35,6 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
     }
     SetSliceIndex(0)
     SetInteractor(viewport.interactor)
-    On()
 
     def contains(point: Point3D) : Boolean = {
       val own = GetSlicePosition().toFloat
@@ -69,11 +69,12 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
       }
     }
     override def Off() = this.synchronized{
-//      if (on) {
-//        on = false
-//        super.Off()
-//      }
+      if (on) {
+        on = false
+        super.Off()
+      }
     }
+    println("Widget creation ended in thread "+Thread.currentThread())
   }
 
   val x = new Widget(Axis.X)
@@ -81,9 +82,11 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
   val z = new Widget(Axis.Z)
   val widgets: immutable.Seq[Widget] = immutable.Seq(x,y,z)
 
+  widgets.foreach {_.setSlicePoint(peer.source.scene.slicingPosition.point)}
   listenTo(viewport.interactor, peer.source.scene)
 
   reactions += {
+    case Scene.SlicingPosition.PointChanged(s) => widgets.foreach {_.setSlicePoint(s.point)}
     case VtkRenderWindowInteractor.PointClicked(point) => this.synchronized {
       if (in(point.x, xmin, xmax) && in(point.y, ymin, ymax) && in (point.z, zmin, zmax)) {
         // point can in principle qualify.
@@ -92,17 +95,10 @@ class ImageWidgetActor(peer: Image3D.Renderable3D)(implicit viewport: VtkViewpor
         }
       }
     }
-    case Scene.SlicingPosition.BoundingBoxChanged(s) => {
-      println("FIXME: Handle Bounding Box Changes in ImageWidgetActor")
-    }
-    case Scene.SlicingPosition.PrecisionChanged(s) => {
-      println("FIXME: Handle Precision Changes in ImageWidgetActor")
-    }
-    case Scene.SlicingPosition.PointChanged(s) => Swing.onEDT{
-      widgets.foreach {_.setSlicePoint(s.point)}
-    }
   }
+
   override def onDestroy() = this.synchronized {
+    println("ImageWidgetActor destroyed in thread "+Thread.currentThread())
     deafTo(viewport.interactor, peer.source.scene)
     widgets.foreach { widget =>
       widget.Off()

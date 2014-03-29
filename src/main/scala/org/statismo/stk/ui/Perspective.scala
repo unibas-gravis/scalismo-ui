@@ -3,7 +3,8 @@ package org.statismo.stk.ui
 import scala.collection.immutable
 
 object Perspective {
-  def defaultPerspective(scene: Scene) = new SlicerPerspective(None)(scene)//SingleViewportPerspective(None)(scene)
+  def defaultPerspective(scene: Scene) = new SlicerPerspective(None)(scene)
+  //def defaultPerspective(scene: Scene) = new SingleViewportPerspective(None)(scene)
 }
 
 abstract class Perspective(template: Option[Perspective]) extends Nameable {

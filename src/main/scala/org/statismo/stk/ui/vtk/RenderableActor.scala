@@ -27,6 +27,7 @@ object RenderableActor {
     implicit val _interactor = interactor
     renderable match {
       case bb: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb))
+      case s: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(s))
       case m: MeshRenderable3D => Some(new MeshActor3D(m))
       case m: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m))
       case s: SphereLike => Some(new SphereActor(s))

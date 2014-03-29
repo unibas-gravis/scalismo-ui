@@ -18,4 +18,8 @@ case class BoundingBox(xMin: Float, xMax: Float, yMin: Float, yMax: Float, zMin:
       BoundingBox(Math.min(this.xMin, that.xMin), Math.max(this.xMax, that.xMax), Math.min(this.yMin, that.yMin), Math.max(this.yMax, that.yMax), Math.min(this.zMin, that.zMin), Math.max(this.zMax, that.zMax))
     }
   }
+
+  override def toString : String = {
+    s"BoundingBox ($xMin -> $xMax)($yMin -> $yMax)($zMin -> $zMax) (dummy: $isDummy)"
+  }
 }

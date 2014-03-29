@@ -37,10 +37,16 @@ object Scene {
 
     class Visualization3D extends Visualization[SlicingPosition] {
       override protected def createDerived() = new Visualization3D
-      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(new BoundingBoxRenderable3D(source))
+      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
+        new BoundingBoxRenderable3D(source),
+      new SlicingPlaneRenderable3D(source, Axis.X),
+      new SlicingPlaneRenderable3D(source, Axis.Y),
+      new SlicingPlaneRenderable3D(source, Axis.Z)
+      )
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
+    class SlicingPlaneRenderable3D(val source: SlicingPosition, val axis: Axis.Value) extends Renderable
   }
 
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
@@ -103,7 +109,14 @@ object Scene {
     }
 
     private[Scene] def updateBoundingBox() = {
-      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) => bb.union(vp.currentBoundingBox)})
+      //println("UPDATING BOUNDINGBOX")
+      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) => {
+        //println(bb)
+        //println(vp.currentBoundingBox)
+        val r = bb.union(vp.currentBoundingBox)
+        //println(" => " + r)
+        r
+      }})
     }
 
   }
