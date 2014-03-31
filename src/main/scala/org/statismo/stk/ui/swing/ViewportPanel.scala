@@ -63,6 +63,11 @@ class ThreeDViewportPanel(workspace: Workspace, viewport: ThreeDViewport) extend
 }
 
 class TwoDViewportPanel(workspace: Workspace, viewport: TwoDViewport) extends ViewportPanel(workspace, viewport) {
+  toolbar.add(new Action("RC") {
+    override def apply() = {
+      vtk.resetCamera()
+    }
+  })
   private [TwoDViewportPanel] class VpSlider extends Slider {
     import org.statismo.stk.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
     peer.setOrientation(SwingConstants.VERTICAL)

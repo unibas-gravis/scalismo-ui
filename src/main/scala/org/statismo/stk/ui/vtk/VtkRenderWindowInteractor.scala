@@ -9,6 +9,7 @@ import org.statismo.stk.ui.Workspace
 
 import vtk.vtkCellPicker
 import vtk.vtkGenericRenderWindowInteractor
+import java.awt.Point
 
 object VtkRenderWindowInteractor {
 
@@ -21,15 +22,11 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
   SetPicker(cellPicker)
 
   private var height = 0
-  private var x: Int = 0
-  private var y: Int = 0
-
-  private var downX: Int = 0
-  private var downY: Int = 0
+  private var currentPt = new Point
+  private var lastPt = new Point
 
   override def SetEventInformationFlipY(x: Int, y: Int, ctrl: Int, shift: Int, unk1: Char, unk2: Int, unk3: String) = {
-    this.x = x
-    this.y = y
+    currentPt = new Point(x,y)
     super.SetEventInformationFlipY(x, y, ctrl, shift, unk1, unk2, unk3)
   }
 
@@ -37,11 +34,15 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
 
   override def LeftButtonPressEvent() = {
     if (workspace.landmarkClickMode) {
-      downX = x
-      downY = y
+      lastPt = new Point(currentPt.x, currentPt.y)
     }
-    if (viewport.isMouseSensitive) {
+    //FIXME: this is ugly
+    val ok = viewport.onLeftButtonDown(currentPt)
+    if (ok || workspace.landmarkClickMode) {
       super.LeftButtonPressEvent()
+      if (!ok) {
+        super.LeftButtonReleaseEvent()
+      }
     }
   }
 
@@ -51,14 +52,14 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
   }
 
   override def LeftButtonReleaseEvent() = {
-    if (viewport.isMouseSensitive) {
+    if (viewport.onLeftButtonUp(currentPt)) {
       super.LeftButtonReleaseEvent()
     }
 
     if (workspace.landmarkClickMode) {
       val threshold = 3 //(pixels)
-      if (Math.abs(x - downX) < threshold && Math.abs(y - downY) < threshold) {
-        val p = cellPicker.Pick(x, height - y - 1, 0.0, renderer)
+      if (Math.abs(currentPt.x - lastPt.x) < threshold && Math.abs(currentPt.y - lastPt.y) < threshold) {
+        val p = cellPicker.Pick(currentPt.x, height - currentPt.y - 1, 0.0, renderer)
         if (p == 1) {
           cellPicker.PickFromListOff()
           val pickpos = cellPicker.GetPickPosition()
@@ -81,25 +82,25 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
   }
 
   override def MiddleButtonPressEvent() = {
-    if (viewport.isMouseSensitive) {
+    if (viewport.onMiddleButtonDown(currentPt)) {
       super.MiddleButtonPressEvent()
     }
   }
 
   override def MiddleButtonReleaseEvent() = {
-    if (viewport.isMouseSensitive) {
+    if (viewport.onMiddleButtonUp(currentPt)) {
       super.MiddleButtonReleaseEvent()
     }
   }
 
   override def RightButtonPressEvent() = {
-    if (viewport.isMouseSensitive) {
+    if (viewport.onRightButtonDown(currentPt)) {
       super.RightButtonPressEvent()
     }
   }
 
   override def RightButtonReleaseEvent() = {
-    if (viewport.isMouseSensitive) {
+    if (viewport.onRightButtonUp(currentPt)) {
       super.RightButtonReleaseEvent()
     }
   }

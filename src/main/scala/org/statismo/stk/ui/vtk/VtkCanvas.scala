@@ -42,14 +42,16 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   private object DeferredRenderer {
     // this should be almost unnoticeable for humans, but helps to prevent lags
     // which would be caused by large amounts of render requests arriving at the same time.
-    val delayMs = 100
+    val delayMs = 25
   }
 
   private class DeferredRenderer extends Timer(true) {
 
-    val skipped = new Object {
+    private [DeferredRenderer] class Skipped {
       var count: Int = 0
     }
+    val skipped = new Skipped
+
     private var pending: Option[DeferredRenderTask] = None
 
     private class DeferredRenderTask extends TimerTask {

@@ -23,9 +23,9 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   val plane = new vtk.vtkPlane()
   plane.SetOrigin(0, 0, 0)
   viewport.axis match {
-    case Axis.X => plane.SetNormal(-1, 0, 0)
-    case Axis.Y => plane.SetNormal(0, -1, 0)
-    case Axis.Z => plane.SetNormal(0, 0, -1)
+    case Axis.X => plane.SetNormal(1, 0, 0)
+    case Axis.Y => plane.SetNormal(0, 1, 0)
+    case Axis.Z => plane.SetNormal(0, 0, 1)
   }
 
   val cutEdges = new vtk.vtkCutter()
