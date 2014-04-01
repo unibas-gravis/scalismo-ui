@@ -1,13 +1,17 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.{Axis, BoundingBox, Scene}
+import org.statismo.stk.ui.{TwoDViewport, Axis, BoundingBox, Scene}
 import org.statismo.stk.core.geometry.Point3D
 import scala.collection.immutable
 
-class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D) extends PolyDataActor {
-  val scene = plane.source.scene
+class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implicit vtkViewport: VtkViewport) extends PolyDataActor {
+  val scene = source.scene
 
-  this.GetProperty().SetColor(1, 0, 0)
+  axis match {
+    case Axis.X => GetProperty().SetColor(1, 0, 0)
+    case Axis.Y => GetProperty().SetColor(0, 1, 0)
+    case Axis.Z => GetProperty().SetColor(0, 0, 1)
+  }
   listenTo(scene)
   update(false)
 
@@ -20,10 +24,10 @@ class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)
     // FIXME: this is essentially a quick hack for now, because we're "abusing" the bounding box functionality.
 
     val points = new vtk.vtkPoints()
-    val bb = plane.source.boundingBox
-    val p = plane.source.point
+    val bb = source.boundingBox
+    val p = source.point
 
-    plane.axis match {
+    axis match {
       case Axis.X =>
         points.InsertNextPoint(p.x, bb.yMin, bb.zMin)
         points.InsertNextPoint(p.x, bb.yMax, bb.zMax)
@@ -56,6 +60,12 @@ class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)
     deafTo(scene)
     super.onDestroy()
   }
+}
 
+class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, plane.axis) {
+ override lazy val currentBoundingBox = BoundingBox.None
+}
+
+class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, vtkViewport.viewport.asInstanceOf[TwoDViewport].axis) {
   override lazy val currentBoundingBox = BoundingBox.None
 }

@@ -28,6 +28,7 @@ object RenderableActor {
     renderable match {
       case bb3d: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb3d))
       case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
+      case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
       case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
       case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
       case img3d: Image3D.Renderable3D => Some(new ImageActor3D(img3d.source))

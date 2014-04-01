@@ -33,7 +33,7 @@ object Scene {
     }
 
     visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
-    visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization))
+    visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
 
     class Visualization3D extends Visualization[SlicingPosition] {
       override protected def createDerived() = new Visualization3D
@@ -45,8 +45,16 @@ object Scene {
       )
     }
 
+    class Visualization2D extends Visualization[SlicingPosition] {
+      override protected def createDerived() = new Visualization2D
+      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
+        new SlicingPlaneRenderable2D(source)
+      )
+    }
+
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
     class SlicingPlaneRenderable3D(val source: SlicingPosition, val axis: Axis.Value) extends Renderable
+    class SlicingPlaneRenderable2D(val source: SlicingPosition) extends Renderable
   }
 
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
