@@ -14,6 +14,7 @@ import org.statismo.stk.ui.Workspace
 import javax.swing.JPanel
 import vtk.vtkPNGWriter
 import vtk.vtkWindowToImageFilter
+import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
 
 class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with Reactor {
   lazy val ui = new VtkCanvas(workspace, viewport)
@@ -24,19 +25,23 @@ class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with 
   }
   lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
   listenTo(viewport, vtk)
-  if (!workspace.scene.displayables.filter(d => d.isShownInViewport(viewport)).isEmpty) {
-    Swing.onEDT(ui.Render())
+
+  {
+    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
+      ui.Render()
+    }
   }
 
   reactions += {
     case Viewport.Destroyed(v) =>
       deafTo(viewport, vtk)
     case VtkContext.RenderRequest(s) =>
+      ui.empty = false
       ui.Render()
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
-    case VtkContext.ViewportEmpty(v) =>
-      ui.setAsEmpty()
+    case VtkContext.ViewportEmptyStatus(v, empty) =>
+      ui.empty = empty
   }
 
   def resetCamera() = {

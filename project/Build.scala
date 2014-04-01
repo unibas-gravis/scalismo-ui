@@ -52,7 +52,7 @@ object Resolvers {
 object Dependencies {
   import BuildSettings._
 
-  val scalatest = "org.scalatest" %% "scalatest" % "1.9" % "test"
+  val scalatest = "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
   val breezeMath = "org.scalanlp" %% "breeze-math" % "0.4"
   val breezeViz = "org.scalanlp" %% "breeze-viz" % "0.4"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion

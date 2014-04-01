@@ -3,7 +3,7 @@ package org.statismo.stk.ui
 trait ThreeDObject extends SceneTreeObject {
   lazy val representations: ThreeDRepresentations = new ThreeDRepresentations(this)
 
-  def landmarks: DisplayableLandmarks
+  def landmarks: VisualizableLandmarks
 
   override def children = {
     val lm: Seq[SceneTreeObject] = Seq(landmarks)

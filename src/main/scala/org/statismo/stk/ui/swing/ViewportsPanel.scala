@@ -4,13 +4,7 @@ import scala.swing.BorderPanel
 import scala.swing.Component
 import scala.swing.GridPanel
 
-import org.statismo.stk.ui.FourViewportsPerspective
-import org.statismo.stk.ui.Perspective
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.SingleViewportPerspective
-import org.statismo.stk.ui.SlicerPerspective
-import org.statismo.stk.ui.TwoViewportsPerspective
-import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui._
 
 class ViewportsPanel(val workspace: Workspace) extends BorderPanel {
   listenTo(workspace.scene)
@@ -23,8 +17,12 @@ class ViewportsPanel(val workspace: Workspace) extends BorderPanel {
   def updateUi() = {
     val child: Component = workspace.scene.perspective match {
       case p: SingleViewportPerspective => singleViewportPanel(p)
+      case p: XOnlyPerspective => singleViewportPanel(p)
+      case p: YOnlyPerspective => singleViewportPanel(p)
+      case p: ZOnlyPerspective => singleViewportPanel(p)
       case p: TwoViewportsPerspective => gridViewportsPanel(p, 1, 2)
       case p: FourViewportsPerspective => gridViewportsPanel(p, 2, 2)
+      case p: SlicerAltPerspective => gridViewportsPanel(p, 2, 2)
       case p: SlicerPerspective => slicerPanel(p)
     }
     layout(child) = BorderPanel.Position.Center

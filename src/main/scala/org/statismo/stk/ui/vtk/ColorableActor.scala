@@ -1,27 +1,30 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.Colorable
+import org.statismo.stk.ui.visualization.props.{OpacityProperty, ColorProperty}
+import org.statismo.stk.ui.visualization.VisualizationProperty
 
-trait ColorableActor extends SingleDisplayableActor {
-  lazy val colorable: Colorable = null
+trait ColorableActor extends SingleRenderableActor {
+  def color: ColorProperty
+  def opacity: OpacityProperty
 
-  listenTo(colorable)
+
+  listenTo(color, opacity)
 
   reactions += {
-    case Colorable.ColorChanged(c) => setAppearance()
+    case VisualizationProperty.ValueChanged(s) => if (s.eq(color) || s.eq(opacity)) setAppearance()
   }
 
   setAppearance()
 
-  def setAppearance() = this.synchronized {
-    vtkActor.GetProperty().SetOpacity(colorable.opacity)
-    val color = colorable.color.getColorComponents(null)
-    vtkActor.GetProperty().SetColor(color(0), color(1), color(2))
+  private def setAppearance() = this.synchronized {
+    vtkActor.GetProperty().SetOpacity(opacity.value)
+    val c = color.value.getColorComponents(null)
+    vtkActor.GetProperty().SetColor(c(0), c(1), c(2))
     publish(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(colorable)
+    deafTo(color, opacity)
     super.onDestroy()
   }
 }

@@ -2,11 +2,9 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.async.Async.async
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.event.Event
 import scala.util.Try
-import scala.collection.immutable.IndexedSeq
+import scala.collection.immutable.{HashMap, IndexedSeq}
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
@@ -87,9 +85,9 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
 
   def calculateMesh(coefficients: IndexedSeq[Float]) = {
     val vector = DenseVector[Float](coefficients.toArray)
-    val ptdefs = gaussianProcess.instanceAtPoints(vector)
-    val newptseq = for ((pt, df) <- ptdefs) yield pt + df
-    new TriangleMesh(newptseq, peer.mesh.cells)
+    val ptdefs = gaussianProcess.instanceAtPoints(vector).toMap
+
+    peer.mesh.warp({p => p + ptdefs(p)})
   }
 
   parent.add(this)
@@ -111,12 +109,8 @@ class ShapeModelInstances(val shapeModel: ShapeModel)(implicit val scene: Scene)
     if (child.coefficients.length == template.coefficients.length) {
       child.coefficients = template.coefficients
     }
-    child.landmarks.color = template.landmarks.color
-    child.landmarks.radius = template.landmarks.radius
     child.landmarks.name = template.landmarks.name
     child.meshRepresentation.name = template.meshRepresentation.name
-    child.meshRepresentation.color = template.meshRepresentation.color
-    child.meshRepresentation.opacity = template.meshRepresentation.opacity
     add(child)
     child
   }
@@ -143,10 +137,8 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
 
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
+      meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
       publish(ShapeModelInstance.CoefficientsChanged(this))
-      async {
-        meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
-      }
     }
   }
 

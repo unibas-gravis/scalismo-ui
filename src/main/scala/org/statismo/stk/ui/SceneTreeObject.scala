@@ -2,6 +2,9 @@ package org.statismo.stk.ui
 
 import scala.swing.event.Event
 import scala.util.Try
+import scala.reflect.ClassTag
+import org.statismo.stk.ui.visualization.Visualizable
+import scala.collection.mutable
 
 object SceneTreeObject {
 
@@ -12,9 +15,9 @@ object SceneTreeObject {
 }
 
 trait SceneTreeObject extends Nameable {
+  //you MUST override this. The exception that is thrown if you don't is intentional.
   def parent: SceneTreeObject = ???
 
-  //you MUST override this. The exception that is thrown if you don't is intentional.
   def children: Seq[SceneTreeObject] = Nil
 
   def scene: Scene = {
@@ -26,14 +29,7 @@ trait SceneTreeObject extends Nameable {
 
   scene.listenTo(this)
 
-  def displayables: List[Displayable] = {
-    val childDisplayables = List(children.map(_.displayables).flatten).flatten
-    this match {
-      case displayable: Displayable =>
-        displayable :: childDisplayables
-      case _ => childDisplayables
-    }
-  }
+  def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = find[Visualizable[_]](filter)
 
   reactions += {
     case Removeable.Removed(o) => if (o eq this) destroy()
@@ -45,69 +41,55 @@ trait SceneTreeObject extends Nameable {
     scene.deafTo(this)
   }
 
-  private var hidden: List[Viewport] = if (this.isInstanceOf[Scene]) Nil else scene.viewports.filterNot(v => v.supportsShowingObject(this)).toList
+  def find[A <: AnyRef : ClassTag](filter: A => Boolean = {
+    o: A => true
+  }, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = doFind(filter, maxDepth, minDepth, 0)
 
-  def isHiddenInViewport(viewport: Viewport) = hidden.exists({
-    v => v eq viewport
-  }) || !scene.viewports.exists({
-    v => v eq viewport
-  })
-
-  def isShownInViewport(viewport: Viewport) = !isHiddenInViewport(viewport)
-
-  private def hideInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = this.synchronized {
-    val changed = viewports.map {
-      viewport =>
-        if (isShownInViewport(viewport)) {
-          hidden ::= viewport
-          true
-        } else false
-    }.foldLeft(false) {
-      case (a, b) => a || b
-    }
-    children foreach {
-      c => c.hideInViewports(viewports, notify && !changed)
-    }
-    if (changed && notify) {
-      publish(SceneTreeObject.VisibilityChanged(this))
+  private def doFind[A <: AnyRef : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
+    if (maxDepth.isDefined && maxDepth.get > curDepth) {
+      Nil
+    } else {
+      val tail = children.map({
+        c =>
+          c.doFind[A](filter, maxDepth, minDepth, curDepth + 1)
+      }).flatten
+      val clazz = implicitly[ClassTag[A]].runtimeClass
+      val head: Seq[A] = if (curDepth >= minDepth && clazz.isInstance(this)) {
+        val candidate = this.asInstanceOf[A]
+        if (filter(candidate)) Seq(candidate) else Nil
+      } else {
+        Nil
+      }
+      Seq(head, tail).flatten
     }
   }
-
-  private def showInViewports(viewports: Seq[Viewport], notify: Boolean): Unit = this.synchronized {
-    val changed = viewports.map {
-      viewport =>
-        if (isHiddenInViewport(viewport)) {
-          hidden = hidden filterNot (_ eq viewport)
-          true
-        } else false
-    }.foldLeft(false) {
-      case (a, b) => a || b
-    }
-
-    children foreach {
-      c => c.showInViewports(viewports, notify && !changed)
-    }
-    if (changed && notify) {
-      publish(SceneTreeObject.VisibilityChanged(this))
-    }
-  }
-
-  def showInAllViewports(): Unit = showInViewports(scene.viewports)
-
-  def hideInAllViewports(): Unit = hideInViewports(scene.viewports)
-
-  def hideInViewports(viewports: Seq[Viewport]): Unit = hideInViewports(viewports, notify = true)
-
-  def showInViewports(viewports: Seq[Viewport]): Unit = showInViewports(viewports, notify = true)
-
-  def hideInViewport(viewport: Viewport): Unit = hideInViewports(Seq(viewport))
-
-  def showInViewport(viewport: Viewport): Unit = showInViewports(Seq(viewport))
 
   def onViewportsChanged(viewports: Seq[Viewport]): Unit = {
-    hidden = viewports.filterNot(v => v.supportsShowingObject(this)).toList
     Try {
       children foreach (_.onViewportsChanged(viewports))
     }
   }
+
+  val visible = new Visibility(this)
 }
+
+class Visibility(container: SceneTreeObject) {
+  val map = new mutable.WeakHashMap[Viewport, Boolean]
+
+  def apply(viewport: Viewport): Boolean = map.getOrElse(viewport, true)
+
+  def update(viewport: Viewport, nv: Boolean): Unit = update(viewport, nv, true)
+
+  private def update(viewport: Viewport, nv: Boolean, isTop: Boolean): Boolean = {
+    val selfChanged = if (apply(viewport) != nv) {
+      map(viewport) = nv
+      true
+    } else false
+    val notify = container.children.foldLeft(selfChanged)({case (b,c) => c.visible.update(viewport, nv, false) || false})
+    if (isTop && notify) {
+      container.scene.publish(new Scene.VisibilityChanged(container.scene))
+    }
+    notify
+  }
+}
+

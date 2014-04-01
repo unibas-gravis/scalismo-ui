@@ -11,7 +11,7 @@ object SceneTreeObjectFactory {
     filters.map(_.ioMetadata.fileExtensions).flatten.toSeq.sorted.toArray
   }
 
-  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage)
+  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage3D)
 
   def load(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))
@@ -24,10 +24,10 @@ object SceneTreeObjectFactory {
         }
         so
     }
-    val allErrors = errors.map(f => f match {
+    val allErrors = errors.map {
       case Failure(ex) => ex.getMessage
       case _ => ""
-    }).mkString
+    }.mkString
     Failure(new IOException(allErrors))
   }
 }

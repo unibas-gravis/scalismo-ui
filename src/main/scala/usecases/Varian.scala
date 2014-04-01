@@ -18,19 +18,23 @@ import org.statismo.stk.core.registration.MeanSquaresMetric3D
 import org.statismo.stk.core.registration.RKHSNormRegularizer
 import org.statismo.stk.core.registration.Registration
 import org.statismo.stk.core.registration.RegistrationConfiguration
-import org.statismo.stk.ui.DisplayableLandmarks
-import org.statismo.stk.ui.Landmarks
-import org.statismo.stk.ui.ReferenceLandmarks
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.StatismoApp
-import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.ui.{Mesh => UiMesh, _}
 import org.statismo.stk.core.geometry.ThreeD
 import scala.collection.mutable.ArrayBuffer
 import org.statismo.stk.core.image.ContinuousScalarImage3D
-import org.statismo.stk.ui.ThreeDImage
-import org.statismo.stk.ui.{Mesh => UiMesh}
 import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.registration.KernelTransformationSpace3D
+import scala.Some
+import org.statismo.stk.core.numerics.LBFGSOptimizer
+import org.statismo.stk.core.registration.KernelTransformationSpaceConfiguration
+import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
+import org.statismo.stk.core.registration.RegistrationConfiguration
+import org.statismo.stk.core.numerics.Integrator
+import org.statismo.stk.core.numerics.FixedPointsUniformMeshSampler3D
+import org.statismo.stk.core.numerics.IntegratorConfiguration
+import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.image.ContinuousScalarImage3D
+import org.statismo.stk.core.registration.MeanSquaresMetric3D
 
 class Varian(scene: Scene) extends StatismoFrame(scene) {
 
@@ -70,7 +74,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
   this.toolbar.add(new Action("Compute Posterior") { def apply() = computeNewPosteriorModel(computeMeanOnly = false) })
   this.toolbar.add(new Action("Start fitting") { def apply() = startFitting() })
 
-  private var targetLm: Option[DisplayableLandmarks] = None
+  private var targetLm: Option[VisualizableLandmarks] = None
   private var modelLm: Option[ReferenceLandmarks] = None
   private var orgModel: Option[ShapeModel] = None
   private var lastModel: Option[ShapeModel] = None
@@ -103,14 +107,14 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
   private def computeNewPosteriorModel(computeMeanOnly: Boolean): Unit = {
     if (modelLm.isDefined && targetLm.isDefined) {
       if (modelLm.get.children.length == targetLm.get.children.length) {
-        val refLms = lastModel.get.landmarks.children.map(_.peer).toIndexedSeq
-        val targetLms = targetLm.get.children.map(_.peer).toIndexedSeq
+        val refLms = lastModel.get.landmarks.children.map(_.point).toIndexedSeq
+        val targetLms = targetLm.get.children.map(_.point).toIndexedSeq
         val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (refPt, tgtPt - refPt) }
         val newModel = if (!trainingData.isEmpty) {
           val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, computeMeanOnly)
           val nm = ShapeModel(posteriorModel, orgModel)
           nm.landmarks.children.foreach { l => l.remove() }
-          lastModel.get.landmarks.children.foreach { lm => nm.landmarks.create(lm.peer) }
+          lastModel.get.landmarks.children.foreach { lm => nm.landmarks.create(lm.point) }
           nm
         } else {
           val nm = ShapeModel(orgModel.get.peer, orgModel)
@@ -153,8 +157,8 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
     val targetDm: ContinuousScalarImage3D = {
       scene.staticObjects(0).representations(0) match {
         case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
-        case imgUi: ThreeDImage[_] =>
-          val img = imgUi.asInstanceOf[ThreeDImage[Short]].peer
+        case imgUi: Image3D[_] =>
+          val img = imgUi.peer.asInstanceOf[DiscreteScalarImage3D[Short]]
           val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))

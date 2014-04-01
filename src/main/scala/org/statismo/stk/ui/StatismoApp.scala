@@ -1,36 +1,21 @@
 package org.statismo.stk.ui
 
-import java.awt.Dimension
 import scala.Array.canBuildFrom
-import scala.swing.MainFrame
-import scala.swing.MenuBar
-import scala.swing.Reactor
-import scala.swing.SimpleSwingApplication
-import org.statismo.stk.ui.swing.WorkspacePanel
-import javax.swing.UIManager
-import javax.swing.WindowConstants
+import scala.swing._
+import org.statismo.stk.ui.swing._
+import javax.swing.{SwingUtilities, UIManager, WindowConstants}
 import org.statismo.stk.ui.swing.menu.MainMenuBar
-import scala.swing.BorderPanel
-import org.statismo.stk.ui.swing.StatismoToolbar
 
 object StatismoApp {
-  type FrameConstructor = (Scene => StatismoFrame)
+  import StatismoFrame.FrameConstructor
 
   def defaultFrameConstructor: FrameConstructor = {
     s: Scene => new StatismoFrame(s)
   }
 
-  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeel: String = defaultLookAndFeelClassName): StatismoApp = {
-    UIManager.put("FileChooser.readOnly", true)
-
-    UIManager.setLookAndFeel(lookAndFeel)
-    val laf = UIManager.getLookAndFeel
-    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-      val defaults = laf.getDefaults
-      defaults.put("Tree.drawHorizontalLines", true)
-      defaults.put("Tree.drawVerticalLines", true)
-    }
-    val app = new StatismoApp(frame(scene))
+  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeelClassName: String = defaultLookAndFeelClassName): StatismoApp = {
+    StatismoLookAndFeel.initializeWith(lookAndFeelClassName)
+    val app = new StatismoApp(StatismoFrame(frame, scene))
     app.main(args)
     app
   }
@@ -53,7 +38,21 @@ class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
 
 }
 
-class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
+object StatismoFrame {
+  type FrameConstructor = (Scene => StatismoFrame)
+  def apply(constructor: FrameConstructor, scene: Scene = new Scene): StatismoFrame = {
+    var result: Option[StatismoFrame] = None
+    Swing.onEDTWait {
+      val theFrame = constructor(scene)
+      result = Some(theFrame)
+    }
+    result.get
+  }
+}
+protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
+  if (!SwingUtilities.isEventDispatchThread) {
+    sys.error("StatismoFrame constructor must be invoked in the Swing EDT. See StatismoFrame.apply()")
+  }
 
   title = "Statismo Viewer"
 
@@ -69,15 +68,17 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
     }
   }
 
+  lazy val console = new Console()(this)
+
   lazy val workspace = new Workspace(scene)
+  private lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)
 
-  lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)(this)
-  lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
+  def toolbar: StatismoToolbar = workspacePanel.toolbar
 
-  lazy val mainPanel = new BorderPanel {
-    layout(toolbar) = BorderPanel.Position.North
+  lazy val mainPanel: Component = new BorderPanel {
     layout(workspacePanel) = BorderPanel.Position.Center
   }
+
   contents = mainPanel
   menuBar = new MainMenuBar()(this)
 
@@ -90,7 +91,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   def startup(args: Array[String]): Unit = {
     size = new Dimension(1024, 768)
     // center on screen
-    peer.setLocationRelativeTo(null)
+    centerOnScreen()
   }
 
   // this is a hack...
@@ -100,6 +101,11 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
       val d = this.size
       this.size = new Dimension(d.width - 1, this.size.height - 1)
       this.size = d
+  }
+
+  override def dispose() = {
+    console.dispose()
+    super.dispose()
   }
 }
 

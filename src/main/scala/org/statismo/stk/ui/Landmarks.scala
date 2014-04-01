@@ -1,39 +1,66 @@
 package org.statismo.stk.ui
 
-import java.awt.Color
 import java.io.File
 
 import scala.swing.event.Event
 import scala.util.Try
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
 import org.statismo.stk.core.io.LandmarkIO
+import scala.collection.immutable
 
 import breeze.linalg.DenseVector
+import org.statismo.stk.ui.visualization._
+import org.statismo.stk.core.geometry.Point3D
+import scala.Some
+import scala.Tuple2
+import org.statismo.stk.ui.visualization.props.{RadiusProperty, ColorProperty, OpacityProperty}
+import java.awt.Color
 
 trait Landmark extends Nameable with Removeable {
-  def peer: Point3D
+  def point: Point3D
 }
 
-class ReferenceLandmark(val peer: Point3D) extends Landmark
+class ReferenceLandmark(val point: Point3D) extends Landmark
 
-class DisplayableLandmark(container: DisplayableLandmarks) extends Landmark with Displayable with SphereLike {
-  override lazy val parent = container
-  color = container.color
-  opacity = container.opacity
-  radius = container.radius
+object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
-  def peer = center
+  class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
+    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
+    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
+    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
+
+
+    override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
+
+    override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new SphereRenderable(source, color, opacity, radius))
+  }
+
+  class SphereRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with SphereLike {
+    setCenter()
+    listenTo(source)
+    reactions += {
+      case Landmarks.LandmarkChanged(_) => setCenter()
+    }
+
+    def setCenter(): Unit = {
+      center = source.point
+    }
+  }
 }
 
-class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends DisplayableLandmark(container) {
-  center = initialCenter
+abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark]{
+  override def parent = container
+  override def visualizationProvider = container
 }
 
-class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends DisplayableLandmark(container) {
-  override lazy val parent = container
+class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
+  var point = initialCenter
+}
 
+class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
@@ -53,15 +80,20 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
       }
     case Removeable.Removed(r) =>
       if (r eq source) {
-        parent.remove(this, silent = true)
+        container.remove(this, silent = true)
       }
   }
 
-  setCenter()
+  var point = calculateCenter()
 
-  def setCenter() = {
+  def calculateCenter(): Point3D = {
     val coeffs = DenseVector(container.instance.coefficients.toArray)
-    center = source.peer + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.peer)
+    source.point + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.point)
+  }
+
+  def setCenter(): Unit = {
+    point = calculateCenter()
+    publish(Landmarks.LandmarkChanged(this))
   }
 
 }
@@ -69,6 +101,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 object Landmarks extends FileIoMetadata {
 
   case class LandmarksChanged(source: AnyRef) extends Event
+  case class LandmarkChanged(source: Landmark) extends Event
 
   override val description = "Landmarks"
   override val fileExtensions = Seq("csv")
@@ -95,7 +128,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def saveToFile(file: File): Try[Unit] = {
     val seq = children.map {
-      lm => (lm.name, lm.peer)
+      lm => (lm.name, lm.point)
     }.toIndexedSeq
     LandmarkIO.writeLandmarks[ThreeD](file, seq)
   }
@@ -116,48 +149,21 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 }
 
-abstract class DisplayableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[DisplayableLandmark] with Landmarks[DisplayableLandmark] with Radius with Colorable with RemoveableChildren {
+abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with VisualizationProvider[VisualizableLandmark] with RemoveableChildren {
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 
   def addAt(position: Point3D)
 
-  color = Color.BLUE
-  opacity = 0.8
-  radius = 3.0f
-
-  override def opacity_=(newOpacity: Double) {
-    super.opacity_=(newOpacity)
-    children.foreach {
-      c =>
-        c.opacity = newOpacity
-    }
-  }
-
-  override def color_=(newColor: Color) {
-    super.color_=(newColor)
-    children.foreach {
-      c =>
-        c.color = newColor
-    }
-  }
-
-  override def radius_=(newRadius: Float) {
-    super.radius_=(newRadius)
-    children.foreach {
-      c =>
-        c.radius = newRadius
-    }
-  }
-
+  override def visualizationProvider = VisualizableLandmark
 }
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   def create(template: ReferenceLandmark): Unit = {
-    create(template.peer, Some(template.name))
+    create(template.point, Some(template.name))
   }
 
   def create(peer: Point3D, name: Option[String] = None): Unit = {
@@ -167,7 +173,7 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
   }
 }
 
-class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theObject) {
+class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   def addAt(peer: Point3D) = create(peer)
@@ -180,7 +186,7 @@ class StaticLandmarks(theObject: ThreeDObject) extends DisplayableLandmarks(theO
 
 }
 
-class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLandmarks(instance) {
+class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
   def addAt(peer: Point3D) = {
@@ -209,7 +215,6 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends DisplayableLan
     _children.length until peer.children.length foreach {
       i =>
         changed = true
-        val p = peer(i)
         add(new MoveableLandmark(this, peer(i)))
     }
     if (changed) {
