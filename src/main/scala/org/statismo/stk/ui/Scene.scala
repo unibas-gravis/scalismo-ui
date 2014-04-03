@@ -60,8 +60,8 @@ object Scene {
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
     import Scene.SlicingPosition.Precision
 
-    override def visualizationProvider = SlicingPosition
-    override def isVisibleIn(viewport: Viewport) = viewport.isInstanceOf[ThreeDViewport]
+    protected[ui] override def visualizationProvider = SlicingPosition
+    protected[ui] override def isVisibleIn(viewport: Viewport) = viewport.isInstanceOf[ThreeDViewport]
 
 
     private var _point: Option[Point3D] = None
@@ -117,14 +117,9 @@ object Scene {
     }
 
     private[Scene] def updateBoundingBox() = {
-      //println("UPDATING BOUNDINGBOX")
-      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) => {
-        //println(bb)
-        //println(vp.currentBoundingBox)
-        val r = bb.union(vp.currentBoundingBox)
-        //println(" => " + r)
-        r
-      }})
+      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) =>
+        bb.union(vp.currentBoundingBox)
+      })
     }
 
   }
@@ -135,7 +130,7 @@ class Scene extends SceneTreeObject {
   org.statismo.stk.core.initialize()
 
   name = "Scene"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
 
   override implicit lazy val parent = this
 
@@ -157,13 +152,13 @@ class Scene extends SceneTreeObject {
     }
   }
 
-  def viewports = perspective.viewports
+  protected[ui] def viewports = perspective.viewports
 
   val shapeModels = new ShapeModels
   val staticObjects = new StaticThreeDObjects
   val auxiliaryObjects = new AuxiliaryObjects
 
-  override val children = List(shapeModels, staticObjects) //, auxiliaries)
+  protected[ui] override val children = List(shapeModels, staticObjects) //, auxiliaries)
 
   def tryLoad(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = SceneTreeObjectFactory.DefaultFactories): Try[SceneTreeObject] = {
     SceneTreeObjectFactory.load(filename, factories)
@@ -171,9 +166,8 @@ class Scene extends SceneTreeObject {
 
   reactions += {
     case Viewport.Destroyed(v) => deafTo(v)
-    case Viewport.BoundingBoxChanged(v) => {
+    case Viewport.BoundingBoxChanged(v) =>
       slicingPosition.updateBoundingBox()
-    }
     case SceneTreeObject.VisibilityChanged(s) =>
       publish(Scene.VisibilityChanged(this))
     case SceneTreeObject.ChildrenChanged(s) =>
@@ -183,15 +177,15 @@ class Scene extends SceneTreeObject {
   }
 
 
-  override def onViewportsChanged(viewports: Seq[Viewport]) = {
+  protected override def onViewportsChanged(viewports: Seq[Viewport]) = {
     viewports.foreach(listenTo(_))
     super.onViewportsChanged(viewports)
   }
 
-  lazy val visualizations: Visualizations = new Visualizations
-  lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
+  protected[ui] lazy val visualizations: Visualizations = new Visualizations
+  protected[ui] lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
-  override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
+  protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
     Seq(super.visualizables(filter), Seq(slicingPosition)).flatten
   }
 
@@ -199,6 +193,6 @@ class Scene extends SceneTreeObject {
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[VisualizableSceneTreeObject[_]] {
   name = "Auxiliary Objects"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
   override lazy val parent = scene
 }

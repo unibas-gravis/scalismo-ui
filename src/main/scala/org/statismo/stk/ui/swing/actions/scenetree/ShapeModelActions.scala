@@ -51,7 +51,7 @@ class LoadShapeModelAction extends SceneTreePopupAction("Load Shape Model from f
     if (isContextSupported(context)) {
       val shapes = context.get.asInstanceOf[ShapeModels]
       def doLoad(file: File): Try[Unit] = {
-        ShapeModel(file)(shapes.scene).map(ok => Success(()))
+        ShapeModel.tryCreate(file)(shapes.scene).map(ok => Success(()))
       }
       new LoadAction(doLoad, ShapeModel).apply()
     }

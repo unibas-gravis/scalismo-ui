@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 // see: http://www.codeproject.com/Tips/315892/A-quick-and-easy-way-to-direct-Java-System-out-to
 
+@SuppressWarnings("ALL")
 public class MultiOutputStream extends OutputStream
 {
 	private final OutputStream[] outputStreams;

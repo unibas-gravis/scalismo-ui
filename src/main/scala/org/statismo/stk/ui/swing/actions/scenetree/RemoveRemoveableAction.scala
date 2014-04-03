@@ -6,22 +6,22 @@ import org.statismo.stk.ui.SceneTreeObject
 
 class RemoveRemoveableAction extends SceneTreePopupAction("Remove") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    if (context.isDefined && context.get.isInstanceOf[Removeable] && context.get.asInstanceOf[Removeable].isCurrentlyRemoveable) {
-      if (context.get.isInstanceOf[RemoveableChildren]) {
-        title = "Remove all"
-      } else {
+    context match {
+      case Some(r : Removeable) =>
         title = "Remove"
-      }
-      true
-    } else {
-      false
+        r.isCurrentlyRemoveable
+      case Some(r : RemoveableChildren) =>
+        title = "Remove all"
+        r.children.foldLeft(false){case (b,c) => c.asInstanceOf[Removeable].isCurrentlyRemoveable || b}
+      case _ => false
     }
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
-    if (isContextSupported(context)) {
-      val r = context.get.asInstanceOf[Removeable]
-      r.remove()
+    context match {
+      case Some(r : Removeable) => r.remove()
+      case Some(r : RemoveableChildren) => r.removeAll()
+      case _ =>
     }
   }
 }

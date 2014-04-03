@@ -6,5 +6,5 @@ class ThreeDRepresentations(override val publisher: ThreeDObject) extends SceneT
 }
 
 trait ThreeDRepresentation[C <: VisualizableSceneTreeObject[C]] extends SceneTreeObject with Removeable with VisualizableSceneTreeObject[C] {
-  def threeDObject = parent.asInstanceOf[ThreeDObject]
+  protected def threeDObject = parent.asInstanceOf[ThreeDObject]
 }

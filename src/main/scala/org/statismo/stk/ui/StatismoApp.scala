@@ -24,8 +24,6 @@ object StatismoApp {
     val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
     if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
-
-  val Version: String = "0.2.2"
 }
 
 class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
@@ -49,6 +47,7 @@ object StatismoFrame {
     result.get
   }
 }
+
 protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   if (!SwingUtilities.isEventDispatchThread) {
     sys.error("StatismoFrame constructor must be invoked in the Swing EDT. See StatismoFrame.apply()")

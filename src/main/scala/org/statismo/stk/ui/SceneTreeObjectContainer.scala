@@ -2,11 +2,17 @@ package org.statismo.stk.ui
 
 import scala.swing.Reactor
 import scala.collection.immutable.IndexedSeq
+import scala.collection.immutable
+
+object MutableObjectContainer {
+  import scala.language.implicitConversions
+  implicit def containerToChildrenSeq[Child <: AnyRef] (container: MutableObjectContainer[Child]): immutable.Seq[Child] = container.children.to[immutable.Seq]
+}
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
   protected var _children: IndexedSeq[Child] = Nil.toIndexedSeq
 
-  def children: Seq[Child] = _children
+  protected[ui] def children: Seq[Child] = _children
 
   def add(child: Child): Unit = {
     child match {
@@ -17,7 +23,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
   }
 
-  def apply(index: Int) = children(index)
+  //def apply(index: Int) = children(index)
 
   def removeAll() = {
     val copy = _children.map({
@@ -28,7 +34,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     }
   }
 
-  protected[ui] def remove(child: Child, silent: Boolean): Boolean = {
+  protected def remove(child: Child, silent: Boolean): Boolean = {
     if (!silent && child.isInstanceOf[Removeable]) {
       // this will publish a message which is handled in the reactions
       child.asInstanceOf[Removeable].remove()
@@ -48,7 +54,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     }
   }
 
-  def remove(child: Child): Boolean = {
+  protected def remove(child: Child): Boolean = {
     remove(child, silent = false)
   }
 
@@ -63,14 +69,14 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectContainer[Child] {
   //  override def children = super.children // required to prevent type conflict
 
-  def publisher: SceneTreeObject
+  protected def publisher: SceneTreeObject
 
   override def add(child: Child): Unit = {
     super.add(child)
     publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
   }
 
-  override def remove(child: Child, silent: Boolean): Boolean = {
+  protected override def remove(child: Child, silent: Boolean): Boolean = {
     val changed = super.remove(child, silent)
     if (changed) {
       publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
@@ -80,9 +86,9 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectCo
 }
 
 trait StandaloneSceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with SceneTreeObjectContainer[Child] {
-  override def children = super.children
+  protected[ui] override def children = super.children
 
   // required to prevent type conflict
-  override lazy val publisher = this
+  protected override lazy val publisher = this
 }
 

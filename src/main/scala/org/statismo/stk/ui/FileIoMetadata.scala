@@ -1,7 +1,9 @@
 package org.statismo.stk.ui
 
+import scala.collection.immutable
+
 trait FileIoMetadata {
-  val fileExtensions: Seq[String]
+  val fileExtensions: immutable.Seq[String]
   val description: String
 
   def longDescription: String = {
@@ -11,5 +13,5 @@ trait FileIoMetadata {
 
 object PngFileIoMetadata extends FileIoMetadata {
   override val description = "PNG Image"
-  override val fileExtensions = Seq("png")
+  override val fileExtensions = immutable.Seq("png")
 }

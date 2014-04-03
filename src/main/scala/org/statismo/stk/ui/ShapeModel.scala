@@ -4,7 +4,7 @@ import java.io.File
 
 import scala.swing.event.Event
 import scala.util.Try
-import scala.collection.immutable.{HashMap, IndexedSeq}
+import scala.collection.immutable
 
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.geometry.ThreeD
@@ -18,49 +18,47 @@ import breeze.linalg.DenseVector
 class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
   override lazy val parent = scene
   name = "Statistical Shape Models"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
+
+  def createFromFile(file: File, numberOfInstances: Int = 1) : Try[ShapeModel] = ShapeModel.createFromFile(file, numberOfInstances)
+  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int = 1) : ShapeModel = ShapeModel.createFromPeer(peer, numberOfInstances)
+  def createFromPeer(peer: StatisticalMeshModel, template: ShapeModel) : ShapeModel = ShapeModel.createFromPeer(peer, template)
 }
 
 object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata {
-  override val ioMetadata = this
+  protected[ui] override val ioMetadata = this
   override val description = "Statistical Shape Model"
-  override val fileExtensions = Seq("h5")
+  override val fileExtensions = immutable.Seq("h5")
 
-  override def apply(file: File)(implicit scene: Scene): Try[ShapeModel] = apply(file, 1)
+  protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[ShapeModel] = createFromFile(file, 1)
 
-  def apply(filename: String, numberOfInstancesToCreate: Int = 1)(implicit scene: Scene): Try[ShapeModel] = apply(new File(filename), numberOfInstancesToCreate)
-
-  def apply(file: File, numberOfInstancesToCreate: Int)(implicit scene: Scene): Try[ShapeModel] = {
+  def createFromFile(file: File, numberOfInstances: Int)(implicit scene: Scene): Try[ShapeModel] = {
     for {
       raw <- StatismoIO.readStatismoMeshModel(file)
     } yield {
       val shape = new ShapeModel(raw)
       shape.name = file.getName
-      0 until numberOfInstancesToCreate foreach {
-        i => shape.instances.create()
-      }
+      0 until numberOfInstances foreach {i => shape.instances.create()}
       shape
     }
   }
 
-  def apply(peer: StatisticalMeshModel, template: Option[ShapeModel])(implicit scene: Scene) = {
+  def createFromPeer(peer: StatisticalMeshModel, template: ShapeModel)(implicit scene: Scene) = {
     val nm = new ShapeModel(peer)
-    if (template.isDefined) {
-      nm.name = template.get.name
-      template.get.instances.children.foreach {
-        inst =>
-          nm.instances.create(inst)
-      }
-      template.get.landmarks.children.foreach {
-        lm =>
-          nm.landmarks.create(lm)
-      }
-    }
+    template.instances.foreach(nm.instances.create)
+    template.landmarks.foreach(nm.landmarks.create)
     nm
   }
+
+  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int)(implicit scene: Scene) = {
+    val nm = new ShapeModel(peer)
+    0 until numberOfInstances foreach {i => nm.instances.create()}
+    nm
+  }
+
 }
 
-class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
+class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
   override lazy val parent: ShapeModels = scene.shapeModels
 
   override lazy val saveableMetadata = ShapeModel
@@ -71,7 +69,7 @@ class ShapeModel(val peer: StatisticalMeshModel)(implicit override val scene: Sc
 
   val instances = new ShapeModelInstances(this)
 
-  override def children = instances.children
+  protected[ui] override def children = instances.children
 
   lazy val landmarkNameGenerator: NameGenerator = NameGenerator.defaultGenerator
   val landmarks = new ReferenceLandmarks(this)
@@ -148,8 +146,8 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
 
   class ShapeModelInstanceMeshRepresentation extends Mesh {
     name = "Mesh"
-    override lazy val isNameUserModifiable = false
-    override lazy val isCurrentlyRemoveable = false
+    protected[ui] override lazy val isNameUserModifiable = false
+    protected[ui] override lazy val isCurrentlyRemoveable = false
     private var _mesh: TriangleMesh = shapeModel.calculateMesh(_coefficients)
 
     def peer = {

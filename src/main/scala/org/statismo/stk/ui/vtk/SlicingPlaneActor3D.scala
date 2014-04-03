@@ -13,7 +13,7 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
     case Axis.Z => GetProperty().SetColor(0, 0, 1)
   }
   listenTo(scene)
-  update(false)
+  update(withEvent = false)
 
   reactions += {
     case Scene.SlicingPosition.BoundingBoxChanged(s) => update()
