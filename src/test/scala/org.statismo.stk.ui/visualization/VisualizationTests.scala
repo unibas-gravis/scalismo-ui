@@ -7,8 +7,11 @@ import scala.util.{Failure, Success}
 
 class VisualizationTests  extends FunSpec with Matchers {
 
+  object TestProp {
+    val DefaultValue: String = "???"
+  }
   class TestProp extends VisualizationProperty[String, TestProp] {
-    val defaultValue: String = "DEFAULT"
+    val defaultValue: String = TestProp.DefaultValue
     def newInstance() = new TestProp
   }
 
@@ -29,11 +32,22 @@ class VisualizationTests  extends FunSpec with Matchers {
   class TestViewport1 extends DummyViewport
   class TestViewport2 extends DummyViewport
 
+  /* This method *is* time-sensitive. Make sure you give the garbage collector some time.
+  * Something like (at least) 100 ms seems to be sensible.
+  */
+  def garbageCollectAnd[R] (f: => R, gracePeriodMs: Long = 500) : R = {
+    System.gc()
+    Thread.sleep(gracePeriodMs)
+    System.gc()
+    val r: R = f
+    r
+  }
+
   describe("A VisualizationProperty") {
 
     it("returns its default value after instantiation") {
       val t = new TestProp
-      t.value should equal("DEFAULT")
+      t.value should equal(TestProp.DefaultValue)
     }
 
     it("changes its value when requested") {
@@ -76,6 +90,39 @@ class VisualizationTests  extends FunSpec with Matchers {
       parent.value should equal(parentValue)
       child.value should equal(childValue)
       grandchild.value should equal(grandChildValue)
+    }
+
+    it("is correctly garbage-collected when not referenced") {
+      val parentValue = "PARENT"
+      val childValue = "CHILD"
+      val grandChildValue = "GRANDCHILD"
+      val parent = new TestProp
+      var child = parent.derive()
+      var grandchild1 = child.derive()
+      var grandchild2 = child.derive()
+      val grandgrandchild = grandchild2.derive()
+      parent.value = parentValue
+      child.value = childValue
+      grandchild1.value = grandChildValue
+
+      grandgrandchild.derived.length shouldBe 0
+      grandchild2.derived.length shouldBe 1
+      grandchild1.derived.length shouldBe 0
+      child.derived.length shouldBe 2
+      parent.derived.length shouldBe 1
+
+      grandchild1 = null
+      garbageCollectAnd(child.derived).length shouldBe 1
+      grandchild2.derived.length shouldBe 1
+
+      grandchild2 = null
+      // this should also garbage-collect the grand-grandchild,
+      // even if it could still be referenced somewhere else
+      garbageCollectAnd(child.derived).length shouldBe 0
+
+      garbageCollectAnd(parent.derived).length shouldBe 1
+      child = null
+      garbageCollectAnd(parent.derived).length shouldBe 0
     }
   }
 

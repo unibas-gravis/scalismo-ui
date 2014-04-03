@@ -61,6 +61,12 @@ class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends
 }
 
 class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
+  //FIXME
+  override def finalize = {
+    super.finalize
+    println("MoveableLandmark finalized.")
+  }
+
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
@@ -80,7 +86,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
       }
     case Removeable.Removed(r) =>
       if (r eq source) {
+        deafTo(container.instance.meshRepresentation, source)
         container.remove(this, silent = true)
+        //FIXME
+        System.gc()
       }
   }
 

@@ -30,6 +30,10 @@ class Visualizations {
           case f@Failure(e) => f
         }
       })
+      // FIXME too: this method is invoked far too often.
+      //FIXME
+//      System.gc()
+      println(key.getClass + " map size = " + mappings.size)
       value.asInstanceOf[Try[Visualization[_]]]
     }
   }
@@ -77,22 +81,23 @@ trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends S
 
 trait Derivable[A <: AnyRef] {
   protected val self:A = this.asInstanceOf[A]
-  protected [visualization] var derived: Seq[WeakReference[A]] = Nil
+  private var _derived: immutable.Seq[WeakReference[A]] = Nil
+
+  protected [visualization] def derived: immutable.Seq[WeakReference[A]] = this.synchronized {
+    val purged = _derived.filter(w => w.get != None)
+    if (purged.length != _derived.length) {
+      //FIXME
+      println("DEBUG: purged visualization children (this is GOOD news): " + _derived.length + " -> "+purged.length)
+      purged
+    } else {
+      _derived
+    }
+  }
 
   final def derive(): A = this.synchronized {
     val child: A = createDerived()
-    purgeDerived()
-    derived :+= new WeakReference[A](child)
+    _derived = Seq(derived, Seq(new WeakReference[A](child))).flatten.to[immutable.Seq]
     child
-  }
-
-  protected [visualization] def purgeDerived(): Unit = this.synchronized {
-    val purged = derived.filter(w => w.get != None)
-    if (purged.length != derived.length) {
-      //FIXME
-      println("purged children: " + derived.length + " -> "+purged.length)
-      derived = purged
-    }
   }
 
   protected def createDerived() :A
@@ -112,30 +117,20 @@ final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
   override protected def instantiateRenderables(source: A) = Nil
 }
 
-//trait ConcreteVisualization[A <: Visualizable[_], C <: ConcreteVisualization[A,C]] extends Visualization[A] {
-//}
-
 object VisualizationProperty {
   case class ValueChanged[V, C <: VisualizationProperty[V,C]](source: VisualizationProperty[V,C]) extends Event
 }
 
 trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivable[C] with EdtPublisher {
   private var _value: Option[V] = None
-  final def value: V = _value.getOrElse(defaultValue)
+  final def value: V = {
+    _value.getOrElse(defaultValue)
+  }
   final def value_=(newValue: V): Unit = this.synchronized {
     if (newValue != value) {
       _value = Some(newValue)
+      derived.map(wr => wr.get).filter(r => r.isDefined).map(_.get).foreach(_.value = newValue)
       publish(VisualizationProperty.ValueChanged(this))
-      var purge = false
-      derived.foreach { w =>
-        w.get match {
-          case None => purge = true
-          case Some(c) => c.value = newValue
-        }
-      }
-      if (purge) {
-        purgeDerived()
-      }
     }
   }
 
@@ -148,4 +143,9 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivabl
   }
 
   def newInstance(): C
+
+  override def finalize() = {
+    println(this.getClass + " finalize()")
+    super.finalize()
+  }
 }
