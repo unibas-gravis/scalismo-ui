@@ -38,34 +38,6 @@ import org.statismo.stk.core.registration.MeanSquaresMetric3D
 
 class Varian(scene: Scene) extends StatismoFrame(scene) {
 
-  //  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadMesh, "Open Mesh...", Seq(StaticMesh), false)))
-  //  menuBar.fileMenu.contents.insert(0, new MenuItem(new OpenSceneTreeObjectAction(loadModel, "Open Statistical Shape Model...", Seq(ShapeModel), false)))
-
-  //  def loadMesh(files: Seq[File], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Unit = {
-  //    val x = scene.tryLoad(files.map(f => f.getAbsolutePath()).toList, factories)
-  //    x foreach { o =>
-  //      if (o.isSuccess) {
-  //        val s = o.get.asInstanceOf[StaticMesh]
-  //        meshLm = s.parent.parent.landmarks
-  //        listenTo(meshLm)
-  //        s.color = Color.GREEN
-  //      }
-  //    }
-  //  }
-  //
-  //  def loadModel(files: Seq[File], factories: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Unit = {
-  //    files foreach { fn =>
-  //      val o = ShapeModel(fn, 1)
-  //      if (o.isSuccess) {
-  //        orgModel = Some(o.get)
-  //        lastModel = Some(o.get)
-  //        o.get.instances(0).meshRepresentation.color = Color.RED
-  //        modelLm = o.get.instances(0).landmarks
-  //        listenTo(modelLm)
-  //      }
-  //    }
-  //  }
-  //
   override def startup(args: Array[String]): Unit = {
     super.startup(args)
     args foreach { scene.tryLoad(_) }
@@ -82,7 +54,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
   listenTo(scene)
   reactions += {
     case Scene.TreeTopologyChanged(s) =>
-      if (!scene.shapeModels.children.isEmpty) {
+      if (!scene.shapeModels.isEmpty) {
         if (!orgModel.isDefined) {
           orgModel = Some(scene.shapeModels(0))
           lastModel = Some(orgModel.get)
@@ -90,7 +62,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
           listenTo(modelLm.get)
         }
       }
-      if (!scene.staticObjects.children.isEmpty) {
+      if (!scene.staticObjects.isEmpty) {
         if (!targetLm.isDefined) {
           targetLm = Some(scene.staticObjects(0).landmarks)
           listenTo(targetLm.get)
@@ -106,19 +78,19 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
   private def computeNewPosteriorModel(computeMeanOnly: Boolean): Unit = {
     if (modelLm.isDefined && targetLm.isDefined) {
-      if (modelLm.get.children.length == targetLm.get.children.length) {
-        val refLms = lastModel.get.landmarks.children.map(_.point).toIndexedSeq
-        val targetLms = targetLm.get.children.map(_.point).toIndexedSeq
+      if (modelLm.get.length == targetLm.get.length) {
+        val refLms = lastModel.get.landmarks.map(_.point).toIndexedSeq
+        val targetLms = targetLm.get.map(_.point).toIndexedSeq
         val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (refPt, tgtPt - refPt) }
         val newModel = if (!trainingData.isEmpty) {
           val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, computeMeanOnly)
-          val nm = ShapeModel(posteriorModel, orgModel)
-          nm.landmarks.children.foreach { l => l.remove() }
-          lastModel.get.landmarks.children.foreach { lm => nm.landmarks.create(lm.point) }
+          val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
+          nm.landmarks.foreach { l => l.remove() }
+          lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point) }
           nm
         } else {
-          val nm = ShapeModel(orgModel.get.peer, orgModel)
-          nm.landmarks.children.foreach(_.remove())
+          val nm = ShapeModel.createFromPeer(orgModel.get.peer, orgModel.get)
+          nm.landmarks.foreach(_.remove())
           nm
         }
 

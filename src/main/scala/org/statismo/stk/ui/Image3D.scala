@@ -18,7 +18,6 @@ import org.statismo.stk.core.geometry.Point3D
 object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
-  //visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
 
   class Visualization3D extends Visualization[Image3D[_]] {
     override protected def createDerived() = new Visualization3D
@@ -44,11 +43,11 @@ object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
 }
 
 class Image3D[S : ScalarValue : ClassTag: TypeTag](val peer: DiscreteScalarImage3D[S]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable {
-  override lazy val saveableMetadata = StaticImage3D
-  override def visualizationProvider: VisualizationProvider[Image3D[S]] = Image3D
+  protected[ui] override lazy val saveableMetadata = StaticImage3D
+  protected[ui] override def visualizationProvider: VisualizationProvider[Image3D[S]] = Image3D
+  protected[ui] lazy val asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
 
-  lazy val asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
-  def saveToFile(f: File) = Try[Unit] {
+  override def saveToFile(f: File) = Try[Unit] {
       ImageIO.writeImage(peer, f)
   }
 

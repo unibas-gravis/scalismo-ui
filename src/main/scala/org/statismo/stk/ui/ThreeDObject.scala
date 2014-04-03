@@ -5,7 +5,7 @@ trait ThreeDObject extends SceneTreeObject {
 
   def landmarks: VisualizableLandmarks
 
-  override def children = {
+  protected[ui] override def children = {
     val lm: Seq[SceneTreeObject] = Seq(landmarks)
     val rep: Seq[SceneTreeObject] = representations.children
     Seq(lm, rep).flatten

@@ -7,13 +7,14 @@ import scala.util.Try
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
+import scala.collection.immutable
 
 object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata {
-  val description = "Static Mesh"
-  val fileExtensions = Seq("vtk")
-  val ioMetadata = this
+  override val description = "Static Mesh"
+  override val fileExtensions = immutable.Seq("vtk")
+  protected[ui] override val ioMetadata = this
 
-  def apply(file: File)(implicit scene: Scene): Try[StaticMesh] = {
+  protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[StaticMesh] = {
     apply(file, None, file.getName)
   }
 
@@ -26,7 +27,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   }
 }
 
-class StaticMesh(override val peer: TriangleMesh, initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
+class StaticMesh protected[ui] (override val peer: TriangleMesh, initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 

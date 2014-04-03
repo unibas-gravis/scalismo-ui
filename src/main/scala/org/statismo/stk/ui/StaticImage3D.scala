@@ -11,13 +11,14 @@ import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
 import reflect.runtime.universe.TypeTag
 import org.statismo.stk.ui.visualization.SimpleVisualizationFactory
+import scala.collection.immutable
 
 object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileIoMetadata {
-  val description = "Static 3D Image"
-  val fileExtensions = Seq("nii", "nia")
-  val ioMetadata = this
+  override val description = "Static 3D Image"
+  override val fileExtensions = immutable.Seq("nii", "nia")
+  protected[ui] override val ioMetadata = this
 
-  def apply(file: File)(implicit scene: Scene): Try[StaticImage3D[_]] = {
+  protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[StaticImage3D[_]] = {
     apply(file, None, file.getName)
   }
 
@@ -47,7 +48,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
   }
 }
 
-class StaticImage3D[S: ScalarValue: ClassTag : TypeTag](override val peer: DiscreteScalarImage3D[S], initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
+class StaticImage3D[S: ScalarValue: ClassTag : TypeTag] protected[ui] (override val peer: DiscreteScalarImage3D[S], initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 

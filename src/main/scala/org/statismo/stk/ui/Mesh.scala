@@ -54,7 +54,7 @@ trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable {
     MeshIO.writeMesh(peer, file)
   }
 
-  override lazy val saveableMetadata = StaticMesh
+  protected[ui] override lazy val saveableMetadata = StaticMesh
 
-  override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
+  protected[ui] override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
 }

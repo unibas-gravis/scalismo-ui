@@ -2,7 +2,7 @@ package org.statismo.stk.ui
 
 class StaticThreeDObjects(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[StaticThreeDObject] with RemoveableChildren {
   name = "Static Objects"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
   override lazy val parent = scene
 }
 

@@ -5,23 +5,35 @@ import java.io.File
 import scala.swing.event.Event
 import scala.util.Try
 
-import org.statismo.stk.core.geometry.ThreeD
+import org.statismo.stk.core.geometry.{Point, ThreeD, Point3D}
 import org.statismo.stk.core.io.LandmarkIO
 import scala.collection.immutable
 
 import breeze.linalg.DenseVector
 import org.statismo.stk.ui.visualization._
-import org.statismo.stk.core.geometry.Point3D
 import scala.Some
 import scala.Tuple2
 import org.statismo.stk.ui.visualization.props.{RadiusProperty, ColorProperty, OpacityProperty}
 import java.awt.Color
+import Landmark.genericPointToPoint3D
+
+object Landmark {
+  import scala.language.implicitConversions
+  implicit def genericPointToPoint3D(generic: Point[ThreeD]): Point3D = {
+    generic match {
+      case p3d: Point3D => p3d
+      case g: Point[ThreeD] =>
+        val v = g.toVector
+        Point3D(v(0),v(1),v(2))
+    }
+  }
+}
 
 trait Landmark extends Nameable with Removeable {
   def point: Point3D
 }
 
-class ReferenceLandmark(val point: Point3D) extends Landmark
+class ReferenceLandmark protected[ui] (val point: Point3D) extends Landmark
 
 object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
@@ -56,11 +68,11 @@ abstract class VisualizableLandmark(container: VisualizableLandmarks) extends La
   override def visualizationProvider = container
 }
 
-class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
+class StaticLandmark protected[ui] (initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
   var point = initialCenter
 }
 
-class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
+class MoveableLandmark protected[ui] (container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
@@ -104,7 +116,17 @@ object Landmarks extends FileIoMetadata {
   case class LandmarkChanged(source: Landmark) extends Event
 
   override val description = "Landmarks"
-  override val fileExtensions = Seq("csv")
+  override val fileExtensions = immutable.Seq("csv")
+
+  import scala.language.implicitConversions
+  implicit def genericPointToPoint3D(generic: Point[ThreeD]): Point3D = {
+    generic match {
+      case p3d: Point3D => p3d
+      case g: Point[ThreeD] =>
+        val v = g.toVector
+        Point3D(v(0),v(1),v(2))
+    }
+  }
 }
 
 trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublisher with Saveable with Loadable {
@@ -113,7 +135,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def isCurrentlySaveable: Boolean = !children.isEmpty
 
-  def create(peer: Point3D, name: Option[String]): Unit
+  def create(peer: Point[ThreeD], name: Option[String]): Unit
 
   override def add(lm: L): Unit = {
     super.add(lm)
@@ -149,14 +171,14 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 }
 
-abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with VisualizationProvider[VisualizableLandmark] with RemoveableChildren {
+abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with VisualizationProvider[VisualizableLandmark] with RemoveableWithChildren {
   name = "Landmarks"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 
-  def addAt(position: Point3D)
-
+  def addAt(position: Point[ThreeD])
   override def visualizationProvider = VisualizableLandmark
+
 }
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
@@ -166,7 +188,7 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
     create(template.point, Some(template.name))
   }
 
-  def create(peer: Point3D, name: Option[String] = None): Unit = {
+  def create(peer: Point[ThreeD], name: Option[String] = None): Unit = {
     val lm = new ReferenceLandmark(peer)
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
@@ -176,9 +198,9 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
-  def addAt(peer: Point3D) = create(peer)
+  def addAt(peer: Point[ThreeD]) = create(peer)
 
-  def create(peer: Point3D, name: Option[String] = None): Unit = {
+  def create(peer: Point[ThreeD], name: Option[String] = None): Unit = {
     val lm = new StaticLandmark(peer, this)
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
@@ -189,11 +211,11 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  def addAt(peer: Point3D) = {
+  def addAt(peer: Point[ThreeD]) = {
     create(peer, None)
   }
 
-  def create(peer: Point3D, name: Option[String]): Unit = {
+  def create(peer: Point[ThreeD], name: Option[String]): Unit = {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
     val refPoint = instance.shapeModel.peer.mesh.points(index).asInstanceOf[Point3D]
     instance.shapeModel.landmarks.create(refPoint, name)

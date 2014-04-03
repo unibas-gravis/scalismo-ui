@@ -60,8 +60,8 @@ object Scene {
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
     import Scene.SlicingPosition.Precision
 
-    override def visualizationProvider = SlicingPosition
-    override def isVisibleIn(viewport: Viewport) = viewport.isInstanceOf[ThreeDViewport]
+    protected[ui] override def visualizationProvider = SlicingPosition
+    protected[ui] override def isVisibleIn(viewport: Viewport) = viewport.isInstanceOf[ThreeDViewport]
 
 
     private var _point: Option[Point3D] = None
@@ -117,13 +117,8 @@ object Scene {
     }
 
     private[Scene] def updateBoundingBox() = {
-      //println("UPDATING BOUNDINGBOX")
       boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) =>
-        //println(bb)
-        //println(vp.currentBoundingBox)
-        val r = bb.union(vp.currentBoundingBox)
-        //println(" => " + r)
-        r
+        bb.union(vp.currentBoundingBox)
       })
     }
 
@@ -135,7 +130,7 @@ class Scene extends SceneTreeObject {
   org.statismo.stk.core.initialize()
 
   name = "Scene"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
 
   override implicit lazy val parent = this
 
@@ -163,7 +158,7 @@ class Scene extends SceneTreeObject {
   val staticObjects = new StaticThreeDObjects
   val auxiliaryObjects = new AuxiliaryObjects
 
-  override val children = List(shapeModels, staticObjects) //, auxiliaries)
+  protected[ui] override val children = List(shapeModels, staticObjects) //, auxiliaries)
 
   def tryLoad(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = SceneTreeObjectFactory.DefaultFactories): Try[SceneTreeObject] = {
     SceneTreeObjectFactory.load(filename, factories)
@@ -198,6 +193,6 @@ class Scene extends SceneTreeObject {
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[VisualizableSceneTreeObject[_]] {
   name = "Auxiliary Objects"
-  override lazy val isNameUserModifiable = false
+  protected[ui] override lazy val isNameUserModifiable = false
   override lazy val parent = scene
 }

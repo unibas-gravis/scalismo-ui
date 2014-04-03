@@ -47,10 +47,10 @@ class Visualizations {
 }
 
 trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A] {
-  override final val visualizationProvider = null
+  protected[ui] override final val visualizationProvider = null
 
-  def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
-  final def instantiate(viewportClassName: String): Visualization[A] = {
+  protected[ui] def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
+  protected[ui] final def instantiate(viewportClassName: String): Visualization[A] = {
     visualizationsFor(viewportClassName).headOption match {
       case Some(v) => v
       case None => throw new RuntimeException(getClass+ " did not provide any Visualization options for viewport class "+viewportClassName)
@@ -64,15 +64,15 @@ trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFact
 }
 
 trait VisualizationProvider[-A <: Visualizable[_]] {
-  def visualizationProvider: VisualizationProvider[A]
+  protected[ui] def visualizationProvider: VisualizationProvider[A]
 }
 
 trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
-  def isVisibleIn(viewport: Viewport) : Boolean
+  protected[ui] def isVisibleIn(viewport: Viewport) : Boolean
 }
 
 trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends SceneTreeObject with Visualizable[X] {
-  override def isVisibleIn(viewport: Viewport) : Boolean = visible(viewport)
+  protected[ui] override def isVisibleIn(viewport: Viewport) : Boolean = visible(viewport)
 }
 
 trait Derivable[A <: AnyRef] {
