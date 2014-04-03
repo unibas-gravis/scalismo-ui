@@ -11,9 +11,26 @@ object PersistentSettings {
   }
 
   class KeyDoesNotExistException extends Exception("Key not found")
-  private val KeyDoesNotExist = new KeyDoesNotExistException
+  val KeyDoesNotExist = new KeyDoesNotExistException
 
   object Codecs {
+
+    def get[A: TypeTag]: Codec[A] = {
+      val codec: Option[Codec[_]] = typeOf[A] match {
+        case t if t <:< typeOf[String] => Some(StringCodec)
+        case t if t <:< typeOf[Int] => Some(IntCodec)
+        case t if t <:< typeOf[Long] => Some(LongCodec)
+        case t if t <:< typeOf[Short] => Some(ShortCodec)
+        case t if t <:< typeOf[Byte] => Some(ByteCodec)
+        case t if t <:< typeOf[Double] => Some(DoubleCodec)
+        case t if t <:< typeOf[Float] => Some(FloatCodec)
+        case _ => None
+      }
+      if (!codec.isDefined) {
+        throw new IllegalArgumentException("Settings of type " + typeOf[A].toString +" are not currently supported")
+      }
+      codec.get.asInstanceOf[Codec[A]]
+    }
 
     abstract class Codec[A] {
       def toString(target: A) : String = target.toString
@@ -24,57 +41,85 @@ object PersistentSettings {
       override def fromString(s: String) = s
     }
 
-    // FIXME: provide codecs for byte, short, long etc.
     object IntCodec extends Codec[Int] {
       override def fromString(s: String) = Integer.parseInt(s)
     }
-  }
-  import Codecs._
 
+    object LongCodec extends Codec[Long] {
+      override def fromString(s: String) = java.lang.Long.parseLong(s)
+    }
+
+    object ShortCodec extends Codec[Short] {
+      override def fromString(s: String) = java.lang.Short.parseShort(s)
+    }
+
+    object ByteCodec extends Codec[Byte] {
+      override def fromString(s: String) = java.lang.Byte.parseByte(s)
+    }
+
+    object DoubleCodec extends Codec[Double] {
+      override def fromString(s: String) = java.lang.Double.parseDouble(s)
+    }
+
+    object FloatCodec extends Codec[Float] {
+      override def fromString(s: String) = java.lang.Float.parseFloat(s)
+    }
+
+  }
   def get[A: TypeTag](key: String, default: Option[A] = None, useDefaultOnFailure: Boolean = false): Try[A] = {
     typeOf[A] match {
-      case t if t <:< typeOf[Seq[_]] => {
-        throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
-      }
+      case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
       case _ => /* ok */
     }
 
     val result = getList(key, default.map(List(_)), useDefaultOnFailure)
     result match {
-      case Success(l) => {
-        if (l.isEmpty) {
-          if (default.isDefined) Success(default.get)
-          else Failure(KeyDoesNotExist)
-        }
-        else Success(l.head)
-      }
       case Failure(error) => Failure(error)
+      case Success(l) => Success(l.head)
     }
   }
 
-  def getList[A: TypeTag](key: String, default: Option[Seq[A]] = None, useDefaultOnFailure: Boolean = false): Try[List[A]] = {
+  def getList[A: TypeTag](key: String, default: Option[List[A]] = None, useDefaultOnFailure: Boolean = false): Try[List[A]] = {
     require(!useDefaultOnFailure || default.isDefined, "useDefaultOnFailure requires default value to be set")
 
-    val codec: Option[Codec[_]] = typeOf[A] match {
-      case t if t <:< typeOf[String] => Some(StringCodec)
-      case t if t <:< typeOf[Int] => Some(IntCodec)
-      case _ => None
-    }
-    if (!codec.isDefined) {
-      throw new IllegalArgumentException("Settings of type " + typeOf[A].toString +" are not currently supported")
-    }
+    val codec = Codecs.get[A]
 
-    Try(tryGet(key)) match {
-      case ok@Success(r) => {
-        Success(r.map(s => codec.get.asInstanceOf[Codec[A]].fromString(s)).toList)
-      }
+    Try(doGet(key)) match {
+      case Failure(error) => if(useDefaultOnFailure) Success(default.get) else Failure(error)
+      case ok@Success(r) =>
+        if (r.isEmpty) {
+          if (default.isDefined) Success(default.get)
+          else Failure(KeyDoesNotExist)
+        } else {
+          Success(r.map(s => codec.fromString(s)).toList)
+        }
+    }
+  }
+
+  def set[A: TypeTag](key: String, value: A): Try[Unit] = {
+    typeOf[A] match {
+      case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the setList() method to set multi-valued settings.")
+      case _ => /* ok */
+    }
+    setList(key, List(value))
+  }
+
+  def setList[A: TypeTag](key: String, values: List[A]) : Try[Unit] = {
+    val codec = Codecs.get[A]
+
+    Try(doSet(key, values.map(v => codec.toString(v)))) match {
+      case ok@Success(r) => Success(())
       case Failure(oops) => Failure(oops)
     }
   }
 
-  private def tryGet(key: String) : Seq[String] = {
+  private def doGet(key: String) : Seq[String] = {
     val sf: SettingsFile = settingsFile
-    val vals:Seq[String] = sf.getValues(key)
-    vals
+    sf.getValues(key)
+  }
+
+  private def doSet(key: String, vals: List[String]) = {
+    val sf: SettingsFile = settingsFile
+    sf.setValues(key, vals)
   }
 }
