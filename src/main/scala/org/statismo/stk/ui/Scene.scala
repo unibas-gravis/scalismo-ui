@@ -118,13 +118,13 @@ object Scene {
 
     private[Scene] def updateBoundingBox() = {
       //println("UPDATING BOUNDINGBOX")
-      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) => {
+      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) =>
         //println(bb)
         //println(vp.currentBoundingBox)
         val r = bb.union(vp.currentBoundingBox)
         //println(" => " + r)
         r
-      }})
+      })
     }
 
   }
@@ -157,7 +157,7 @@ class Scene extends SceneTreeObject {
     }
   }
 
-  def viewports = perspective.viewports
+  protected[ui] def viewports = perspective.viewports
 
   val shapeModels = new ShapeModels
   val staticObjects = new StaticThreeDObjects
@@ -171,9 +171,8 @@ class Scene extends SceneTreeObject {
 
   reactions += {
     case Viewport.Destroyed(v) => deafTo(v)
-    case Viewport.BoundingBoxChanged(v) => {
+    case Viewport.BoundingBoxChanged(v) =>
       slicingPosition.updateBoundingBox()
-    }
     case SceneTreeObject.VisibilityChanged(s) =>
       publish(Scene.VisibilityChanged(this))
     case SceneTreeObject.ChildrenChanged(s) =>
@@ -183,15 +182,15 @@ class Scene extends SceneTreeObject {
   }
 
 
-  override def onViewportsChanged(viewports: Seq[Viewport]) = {
+  protected override def onViewportsChanged(viewports: Seq[Viewport]) = {
     viewports.foreach(listenTo(_))
     super.onViewportsChanged(viewports)
   }
 
-  lazy val visualizations: Visualizations = new Visualizations
-  lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
+  protected[ui] lazy val visualizations: Visualizations = new Visualizations
+  protected[ui] lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
-  override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
+  protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
     Seq(super.visualizables(filter), Seq(slicingPosition)).flatten
   }
 

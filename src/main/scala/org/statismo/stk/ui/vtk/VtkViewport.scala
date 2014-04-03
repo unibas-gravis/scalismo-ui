@@ -33,10 +33,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interac
   def refresh(): Unit = {
     val renderables = scene.visualizables(f => f.isVisibleIn(viewport)).flatMap {obj =>
       scene.visualizations.tryGet(obj, viewport) match {
-        case Failure(f) => {
+        case Failure(f) =>
           f.printStackTrace()
           Nil
-        }
         case Success(vis) => vis(obj)
       }
     }
@@ -92,7 +91,7 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interac
           // this is a safe way of determining whether there are any "real" actors.
           // "helper" actors (like the BoundingBox itself) are not taken into account
           // while calculating the boundingbox.
-          publish(VtkContext.ViewportEmptyStatus(this, true))
+          publish(VtkContext.ViewportEmptyStatus(this, isEmpty = true))
         } else {
           if (firstTime) {
             firstTime = false
@@ -122,10 +121,9 @@ class VtkViewport(val viewport: Viewport, val renderer: vtkRenderer, val interac
     case Scene.TreeTopologyChanged(s) => refresh()
     case Scene.VisibilityChanged(s) => refresh()
     case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
-    case VtkContext.RenderRequest(s) => {
+    case VtkContext.RenderRequest(s) =>
       updateBoundingBox()
       publish(VtkContext.RenderRequest(this))
-    }
   }
 
   refresh()

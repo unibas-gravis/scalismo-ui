@@ -14,7 +14,6 @@ class VisualizationTests  extends FunSpec with Matchers {
 
   class DummyViewport extends Viewport {
     override def scene: Scene = ???
-    //override def isMouseSensitive: Boolean = ???
   }
 
   object TestVisualizableFactory extends SimpleVisualizationFactory[TestVisualizable] {

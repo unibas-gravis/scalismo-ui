@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.ui.visualization.props.{LineThicknessProperty}
+import org.statismo.stk.ui.visualization.props.LineThicknessProperty
 import org.statismo.stk.ui.visualization.VisualizationProperty
 
 trait LineActor extends ColorableActor {

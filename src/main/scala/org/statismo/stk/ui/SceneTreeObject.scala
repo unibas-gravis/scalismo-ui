@@ -29,29 +29,29 @@ trait SceneTreeObject extends Nameable {
 
   scene.listenTo(this)
 
-  def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = find[Visualizable[_]](filter)
+  protected [ui] def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = findAny[Visualizable[_]](filter, None, 1, 0)
 
   reactions += {
     case Removeable.Removed(o) => if (o eq this) destroy()
   }
 
-  def destroy() {
+  protected def destroy() {
     children.foreach(_.destroy())
     // make sure that we don't leak memory...
     scene.deafTo(this)
   }
 
-  def find[A <: AnyRef : ClassTag](filter: A => Boolean = {
+  def find[A <: SceneTreeObject : ClassTag](filter: A => Boolean = {
     o: A => true
-  }, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = doFind(filter, maxDepth, minDepth, 0)
+  }, maxDepth: Option[Int] = None, minDepth: Int = 1): Seq[A] = findAny(filter, maxDepth, minDepth, 0)
 
-  private def doFind[A <: AnyRef : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
+  private def findAny[A <: AnyRef : ClassTag](filter: A => Boolean, maxDepth: Option[Int], minDepth: Int, curDepth: Int): Seq[A] = {
     if (maxDepth.isDefined && maxDepth.get > curDepth) {
       Nil
     } else {
       val tail = children.map({
         c =>
-          c.doFind[A](filter, maxDepth, minDepth, curDepth + 1)
+          c.findAny[A](filter, maxDepth, minDepth, curDepth + 1)
       }).flatten
       val clazz = implicitly[ClassTag[A]].runtimeClass
       val head: Seq[A] = if (curDepth >= minDepth && clazz.isInstance(this)) {
@@ -64,7 +64,7 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  def onViewportsChanged(viewports: Seq[Viewport]): Unit = {
+  protected def onViewportsChanged(viewports: Seq[Viewport]): Unit = {
     Try {
       children foreach (_.onViewportsChanged(viewports))
     }
@@ -78,14 +78,14 @@ class Visibility(container: SceneTreeObject) {
 
   def apply(viewport: Viewport): Boolean = map.getOrElse(viewport, true)
 
-  def update(viewport: Viewport, nv: Boolean): Unit = update(viewport, nv, true)
+  def update(viewport: Viewport, nv: Boolean): Unit = update(viewport, nv, isTop = true)
 
   private def update(viewport: Viewport, nv: Boolean, isTop: Boolean): Boolean = {
     val selfChanged = if (apply(viewport) != nv) {
       map(viewport) = nv
       true
     } else false
-    val notify = container.children.foldLeft(selfChanged)({case (b,c) => c.visible.update(viewport, nv, false) || false})
+    val notify = container.children.foldLeft(selfChanged)({case (b,c) => c.visible.update(viewport, nv, isTop = false) || b})
     if (isTop && notify) {
       container.scene.publish(new Scene.VisibilityChanged(container.scene))
     }

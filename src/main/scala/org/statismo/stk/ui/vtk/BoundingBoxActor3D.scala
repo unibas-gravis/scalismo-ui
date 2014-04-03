@@ -9,7 +9,7 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
 
   this.GetProperty().SetColor(1,1,1)
   listenTo(scene)
-  update(false)
+  update(withEvent = false)
 
   reactions += {
     case Scene.SlicingPosition.BoundingBoxChanged(s) => update()

@@ -47,6 +47,7 @@ object StatismoFrame {
     result.get
   }
 }
+
 protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   if (!SwingUtilities.isEventDispatchThread) {
     sys.error("StatismoFrame constructor must be invoked in the Swing EDT. See StatismoFrame.apply()")
