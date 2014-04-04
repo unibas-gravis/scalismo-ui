@@ -104,7 +104,7 @@ object Landmarks extends FileIoMetadata {
   case class LandmarkChanged(source: Landmark) extends Event
 
   override val description = "Landmarks"
-  override val fileExtensions = Seq("csv")
+  override val fileExtensions = immutable.Seq("csv")
 }
 
 trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublisher with Saveable with Loadable {
@@ -220,10 +220,5 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
     if (changed) {
       publish(SceneTreeObject.ChildrenChanged(this))
     }
-  }
-
-  override def remove() {
-    deafTo(peer)
-    super.remove()
   }
 }

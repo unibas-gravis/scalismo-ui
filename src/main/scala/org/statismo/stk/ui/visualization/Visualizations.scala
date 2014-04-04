@@ -6,6 +6,7 @@ import scala.ref.WeakReference
 import scala.swing.event.Event
 import scala.language.existentials
 import scala.collection.{mutable, immutable}
+import java.util.Date
 
 class Visualizations {
   private type ViewportOrClassName = Either[Viewport, String]
@@ -16,6 +17,10 @@ class Visualizations {
     private val mappings = new mutable.WeakHashMap[VisualizationProvider[_], Try[Visualization[_]]]
 
     def tryGet(key: VisualizationProvider[_]) : Try[Visualization[_]] = {
+      //FIXME too: this method is invoked far too often.
+      //FIXME
+      //      System.gc()
+      println(new Date()+ " " +key.getClass + " " +key+" " + " map size = " + mappings.size)
       val value = mappings.getOrElseUpdate(key, {
         val existing: Try[Visualization[_]] = key match {
           case fac: VisualizationFactory[_] =>
@@ -30,10 +35,6 @@ class Visualizations {
           case f@Failure(e) => f
         }
       })
-      // FIXME too: this method is invoked far too often.
-      //FIXME
-//      System.gc()
-      println(key.getClass + " map size = " + mappings.size)
       value.asInstanceOf[Try[Visualization[_]]]
     }
   }
