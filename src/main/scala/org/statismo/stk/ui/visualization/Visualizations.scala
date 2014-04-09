@@ -19,8 +19,8 @@ class Visualizations {
     def tryGet(key: VisualizationProvider[_]) : Try[Visualization[_]] = {
       //FIXME too: this method is invoked far too often.
       //FIXME
-            System.gc()
-      println(new Date()+ " " +key.getClass + " " +key+" " + " map size = " + mappings.size)
+      //System.gc()
+      //println(new Date()+ " " +key.getClass + " " +key+" " + " map size = " + mappings.size)
       //mappings.keys.foreach { p => println(s"\t$p") }
 
       val value = mappings.getOrElseUpdate(key, {
@@ -86,20 +86,16 @@ trait Derivable[A <: AnyRef] {
   protected val self:A = this.asInstanceOf[A]
   private var _derived: immutable.Seq[WeakReference[A]] = Nil
 
-  protected [visualization] def derived: immutable.Seq[WeakReference[A]] = this.synchronized {
-    val purged = _derived.filter(w => w.get != None)
-    if (purged.length != _derived.length) {
-      //FIXME
-      println("DEBUG: purged visualization children (this is GOOD news): " + _derived.length + " -> "+purged.length)
-      purged
-    } else {
-      _derived
-    }
+  protected [visualization] def derived: immutable.Seq[A] = derivedInUse.map(r => r.get).filter(o => o != None).map(o => o.get)
+
+  private def derivedInUse: immutable.Seq[WeakReference[A]] = this.synchronized {
+    _derived = _derived.filter(w => w.get != None)
+    _derived
   }
 
   final def derive(): A = this.synchronized {
     val child: A = createDerived()
-    _derived = Seq(derived, Seq(new WeakReference[A](child))).flatten.to[immutable.Seq]
+    _derived = Seq(derivedInUse, Seq(new WeakReference[A](child))).flatten.to[immutable.Seq]
     child
   }
 
@@ -132,7 +128,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivabl
   final def value_=(newValue: V): Unit = this.synchronized {
     if (newValue != value) {
       _value = Some(newValue)
-      derived.map(wr => wr.get).filter(r => r.isDefined).map(_.get).foreach(_.value = newValue)
+      derived.foreach(_.value = newValue)
       publish(VisualizationProperty.ValueChanged(this))
     }
   }

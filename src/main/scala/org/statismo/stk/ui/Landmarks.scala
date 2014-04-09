@@ -40,25 +40,25 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   def create(peer: Point3D, name: Option[String]): Unit
 
-  override def add(lm: L): Unit = {
+  override def add(lm: L): Unit = this.synchronized {
     super.add(lm)
     publish(Landmarks.LandmarksChanged(this))
   }
 
-  override def remove(lm: L, silent: Boolean) = {
+  override def remove(lm: L, silent: Boolean) = this.synchronized {
     val changed = super.remove(lm, silent)
     if (changed) publish(Landmarks.LandmarksChanged(this))
     changed
   }
 
-  override def saveToFile(file: File): Try[Unit] = {
+  override def saveToFile(file: File): Try[Unit] = this.synchronized {
     val seq = children.map {
       lm => (lm.name, lm.point)
     }.toIndexedSeq
     LandmarkIO.writeLandmarks[ThreeD](file, seq)
   }
 
-  override def loadFromFile(file: File): Try[Unit] = {
+  override def loadFromFile(file: File): Try[Unit] = this.synchronized {
     this.removeAll()
     val status = for {
       saved <- LandmarkIO.readLandmarks3D(file)
@@ -126,7 +126,7 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
     create(template.point, Some(template.name))
   }
 
-  def create(peer: Point3D, name: Option[String] = None): Unit = {
+  def create(peer: Point3D, name: Option[String] = None): Unit = this.synchronized {
     val lm = new ReferenceLandmark(peer)
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
@@ -154,9 +154,12 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
+  println(s"MoveableLandmark instantiated: $this")
+
   override def remove() = {
     // we simply forward the request to the source, which in turn publishes an event that all attached
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
+    println(s"$this forwarding remove request")
     source.remove()
   }
 
@@ -169,10 +172,20 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
         source.name = this.name
       }
     case Removeable.Removed(r) =>
-      if (r eq source) {
-        deafTo(container.instance.meshRepresentation, source)
-        container.remove(this, silent = true)
-        publish(Removeable.Removed(this))
+      if (r eq this) {
+        //println("ignoring remove request from myself")
+      }
+      else {
+        println(s"$this (${this.getClass}) is handling Removeable.Removed($r ${r.getClass}})")
+        if (r eq source) {
+          println(s"$this honoring remove request from source")
+          deafTo(container.instance.meshRepresentation, source)
+          container.remove(this, silent = true)
+          publish(Removeable.Removed(this))
+        } else {
+          println(s"IGNORING REMOVE REQUEST FROM $r , expected $source")
+          println("source hash="+r.hashCode()+", expected hash="+source.hashCode())
+        }
       }
   }
 
@@ -193,11 +206,11 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  def addAt(peer: Point3D) = {
+  def addAt(peer: Point3D) = this.synchronized {
     create(peer, None)
   }
 
-  def create(peer: Point3D, name: Option[String]): Unit = {
+  override def create(peer: Point3D, name: Option[String]): Unit = this.synchronized {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
     val refPoint = instance.shapeModel.peer.mesh.points(index).asInstanceOf[Point3D]
     instance.shapeModel.landmarks.create(refPoint, name)

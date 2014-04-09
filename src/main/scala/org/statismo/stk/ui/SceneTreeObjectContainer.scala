@@ -14,7 +14,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 
   protected[ui] def children: Seq[Child] = _children
 
-  def add(child: Child): Unit = {
+  def add(child: Child): Unit = this.synchronized {
     child match {
       case removeable: Removeable =>
         listenTo(removeable)
@@ -23,18 +23,17 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
   }
 
-  //def apply(index: Int) = children(index)
-
-  def removeAll() = {
+  def removeAll() = this.synchronized {
     val copy = _children.map({
       c => c
     })
-    copy.foreach {
-      c => remove(c)
+    copy.foreach {c =>
+      //println(s"removing $c")
+      remove(c)
     }
   }
 
-  protected def remove(child: Child, silent: Boolean): Boolean = {
+  protected def remove(child: Child, silent: Boolean): Boolean = this.synchronized {
     if (!silent && child.isInstanceOf[Removeable]) {
       // this will publish a message which is handled in the reactions
       child.asInstanceOf[Removeable].remove()
@@ -51,7 +50,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     }
   }
 
-  protected def remove(child: Child): Boolean = {
+  protected final def remove(child: Child): Boolean = {
     remove(child, silent = false)
   }
 
