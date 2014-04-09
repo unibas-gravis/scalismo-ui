@@ -172,6 +172,8 @@ class Scene extends SceneTreeObject {
       publish(Scene.VisibilityChanged(this))
     case SceneTreeObject.ChildrenChanged(s) =>
       publish(Scene.TreeTopologyChanged(this))
+    case SceneTreeObject.Destroyed(s) =>
+      deafTo(s)
     case m@Nameable.NameChanged(s) =>
       publish(m)
   }

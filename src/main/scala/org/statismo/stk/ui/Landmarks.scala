@@ -23,81 +23,6 @@ trait Landmark extends Nameable with Removeable {
 
 class ReferenceLandmark(val point: Point3D) extends Landmark
 
-object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
-  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
-
-  class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
-    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
-    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
-    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
-
-
-    override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
-
-    override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new SphereRenderable(source, color, opacity, radius))
-  }
-
-  class SphereRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with SphereLike {
-    setCenter()
-    listenTo(source)
-    reactions += {
-      case Landmarks.LandmarkChanged(_) => setCenter()
-    }
-
-    def setCenter(): Unit = {
-      center = source.point
-    }
-  }
-}
-
-abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark]{
-  override def parent = container
-  override def visualizationProvider = container
-}
-
-class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
-  var point = initialCenter
-}
-
-class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
-  name = source.name
-  listenTo(container.instance.meshRepresentation, source)
-
-  override def remove() = {
-    // we simply forward the request to the source, which in turn publishes an event that all attached
-    // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
-    source.remove()
-  }
-
-  reactions += {
-    case Mesh.GeometryChanged(m) => setCenter()
-    case Nameable.NameChanged(n) =>
-      if (n == source) {
-        this.name = source.name
-      } else if (n == this) {
-        source.name = this.name
-      }
-    case Removeable.Removed(r) =>
-      if (r eq source) {
-        container.remove(this, silent = true)
-      }
-  }
-
-  var point = calculateCenter()
-
-  def calculateCenter(): Point3D = {
-    val coeffs = DenseVector(container.instance.coefficients.toArray)
-    source.point + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.point)
-  }
-
-  def setCenter(): Unit = {
-    point = calculateCenter()
-    publish(Landmarks.LandmarkChanged(this))
-  }
-
-}
-
 object Landmarks extends FileIoMetadata {
 
   case class LandmarksChanged(source: AnyRef) extends Event
@@ -149,6 +74,41 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 }
 
+object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
+  //visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
+
+  class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
+    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
+    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
+    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
+
+
+    override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
+
+    override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new SphereRenderable(source, color, opacity, radius))
+  }
+
+  class SphereRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with SphereLike {
+    setCenter(source)
+    listenTo(source)
+    reactions += {
+      case Landmarks.LandmarkChanged(src) => setCenter(src)
+      case SceneTreeObject.Destroyed(src) => deafTo(src)
+    }
+
+    def setCenter(src: Landmark): Unit = {
+      center = src.point
+    }
+  }
+}
+
+abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark]{
+  override def parent = container
+  override def visualizationProvider = container
+}
+
 abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with VisualizationProvider[VisualizableLandmark] with RemoveableChildren {
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
@@ -173,6 +133,10 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
   }
 }
 
+class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
+  var point = initialCenter
+}
+
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
@@ -182,6 +146,46 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
     val lm = new StaticLandmark(peer, this)
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
+  }
+
+}
+
+class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
+  name = source.name
+  listenTo(container.instance.meshRepresentation, source)
+
+  override def remove() = {
+    // we simply forward the request to the source, which in turn publishes an event that all attached
+    // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
+    source.remove()
+  }
+
+  reactions += {
+    case Mesh.GeometryChanged(m) => setCenter()
+    case Nameable.NameChanged(n) =>
+      if (n == source) {
+        this.name = source.name
+      } else if (n == this) {
+        source.name = this.name
+      }
+    case Removeable.Removed(r) =>
+      if (r eq source) {
+        deafTo(container.instance.meshRepresentation, source)
+        container.remove(this, silent = true)
+        publish(Removeable.Removed(this))
+      }
+  }
+
+  var point = calculateCenter()
+
+  def calculateCenter(): Point3D = {
+    val coeffs = DenseVector(container.instance.coefficients.toArray)
+    source.point + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.point)
+  }
+
+  def setCenter(): Unit = {
+    point = calculateCenter()
+    publish(Landmarks.LandmarkChanged(this))
   }
 
 }

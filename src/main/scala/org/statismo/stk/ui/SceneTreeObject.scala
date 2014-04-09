@@ -5,13 +5,13 @@ import scala.util.Try
 import scala.reflect.ClassTag
 import org.statismo.stk.ui.visualization.Visualizable
 import scala.collection.mutable
+import org.statismo.stk.ui
 
 object SceneTreeObject {
 
   case class ChildrenChanged(source: SceneTreeObject) extends Event
-
   case class VisibilityChanged(source: SceneTreeObject) extends Event
-
+  case class Destroyed(source: SceneTreeObject) extends Event
 }
 
 trait SceneTreeObject extends Nameable {
@@ -32,13 +32,15 @@ trait SceneTreeObject extends Nameable {
   protected [ui] def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = findAny[Visualizable[_]](filter, None, 1, 0)
 
   reactions += {
-    case Removeable.Removed(o) => if (o eq this) destroy()
+    case Removeable.Removed(o) => if (o eq this) {
+      destroy()
+    }
   }
 
-  protected def destroy() {
+  protected final def destroy() {
     children.foreach(_.destroy())
-    // make sure that we don't leak memory...
-    scene.deafTo(this)
+    println(s"$this destroyed")
+    publish (SceneTreeObject.Destroyed(this))
   }
 
   def find[A <: SceneTreeObject : ClassTag](filter: A => Boolean = {

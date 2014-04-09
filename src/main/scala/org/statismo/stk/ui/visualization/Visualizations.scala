@@ -19,8 +19,10 @@ class Visualizations {
     def tryGet(key: VisualizationProvider[_]) : Try[Visualization[_]] = {
       //FIXME too: this method is invoked far too often.
       //FIXME
-      //      System.gc()
+            System.gc()
       println(new Date()+ " " +key.getClass + " " +key+" " + " map size = " + mappings.size)
+      //mappings.keys.foreach { p => println(s"\t$p") }
+
       val value = mappings.getOrElseUpdate(key, {
         val existing: Try[Visualization[_]] = key match {
           case fac: VisualizationFactory[_] =>

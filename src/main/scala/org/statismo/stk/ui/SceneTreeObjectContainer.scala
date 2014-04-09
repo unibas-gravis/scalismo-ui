@@ -43,10 +43,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
       val before = _children.length
       val toRemove = _children filter (_ eq child)
       toRemove foreach {
-        child =>
-          if (!silent && child.isInstanceOf[Removeable]) {
-            deafTo(child.asInstanceOf[Removeable])
-          }
+        case r: Removeable => deafTo(r)
       }
       _children = _children.diff(toRemove)
       val after = _children.length

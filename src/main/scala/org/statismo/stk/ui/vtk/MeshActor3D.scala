@@ -10,19 +10,21 @@ import org.statismo.stk.ui.Mesh.MeshRenderable3D
 class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
   override lazy val color = source.color
   override lazy val opacity = source.opacity
-  listenTo(source.mesh)
 
   private var polyMesh: Option[vtkPolyData] = None
 
   this.GetProperty().SetInterpolationToGouraud()
-  setGeometry()
-
-  reactions += {
-    case Mesh.GeometryChanged(m) => setGeometry()
+  source.meshOrNone.map{m =>
+    setGeometry(m)
+    listenTo(m)
   }
 
-  def setGeometry() = this.synchronized {
-    polyMesh = Some(MeshConversion.meshToVTKPolyData(source.mesh.peer, polyMesh))
+  reactions += {
+    case Mesh.GeometryChanged(m) => setGeometry(m)
+  }
+
+  def setGeometry(mesh: Mesh) = this.synchronized {
+    polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
 
     val normals = new vtk.vtkPolyDataNormals()
     normals.SetInputData(polyMesh.get)
@@ -35,11 +37,11 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   def clicked(point: Point3D) = {
-    source.mesh.addLandmarkAt(point)
+    source.meshOrNone.map(m => m.addLandmarkAt(point))
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(source.mesh)
+    source.meshOrNone.map(m => deafTo(m))
     super.onDestroy()
   }
 
