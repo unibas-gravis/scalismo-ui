@@ -31,8 +31,8 @@ object RenderableActor {
       case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
       case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
       case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
-      case img3d: Image3D.Renderable3D => Some(new ImageActor3D(img3d.source))
-      case img2d: Image3D.Renderable2D => Some(ImageActor2D(img2d.source))
+      case img3d: Image3D.Renderable3D => img3d.imageOrNone.map{source => new ImageActor3D(source)}
+      case img2d: Image3D.Renderable2D => img2d.imageOrNone.map{source => ImageActor2D(source)}
       case s: SphereLike => Some(new SphereActor(s))
       case _ => None
     }

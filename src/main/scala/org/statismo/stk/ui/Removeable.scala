@@ -10,7 +10,6 @@ object Removeable {
 
 trait Removeable extends EdtPublisher {
   def remove() = {
-    println(s"$this publishing remove request")
     publish(Removeable.Removed(this))
   }
 

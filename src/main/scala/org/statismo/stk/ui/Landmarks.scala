@@ -26,6 +26,7 @@ class ReferenceLandmark(val point: Point3D) extends Landmark
 object Landmarks extends FileIoMetadata {
 
   case class LandmarksChanged(source: AnyRef) extends Event
+
   case class LandmarkChanged(source: Landmark) extends Event
 
   override val description = "Landmarks"
@@ -62,11 +63,9 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     this.removeAll()
     val status = for {
       saved <- LandmarkIO.readLandmarks3D(file)
-      newLandmarks = {
-        saved.map {
-          case (name, point) =>
-            this.create(point, Some(name))
-        }
+      newLandmarks = saved.map {
+        case (name, point) =>
+          this.create(point, Some(name))
       }
     } yield {}
     publish(Landmarks.LandmarksChanged(this))
@@ -80,9 +79,9 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
   class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
-    override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
-    override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
-    override val radius:RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
+    override val color: ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
+    override val opacity: OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
+    override val radius: RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
 
 
     override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
@@ -102,10 +101,12 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
       center = src.point
     }
   }
+
 }
 
-abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark]{
+abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark] {
   override def parent = container
+
   override def visualizationProvider = container
 }
 
@@ -154,39 +155,24 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   name = source.name
   listenTo(container.instance.meshRepresentation, source)
 
-  println(s"MoveableLandmark instantiated: $this")
-
   override def remove() = {
     // we simply forward the request to the source, which in turn publishes an event that all attached
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
-    println(s"$this forwarding remove request")
     source.remove()
   }
 
   reactions += {
     case Mesh.GeometryChanged(m) => setCenter()
     case Nameable.NameChanged(n) =>
-      if (n == source) {
+      if (n eq source) {
         this.name = source.name
-      } else if (n == this) {
+      } else if (n eq this) {
         source.name = this.name
       }
-    case Removeable.Removed(r) =>
-      if (r eq this) {
-        //println("ignoring remove request from myself")
-      }
-      else {
-        println(s"$this (${this.getClass}) is handling Removeable.Removed($r ${r.getClass}})")
-        if (r eq source) {
-          println(s"$this honoring remove request from source")
-          deafTo(container.instance.meshRepresentation, source)
-          container.remove(this, silent = true)
-          publish(Removeable.Removed(this))
-        } else {
-          println(s"IGNORING REMOVE REQUEST FROM $r , expected $source")
-          println("source hash="+r.hashCode()+", expected hash="+source.hashCode())
-        }
-      }
+    case Removeable.Removed(r) if r eq source =>
+      deafTo(container.instance.meshRepresentation, source)
+      container.remove(this, silent = true)
+      publish(Removeable.Removed(this))
   }
 
   var point = calculateCenter()

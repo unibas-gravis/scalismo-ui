@@ -142,9 +142,4 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivabl
   }
 
   def newInstance(): C
-
-  override def finalize() = {
-    println(this.getClass + " finalize()")
-    super.finalize()
-  }
 }

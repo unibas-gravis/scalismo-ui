@@ -39,7 +39,6 @@ trait SceneTreeObject extends Nameable {
 
   protected final def destroy() {
     children.foreach(_.destroy())
-    println(s"$this destroyed")
     publish (SceneTreeObject.Destroyed(this))
   }
 
