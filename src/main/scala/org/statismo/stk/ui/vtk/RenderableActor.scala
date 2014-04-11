@@ -23,8 +23,8 @@ object RenderableActor {
     }
   }
 
-  val DefaultRenderableToActorFunction: RenderableToActor = { case (renderable, interactor) =>
-    implicit val _interactor = interactor
+  val DefaultRenderableToActorFunction: RenderableToActor = { case (renderable, vtkViewport) =>
+    implicit val _vtkViewport = vtkViewport
     renderable match {
       case bb3d: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb3d))
       case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
@@ -48,5 +48,8 @@ object RenderableActor {
 trait RenderableActor extends VtkContext {
   def vtkActors: Seq[vtkActor]
   def currentBoundingBox: BoundingBox
-  def onDestroy(): Unit = ()
+
+  def onDestroy(): Unit = {
+    vtkActors.foreach{_.Delete()}
+  }
 }

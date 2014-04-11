@@ -32,8 +32,8 @@ trait Viewport extends Nameable {
   private [ui] def currentBoundingBox_=(nb: BoundingBox) = {
     if (currentBoundingBox != nb) {
       _currentBoundingBox = nb
+      publish(Viewport.BoundingBoxChanged(this))
     }
-    publish(Viewport.BoundingBoxChanged(this))
   }
 
   def initialCameraChange = Viewport.NoInitialCameraChange

@@ -9,9 +9,6 @@ trait SingleRenderableActor extends RenderableActor {
 
   override lazy val vtkActors = Seq(vtkActor)
 
-  // why on earth is this needed? (if we don't define it, we (may) get an AbstractMethodError e.g. in ColorableActor :-O)
-  override def onDestroy() = super.onDestroy()
-
   private var _empty = false
   protected def empty = _empty
   protected def empty_=(nv: Boolean) = {
@@ -21,5 +18,10 @@ trait SingleRenderableActor extends RenderableActor {
   override def currentBoundingBox = {
     if (empty) BoundingBox.None else VtkUtils.bounds2BoundingBox(vtkActor.GetBounds())
   }
+
+  override def onDestroy() = {
+    super.onDestroy()
+  }
+
 
 }

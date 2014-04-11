@@ -1,7 +1,6 @@
 package org.statismo.stk.ui.vtk
 
-import vtk.vtkSphereSource
-import org.statismo.stk.ui.visualization.{VisualizationProperty, SphereLike}
+import vtk.{vtkPoints, vtkOutlineFilter, vtkPolyData}
 import org.statismo.stk.ui.{BoundingBox, Scene}
 
 class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends PolyDataActor {
@@ -16,15 +15,15 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
   }
 
   def update(withEvent: Boolean = true) = this.synchronized {
-    val points = new vtk.vtkPoints()
+    val points = new vtkPoints()
     val bb = source.source.boundingBox
     points.InsertNextPoint(bb.xMin, bb.yMin, bb.zMin)
     points.InsertNextPoint(bb.xMax, bb.yMax, bb.zMax)
 
-    val poly = new vtk.vtkPolyData()
+    val poly = new vtkPolyData()
     poly.SetPoints(points)
 
-    val outline = new vtk.vtkOutlineFilter()
+    val outline = new vtkOutlineFilter()
     outline.SetInputData(poly)
     mapper.SetInputConnection(outline.GetOutputPort())
     mapper.Modified()
@@ -43,5 +42,6 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
     super.onDestroy()
   }
 
+  // this actor is showing the bounding box, but doesn't "have" one itself (i.e., doesn't affect it).
   override lazy val currentBoundingBox = BoundingBox.None
 }

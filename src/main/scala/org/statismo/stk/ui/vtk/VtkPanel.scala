@@ -5,7 +5,6 @@ import java.io.File
 
 import scala.swing.Component
 import scala.swing.Reactor
-import scala.swing.Swing
 import scala.util.Try
 
 import org.statismo.stk.ui.Viewport
@@ -17,40 +16,40 @@ import vtk.vtkWindowToImageFilter
 import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
 
 class VtkPanel(workspace: Workspace, viewport: Viewport) extends Component with Reactor {
-  lazy val ui = new VtkCanvas(workspace, viewport)
+  lazy val vtkUi = new VtkCanvas(workspace, viewport)
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
-    panel.add(ui, BorderLayout.CENTER)
+    panel.add(vtkUi, BorderLayout.CENTER)
     panel
   }
-  lazy val vtk = new VtkViewport(viewport, ui.GetRenderer(), ui.interactor)
-  listenTo(viewport, vtk)
+  lazy val vtkViewport = new VtkViewport(viewport, vtkUi.GetRenderer(), vtkUi.interactor)
+  listenTo(viewport, vtkViewport)
 
   {
     if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
-      ui.Render()
+      vtkUi.Render()
     }
   }
 
   reactions += {
     case Viewport.Destroyed(v) =>
-      deafTo(viewport, vtk)
+      deafTo(viewport, vtkViewport)
     case VtkContext.RenderRequest(s) =>
-      ui.empty = false
-      ui.Render()
+      vtkUi.empty = false
+      vtkUi.Render()
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
     case VtkContext.ViewportEmptyStatus(v, empty) =>
-      ui.empty = empty
+      vtkUi.empty = empty
   }
 
   def resetCamera() = {
-    vtk.resetCamera()
+    vtkViewport.resetCamera()
   }
 
   def screenshot(file: File) = Try {
     val filter = new vtkWindowToImageFilter
-    filter.SetInput(ui.GetRenderWindow())
+    filter.SetInput(vtkUi.GetRenderWindow())
     filter.SetInputBufferTypeToRGBA()
     filter.Update()
 

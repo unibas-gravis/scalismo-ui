@@ -30,5 +30,6 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
   override def onDestroy() = this.synchronized {
     deafTo(source, radius)
     super.onDestroy()
+    sphere.Delete()
   }
 }

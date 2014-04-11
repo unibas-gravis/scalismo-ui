@@ -43,6 +43,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   override def onDestroy() = this.synchronized {
     source.meshOrNone.map(m => deafTo(m))
     super.onDestroy()
+    polyMesh.map(m => m.Delete())
   }
 
 }

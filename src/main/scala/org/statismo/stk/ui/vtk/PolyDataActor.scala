@@ -14,4 +14,9 @@ class PolyDataActor extends vtkActor with SingleRenderableActor {
     empty = Try(mapper.GetInput().GetPoints().GetNumberOfPoints() == 0).getOrElse(false)
     super.currentBoundingBox
   }
+
+  override def onDestroy() = {
+    super.onDestroy()
+    mapper.Delete()
+  }
 }

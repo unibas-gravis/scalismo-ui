@@ -104,6 +104,7 @@ protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   override def dispose() = {
     console.dispose()
+    scene.viewports.foreach(_.destroy())
     super.dispose()
   }
 }

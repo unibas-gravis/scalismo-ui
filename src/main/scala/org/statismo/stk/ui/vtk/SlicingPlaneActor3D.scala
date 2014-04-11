@@ -1,8 +1,7 @@
 package org.statismo.stk.ui.vtk
 
 import org.statismo.stk.ui.{TwoDViewport, Axis, BoundingBox, Scene}
-import org.statismo.stk.core.geometry.Point3D
-import scala.collection.immutable
+import vtk.vtkPoints
 
 class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implicit vtkViewport: VtkViewport) extends PolyDataActor {
   val scene = source.scene
@@ -23,7 +22,7 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
   def update(withEvent: Boolean = true) = this.synchronized {
     // FIXME: this is essentially a quick hack for now, because we're "abusing" the bounding box functionality.
 
-    val points = new vtk.vtkPoints()
+    val points = new vtkPoints()
     val bb = source.boundingBox
     val p = source.point
 

@@ -1,11 +1,10 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui._
 
-import _root_.vtk.{vtkCutter, vtkPlane, vtkRenderer, vtkPolyData}
-import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
+import _root_.vtk.{vtkCutter, vtkPlane, vtkPolyData}
+import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
 import org.statismo.stk.core.geometry.Point3D
 import scala.Some
 
@@ -78,6 +77,9 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
     deafTo(scene)
     meshOrNone.map { m => deafTo(m)}
     super.onDestroy()
+    polyMesh.map(m => m.Delete())
+    cutEdges.Delete()
+    plane.Delete()
   }
 
 }
