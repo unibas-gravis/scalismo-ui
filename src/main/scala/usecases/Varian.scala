@@ -145,7 +145,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0)),
         integrator = integr,
         metric = MeanSquaresMetric3D(integr),
-        transformationSpace = null, // FIXME!!! KernelTransformationSpace3D(KernelTransformationSpaceConfiguration[ThreeD](statmodel.gaussianProcess, withValueCaching = false)),
+        transformationSpace = KernelTransformationSpace3D(KernelTransformationSpaceConfiguration[ThreeD](statmodel.gaussianProcess, withValueCaching = false)),
         regularizer = RKHSNormRegularizer,
         regularizationWeight = 0.01,
         initialParametersOrNone = None)
