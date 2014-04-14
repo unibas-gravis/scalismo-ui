@@ -1,12 +1,13 @@
 package org.statismo.stk.ui.swing.util
 
 import java.io.File
-import javax.swing.{BorderFactory, JFileChooser, JDialog}
+import javax.swing._
 import java.awt.{Component => AComponent, Color, Point, BorderLayout}
-import scala.swing.{ListView, Component, BorderPanel, Label}
+import scala.swing.{Component, BorderPanel, Label}
 import org.statismo.stk.ui.settings.PersistentSettings
 import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionAdapter}
 import scala.util.Failure
+import scala.Some
 
 object EnhancedFileChooser {
   val LastUsedDirectoriesSettingsKey = "common.lastUsedDirectories"
@@ -78,11 +79,12 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
 
     def createRecentDirsPanel(lastDirs: Seq[File]): Component = {
 
+      val data = lastDirs.map(d => new FileEntry(d)).toArray[Object]
       val panel = new BorderPanel {
         val title = new BorderPanel{layout(new Label("Recent Folders:")) = BorderPanel.Position.West}
         layout(title) = BorderPanel.Position.North
 
-        val list = new ListView[FileEntry] {
+        val list = new UntypedJList(data) {
           def affectedItem(point: Point): Option[FileEntry] = {
             val m = peer.getModel
             val index = peer.locationToIndex(point)
@@ -96,8 +98,8 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
           peer.addMouseMotionListener(new MouseMotionAdapter {
             override def mouseMoved(e: MouseEvent) = {
               affectedItem(e.getPoint) match {
-                case None => peer.setToolTipText(null)
-                case Some(f) => peer.setToolTipText(f.tooltip)
+                case None => setToolTipText(null)
+                case Some(f) => setToolTipText(f.tooltip)
               }
             }
           })
@@ -111,9 +113,8 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
           })
         }
 
-        list.listData= lastDirs.map(d => new FileEntry(d))
-        list.border = BorderFactory.createLineBorder(Color.GRAY, 1)
-        layout(list) = BorderPanel.Position.Center
+        list.peer.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1))
+        layout(new Component {override lazy val peer = list.peer}) = BorderPanel.Position.Center
       }
       panel.border = BorderFactory.createEmptyBorder(17,10,12,8)
       panel

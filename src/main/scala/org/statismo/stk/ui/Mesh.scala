@@ -13,6 +13,7 @@ import scala.Tuple2
 import org.statismo.stk.ui.visualization.props._
 import scala.Tuple2
 import scala.Some
+import scala.swing.Reactor
 
 object Mesh extends SimpleVisualizationFactory[Mesh] {
   case class GeometryChanged(source: Mesh) extends Event
@@ -30,6 +31,15 @@ object Mesh extends SimpleVisualizationFactory[Mesh] {
     }
   }
 
+  class MeshRenderable3D(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity with Reactor {
+    var meshOrNone: Option[Mesh] = Some(source)
+    listenTo(source)
+    reactions += {
+      case SceneTreeObject.Destroyed(m) =>
+        deafTo(m)
+        meshOrNone = None
+    }
+  }
   class Visualization2DOutline(from: Option[Visualization2DOutline]) extends Visualization[Mesh] with HasColorAndOpacity with HasLineThickness {
     override val color:ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(None)
     override val opacity:OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(None)
@@ -42,8 +52,15 @@ object Mesh extends SimpleVisualizationFactory[Mesh] {
     }
   }
 
-  class MeshRenderable3D(val mesh: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
-  class MeshRenderable2DOutline(val mesh: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineThickness: LineThicknessProperty) extends Renderable with HasColorAndOpacity with HasLineThickness
+  class MeshRenderable2DOutline(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineThickness: LineThicknessProperty) extends Renderable with HasColorAndOpacity with HasLineThickness with Reactor {
+    var meshOrNone: Option[Mesh] = Some(source)
+    listenTo(source)
+    reactions += {
+      case SceneTreeObject.Destroyed(m) =>
+        deafTo(m)
+        meshOrNone = None
+    }
+  }
 }
 
 
@@ -54,7 +71,7 @@ trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable {
     MeshIO.writeMesh(peer, file)
   }
 
-  override lazy val saveableMetadata = StaticMesh
+  protected[ui] override lazy val saveableMetadata = StaticMesh
 
-  override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
+  protected[ui] override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
 }

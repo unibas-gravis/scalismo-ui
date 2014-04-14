@@ -4,15 +4,22 @@ import scala.swing.{SimpleSwingApplication, Swing}
 import javax.swing.{SwingUtilities, UIManager}
 
 object StatismoLookAndFeel {
-  def initializeWith(lookAndFeelClassName: String): Unit = Swing.onEDTWait {
-    UIManager.setLookAndFeel(lookAndFeelClassName)
-    val laf = UIManager.getLookAndFeel
-    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-      val defaults = laf.getDefaults
-      defaults.put("Tree.drawHorizontalLines", true)
-      defaults.put("Tree.drawVerticalLines", true)
+  def initializeWith(lookAndFeelClassName: String): Unit = {
+    def doit() = {
+      UIManager.setLookAndFeel(lookAndFeelClassName)
+      val laf = UIManager.getLookAndFeel
+      if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
+        val defaults = laf.getDefaults
+        defaults.put("Tree.drawHorizontalLines", true)
+        defaults.put("Tree.drawVerticalLines", true)
+      }
+      UIManager.put("FileChooser.readOnly", true)
     }
-    UIManager.put("FileChooser.readOnly", true)
+    if (SwingUtilities.isEventDispatchThread) {
+      doit()
+    } else {
+      Swing.onEDTWait(doit())
+    }
   }
 }
 

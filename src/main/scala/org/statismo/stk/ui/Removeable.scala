@@ -13,19 +13,18 @@ trait Removeable extends EdtPublisher {
     publish(Removeable.Removed(this))
   }
 
-  def isCurrentlyRemoveable = true
+  protected[ui] def isCurrentlyRemoveable = true
 }
 
-trait RemoveableChildren extends Removeable {
-  def children: Seq[Removeable]
+trait RemoveableChildren {
+  protected[ui] def children: Seq[Removeable]
+  def removeAll(): Unit
+}
 
+trait RemoveableWithChildren extends Removeable with RemoveableChildren {
   override def remove() = {
-    val copy = children.map {
-      c => c
-    }
-    copy.foreach {
-      c => c.remove()
-    }
+    removeAll()
+    super.remove()
   }
 
   override def isCurrentlyRemoveable = {

@@ -1,6 +1,5 @@
 package org.statismo.stk.ui.swing
 
-import java.awt.{Component => AComponent}
 import java.awt.Frame
 import java.awt.event.KeyAdapter
 import java.awt.event.KeyEvent
@@ -16,11 +15,7 @@ import scala.swing.Component
 import scala.swing.Reactor
 import scala.swing.ScrollPane
 
-import org.statismo.stk.ui.Nameable
-import org.statismo.stk.ui.Removeable
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui._
 
 import javax.swing.JPopupMenu
 import javax.swing.JTree
@@ -31,15 +26,6 @@ import javax.swing.tree.DefaultTreeModel
 import javax.swing.tree.TreePath
 import javax.swing.tree.TreeSelectionModel
 import org.statismo.stk.ui.swing.actions.scenetree._
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
-import scala.Some
 import scala.Some
 
 object SceneTreePanel {
@@ -98,11 +84,13 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       if (event.getKeyChar == '\u007f') {
         // delete
         val maybeRemoveable = getTreeObjectForEvent(event)
-        if (maybeRemoveable.isDefined && maybeRemoveable.get.isInstanceOf[Removeable]) {
-          val r = maybeRemoveable.get.asInstanceOf[Removeable]
-          if (r.isCurrentlyRemoveable) {
-            r.remove()
-          }
+        maybeRemoveable match {
+          case Some(r: Removeable) =>
+            if (r.isCurrentlyRemoveable) {
+              r.remove()
+            }
+          case Some(r: RemoveableChildren) => r.removeAll()
+          case _ =>
         }
       }
     }

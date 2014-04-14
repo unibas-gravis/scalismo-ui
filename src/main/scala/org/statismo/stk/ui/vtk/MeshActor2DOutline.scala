@@ -1,11 +1,12 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.utils.MeshConversion
-import org.statismo.stk.ui.{Scene, Axis, TwoDViewport, Mesh}
+import org.statismo.stk.ui._
 
-import vtk.{vtkRenderer, vtkPolyData}
-import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
+import _root_.vtk.{vtkCutter, vtkPlane, vtkPolyData}
+import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
+import org.statismo.stk.core.geometry.Point3D
+import scala.Some
 
 class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: VtkViewport) extends PolyDataActor with LineActor with ClickableActor {
   override lazy val color = source.color
@@ -13,14 +14,19 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   override lazy val lineThickness = source.lineThickness
 
   val viewport = vtkViewport.viewport.asInstanceOf[TwoDViewport]
-  val scene = source.mesh.scene
+  val scene = viewport.scene
 
-  listenTo(source.mesh, scene)
+  listenTo(scene)
+  private var polyMesh: Option[vtkPolyData] = None
+  private var meshOrNone: Option[Mesh] = None
 
-  private var polyMesh: Option[vtkPolyData] = Some(MeshConversion.meshToVTKPolyData(source.mesh.peer, None))
+  source.meshOrNone.map { m =>
+    listenTo(m)
+    polyMesh = Some(MeshConversion.meshToVTKPolyData(m.peer, None))
+    meshOrNone = Some(m)
+  }
 
-
-  val plane = new vtk.vtkPlane()
+  val plane = new vtkPlane()
   plane.SetOrigin(0, 0, 0)
   viewport.axis match {
     case Axis.X => plane.SetNormal(1, 0, 0)
@@ -28,7 +34,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
     case Axis.Z => plane.SetNormal(0, 0, 1)
   }
 
-  val cutEdges = new vtk.vtkCutter()
+  val cutEdges = new vtkCutter()
   cutEdges.SetInputData(polyMesh.get)
   cutEdges.SetCutFunction(plane)
   cutEdges.SetValue(0, 0)
@@ -36,18 +42,20 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   mapper.SetInputConnection(cutEdges.GetOutputPort())
 
   def update(withGeometry: Boolean = false) = {
-    if (withGeometry) {
-      polyMesh = Some(MeshConversion.meshToVTKPolyData(source.mesh.peer, polyMesh))
-      cutEdges.SetInputData(polyMesh.get)
+    meshOrNone.map { mesh =>
+      if (withGeometry) {
+        polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
+        cutEdges.SetInputData(polyMesh.get)
+      }
+      cutEdges.SetValue(0, viewport.axis match {
+        case Axis.X => scene.slicingPosition.x
+        case Axis.Y => scene.slicingPosition.y
+        case Axis.Z => scene.slicingPosition.z
+      })
+      cutEdges.Update()
+      publish(VtkContext.ResetCameraRequest(this))
+      publish(VtkContext.RenderRequest(this))
     }
-    cutEdges.SetValue(0, viewport.axis match {
-      case Axis.X => scene.slicingPosition.x
-      case Axis.Y => scene.slicingPosition.y
-      case Axis.Z => scene.slicingPosition.z
-    })
-    cutEdges.Update()
-    publish(VtkContext.ResetCameraRequest(this))
-    publish(VtkContext.RenderRequest(this))
   }
 
   this.GetProperty().SetInterpolationToGouraud()
@@ -55,16 +63,23 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
 
   reactions += {
     case Scene.SlicingPosition.PointChanged(s) => update()
-    case Mesh.GeometryChanged(m) => update(true)
+    case Mesh.GeometryChanged(m) => update(withGeometry = true)
+    case SceneTreeObject.Destroyed(m) =>
+      deafTo(m)
+      meshOrNone = None
   }
 
   override def clicked(point: Point3D) = {
-    source.mesh.addLandmarkAt(point)
+    meshOrNone.map {m => m.addLandmarkAt(point) }
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(source.mesh, scene)
+    deafTo(scene)
+    meshOrNone.map { m => deafTo(m)}
     super.onDestroy()
+    polyMesh.map(m => m.Delete())
+    cutEdges.Delete()
+    plane.Delete()
   }
 
 }

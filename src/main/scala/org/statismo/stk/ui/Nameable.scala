@@ -23,7 +23,7 @@ trait Nameable extends EdtPublisher {
     }
   }
 
-  def isNameUserModifiable = true
+  protected[ui] def isNameUserModifiable = true
 
   override def toString: String = {
     if (name.trim().length() > 0) name else Nameable.NoName

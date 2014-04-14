@@ -6,6 +6,7 @@ import scala.ref.WeakReference
 import scala.swing.event.Event
 import scala.language.existentials
 import scala.collection.{mutable, immutable}
+import java.util.Date
 
 class Visualizations {
   private type ViewportOrClassName = Either[Viewport, String]
@@ -16,6 +17,12 @@ class Visualizations {
     private val mappings = new mutable.WeakHashMap[VisualizationProvider[_], Try[Visualization[_]]]
 
     def tryGet(key: VisualizationProvider[_]) : Try[Visualization[_]] = {
+      //FIXME too: this method is invoked far too often.
+      //FIXME
+      //System.gc()
+      //println(new Date()+ " " +key.getClass + " " +key+" " + " map size = " + mappings.size)
+      //mappings.keys.foreach { p => println(s"\t$p") }
+
       val value = mappings.getOrElseUpdate(key, {
         val existing: Try[Visualization[_]] = key match {
           case fac: VisualizationFactory[_] =>
@@ -47,10 +54,10 @@ class Visualizations {
 }
 
 trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A] {
-  override final val visualizationProvider = null
+  protected[ui] override final val visualizationProvider = null
 
-  def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
-  final def instantiate(viewportClassName: String): Visualization[A] = {
+  protected[ui] def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
+  protected[ui] final def instantiate(viewportClassName: String): Visualization[A] = {
     visualizationsFor(viewportClassName).headOption match {
       case Some(v) => v
       case None => throw new RuntimeException(getClass+ " did not provide any Visualization options for viewport class "+viewportClassName)
@@ -64,35 +71,32 @@ trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFact
 }
 
 trait VisualizationProvider[-A <: Visualizable[_]] {
-  def visualizationProvider: VisualizationProvider[A]
+  protected[ui] def visualizationProvider: VisualizationProvider[A]
 }
 
 trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
-  def isVisibleIn(viewport: Viewport) : Boolean
+  protected[ui] def isVisibleIn(viewport: Viewport) : Boolean
 }
 
 trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends SceneTreeObject with Visualizable[X] {
-  override def isVisibleIn(viewport: Viewport) : Boolean = visible(viewport)
+  protected[ui] override def isVisibleIn(viewport: Viewport) : Boolean = visible(viewport)
 }
 
 trait Derivable[A <: AnyRef] {
   protected val self:A = this.asInstanceOf[A]
-  protected [visualization] var derived: Seq[WeakReference[A]] = Nil
+  private var _derived: immutable.Seq[WeakReference[A]] = Nil
+
+  protected [visualization] def derived: immutable.Seq[A] = derivedInUse.map(r => r.get).filter(o => o != None).map(o => o.get)
+
+  private def derivedInUse: immutable.Seq[WeakReference[A]] = this.synchronized {
+    _derived = _derived.filter(w => w.get != None)
+    _derived
+  }
 
   final def derive(): A = this.synchronized {
     val child: A = createDerived()
-    purgeDerived()
-    derived :+= new WeakReference[A](child)
+    _derived = Seq(derivedInUse, Seq(new WeakReference[A](child))).flatten.to[immutable.Seq]
     child
-  }
-
-  protected [visualization] def purgeDerived(): Unit = this.synchronized {
-    val purged = derived.filter(w => w.get != None)
-    if (purged.length != derived.length) {
-      //FIXME
-      println("purged children: " + derived.length + " -> "+purged.length)
-      derived = purged
-    }
   }
 
   protected def createDerived() :A
@@ -112,30 +116,20 @@ final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
   override protected def instantiateRenderables(source: A) = Nil
 }
 
-//trait ConcreteVisualization[A <: Visualizable[_], C <: ConcreteVisualization[A,C]] extends Visualization[A] {
-//}
-
 object VisualizationProperty {
   case class ValueChanged[V, C <: VisualizationProperty[V,C]](source: VisualizationProperty[V,C]) extends Event
 }
 
 trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivable[C] with EdtPublisher {
   private var _value: Option[V] = None
-  final def value: V = _value.getOrElse(defaultValue)
+  final def value: V = {
+    _value.getOrElse(defaultValue)
+  }
   final def value_=(newValue: V): Unit = this.synchronized {
     if (newValue != value) {
       _value = Some(newValue)
+      derived.foreach(_.value = newValue)
       publish(VisualizationProperty.ValueChanged(this))
-      var purge = false
-      derived.foreach { w =>
-        w.get match {
-          case None => purge = true
-          case Some(c) => c.value = newValue
-        }
-      }
-      if (purge) {
-        purgeDerived()
-      }
     }
   }
 

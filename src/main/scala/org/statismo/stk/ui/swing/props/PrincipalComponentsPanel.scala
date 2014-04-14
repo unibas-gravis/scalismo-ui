@@ -3,9 +3,8 @@ package org.statismo.stk.ui.swing.props
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 
-import scala.collection.immutable.IndexedSeq
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.Buffer
+import scala.collection.immutable
+import scala.collection.mutable
 import scala.swing.BorderPanel
 import scala.swing.BorderPanel.Position.Center
 import scala.swing.BorderPanel.Position.North
@@ -19,7 +18,6 @@ import scala.swing.Slider
 import scala.swing.event.ButtonClicked
 import scala.swing.event.ValueChanged
 
-import org.statismo.stk.ui.SceneTreeObject
 import org.statismo.stk.ui.ShapeModelInstance
 
 import breeze.stats.distributions.Gaussian
@@ -65,7 +63,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   }
 
   private class Table extends GridBagPanel {
-    var entries: Buffer[Entry] = new ArrayBuffer
+    var entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
 
     // need to redefine because add() is protected in superclass
     def add(comp: Component, position: (Int, Int)) = {
@@ -119,7 +117,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   def resetValues() = {
     if (model.isDefined)
-      model.get.coefficients = IndexedSeq.fill(model.get.coefficients.length)(0.0f)
+      model.get.coefficients = immutable.IndexedSeq.fill(model.get.coefficients.length)(0.0f)
   }
 
   def sanitize(value: Float) = {

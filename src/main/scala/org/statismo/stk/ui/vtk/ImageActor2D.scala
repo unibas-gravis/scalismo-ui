@@ -1,12 +1,9 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.core.utils.{ImageConversion, MeshConversion}
+import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui._
 
 import _root_.vtk._
-import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
-import scala.Some
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui.vtk.VtkContext.{ResetCameraRequest, RenderRequest}
 
@@ -19,7 +16,7 @@ object ImageActor2D {
   def apply(source: Image3D[_], points: vtkStructuredPoints, axis: Axis.Value) = new ImageActor2D(source, points, axis, false)
 }
 
-class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructuredPoints, axis: Axis.Value, isTwoD: Boolean) extends PolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructuredPoints, axis: Axis.Value, isStandalone: Boolean) extends PolyDataActor with ClickableActor {
 
   val OutOfBounds: Int = -1
 
@@ -56,16 +53,18 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
   slice.Update()
   mapper.SetInputData(slice.GetOutput())
 
+  val grayscale = new vtkLookupTable
+
   {
     val r = slice.GetOutput().GetScalarRange()
     mapper.SetScalarRange(r(0), r(1))
-    val bwLut = new vtkLookupTable
-    bwLut.SetTableRange(r(0), r(1))
-    bwLut.SetSaturationRange(0, 0)
-    bwLut.SetHueRange(0, 0)
-    bwLut.SetValueRange(0, 1)
-    bwLut.Build()
-    mapper.SetLookupTable(bwLut)
+
+    grayscale.SetTableRange(r(0), r(1))
+    grayscale.SetSaturationRange(0, 0)
+    grayscale.SetHueRange(0, 0)
+    grayscale.SetValueRange(0, 1)
+    grayscale.Build()
+    mapper.SetLookupTable(grayscale)
   }
 
   //mapper.SetScalarVisibility(0)
@@ -85,7 +84,7 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
       slice.Update()
       mapper.Update()
     }
-    publish(if (isTwoD) new ResetCameraRequest(this) else new RenderRequest(this))
+    publish(if (isStandalone) new ResetCameraRequest(this) else new RenderRequest(this))
   }
 
   listenTo(source.scene)
@@ -97,6 +96,11 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
   override def onDestroy() {
     deafTo(source.scene)
     super.onDestroy()
+    slice.Delete()
+    grayscale.Delete()
+    if (isStandalone) {
+      points.Delete()
+    }
   }
 
   override def clicked(point: Point3D) = source.addLandmarkAt(point)

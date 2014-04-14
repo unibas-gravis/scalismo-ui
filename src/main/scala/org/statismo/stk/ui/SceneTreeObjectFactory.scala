@@ -18,7 +18,7 @@ object SceneTreeObjectFactory {
     val file = new File(filename)
     val errors = candidates map {
       f =>
-        val so = f.apply(file)
+        val so = f.tryCreate(file)
         if (so.isSuccess) {
           return so
         }
@@ -33,17 +33,13 @@ object SceneTreeObjectFactory {
 }
 
 trait SceneTreeObjectFactory[+T <: SceneTreeObject] {
-  def ioMetadata: FileIoMetadata
+  protected[ui] def ioMetadata: FileIoMetadata
 
-  def canPotentiallyHandleFile(filename: String): Boolean = {
+  protected[ui] def canPotentiallyHandleFile(filename: String): Boolean = {
     val lc = filename.toLowerCase
     ioMetadata.fileExtensions.map(ext => lc.endsWith("." + ext.toLowerCase)).count(_ == true) != 0
   }
 
-  def apply(filename: String)(implicit scene: Scene): Try[T] = {
-    apply(new File(filename))
-  }
-
-  def apply(file: File)(implicit scene: Scene): Try[T]
+  protected[ui] def tryCreate(file: File)(implicit scene: Scene): Try[T]
 }
 

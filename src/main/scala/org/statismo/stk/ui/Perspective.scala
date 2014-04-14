@@ -10,13 +10,13 @@ object Perspective {
 abstract class Perspective(template: Option[Perspective]) extends Nameable {
   final lazy val viewports: immutable.Seq[Viewport] = createViewports()
 
-  def createViewports(): immutable.Seq[Viewport]
+  protected def createViewports(): immutable.Seq[Viewport]
 
   val factory: PerspectiveFactory
   name = factory.name
 
-  def reuseOrInstantiate3D(p: Option[Perspective], count: Int)(implicit scene: Scene) : immutable.Seq[ThreeDViewport] = {
-    val existing = p match {
+  def reuseOrInstantiate3D(perspective: Option[Perspective], count: Int)(implicit scene: Scene) : immutable.Seq[ThreeDViewport] = {
+    val existing = perspective match {
       case Some(p) => p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[immutable.Seq[ThreeDViewport]]
       case None => Nil
     }
@@ -26,8 +26,8 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
     } else existing.take(count)
   }
 
-  def reuseOrInstantiate2D(p: Option[Perspective], axis: Axis.Value, count: Int)(implicit scene: Scene) : immutable.Seq[TwoDViewport] = {
-    val existing = p match {
+  def reuseOrInstantiate2D(perspective: Option[Perspective], axis: Axis.Value, count: Int)(implicit scene: Scene) : immutable.Seq[TwoDViewport] = {
+    val existing = perspective match {
       case Some(p) => p.viewports.filter(vp => vp.isInstanceOf[TwoDViewport]).asInstanceOf[immutable.Seq[TwoDViewport]].filter(vp => vp.axis == axis)
       case None => Nil
     }
@@ -45,35 +45,39 @@ object Perspectives {
 trait PerspectiveFactory {
   val name: String
 
-  def apply()(implicit scene: Scene): Perspective
+  protected [ui] def apply()(implicit scene: Scene): Perspective
 }
+
+
 
 object SingleViewportPerspective extends PerspectiveFactory {
   override lazy val name = "Single 3D Window"
 
-  def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
 }
 
 class SingleViewportPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = SingleViewportPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val only = reuseOrInstantiate3D(template, 1).head
     only.name = "3D View"
     List(only)
   }
 }
 
+
+
 object TwoViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Two 3D Windows"
 
-  def apply()(implicit scene: Scene): Perspective = new TwoViewportsPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new TwoViewportsPerspective(Some(scene.perspective))
 }
 
 class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = TwoViewportsPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val vp = reuseOrInstantiate3D(template, 2)
     vp(0).name = "Left"
     vp(1).name = "Right"
@@ -81,16 +85,18 @@ class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene:
   }
 }
 
+
+
 object FourViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Four 3D Windows"
 
-  def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
 }
 
 class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
   override lazy val factory = FourViewportsPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val vp = reuseOrInstantiate3D(template, 4)
     vp(0).name = "One"
     vp(1).name = "Two"
@@ -100,16 +106,18 @@ class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Sc
   }
 }
 
+
+
 object SlicerPerspective extends PerspectiveFactory {
   override lazy val name = "Slicer"
 
-  def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
 }
 
 class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
   override lazy val factory = SlicerPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val threeD = reuseOrInstantiate3D(template, 1).head
     val x = reuseOrInstantiate2D(template, Axis.X, 1).head
     val y = reuseOrInstantiate2D(template, Axis.Y, 1).head
@@ -120,16 +128,18 @@ class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) ex
   }
 }
 
+
+
 object SlicerAltPerspective extends PerspectiveFactory {
   override lazy val name = "Slicer (alt.)"
 
-  def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
 }
 
 class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
   override lazy val factory = SlicerAltPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val threeD = reuseOrInstantiate3D(template, 1).head
     val x = reuseOrInstantiate2D(template, Axis.X, 1).head
     val y = reuseOrInstantiate2D(template, Axis.Y, 1).head
@@ -140,48 +150,54 @@ class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene)
   }
 }
 
+
+
 object XOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "X Only"
 
-  def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
 }
 
 class XOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = XOnlyPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val only = reuseOrInstantiate2D(template, Axis.X, 1).head
     only.name = "X"
     List(only)
   }
 }
 
+
+
 object YOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Y Only"
 
-  def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
 }
 
 class YOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = YOnlyPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val only = reuseOrInstantiate2D(template, Axis.Y, 1).head
     only.name = "Y"
     List(only)
   }
 }
 
+
+
 object ZOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Z Only"
 
-  def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
+  protected [ui] override def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
 }
 
 class ZOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
   override lazy val factory = ZOnlyPerspective
 
-  override def createViewports() = {
+  protected override def createViewports() = {
     val only = reuseOrInstantiate2D(template, Axis.Z, 1).head
     only.name = "Z"
     List(only)

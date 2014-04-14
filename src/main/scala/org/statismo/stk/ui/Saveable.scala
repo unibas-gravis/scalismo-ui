@@ -5,9 +5,9 @@ import java.io.File
 import scala.util.Try
 
 trait Saveable {
-  def saveableMetadata: FileIoMetadata
+  protected[ui] def saveableMetadata: FileIoMetadata
 
   def saveToFile(file: File): Try[Unit]
 
-  def isCurrentlySaveable: Boolean = true
+  protected[ui] def isCurrentlySaveable: Boolean = true
 }

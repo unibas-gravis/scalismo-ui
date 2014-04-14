@@ -33,7 +33,7 @@ class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFro
   override val metadata = StaticMesh
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-    StaticMesh(file)(parent.scene).map(ok => Success(()))
+    StaticMesh.tryCreate(file)(parent.scene).map(ok => Success(()))
   }
 }
 
@@ -41,7 +41,7 @@ class CreateStaticThreeDObjectFromImageAction extends CreateStaticThreeDObjectFr
   override val metadata = StaticImage3D
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-    StaticImage3D(file)(parent.scene).map(ok => Success(()))
+    StaticImage3D.tryCreate(file)(parent.scene).map(ok => Success(()))
   }
 }
 
