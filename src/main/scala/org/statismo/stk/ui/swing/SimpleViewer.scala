@@ -33,7 +33,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
           }
         }
       }
-    }//.start()
+    }.start()
   }
 
   var disposed = false
