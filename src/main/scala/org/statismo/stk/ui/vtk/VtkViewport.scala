@@ -14,7 +14,6 @@ trait VtkContext extends EdtPublisher
 object VtkContext {
   case class ResetCameraRequest(source: VtkContext) extends Event
   case class RenderRequest(source: VtkContext, immediately: Boolean=false) extends Event
-  case class ViewportEmptyStatus(source: VtkViewport, isEmpty: Boolean) extends Event
 }
 
 object VtkViewport {
@@ -104,12 +103,10 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
         viewportOption match {
           case Some(viewport) =>
             updateBoundingBox()
-            if (viewport.currentBoundingBox eq BoundingBox.None) {
-              // this is a safe way of determining whether there are any "real" actors.
-              // "helper" actors (like the BoundingBox itself) are not taken into account
-              // while calculating the boundingbox.
-              publish(VtkContext.ViewportEmptyStatus(this, isEmpty = true))
-            } else {
+            // the if statement below should be a safe way of determining whether there are any "real" actors.
+            // "helper" actors (like the BoundingBox itself) are not taken into account
+            // while calculating the boundingbox.
+            if (viewport.currentBoundingBox ne BoundingBox.None) {
               if (firstTime) {
                 firstTime = false
 

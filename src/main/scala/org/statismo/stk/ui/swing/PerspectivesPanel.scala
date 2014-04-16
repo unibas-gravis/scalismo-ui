@@ -35,12 +35,7 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
 
   private val cards = new TrackingCardPanel
   private val center = new Panel {
-    override lazy val peer = new JPanel() {
-      override def paintComponent(g: Graphics) = {
-        g.setColor(Color.BLUE)
-        g.fillRect(0, 0, getWidth, getHeight)
-      }
-    }
+    override lazy val peer = new JPanel
     peer.setLayout(new OverlayLayout(peer))
     peer.add(ViewportRenderingPanelPool.jpanel)
     peer.add(cards.peer)
@@ -82,7 +77,6 @@ trait PerspectivePanel extends CardPanel.CardableComponent {
       case (panel, viewport) =>
         panel.show(workspace, viewport)
     }
-    workspace.publish(Workspace.RenderOnScreen(workspace))
   }
 
   def hide(): Unit = {

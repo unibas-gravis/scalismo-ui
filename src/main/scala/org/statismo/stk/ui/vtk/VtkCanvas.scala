@@ -21,26 +21,11 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
   iren.ConfigureEvent()
   iren.SetInteractorStyle(new vtkInteractorStyleTrackballCamera)
 
-  this.LightFollowCameraOn()
-
-  private var _empty = true
-
-  def empty = _empty
-  def empty_=(nv: Boolean) = this.synchronized {
-    if (empty != nv) {
-      _empty = nv
-      repaint()
-    }
-  }
+  //this.LightFollowCameraOn()
 
   private def RenderReal() = {
     def doIt() = {
-      if (false && empty) {
-        invalidate()
-        repaint()
-      } else {
         super.Render()
-      }
     }
     if (SwingUtilities.isEventDispatchThread) {
       doIt()

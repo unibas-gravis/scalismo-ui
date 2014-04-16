@@ -33,19 +33,9 @@ class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
 
   reactions += {
     case VtkContext.RenderRequest(s, immediately) =>
-      vtkUi.empty = false
       vtkUi.render(immediately)
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
-    case VtkContext.ViewportEmptyStatus(v, empty) =>
-      vtkUi.empty = empty
-//    case Workspace.RenderOnScreen(workspace) =>
-//      workspaceOption match {
-//        case Some(ws) if ws eq workspace =>
-//          println("enabling on-screen rendering")
-//          vtkUi.GetRenderWindow().SetOffScreenRendering(0)
-//        case _ =>
-//      }
   }
 
   override lazy val target = vtkUi
