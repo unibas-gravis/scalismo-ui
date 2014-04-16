@@ -16,6 +16,7 @@ import scala.Some
 import scala.swing.Action
 import java.awt.event.{ComponentEvent, ComponentListener}
 import org.statismo.stk.ui.vtk.VtkPanel
+import org.statismo.stk.ui.swing.util.EdtSlider
 
 object ViewportRenderingPanelPool {
   val jpanel = new JPanel {
@@ -218,7 +219,7 @@ class TwoDViewportPanel extends ViewportPanel {
     super.hide()
   }
 
-  private[TwoDViewportPanel] class VpSlider extends Slider {
+  private[TwoDViewportPanel] class VpSlider extends EdtSlider {
 
     import org.statismo.stk.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
 

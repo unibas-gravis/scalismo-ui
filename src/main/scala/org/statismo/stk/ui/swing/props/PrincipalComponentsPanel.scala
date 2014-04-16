@@ -22,6 +22,7 @@ import org.statismo.stk.ui.ShapeModelInstance
 
 import breeze.stats.distributions.Gaussian
 import javax.swing.JSlider
+import org.statismo.stk.ui.swing.util.EdtSlider
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with PropertyPanel {
   val description = "Shape Parameters"
@@ -40,7 +41,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   private case class Entry(index: Int) {
     val label = new Label(index.toString)
-    val slider = new Slider() {
+    val slider = new EdtSlider {
       override lazy val peer = new JSlider with SuperMixin {
         addMouseListener(new MouseAdapter() {
           override def mousePressed(e: MouseEvent) = {

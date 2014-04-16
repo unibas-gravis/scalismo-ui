@@ -8,6 +8,7 @@ import scala.swing.event.ValueChanged
 import org.statismo.stk.ui.SceneTreeObject
 
 import javax.swing.border.TitledBorder
+import org.statismo.stk.ui.swing.util.EdtSlider
 
 class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
   val description = "Slice position"
@@ -17,7 +18,7 @@ class ThreeDImagePlanePanel extends BorderPanel with PropertyPanel {
   val maxLabel = new Label("1000")
 
   val title = new TitledBorder(null, "Slice position", TitledBorder.LEADING, 0, null, null)
-  private val slider = new Slider() {
+  private val slider = new EdtSlider {
     min = 0
     max = 1
     value = 0

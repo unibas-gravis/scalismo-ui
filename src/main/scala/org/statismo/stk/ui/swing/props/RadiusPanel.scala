@@ -11,6 +11,7 @@ import javax.swing.border.TitledBorder
 import org.statismo.stk.ui.visualization.props.{HasColorAndOpacity, HasRadius}
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
 import scala.collection.immutable
+import org.statismo.stk.ui.swing.util.EdtSlider
 
 class RadiusPanel extends BorderPanel with VisualizationsPropertyPanel {
   type Target = Visualization[_] with HasRadius
@@ -19,7 +20,7 @@ class RadiusPanel extends BorderPanel with VisualizationsPropertyPanel {
   val description = "Radius"
   private var target: Option[TargetSeq] = None
 
-  private val slider = new Slider() {
+  private val slider = new EdtSlider {
     min = 1
     max = 20
     value = 0

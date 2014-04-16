@@ -8,6 +8,7 @@ import scala.Some
 import javax.swing.border.TitledBorder
 import scala.swing.event.{ValueChanged, ButtonClicked}
 import org.statismo.stk.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
+import org.statismo.stk.ui.swing.util.EdtSlider
 
 class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   val description = "Slicing Position"
@@ -19,7 +20,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     val current = new Label(format(0))
     val minimum = new Label(format(0))
     val maximum = new Label(format(0))
-    val slider = new Slider {
+    val slider = new EdtSlider {
       min = 0
       max = 0
       value = 0
@@ -171,7 +172,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
     case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
     case Scene.SlicingPosition.PointChanged(sp) => updateUi()
-    case ValueChanged(slider: Slider) =>
+    case ValueChanged(slider: EdtSlider) =>
       slider match {
         case x.slider => slicingPosition.map{_.x = x.value}
         case y.slider => slicingPosition.map(_.y = y.value)

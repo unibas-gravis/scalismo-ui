@@ -11,7 +11,7 @@ import scala.swing.Slider
 import scala.swing.event.Event
 import scala.swing.event.ValueChanged
 
-import org.statismo.stk.ui.swing.util.ColorPickerPanel
+import org.statismo.stk.ui.swing.util.{EdtSlider, ColorPickerPanel}
 
 import javax.swing.JPanel
 import javax.swing.border.TitledBorder
@@ -29,7 +29,7 @@ class LineThicknessPanel extends BorderPanel with VisualizationsPropertyPanel {
   val description = "Line width"
   private var target: Option[TargetSeq] = None
 
-  private val thicknessSlider = new Slider() {
+  private val thicknessSlider = new EdtSlider {
     min = 0
     max = 10
     value = 1

@@ -23,6 +23,12 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
   }
 
+  reactions += {
+    case Removeable.Removed(c) =>
+      val child = c.asInstanceOf[Child]
+      remove(child, silent = true)
+  }
+
   def removeAll() = this.synchronized {
     val copy = _children.map({
       c => c
@@ -52,12 +58,6 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 
   protected final def remove(child: Child): Boolean = {
     remove(child, silent = false)
-  }
-
-  reactions += {
-    case Removeable.Removed(c) =>
-      val child = c.asInstanceOf[Child]
-      remove(child, silent = true)
   }
 
 }

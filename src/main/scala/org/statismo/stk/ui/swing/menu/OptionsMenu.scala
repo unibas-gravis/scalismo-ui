@@ -4,10 +4,8 @@ import scala.swing.Menu
 import scala.swing.RadioMenuItem
 import scala.swing.event.ButtonClicked
 
-import org.statismo.stk.ui.PerspectiveFactory
-import org.statismo.stk.ui.Perspectives
-import org.statismo.stk.ui.Scene
-import org.statismo.stk.ui.StatismoFrame
+import org.statismo.stk.ui._
+import scala.swing.event.ButtonClicked
 
 object OptionsMenu {
   val Name = "Options"
@@ -23,7 +21,7 @@ object PerspectiveMenu {
 
 class PerspectiveMenu(implicit app: StatismoFrame) extends Menu(PerspectiveMenu.Name) {
 
-  private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.name) {
+  private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.name) with EdtPublisher {
     listenTo(app.scene)
     reactions += {
       case ButtonClicked(b) =>
