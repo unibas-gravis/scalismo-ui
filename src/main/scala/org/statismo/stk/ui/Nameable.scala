@@ -19,7 +19,7 @@ trait Nameable extends EdtPublisher {
   def name_=(newName: String) = {
     if (newName != _name) {
       _name = newName
-      publish(Nameable.NameChanged(this))
+      publishEdt(Nameable.NameChanged(this))
     }
   }
 

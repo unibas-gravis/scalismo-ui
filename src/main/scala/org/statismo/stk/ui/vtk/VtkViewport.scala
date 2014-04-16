@@ -124,7 +124,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
                 cam.OrthogonalizeViewUp()
                 resetCamera(true)
               } else {
-                publish(VtkContext.RenderRequest(this))
+                publishEdt(VtkContext.RenderRequest(this))
               }
             }
           case _ =>
@@ -145,10 +145,10 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
     case Scene.VisibilityChanged(s) => refresh(s)
     case Scene.PerspectiveChangeCompleted(s) => refresh(s)
 
-    case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
+    case VtkContext.ResetCameraRequest(s) => publishEdt(VtkContext.ResetCameraRequest(this))
     case VtkContext.RenderRequest(s, now) =>
       updateBoundingBox()
-      publish(VtkContext.RenderRequest(this, now))
+      publishEdt(VtkContext.RenderRequest(this, now))
   }
 
   def attach() = this.synchronized {
@@ -169,7 +169,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
 
   def resetCamera(force: Boolean = false ) = {
     renderer.ResetCamera()
-    publish(VtkContext.RenderRequest(this, force))
+    publishEdt(VtkContext.RenderRequest(this, force))
   }
 
   def viewport: Viewport = parent.viewportOption.get

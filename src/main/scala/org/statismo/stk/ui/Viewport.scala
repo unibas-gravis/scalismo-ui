@@ -17,7 +17,7 @@ trait Viewport extends Nameable {
   def scene: Scene
 
   def destroy(): Unit = {
-    publish(Viewport.Destroyed(this))
+    publishEdt(Viewport.Destroyed(this))
   }
 
   def onLeftButtonDown(pt: Point) : Boolean = true
@@ -32,7 +32,7 @@ trait Viewport extends Nameable {
   private [ui] def currentBoundingBox_=(nb: BoundingBox) = {
     if (currentBoundingBox != nb) {
       _currentBoundingBox = nb
-      publish(Viewport.BoundingBoxChanged(this))
+      publishEdt(Viewport.BoundingBoxChanged(this))
     }
   }
 

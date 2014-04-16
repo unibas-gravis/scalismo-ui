@@ -32,7 +32,7 @@ trait PropertyPanel extends CardPanel.CardableComponent {
     super.revalidate()
     if (preferredSize.width > size.width) {
       // this is a hack :-D
-      workspace.map(_.publish(Workspace.PleaseLayoutAgain))
+      workspace.map(_.publishEdt(Workspace.PleaseLayoutAgain))
     }
   }
 }
@@ -58,11 +58,11 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     }
   }
 
-  lazy val combo = new Component {
+  lazy val combo = new Component with EdtPublisher {
     override lazy val peer = new JComboBox(applicableViews.model)
     peer.addActionListener(Swing.ActionListener {
       e =>
-        publish(SelectionChanged(this))
+        publishEdt(SelectionChanged(this))
     })
   }
   layout(combo) = North
@@ -110,7 +110,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
         cards.show(view)
         // this is a hack...
         if (cards.preferredSize.width > cards.size.width) {
-          workspace.publish(Workspace.PleaseLayoutAgain)
+          workspace.publishEdt(Workspace.PleaseLayoutAgain)
         }
       }
     } else {

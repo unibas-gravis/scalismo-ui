@@ -20,7 +20,7 @@ trait ColorableActor extends SingleRenderableActor {
     vtkActor.GetProperty().SetOpacity(opacity.value)
     val c = color.value.getColorComponents(null)
     vtkActor.GetProperty().SetColor(c(0), c(1), c(2))
-    publish(VtkContext.RenderRequest(this))
+    publishEdt(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {

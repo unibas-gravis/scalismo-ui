@@ -55,7 +55,7 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
         cards.set(panel)
         panel.show(workspace)
     }
-    workspace.scene.perspectiveChangeCompleted()
+    workspace.scene.publishPerspectiveChangeCompleted()
   }
 }
 

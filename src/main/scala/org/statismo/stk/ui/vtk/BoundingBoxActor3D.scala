@@ -33,7 +33,7 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
     points.Delete()
 
     if (withEvent) {
-      publish(VtkContext.RenderRequest(this))
+      publishEdt(VtkContext.RenderRequest(this))
     }
   }
 

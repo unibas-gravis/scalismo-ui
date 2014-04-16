@@ -71,7 +71,7 @@ object Scene {
       if (!_point.isDefined || _point.get != np) {
         _point = Some(np)
       }
-      scene.publish(Scene.SlicingPosition.PointChanged(this))
+      scene.publishEdt(Scene.SlicingPosition.PointChanged(this))
     }
 
     private var _precision: Precision.Value = Precision.MmWhole
@@ -79,7 +79,7 @@ object Scene {
     def precision_=(np: Precision.Value): Unit = {
       if (precision != np) {
         _precision = np
-        scene.publish(Scene.SlicingPosition.PrecisionChanged(this))
+        scene.publishEdt(Scene.SlicingPosition.PrecisionChanged(this))
       }
     }
 
@@ -113,7 +113,7 @@ object Scene {
     private[Scene] def boundingBox_=(nb: BoundingBox) = this.synchronized {
       if (boundingBox != nb) {
         _boundingBox = nb
-        scene.publish(Scene.SlicingPosition.BoundingBoxChanged(this))
+        scene.publishEdt(Scene.SlicingPosition.BoundingBoxChanged(this))
       }
     }
 
@@ -149,14 +149,17 @@ class Scene extends SceneTreeObject {
       _perspective.viewports foreach (_.destroy())
       _perspective = newPerspective
       onViewportsChanged(newPerspective.viewports)
-      publish(Scene.PerspectiveChanged(this))
+      publishEdt(Scene.PerspectiveChanged(this))
     }
   }
 
-  protected[ui] def perspectiveChangeCompleted() = {
-    publish(Scene.PerspectiveChangeCompleted(this))
+  protected[ui] def publishPerspectiveChangeCompleted() = {
+    publishEdt(Scene.PerspectiveChangeCompleted(this))
   }
 
+  protected[ui] def publishVisibilityChanged() = {
+    publishEdt(Scene.VisibilityChanged(this))
+  }
   protected[ui] def viewports = perspective.viewports
 
   val shapeModels = new ShapeModels
@@ -174,13 +177,13 @@ class Scene extends SceneTreeObject {
     case Viewport.BoundingBoxChanged(v) =>
       slicingPosition.updateBoundingBox()
     case SceneTreeObject.VisibilityChanged(s) =>
-      publish(Scene.VisibilityChanged(this))
+      publishEdt(Scene.VisibilityChanged(this))
     case SceneTreeObject.ChildrenChanged(s) =>
-      publish(Scene.TreeTopologyChanged(this))
+      publishEdt(Scene.TreeTopologyChanged(this))
     case SceneTreeObject.Destroyed(s) =>
       deafTo(s)
     case m@Nameable.NameChanged(s) =>
-      publish(m)
+      publishEdt(m)
   }
 
 

@@ -49,7 +49,7 @@ class Console(implicit statismo: StatismoFrame) extends EdtPublisher {
       _visible = v
       needToDispose = true
       frame.visible = v
-      publish(Console.VisibilityChanged(this))
+      publishEdt(Console.VisibilityChanged(this))
     }
   }
 

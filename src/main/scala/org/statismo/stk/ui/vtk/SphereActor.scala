@@ -24,7 +24,7 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
     sphere.SetRadius(source.radius.value)
     sphere.Modified()
     mapper.Modified()
-    publish(VtkContext.RenderRequest(this))
+    publishEdt(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {

@@ -84,7 +84,7 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
       slice.Update()
       mapper.Update()
     }
-    publish(if (isStandalone) new ResetCameraRequest(this) else new RenderRequest(this))
+    publishEdt(if (isStandalone) new ResetCameraRequest(this) else new RenderRequest(this))
   }
 
   listenTo(source.scene)

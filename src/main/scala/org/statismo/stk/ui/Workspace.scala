@@ -30,7 +30,7 @@ class Workspace(val scene: Scene) extends EdtPublisher {
   def selectedObject_=(newObject: Option[SceneTreeObject]) = {
     if (!(_selectedObject eq newObject)) {
       _selectedObject = newObject
-      publish(Workspace.SelectedObjectChanged)
+      publishEdt(Workspace.SelectedObjectChanged)
     }
   }
 }

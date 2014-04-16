@@ -82,7 +82,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
                   case _ =>
                     // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
                     // we publish an event instead
-                    publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+                    publishEdt(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
                 }
               }
             }

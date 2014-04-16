@@ -10,7 +10,7 @@ object Removeable {
 
 trait Removeable extends EdtPublisher {
   def remove() = {
-    publish(Removeable.Removed(this))
+    publishEdt(Removeable.Removed(this))
   }
 
   protected[ui] def isCurrentlyRemoveable = true

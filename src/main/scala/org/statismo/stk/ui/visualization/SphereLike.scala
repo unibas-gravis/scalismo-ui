@@ -15,7 +15,7 @@ trait SphereLike extends HasRadius with HasColorAndOpacity with EdtPublisher {
   def center_=(nc: Point3D) {
     if (nc != center) {
       _center = nc
-      publish(SphereLike.CenterChanged(this))
+      publishEdt(SphereLike.CenterChanged(this))
     }
   }
 }

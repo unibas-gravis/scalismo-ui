@@ -53,8 +53,8 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
         case Axis.Z => scene.slicingPosition.z
       })
       cutEdges.Update()
-      publish(VtkContext.ResetCameraRequest(this))
-      publish(VtkContext.RenderRequest(this))
+      publishEdt(VtkContext.ResetCameraRequest(this))
+      publishEdt(VtkContext.RenderRequest(this))
     }
   }
 

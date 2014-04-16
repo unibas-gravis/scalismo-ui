@@ -17,7 +17,7 @@ trait LineActor extends ColorableActor {
 
   private def setAppearance() = this.synchronized {
     vtkActor.GetProperty().SetLineWidth(lineThickness.value.toFloat)
-    publish(VtkContext.RenderRequest(this))
+    publishEdt(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {

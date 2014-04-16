@@ -129,7 +129,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V,C]] extends Derivabl
     if (newValue != value) {
       _value = Some(newValue)
       derived.foreach(_.value = newValue)
-      publish(VisualizationProperty.ValueChanged(this))
+      publishEdt(VisualizationProperty.ValueChanged(this))
     }
   }
 

@@ -43,12 +43,12 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def add(lm: L): Unit = this.synchronized {
     super.add(lm)
-    publish(Landmarks.LandmarksChanged(this))
+    publishEdt(Landmarks.LandmarksChanged(this))
   }
 
   override def remove(lm: L, silent: Boolean) = this.synchronized {
     val changed = super.remove(lm, silent)
-    if (changed) publish(Landmarks.LandmarksChanged(this))
+    if (changed) publishEdt(Landmarks.LandmarksChanged(this))
     changed
   }
 
@@ -68,7 +68,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
           this.create(point, Some(name))
       }
     } yield {}
-    publish(Landmarks.LandmarksChanged(this))
+    publishEdt(Landmarks.LandmarksChanged(this))
     status
   }
 }
@@ -172,7 +172,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
     case Removeable.Removed(r) if r eq source =>
       deafTo(container.instance.meshRepresentation, source)
       container.remove(this, silent = true)
-      publish(Removeable.Removed(this))
+      publishEdt(Removeable.Removed(this))
   }
 
   var point = calculateCenter()
@@ -184,7 +184,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
   def setCenter(): Unit = {
     point = calculateCenter()
-    publish(Landmarks.LandmarkChanged(this))
+    publishEdt(Landmarks.LandmarkChanged(this))
   }
 
 }
@@ -221,7 +221,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
         add(new MoveableLandmark(this, peer(i)))
     }
     if (changed) {
-      publish(SceneTreeObject.ChildrenChanged(this))
+      publishEdt(SceneTreeObject.ChildrenChanged(this))
     }
   }
 }

@@ -54,7 +54,7 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
       points.Delete()
 
       if (withEvent) {
-        publish(VtkContext.RenderRequest(this))
+        publishEdt(VtkContext.RenderRequest(this))
       }
   }
 

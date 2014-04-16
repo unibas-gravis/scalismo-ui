@@ -8,6 +8,11 @@ import javax.swing.SwingUtilities
 
 trait EdtPublisher extends Publisher {
   override def publish(e: Event) = {
+    publishEdt(e)
+  }
+
+  /* this is the preferred method to use */
+  def publishEdt(e:Event) = {
     if (SwingUtilities.isEventDispatchThread) {
       doPublish(e)
     } else {

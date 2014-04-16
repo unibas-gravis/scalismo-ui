@@ -69,13 +69,13 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectCo
 
   override def add(child: Child): Unit = {
     super.add(child)
-    publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
+    publisher.publishEdt(SceneTreeObject.ChildrenChanged(publisher))
   }
 
   protected override def remove(child: Child, silent: Boolean): Boolean = {
     val changed = super.remove(child, silent)
     if (changed) {
-      publisher.publish(SceneTreeObject.ChildrenChanged(publisher))
+      publisher.publishEdt(SceneTreeObject.ChildrenChanged(publisher))
     }
     changed
   }

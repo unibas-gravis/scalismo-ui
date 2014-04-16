@@ -88,7 +88,7 @@ class Visibility(container: SceneTreeObject) {
     } else false
     val notify = container.children.foldLeft(selfChanged)({case (b,c) => c.visible.update(viewport, nv, isTop = false) || b})
     if (isTop && notify) {
-      container.scene.publish(new Scene.VisibilityChanged(container.scene))
+      container.scene.publishVisibilityChanged()
     }
     notify
   }

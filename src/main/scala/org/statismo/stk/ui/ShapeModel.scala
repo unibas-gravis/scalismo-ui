@@ -136,7 +136,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
       meshRepresentation.peer = shapeModel.calculateMesh(newCoeffs)
-      publish(ShapeModelInstance.CoefficientsChanged(this))
+      publishEdt(ShapeModelInstance.CoefficientsChanged(this))
     }
   }
 
@@ -156,7 +156,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
 
     private[ShapeModelInstance] def peer_=(newMesh: TriangleMesh) = {
       _mesh = newMesh
-      publish(Mesh.GeometryChanged(this))
+      publishEdt(Mesh.GeometryChanged(this))
     }
 
     override lazy val parent = ShapeModelInstance.this

@@ -22,6 +22,7 @@ import scala.language.reflectiveCalls
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
 import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
 import scala.collection.immutable
+import org.statismo.stk.ui.EdtPublisher
 
 class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
   type Target = Visualization[_] with HasColorAndOpacity
@@ -62,7 +63,7 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
     peer.setPreferredSize(new Dimension(20, 20))
   }
 
-  val colorChooser = new Component with ChangeListener {
+  val colorChooser = new Component with ChangeListener with EdtPublisher {
     override lazy val peer = new ColorPickerPanel()
     private var deaf = false
     setColor(Color.WHITE)
@@ -78,7 +79,7 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
       if (!deaf) {
         val rgb = peer.getRGB
         val c: Color = new Color(rgb(0), rgb(1), rgb(2))
-        publish(ColorChosen(c))
+        publishEdt(ColorChosen(c))
       }
     }
 

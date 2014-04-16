@@ -43,7 +43,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
 
    mapper.Modified()
 
-    publish(VtkContext.RenderRequest(this))
+    publishEdt(VtkContext.RenderRequest(this))
   }
 
   def clicked(point: Point3D) = {
