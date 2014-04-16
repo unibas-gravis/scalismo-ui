@@ -60,9 +60,7 @@ trait ViewportRenderingPanel extends ComponentListener {
   private var source: Option[ViewportPanel] = None
 
   def attach(source: ViewportPanel): Unit = this.synchronized {
-    detach()
     this.source = Some(source)
-    //target.invisible = false
     source.renderStub.peer.addComponentListener(this)
     sourceVisibilityChanged
     sourcePositionChanged
@@ -156,7 +154,6 @@ class ViewportPanel extends BorderPanel {
   protected[ui] val renderStub = new Component {
     override lazy val peer = new JComponent {
       override def paint(g: Graphics) = {
-        g.setColor(Color.BLACK)
         g.fillRect(0, 0, getWidth, getHeight)
       }
     }

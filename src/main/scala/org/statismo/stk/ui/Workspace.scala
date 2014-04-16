@@ -9,6 +9,8 @@ object Workspace {
   // this is a hack
   case object PleaseLayoutAgain extends Event
 
+  // and another hideous hack
+  case class RenderOnScreen(workspace: Workspace) extends Event
 }
 
 class Workspace(val scene: Scene) extends EdtPublisher {

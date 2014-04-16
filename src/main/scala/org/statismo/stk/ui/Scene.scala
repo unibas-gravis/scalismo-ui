@@ -12,9 +12,10 @@ import scala.Tuple2
 import scala.collection.immutable
 
 object Scene {
-  case class TreeTopologyChanged(scene: Scene) extends Event
-  case class PerspectiveChanged(scene: Scene) extends Event
-  case class VisibilityChanged(scene: Scene) extends Event
+  case class TreeTopologyChanged private [Scene] (scene: Scene) extends Event
+  case class PerspectiveChanged private [Scene] (scene: Scene) extends Event
+  case class PerspectiveChangeCompleted private [Scene] (scene: Scene) extends Event
+  case class VisibilityChanged private [Scene] (scene: Scene) extends Event
 
   object SlicingPosition extends SimpleVisualizationFactory[SlicingPosition] {
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
@@ -150,6 +151,10 @@ class Scene extends SceneTreeObject {
       onViewportsChanged(newPerspective.viewports)
       publish(Scene.PerspectiveChanged(this))
     }
+  }
+
+  protected[ui] def perspectiveChangeCompleted() = {
+    publish(Scene.PerspectiveChangeCompleted(this))
   }
 
   protected[ui] def viewports = perspective.viewports

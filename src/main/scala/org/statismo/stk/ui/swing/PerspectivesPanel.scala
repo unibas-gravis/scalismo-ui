@@ -3,10 +3,10 @@ package org.statismo.stk.ui.swing
 import scala.swing._
 
 import org.statismo.stk.ui._
-import javax.swing.{JButton, OverlayLayout, JPanel}
+import javax.swing.{JLabel, JButton, OverlayLayout, JPanel}
 import scala.collection.{immutable, mutable}
 import org.statismo.stk.ui.swing.CardPanel.CardableComponent
-import java.awt.Graphics
+import java.awt.{Color, Graphics}
 
 class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   listenTo(workspace.scene)
@@ -35,7 +35,12 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
 
   private val cards = new TrackingCardPanel
   private val center = new Panel {
-    override lazy val peer = new JPanel()
+    override lazy val peer = new JPanel() {
+      override def paintComponent(g: Graphics) = {
+        g.setColor(Color.BLUE)
+        g.fillRect(0, 0, getWidth, getHeight)
+      }
+    }
     peer.setLayout(new OverlayLayout(peer))
     peer.add(ViewportRenderingPanelPool.jpanel)
     peer.add(cards.peer)
@@ -55,6 +60,7 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
         cards.set(panel)
         panel.show(workspace)
     }
+    workspace.scene.perspectiveChangeCompleted()
   }
 }
 
@@ -76,6 +82,7 @@ trait PerspectivePanel extends CardPanel.CardableComponent {
       case (panel, viewport) =>
         panel.show(workspace, viewport)
     }
+    workspace.publish(Workspace.RenderOnScreen(workspace))
   }
 
   def hide(): Unit = {

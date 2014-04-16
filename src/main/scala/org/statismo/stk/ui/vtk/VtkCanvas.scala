@@ -35,7 +35,7 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
 
   private def RenderReal() = {
     def doIt() = {
-      if (empty) {
+      if (false && empty) {
         invalidate()
         repaint()
       } else {
@@ -114,11 +114,8 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
   }
 
   override def paint(g: Graphics) = this.synchronized {
-    if (empty) {
-      g.setColor(Color.BLACK)
-      g.fillRect(0, 0, getWidth, getHeight)
-    } else {
-      super.paint(g)
-    }
+    g.setColor(Color.BLACK)
+    g.fillRect(0, 0, getWidth, getHeight)
+    super.paint(g)
   }
 }

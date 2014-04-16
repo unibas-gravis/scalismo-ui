@@ -39,22 +39,33 @@ class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
       resetCamera()
     case VtkContext.ViewportEmptyStatus(v, empty) =>
       vtkUi.empty = empty
+//    case Workspace.RenderOnScreen(workspace) =>
+//      workspaceOption match {
+//        case Some(ws) if ws eq workspace =>
+//          println("enabling on-screen rendering")
+//          vtkUi.GetRenderWindow().SetOffScreenRendering(0)
+//        case _ =>
+//      }
   }
 
   override lazy val target = vtkUi
 
   override def attach(source: ViewportPanel) = {
-    viewportOption = source.viewportOption
-    workspaceOption = source.workspaceOption
     super.attach(source)
     vtkUi.GetRenderWindow().SetOffScreenRendering(0)
+    viewportOption = source.viewportOption
+    workspaceOption = source.workspaceOption
+    workspaceOption.map(listenTo(_))
     vtkViewport.attach()
   }
 
   override def detach() = {
+    workspaceOption.map(deafTo(_))
     vtkUi.GetRenderWindow().SetOffScreenRendering(1)
     vtkViewport.detach()
     vtkUi.disableDeferredRendering()
+    workspaceOption = None
+    viewportOption = None
     super.detach()
   }
 

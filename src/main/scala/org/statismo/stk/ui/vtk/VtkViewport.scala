@@ -7,7 +7,7 @@ import org.statismo.stk.ui.{BoundingBox, EdtPublisher, Scene, Viewport}
 
 import vtk.{vtkCamera, vtkRenderer}
 import org.statismo.stk.ui.visualization.{Renderable, Visualizable}
-import scala.util.{Success, Failure}
+import scala.util.{Try, Success, Failure}
 
 trait VtkContext extends EdtPublisher
 
@@ -57,6 +57,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
     refresh(renderables, parent.viewportOption)
   }
   def refresh(backend: Seq[Renderable], viewportOption: Option[Viewport]): Unit = /*Swing.onEDT*/ {
+    //println("refresh: "+backend.length)
     this.synchronized {
       var changed = false
       // remove obsolete actors
@@ -145,6 +146,8 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
 
     case Scene.TreeTopologyChanged(s) => refresh(s)
     case Scene.VisibilityChanged(s) => refresh(s)
+    case Scene.PerspectiveChangeCompleted(s) => refresh(s)
+
     case VtkContext.ResetCameraRequest(s) => publish(VtkContext.ResetCameraRequest(this))
     case VtkContext.RenderRequest(s, now) =>
       updateBoundingBox()
@@ -154,7 +157,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   def attach() = this.synchronized {
     val vp = parent.viewportOption.get
     listenTo(vp, vp.scene)
-    refresh(vp.scene)
+    //refresh(vp.scene)
   }
 
   def detach() = this.synchronized {

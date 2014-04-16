@@ -11,7 +11,7 @@ trait EdtPublisher extends Publisher {
     if (SwingUtilities.isEventDispatchThread) {
       doPublish(e)
     } else {
-      Swing.onEDT {
+      Swing.onEDTWait {
         doPublish(e)
       }
     }
