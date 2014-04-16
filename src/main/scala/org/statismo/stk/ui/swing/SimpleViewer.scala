@@ -10,6 +10,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
       scene.tryLoad(_)
     }
   }
+
 }
 
 object SimpleViewer {
