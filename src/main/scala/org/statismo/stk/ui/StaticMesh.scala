@@ -15,15 +15,19 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   protected[ui] override val ioMetadata = this
 
   protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[StaticMesh] = {
-    apply(file, None, file.getName)
+    createFromFile(file, None, file.getName)
   }
 
-  def apply(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
+  def createFromFile(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
     for {
       raw <- MeshIO.readMesh(file)
     } yield {
       new StaticMesh(raw, parent, Some(name))
     }
+  }
+
+  def createFromPeer(peer: TriangleMesh, parent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMesh = {
+    new StaticMesh(peer, parent, name)
   }
 }
 
