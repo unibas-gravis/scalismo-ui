@@ -4,7 +4,7 @@ import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
 
-import vtk.vtkPolyData
+import vtk.{vtkObjectBase, vtkPolyData}
 import org.statismo.stk.ui.Mesh.MeshRenderable3D
 
 class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
@@ -12,6 +12,10 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   override lazy val opacity = source.opacity
 
   private var polyMesh: Option[vtkPolyData] = None
+  val normals = new vtk.vtkPolyDataNormals() {
+    ComputePointNormalsOn()
+    ComputeCellNormalsOff()
+  }
 
   this.GetProperty().SetInterpolationToGouraud()
   source.meshOrNone.map{m =>
@@ -24,15 +28,21 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   def setGeometry(mesh: Mesh) = this.synchronized {
+    val obsolete = polyMesh
     polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
+    obsolete.map {v =>
+      //v.Delete()
+    }
 
-    val normals = new vtk.vtkPolyDataNormals()
+    normals.RemoveAllInputs()
     normals.SetInputData(polyMesh.get)
-    normals.ComputePointNormalsOn()
-    normals.ComputeCellNormalsOff()
     normals.Update()
+
+    mapper.RemoveAllInputs()
     mapper.SetInputData(normals.GetOutput())
-    mapper.Modified()
+
+   mapper.Modified()
+
     publish(VtkContext.RenderRequest(this))
   }
 
@@ -43,6 +53,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   override def onDestroy() = this.synchronized {
     source.meshOrNone.map(m => deafTo(m))
     super.onDestroy()
+    normals.Delete()
     polyMesh.map(m => m.Delete())
   }
 

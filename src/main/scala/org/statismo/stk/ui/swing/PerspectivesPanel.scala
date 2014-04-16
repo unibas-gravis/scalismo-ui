@@ -12,12 +12,15 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   listenTo(workspace.scene)
 
   reactions += {
-    case Scene.PerspectiveChanged(s) => updateUi(); revalidate()
+    case Scene.PerspectiveChanged(s) =>
+      updateUi()
+      revalidate()
   }
 
-  private [PerspectivesPanel] class TrackingCardPanel extends CardPanel {
-    PerspectivePanels.mappings.foreach { case(f, i) =>
-      this.add(i)
+  private[PerspectivesPanel] class TrackingCardPanel extends CardPanel {
+    PerspectivePanels.mappings.foreach {
+      case (f, i) =>
+        this.add(i)
     }
 
     private var currentPanel: Option[PerspectivePanel] = None
@@ -31,7 +34,6 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   }
 
   private val cards = new TrackingCardPanel
-
   private val center = new Panel {
     override lazy val peer = new JPanel()
     peer.setLayout(new OverlayLayout(peer))
@@ -42,15 +44,17 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   updateUi()
 
   def updateUi() = {
-      val next = PerspectivePanels.mappings.get(workspace.scene.perspective.factory)
-      next match {
-        case None =>
-          System.err.println("PerspectivesPanel: Don't know how to display perspective of class "+workspace.scene.perspective.getClass.getName)
-        case Some(panel) =>
-          cards.get().map{_.hide()}
-          cards.set(panel)
-          panel.show(workspace)
-      }
+    val next = PerspectivePanels.mappings.get(workspace.scene.perspective.factory)
+    next match {
+      case None =>
+        System.err.println("PerspectivesPanel: Don't know how to display perspective of class " + workspace.scene.perspective.getClass.getName)
+      case Some(panel) =>
+        cards.get().map {
+          _.hide()
+        }
+        cards.set(panel)
+        panel.show(workspace)
+    }
   }
 }
 
@@ -68,10 +72,12 @@ object PerspectivePanels {
 trait PerspectivePanel extends CardPanel.CardableComponent {
   def show(workspace: Workspace): Unit = {
     val zipped = viewportPanels.zip(workspace.scene.viewports)
-    zipped.foreach{ case(panel, viewport) =>
-      panel.show(workspace, viewport)
+    zipped.foreach {
+      case (panel, viewport) =>
+        panel.show(workspace, viewport)
     }
   }
+
   def hide(): Unit = {
     viewportPanels.foreach(_.hide())
   }
@@ -89,17 +95,23 @@ class SingleThreeDViewportPanel extends BorderPanel with PerspectivePanel {
   layout(viewportPanels.head) = BorderPanel.Position.Center
 }
 
-class SlicerAltViewportsPanel extends GridPanel(2,2) with PerspectivePanel {
+class SlicerAltViewportsPanel extends GridPanel(2, 2) with PerspectivePanel {
   override lazy val viewportPanels = immutable.Seq(new ThreeDViewportPanel, new TwoDViewportPanel, new TwoDViewportPanel, new TwoDViewportPanel)
-  viewportPanels.foreach{p=> this.contents += p}
+  viewportPanels.foreach {
+    p => this.contents += p
+  }
 }
 
-class FourViewportsPanel extends GridPanel(2,2) with PerspectivePanel {
+class FourViewportsPanel extends GridPanel(2, 2) with PerspectivePanel {
   override lazy val viewportPanels = immutable.Seq(new ThreeDViewportPanel, new ThreeDViewportPanel, new ThreeDViewportPanel, new ThreeDViewportPanel)
-  viewportPanels.foreach{p=> this.contents += p}
+  viewportPanels.foreach {
+    p => this.contents += p
+  }
 }
 
-class TwoViewportsPanel extends GridPanel(1,2) with PerspectivePanel {
+class TwoViewportsPanel extends GridPanel(1, 2) with PerspectivePanel {
   override lazy val viewportPanels = immutable.Seq(new ThreeDViewportPanel, new ThreeDViewportPanel)
-  viewportPanels.foreach{p=> this.contents += p}
+  viewportPanels.foreach {
+    p => this.contents += p
+  }
 }

@@ -17,7 +17,7 @@ object RenderableActor {
       renderable match {
         case r: VtkRenderable => Some(r.getVtkActor)
         case _ =>
-          println("RenderableActor: Dunno what to do with " + renderable.getClass)
+          //println("RenderableActor: Dunno what to do with " + renderable.getClass)
           None
       }
     }

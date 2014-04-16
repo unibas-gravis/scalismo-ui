@@ -10,9 +10,10 @@ import vtk.vtkCanvas
 import vtk.vtkInteractorStyleTrackballCamera
 import scala.swing.Swing
 import java.util.{TimerTask, Timer}
+import javax.swing.SwingUtilities
 
-class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
-  lazy val interactor = new VtkRenderWindowInteractor(workspace, viewport)
+class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
+  lazy val interactor = new VtkRenderWindowInteractor(parent)
   iren = interactor
 
   iren.SetRenderWindow(rw)
@@ -20,22 +21,31 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
   iren.ConfigureEvent()
   iren.SetInteractorStyle(new vtkInteractorStyleTrackballCamera)
 
+  this.LightFollowCameraOn()
+
   private var _empty = true
 
   def empty = _empty
   def empty_=(nv: Boolean) = this.synchronized {
     if (empty != nv) {
       _empty = nv
-      Render()
+      repaint()
     }
   }
 
-  private def RenderReal() = Swing.onEDTWait {
-    if (empty) {
-      invalidate()
-      repaint()
+  private def RenderReal() = {
+    def doIt() = {
+      if (empty) {
+        invalidate()
+        repaint()
+      } else {
+        super.Render()
+      }
+    }
+    if (SwingUtilities.isEventDispatchThread) {
+      doIt()
     } else {
-      super.Render()
+      Swing.onEDTWait(doIt())
     }
   }
 
@@ -60,7 +70,7 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
         skipped.synchronized {
           if (skipped.count > 0) {
             //FIXME
-            //println(s"DEBUG: Skipped ${skipped.count} render requests")
+            println(s"DEBUG: Skipped ${skipped.count} render requests")
           }
           skipped.count = 0
           pending = None
@@ -81,7 +91,27 @@ class VtkCanvas(workspace: Workspace, viewport: Viewport) extends vtkCanvas {
 
   private val deferredRenderer = new DeferredRenderer
 
-  override def Render() = deferredRenderer.request()
+  override def Render() = {
+    render(true)
+  }
+
+  /* This is a somewhat awkward combination, but it seems to do the trick. */
+
+  private var _allowDeferredRendering = false
+  def disableDeferredRendering() = {
+    _allowDeferredRendering = false
+  }
+
+  def render(immediately: Boolean = false) = {
+    if (immediately || !_allowDeferredRendering) {
+      RenderReal()
+      if (immediately) {
+        _allowDeferredRendering = true
+      }
+    } else {
+      deferredRenderer.request()
+    }
+  }
 
   override def paint(g: Graphics) = this.synchronized {
     if (empty) {

@@ -7,39 +7,55 @@ import scala.swing.Component
 import scala.swing.Reactor
 import scala.util.Try
 
-import org.statismo.stk.ui.Viewport
-import org.statismo.stk.ui.Workspace
+import org.statismo.stk.ui.{EdtPublisher, Viewport, Workspace}
 
 import javax.swing.JPanel
 import vtk.vtkPNGWriter
 import vtk.vtkWindowToImageFilter
 import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
-import org.statismo.stk.ui.swing.ViewportRenderingPanel
+import org.statismo.stk.ui.swing.{ViewportPanel, ViewportRenderingPanel}
+import scala.swing.event.Event
 
-class VtkPanel(workspace: Workspace, viewport: Viewport) extends ViewportRenderingPanel with Reactor {
-  lazy val vtkUi = new VtkCanvas(workspace, viewport)
+class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
+  lazy val vtkUi = new VtkCanvas(this)
+  lazy val vtkViewport: VtkViewport = new VtkViewport(this, vtkUi.GetRenderer(), vtkUi.interactor)
+  listenTo(vtkViewport)
 
-  override lazy val target = vtkUi
+  protected [vtk] var viewportOption: Option[Viewport] = None
+  protected [vtk] var workspaceOption: Option[Workspace] = None
 
-  lazy val vtkViewport = new VtkViewport(viewport, vtkUi.GetRenderer(), vtkUi.interactor)
-  listenTo(viewport, vtkViewport)
 
-//  {
+  //  {
 //    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
 //      vtkUi.Render()
 //    }
 //  }
 
   reactions += {
-    case Viewport.Destroyed(v) =>
-      deafTo(viewport, vtkViewport)
-    case VtkContext.RenderRequest(s) =>
+    case VtkContext.RenderRequest(s, immediately) =>
       vtkUi.empty = false
-      vtkUi.Render()
+      vtkUi.render(immediately)
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
     case VtkContext.ViewportEmptyStatus(v, empty) =>
       vtkUi.empty = empty
+  }
+
+  override lazy val target = vtkUi
+
+  override def attach(source: ViewportPanel) = {
+    viewportOption = source.viewportOption
+    workspaceOption = source.workspaceOption
+    super.attach(source)
+    vtkUi.GetRenderWindow().SetOffScreenRendering(0)
+    vtkViewport.attach()
+  }
+
+  override def detach() = {
+    vtkUi.GetRenderWindow().SetOffScreenRendering(1)
+    vtkViewport.detach()
+    vtkUi.disableDeferredRendering()
+    super.detach()
   }
 
   override def resetCamera() = {

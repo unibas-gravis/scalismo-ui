@@ -2,6 +2,7 @@ package org.statismo.stk.ui.vtk
 
 import org.statismo.stk.ui.{TwoDViewport, Axis, BoundingBox, Scene}
 import vtk.vtkPoints
+import org.statismo.stk.core.geometry.Point3D
 
 class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implicit vtkViewport: VtkViewport) extends PolyDataActor {
   val scene = source.scene
@@ -22,37 +23,39 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
   def update(withEvent: Boolean = true) = this.synchronized {
     // FIXME: this is essentially a quick hack for now, because we're "abusing" the bounding box functionality.
 
-    val points = new vtkPoints()
     val bb = source.boundingBox
-    val p = source.point
+      val p = source.point
 
-    axis match {
-      case Axis.X =>
-        points.InsertNextPoint(p.x, bb.yMin, bb.zMin)
-        points.InsertNextPoint(p.x, bb.yMax, bb.zMax)
-      case Axis.Y =>
-        points.InsertNextPoint(bb.xMin, p.y, bb.zMin)
-        points.InsertNextPoint(bb.xMax, p.y, bb.zMax)
-      case Axis.Z =>
-        points.InsertNextPoint(bb.xMin, bb.yMin, p.z)
-        points.InsertNextPoint(bb.xMax, bb.yMax, p.z)
-    }
+      val points = new vtkPoints()
 
-    val poly = new vtk.vtkPolyData()
-    poly.SetPoints(points)
+      axis match {
+        case Axis.X =>
+          points.InsertNextPoint(p.x, bb.yMin, bb.zMin)
+          points.InsertNextPoint(p.x, bb.yMax, bb.zMax)
+        case Axis.Y =>
+          points.InsertNextPoint(bb.xMin, p.y, bb.zMin)
+          points.InsertNextPoint(bb.xMax, p.y, bb.zMax)
+        case Axis.Z =>
+          points.InsertNextPoint(bb.xMin, bb.yMin, p.z)
+          points.InsertNextPoint(bb.xMax, bb.yMax, p.z)
+      }
 
-    val outline = new vtk.vtkOutlineFilter()
-    outline.SetInputData(poly)
-    mapper.SetInputConnection(outline.GetOutputPort())
-    mapper.Modified()
+      val poly = new vtk.vtkPolyData()
+      poly.SetPoints(points)
 
-    outline.Delete()
-    poly.Delete()
-    points.Delete()
+      val outline = new vtk.vtkOutlineFilter()
+      outline.SetInputData(poly)
+      mapper.RemoveAllInputs()
+      mapper.SetInputConnection(outline.GetOutputPort())
+      mapper.Modified()
 
-    if (withEvent) {
-      publish(VtkContext.RenderRequest(this))
-    }
+      outline.Delete()
+      poly.Delete()
+      points.Delete()
+
+      if (withEvent) {
+        publish(VtkContext.RenderRequest(this))
+      }
   }
 
   override def onDestroy() = this.synchronized {

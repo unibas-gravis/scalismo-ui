@@ -39,7 +39,7 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
 }
 
 object Perspectives {
-  lazy val availablePerspectives: immutable.Seq[PerspectiveFactory] = immutable.Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, SlicerPerspective, SlicerAltPerspective, XOnlyPerspective, YOnlyPerspective, ZOnlyPerspective)
+  lazy val availablePerspectives: immutable.Seq[PerspectiveFactory] = immutable.Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, /*SlicerPerspective,*/ SlicerAltPerspective, XOnlyPerspective, YOnlyPerspective, ZOnlyPerspective)
 }
 
 trait PerspectiveFactory {

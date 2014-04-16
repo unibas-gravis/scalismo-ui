@@ -8,13 +8,14 @@ import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.SaveAction
 import javax.swing.border.TitledBorder
 import javax.swing._
-import scala.swing.event.ValueChanged
+import scala.swing.event.{Event, ValueChanged}
 import java.awt.{Color, Graphics}
 import scala.collection.immutable
 import scala.util.Failure
 import scala.Some
 import scala.swing.Action
 import java.awt.event.{ComponentEvent, ComponentListener}
+import org.statismo.stk.ui.vtk.VtkPanel
 
 object ViewportRenderingPanelPool {
   val jpanel = new JPanel {
@@ -31,7 +32,7 @@ object ViewportRenderingPanelPool {
 
   def allocate: ViewportRenderingPanel = this.synchronized {
     val entry = pool.find(e => e.available).getOrElse {
-      val panel: ViewportRenderingPanel = new DummyViewportRenderingPanel
+      val panel: ViewportRenderingPanel = new VtkPanel
       val entry = new Entry(panel)
       pool ++= immutable.Seq(entry)
       jpanel.add(panel.target)
@@ -61,7 +62,7 @@ trait ViewportRenderingPanel extends ComponentListener {
   def attach(source: ViewportPanel): Unit = this.synchronized {
     detach()
     this.source = Some(source)
-    target.setVisible(true)
+    //target.invisible = false
     source.renderStub.peer.addComponentListener(this)
     sourceVisibilityChanged
     sourcePositionChanged
@@ -72,7 +73,8 @@ trait ViewportRenderingPanel extends ComponentListener {
       s =>
         s.renderStub.peer.removeComponentListener(this)
         source = None
-        target.setVisible(false)
+        //target.setBounds(0,0,1,1)
+        //target.invisible = true
         ViewportRenderingPanelPool.free(this)
     }
     source = None
@@ -105,18 +107,18 @@ trait ViewportRenderingPanel extends ComponentListener {
   }
 }
 
-class DummyViewportRenderingPanel extends ViewportRenderingPanel {
-  override lazy val target = new java.awt.Component {
-    override def paint(g: Graphics) = {
-      g.setColor(Color.RED)
-      g.fillRect(0, 0, getWidth, getHeight)
-    }
-  }
-
-  override def resetCamera() = {}
-
-  override def screenshot(file: File) = Try(())
-}
+//class DummyViewportRenderingPanel extends ViewportRenderingPanel {
+//  override lazy val target = new java.awt.Component {
+//    override def paint(g: Graphics) = {
+//      g.setColor(Color.RED)
+//      g.fillRect(0, 0, getWidth, getHeight)
+//    }
+//  }
+//
+//  override def resetCamera() = {}
+//
+//  override def screenshot(file: File) = Try(())
+//}
 
 class ViewportPanel extends BorderPanel {
 

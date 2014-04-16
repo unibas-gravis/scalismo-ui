@@ -17,7 +17,7 @@ object VtkRenderWindowInteractor {
 
 }
 
-class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) extends vtkGenericRenderWindowInteractor with EdtPublisher {
+class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindowInteractor with EdtPublisher {
   val cellPicker = new vtkCellPicker
   SetPicker(cellPicker)
 
@@ -26,23 +26,30 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
   private var lastPt = new Point
 
   override def SetEventInformationFlipY(x: Int, y: Int, ctrl: Int, shift: Int, unk1: Char, unk2: Int, unk3: String) = {
-    currentPt = new Point(x,y)
+    currentPt = new Point(x, y)
     super.SetEventInformationFlipY(x, y, ctrl, shift, unk1, unk2, unk3)
   }
+
+  protected[vtk] def workspaceOption: Option[Workspace] = parent.workspaceOption
+  protected[vtk] def viewportOption: Option[Viewport] = parent.viewportOption
 
   def renderer = GetRenderWindow().GetRenderers().GetFirstRenderer()
 
   override def LeftButtonPressEvent() = {
-    if (workspace.landmarkClickMode) {
-      lastPt = new Point(currentPt.x, currentPt.y)
-    }
-    //FIXME: this is ugly
-    val ok = viewport.onLeftButtonDown(currentPt)
-    if (ok || workspace.landmarkClickMode) {
-      super.LeftButtonPressEvent()
-      if (!ok) {
-        super.LeftButtonReleaseEvent()
-      }
+    (workspaceOption, viewportOption) match {
+      case (Some(workspace), Some(viewport)) =>
+        if (workspace.landmarkClickMode) {
+          lastPt = new Point(currentPt.x, currentPt.y)
+        }
+        //FIXME: this is ugly
+        val ok = viewport.onLeftButtonDown(currentPt)
+        if (ok || workspace.landmarkClickMode) {
+          super.LeftButtonPressEvent()
+          if (!ok) {
+            super.LeftButtonReleaseEvent()
+          }
+        }
+      case _ =>
     }
   }
 
@@ -52,56 +59,76 @@ class VtkRenderWindowInteractor(workspace: Workspace, var viewport: Viewport) ex
   }
 
   override def LeftButtonReleaseEvent() = {
-    if (viewport.onLeftButtonUp(currentPt)) {
-      super.LeftButtonReleaseEvent()
-    }
+    (workspaceOption, viewportOption) match {
+      case (Some(workspace), Some(viewport)) =>
+        if (viewport.onLeftButtonUp(currentPt)) {
+          super.LeftButtonReleaseEvent()
+        }
 
-    if (workspace.landmarkClickMode) {
-      val threshold = 3 //(pixels)
-      if (Math.abs(currentPt.x - lastPt.x) < threshold && Math.abs(currentPt.y - lastPt.y) < threshold) {
-        val p = cellPicker.Pick(currentPt.x, height - currentPt.y - 1, 0.0, renderer)
-        if (p == 1) {
-          cellPicker.PickFromListOff()
-          val pickpos = cellPicker.GetPickPosition()
-          val prop = cellPicker.GetProp3D()
-          if (prop != null) {
-            prop match {
-              case clickable: ClickableActor =>
-                clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
-              case _: RenderableActor =>
-              // do nothing. We found one of our own actors, but it doesn't react to clicks
-              case _ =>
-                // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
-                // we publish an event instead
-                publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+        if (workspace.landmarkClickMode) {
+          val threshold = 3 //(pixels)
+          if (Math.abs(currentPt.x - lastPt.x) < threshold && Math.abs(currentPt.y - lastPt.y) < threshold) {
+            val p = cellPicker.Pick(currentPt.x, height - currentPt.y - 1, 0.0, renderer)
+            if (p == 1) {
+              cellPicker.PickFromListOff()
+              val pickpos = cellPicker.GetPickPosition()
+              val prop = cellPicker.GetProp3D()
+              if (prop != null) {
+                prop match {
+                  case clickable: ClickableActor =>
+                    clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
+                  case _: RenderableActor =>
+                  // do nothing. We found one of our own actors, but it doesn't react to clicks
+                  case _ =>
+                    // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
+                    // we publish an event instead
+                    publish(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+                }
+              }
             }
           }
         }
-      }
+      case _ =>
     }
   }
 
   override def MiddleButtonPressEvent() = {
-    if (viewport.onMiddleButtonDown(currentPt)) {
-      super.MiddleButtonPressEvent()
+    viewportOption match {
+      case Some(viewport) =>
+        if (viewport.onMiddleButtonDown(currentPt)) {
+          super.MiddleButtonPressEvent()
+        }
+      case _ =>
     }
   }
 
   override def MiddleButtonReleaseEvent() = {
-    if (viewport.onMiddleButtonUp(currentPt)) {
-      super.MiddleButtonReleaseEvent()
+    viewportOption match {
+      case Some(viewport) =>
+        if (viewport.onMiddleButtonUp(currentPt)) {
+          super.MiddleButtonReleaseEvent()
+        }
+      case _ =>
     }
   }
 
   override def RightButtonPressEvent() = {
-    if (viewport.onRightButtonDown(currentPt)) {
-      super.RightButtonPressEvent()
+    viewportOption match {
+      case Some(viewport) =>
+        if (viewport.onRightButtonDown(currentPt)) {
+          super.RightButtonPressEvent()
+        }
+      case _ =>
     }
   }
 
   override def RightButtonReleaseEvent() = {
-    if (viewport.onRightButtonUp(currentPt)) {
-      super.RightButtonReleaseEvent()
+    viewportOption match {
+      case Some(viewport) =>
+        if (viewport.onRightButtonUp(currentPt)) {
+          super.RightButtonReleaseEvent()
+        }
+      case _ =>
     }
   }
 }
