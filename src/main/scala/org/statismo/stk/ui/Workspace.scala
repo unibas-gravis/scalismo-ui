@@ -4,10 +4,10 @@ import scala.swing.event.Event
 
 object Workspace {
 
-  case object SelectedObjectChanged extends Event
+  case class SelectedObjectChanged protected[Workspace] (workspace: Workspace) extends Event
 
   // this is a hack
-  case object PleaseLayoutAgain extends Event
+  case class PleaseLayoutAgain protected[Workspace] (workspace: Workspace) extends Event
 }
 
 class Workspace(val scene: Scene) extends EdtPublisher {
@@ -30,7 +30,11 @@ class Workspace(val scene: Scene) extends EdtPublisher {
   def selectedObject_=(newObject: Option[SceneTreeObject]) = {
     if (!(_selectedObject eq newObject)) {
       _selectedObject = newObject
-      publishEdt(Workspace.SelectedObjectChanged)
+      publishEdt(Workspace.SelectedObjectChanged(this))
     }
+  }
+
+  def publishPleaseLayoutAgain() = {
+    publishEdt(Workspace.PleaseLayoutAgain(this))
   }
 }

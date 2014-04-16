@@ -96,7 +96,7 @@ protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   // this is a hack...
   listenTo(workspace)
   reactions += {
-    case Workspace.PleaseLayoutAgain =>
+    case Workspace.PleaseLayoutAgain(ws) =>
       val d = this.size
       this.size = new Dimension(d.width - 1, this.size.height - 1)
       this.size = d

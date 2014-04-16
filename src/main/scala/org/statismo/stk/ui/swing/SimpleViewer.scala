@@ -25,7 +25,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
           Perspectives.availablePerspectives.foreach {
             f =>
               if (!disposed) {
-                Thread.sleep(2000)
+                Thread.sleep(5000)
                 Swing.onEDTWait {
                   scene.perspective = f.apply()(scene)
                 }
@@ -33,7 +33,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
           }
         }
       }
-    }//.start()
+    }.start()
   }
 
   var disposed = false

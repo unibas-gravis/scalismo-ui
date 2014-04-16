@@ -31,8 +31,8 @@ trait PropertyPanel extends CardPanel.CardableComponent {
   override def revalidate() = {
     super.revalidate()
     if (preferredSize.width > size.width) {
-      // this is a hack :-D
-      workspace.map(_.publishEdt(Workspace.PleaseLayoutAgain))
+      // this is a hack ...
+      workspace.map {_.publishPleaseLayoutAgain()}
     }
   }
 }
@@ -73,7 +73,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   reactions += {
     case SelectionChanged(e) => updateContent()
-    case Workspace.SelectedObjectChanged =>
+    case Workspace.SelectedObjectChanged(ws) if ws eq workspace =>
       updateListAndContent()
   }
 
@@ -110,7 +110,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
         cards.show(view)
         // this is a hack...
         if (cards.preferredSize.width > cards.size.width) {
-          workspace.publishEdt(Workspace.PleaseLayoutAgain)
+          workspace.publishPleaseLayoutAgain()
         }
       }
     } else {
