@@ -15,7 +15,7 @@ import scala.collection.immutable
 
 object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileIoMetadata {
   override val description = "Static 3D Image"
-  override val fileExtensions = immutable.Seq("nii", "nia")
+  override val fileExtensions = immutable.Seq("nii", "nia", "vtk")
   protected[ui] override val ioMetadata = this
 
   protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[StaticImage3D[_]] = {
