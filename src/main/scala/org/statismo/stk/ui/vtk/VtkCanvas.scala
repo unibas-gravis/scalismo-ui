@@ -55,7 +55,7 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
         skipped.synchronized {
           if (skipped.count > 0) {
             //FIXME
-            println(s"DEBUG: Skipped ${skipped.count} render requests")
+            //println(s"DEBUG: Skipped ${skipped.count} render requests")
           }
           skipped.count = 0
           pending = None
