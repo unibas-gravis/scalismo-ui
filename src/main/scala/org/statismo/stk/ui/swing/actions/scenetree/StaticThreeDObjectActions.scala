@@ -67,7 +67,7 @@ class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationT
   override val metadata = StaticMesh
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
-    StaticMesh(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
+    StaticMesh.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
 }
 
