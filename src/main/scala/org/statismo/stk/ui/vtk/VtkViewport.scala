@@ -41,7 +41,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   def refresh(scene: Scene): Unit = {
     val renderables = parent.viewportOption match {
       case Some(viewport) =>
-        scene.visualizables(f => f.isVisibleIn(viewport)).flatMap {obj =>
+        scene.visualizables{f => f.isVisibleIn(viewport)}.flatMap {obj =>
         scene.visualizations.tryGet(obj, viewport) match {
           case Failure(f) =>
             f.printStackTrace()

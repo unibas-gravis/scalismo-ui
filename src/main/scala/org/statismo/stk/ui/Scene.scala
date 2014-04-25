@@ -62,8 +62,15 @@ object Scene {
     import Scene.SlicingPosition.Precision
 
     protected[ui] override def visualizationProvider = SlicingPosition
-    protected[ui] override def isVisibleIn(viewport: Viewport) = viewport.isInstanceOf[ThreeDViewport]
+    protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
 
+    private var _visible = true
+    def visible = _visible
+    def visible_=(nv: Boolean) = {
+      if (_visible != nv) {
+        _visible = nv
+      }
+    }
 
     private var _point: Option[Point3D] = None
     def point = this.synchronized {_point.getOrElse(Point3D((boundingBox.xMin + boundingBox.xMax) / 2,(boundingBox.yMin + boundingBox.yMax) / 2,(boundingBox.zMin + boundingBox.zMax) / 2))}
@@ -109,7 +116,9 @@ object Scene {
     }
 
     private var _boundingBox = BoundingBox.None
+
     def boundingBox = this.synchronized(_boundingBox)
+
     private[Scene] def boundingBox_=(nb: BoundingBox) = this.synchronized {
       if (boundingBox != nb) {
         _boundingBox = nb
@@ -192,11 +201,11 @@ class Scene extends SceneTreeObject {
     super.onViewportsChanged(viewports)
   }
 
-  protected[ui] lazy val visualizations: Visualizations = new Visualizations
-  protected[ui] lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
+  lazy val visualizations: Visualizations = new Visualizations
+  lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
-    Seq(super.visualizables(filter), Seq(slicingPosition)).flatten
+    Seq(super.visualizables(filter), Seq(slicingPosition).filter(filter)).flatten
   }
 
 }

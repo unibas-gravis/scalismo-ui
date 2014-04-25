@@ -7,6 +7,7 @@ import scala.swing.event.Event
 import scala.language.existentials
 import scala.collection.{mutable, immutable}
 import java.util.Date
+import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
 
 class Visualizations {
   private type ViewportOrClassName = Either[Viewport, String]

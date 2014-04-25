@@ -100,8 +100,6 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   position.add(y, 2)
   position.add(z, 3)
 
-  listenToOwnEvents()
-
   val precision = new GridPanel(1, Scene.SlicingPosition.Precision.values.size) {
     border = new TitledBorder(null, "Precision", TitledBorder.LEADING, 0, null, null)
 
@@ -126,8 +124,17 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     }
   }
 
+  val visibility = new BorderPanel {
+    border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
+    val check = new CheckBox("Draw outlines")
+    layout(check) = BorderPanel.Position.Center
+  }
+
   layout(new BorderPanel {
-    layout(precision) = BorderPanel.Position.North
+    layout(new BorderPanel {
+      layout(visibility) = BorderPanel.Position.North
+      layout(precision) = BorderPanel.Position.Center
+    }) = BorderPanel.Position.North
     layout(position) = BorderPanel.Position.Center
   }) = BorderPanel.Position.North
 
@@ -155,17 +162,18 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       dimensions.foreach { d =>
         d.update()
       }
+      visibility.check.selected = sp.visible
     }
     revalidate()
     listenToOwnEvents()
   }
 
   def deafToOwnEvents() = {
-    deafTo(x.slider, y.slider, z.slider)
+    deafTo(x.slider, y.slider, z.slider, visibility.check)
   }
 
   def listenToOwnEvents() = {
-    listenTo(x.slider, y.slider, z.slider)
+    listenTo(x.slider, y.slider, z.slider, visibility.check)
   }
 
   reactions += {
@@ -179,4 +187,6 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
         case z.slider => slicingPosition.map(_.z = z.value)
       }
   }
+
+  listenToOwnEvents()
 }

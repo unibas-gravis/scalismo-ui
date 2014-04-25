@@ -4,6 +4,8 @@ import org.statismo.stk.ui.{Perspectives, Scene, StatismoApp, StatismoFrame}
 import scala.swing.Swing
 import vtk.vtkObjectBase
 import java.util.concurrent.TimeUnit
+import org.statismo.stk.ui.visualization.SphereLike
+import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
@@ -12,12 +14,6 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
     args foreach {
       scene.tryLoad(_)
     }
-
-//    val x = vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector
-//    x.SetScheduleTime(1, TimeUnit.SECONDS)
-//    x.SetDebug(false)
-//    x.Start()
-
 
     new Thread() {
       override def run() = {
