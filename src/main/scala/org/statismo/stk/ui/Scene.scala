@@ -21,6 +21,7 @@ object Scene {
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
     case class PointChanged(slicingPosition: SlicingPosition) extends Event
     case class PrecisionChanged(slicingPosition: SlicingPosition) extends Event
+    case class VisibilityChanged(slicingPosition: SlicingPosition) extends Event
 
     object Precision extends Enumeration {
       import scala.language.implicitConversions
@@ -69,6 +70,8 @@ object Scene {
     def visible_=(nv: Boolean) = {
       if (_visible != nv) {
         _visible = nv
+        scene.publish(Scene.SlicingPosition.VisibilityChanged(this))
+        scene.publish(Scene.VisibilityChanged(scene))
       }
     }
 

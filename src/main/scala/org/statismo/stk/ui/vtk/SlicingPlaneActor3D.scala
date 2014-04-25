@@ -12,6 +12,7 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
   reactions += {
     case Scene.SlicingPosition.BoundingBoxChanged(s) => update()
     case Scene.SlicingPosition.PointChanged(s) => update()
+    case Scene.SlicingPosition.VisibilityChanged(s) => update()
   }
 
   def update(withEvent: Boolean = true) = this.synchronized {
@@ -43,18 +44,21 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
     mapper.SetInputConnection(outline.GetOutputPort())
     mapper.Modified()
 
+
     outline.Delete()
     poly.Delete()
     points.Delete()
 
-    // this should actually only be set once, but for some reason, the lines sometimes return to black (???)
-    axis match {
-      case Axis.X => GetProperty().SetColor(1, 0, 0)
-      case Axis.Y => GetProperty().SetColor(0, 1, 0)
-      case Axis.Z => GetProperty().SetColor(0, 0, 1)
+    if (!source.visible) {
+      // we still need to draw the lines in 2D, but we'll draw them black on black if they're supposed to be invisible.
+      GetProperty().SetColor(0, 0, 0)
+    } else {
+      axis match {
+        case Axis.X => GetProperty().SetColor(1, 0, 0)
+        case Axis.Y => GetProperty().SetColor(0, 1, 0)
+        case Axis.Z => GetProperty().SetColor(0, 0, 1)
+      }
     }
-
-    //GetProperty().SetColor(0, 0, 0)
 
     if (withEvent) {
       publishEdt(VtkContext.RenderRequest(this))

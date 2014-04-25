@@ -177,6 +177,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   }
 
   reactions += {
+    case Scene.SlicingPosition.VisibilityChanged(s) => updateUi()
     case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
     case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
     case Scene.SlicingPosition.PointChanged(sp) => updateUi()
@@ -186,6 +187,8 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
         case y.slider => slicingPosition.map(_.y = y.value)
         case z.slider => slicingPosition.map(_.z = z.value)
       }
+    case ButtonClicked(b: CheckBox) if b eq visibility.check =>
+      slicingPosition.map{_.visible = visibility.check.selected}
   }
 
   listenToOwnEvents()
