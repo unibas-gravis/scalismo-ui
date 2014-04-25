@@ -60,7 +60,7 @@ object Dependencies {
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
   val twitterUtilCollection = "com.twitter" % "util-collection" % "5.3.10"
   val twitterUtilEval = "com.twitter" %% "util-eval" % "6.2.4"
-  val stkCore = "org.statismo" %% "stkcore" % "0.2.2"
+  val stkCore = "org.statismo" %% "stkcore" % "0.3.0-SNAPSHOT"
   val scalaInterpreterPanel= "de.sciss" %% "scalainterpreterpane" % "1.6.+"
 }
 

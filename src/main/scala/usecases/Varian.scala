@@ -12,8 +12,7 @@ import org.statismo.stk.core.numerics.Integrator
 import org.statismo.stk.core.numerics.IntegratorConfiguration
 import org.statismo.stk.core.numerics.LBFGSOptimizer
 import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
-import org.statismo.stk.core.registration.KernelTransformationSpace3D
-import org.statismo.stk.core.registration.KernelTransformationSpaceConfiguration
+
 import org.statismo.stk.core.registration.MeanSquaresMetric3D
 import org.statismo.stk.core.registration.RKHSNormRegularizer
 import org.statismo.stk.core.registration.Registration
@@ -23,10 +22,10 @@ import org.statismo.stk.core.geometry.ThreeD
 import scala.collection.mutable.ArrayBuffer
 import org.statismo.stk.core.image.ContinuousScalarImage3D
 import org.statismo.stk.core.image.DiscreteScalarImage3D
-import org.statismo.stk.core.registration.KernelTransformationSpace3D
+
 import scala.Some
 import org.statismo.stk.core.numerics.LBFGSOptimizer
-import org.statismo.stk.core.registration.KernelTransformationSpaceConfiguration
+
 import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
 import org.statismo.stk.core.registration.RegistrationConfiguration
 import org.statismo.stk.core.numerics.Integrator
@@ -35,6 +34,7 @@ import org.statismo.stk.core.numerics.IntegratorConfiguration
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.image.ContinuousScalarImage3D
 import org.statismo.stk.core.registration.MeanSquaresMetric3D
+import org.statismo.stk.core.registration.GaussianProcessTransformationSpace3D
 
 class Varian(scene: Scene) extends StatismoFrame(scene) {
 
@@ -117,7 +117,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0)),
         integrator = integr,
         metric = MeanSquaresMetric3D(integr),
-        transformationSpace = KernelTransformationSpace3D(KernelTransformationSpaceConfiguration[ThreeD](statmodel.gaussianProcess, withValueCaching = false)),
+        transformationSpace = GaussianProcessTransformationSpace3D(statmodel.gaussianProcess),
         regularizer = RKHSNormRegularizer,
         regularizationWeight = 0.01,
         initialParametersOrNone = None)
