@@ -45,7 +45,7 @@ object Perspectives {
 trait PerspectiveFactory {
   val name: String
 
-  protected [ui] def apply()(implicit scene: Scene): Perspective
+  def apply()(implicit scene: Scene): Perspective
 }
 
 
@@ -53,7 +53,7 @@ trait PerspectiveFactory {
 object SingleViewportPerspective extends PerspectiveFactory {
   override lazy val name = "Single 3D Window"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
 }
 
 class SingleViewportPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
@@ -71,7 +71,7 @@ class SingleViewportPerspective(template: Option[Perspective])(implicit val scen
 object TwoViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Two 3D Windows"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new TwoViewportsPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new TwoViewportsPerspective(Some(scene.perspective))
 }
 
 class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
@@ -90,7 +90,7 @@ class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene:
 object FourViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Four 3D Windows"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
 }
 
 class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
@@ -111,7 +111,7 @@ class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Sc
 object SlicerPerspective extends PerspectiveFactory {
   override lazy val name = "Slicer"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
 }
 
 class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
@@ -133,7 +133,7 @@ class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) ex
 object SlicerAltPerspective extends PerspectiveFactory {
   override lazy val name = "Slicer (alt.)"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
 }
 
 class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
@@ -155,7 +155,7 @@ class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene)
 object XOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "X Only"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
 }
 
 class XOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
@@ -173,7 +173,7 @@ class XOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
 object YOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Y Only"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
 }
 
 class YOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
@@ -191,7 +191,7 @@ class YOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
 object ZOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Z Only"
 
-  protected [ui] override def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
 }
 
 class ZOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene) extends Perspective(template) {
