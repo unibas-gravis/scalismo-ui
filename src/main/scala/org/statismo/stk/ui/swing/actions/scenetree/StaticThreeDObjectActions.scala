@@ -75,7 +75,7 @@ class AddImageRepresentationToStaticThreeDObjectAction extends AddRepresentation
   override val metadata = StaticImage3D
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
-    StaticImage3D(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
+    StaticImage3D.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
 }
 
