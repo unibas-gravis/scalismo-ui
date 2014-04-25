@@ -32,14 +32,14 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     }
     {
       // Float
-      val peerTry = ImageIO.read3DScalarImage[Short](file)
+      val peerTry = ImageIO.read3DScalarImage[Float](file)
       if (peerTry.isSuccess) {
         return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
       }
     }
     {
       // Double
-      val peerTry = ImageIO.read3DScalarImage[Short](file)
+      val peerTry = ImageIO.read3DScalarImage[Double](file)
       if (peerTry.isSuccess) {
         return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
       }
