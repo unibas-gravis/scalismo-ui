@@ -6,6 +6,7 @@ import org.statismo.stk.ui.visualization.{SphereLike, Renderable}
 import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
 import org.statismo.stk.ui.{Scene, BoundingBox, Image3D}
 import scala.None
+import scala.util.Try
 
 object RenderableActor {
   type RenderableToActor = (Renderable, VtkViewport) => Option[RenderableActor]
@@ -50,6 +51,6 @@ trait RenderableActor extends VtkContext {
   def currentBoundingBox: BoundingBox
 
   def onDestroy(): Unit = {
-    vtkActors.foreach{_.Delete()}
+    vtkActors.foreach{a => Try{a.Delete()}}
   }
 }

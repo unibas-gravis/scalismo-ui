@@ -13,10 +13,10 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
       scene.tryLoad(_)
     }
 
-    val x = vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector
-    x.SetScheduleTime(1, TimeUnit.SECONDS)
-    x.SetDebug(false)
-    x.Start()
+//    val x = vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector
+//    x.SetScheduleTime(1, TimeUnit.SECONDS)
+//    x.SetDebug(false)
+//    x.Start()
 
 
     new Thread() {

@@ -1,5 +1,6 @@
 package org.statismo.stk.ui
 
+import _root_.vtk.vtkObjectBase
 import scala.Array.canBuildFrom
 import scala.swing._
 import org.statismo.stk.ui.swing._
@@ -88,6 +89,8 @@ protected class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   def startup(args: Array[String]): Unit = {
+    vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector.Start()
+
     size = new Dimension(1024, 768)
     // center on screen
     centerOnScreen()
