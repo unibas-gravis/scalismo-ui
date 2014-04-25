@@ -92,5 +92,14 @@ class Visibility(container: SceneTreeObject) {
     }
     notify
   }
+
+//  initialize with parent visibility
+  if (container ne container.parent) {
+    for (v <- container.scene.viewports) {
+      if (!container.parent.visible(v)) {
+        map(v) = false
+      }
+    }
+  }
 }
 

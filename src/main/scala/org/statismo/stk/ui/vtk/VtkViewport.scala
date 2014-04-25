@@ -126,6 +126,8 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
               } else {
                 publishEdt(VtkContext.RenderRequest(this))
               }
+            } else if (changed && !firstTime) {
+              publishEdt(VtkContext.RenderRequest(this))
             }
           case _ =>
         }
@@ -142,7 +144,9 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   reactions += {
 
     case Scene.TreeTopologyChanged(s) => refresh(s)
-    case Scene.VisibilityChanged(s) => refresh(s)
+    case Scene.VisibilityChanged(s) => {
+      refresh(s)
+    }
     case Scene.PerspectiveChangeCompleted(s) => refresh(s)
 
     case VtkContext.ResetCameraRequest(s) => publishEdt(VtkContext.ResetCameraRequest(this))

@@ -10,28 +10,65 @@ import org.statismo.stk.core.geometry.Point3D
 import scala.Some
 import scala.Tuple2
 import scala.collection.immutable
+import javax.swing.SwingUtilities
+import scala.swing.Swing
 
 object Scene {
-  case class TreeTopologyChanged private [Scene] (scene: Scene) extends Event
-  case class PerspectiveChanged private [Scene] (scene: Scene) extends Event
-  case class PerspectiveChangeCompleted private [Scene] (scene: Scene) extends Event
-  case class VisibilityChanged private [Scene] (scene: Scene) extends Event
+
+  case class TreeTopologyChanged private[Scene](scene: Scene) extends Event
+
+  case class PerspectiveChanged private[Scene](scene: Scene) extends Event
+
+  case class PerspectiveChangeCompleted private[Scene](scene: Scene) extends Event
+
+  case class VisibilityChanged private[Scene](scene: Scene) extends Event
 
   object SlicingPosition extends SimpleVisualizationFactory[SlicingPosition] {
+
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
+
     case class PointChanged(slicingPosition: SlicingPosition) extends Event
+
     case class PrecisionChanged(slicingPosition: SlicingPosition) extends Event
+
     case class VisibilityChanged(slicingPosition: SlicingPosition) extends Event
 
     object Precision extends Enumeration {
+
       import scala.language.implicitConversions
+
       case class Val(name: String, format: Float => String, toIntValue: Float => Int, fromInt: Int => Float) extends super.Val(nextId, name)
+
       implicit def valueToPrecisionVal(x: Value) = x.asInstanceOf[Val]
 
-      val MmWhole = new Val("1 mm", {value => f"$value%1.0f"}, {f => Math.round(f)}, {i => i.toFloat} )
-      val MmTenth = new Val("1/10 mm", {value => f"$value%1.1f"}, {f => Math.round(f * 10)}, {i => i.toFloat / 10f})
-      val MmHundredth = new Val("1/100 mm", {value => f"$value%1.2f"}, {f => Math.round(f * 100)}, {i => i.toFloat  / 100f})
-      val MmThousandth = new Val("1/1000 mm", {value => f"$value%1.3f"}, {f => Math.round(f * 1000)}, {i => i.toFloat  / 1000f})
+      val MmWhole = new Val("1 mm", {
+        value => f"$value%1.0f"
+      }, {
+        f => Math.round(f)
+      }, {
+        i => i.toFloat
+      })
+      val MmTenth = new Val("1/10 mm", {
+        value => f"$value%1.1f"
+      }, {
+        f => Math.round(f * 10)
+      }, {
+        i => i.toFloat / 10f
+      })
+      val MmHundredth = new Val("1/100 mm", {
+        value => f"$value%1.2f"
+      }, {
+        f => Math.round(f * 100)
+      }, {
+        i => i.toFloat / 100f
+      })
+      val MmThousandth = new Val("1/1000 mm", {
+        value => f"$value%1.3f"
+      }, {
+        f => Math.round(f * 1000)
+      }, {
+        i => i.toFloat / 1000f
+      })
     }
 
     visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
@@ -39,34 +76,43 @@ object Scene {
 
     class Visualization3D extends Visualization[SlicingPosition] {
       override protected def createDerived() = new Visualization3D
+
       override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
         new BoundingBoxRenderable3D(source),
-      new SlicingPlaneRenderable3D(source, Axis.X),
-      new SlicingPlaneRenderable3D(source, Axis.Y),
-      new SlicingPlaneRenderable3D(source, Axis.Z)
+        new SlicingPlaneRenderable3D(source, Axis.X),
+        new SlicingPlaneRenderable3D(source, Axis.Y),
+        new SlicingPlaneRenderable3D(source, Axis.Z)
       )
     }
 
     class Visualization2D extends Visualization[SlicingPosition] {
       override protected def createDerived() = new Visualization2D
+
       override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
         new SlicingPlaneRenderable2D(source)
       )
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
+
     class SlicingPlaneRenderable3D(val source: SlicingPosition, val axis: Axis.Value) extends Renderable
+
     class SlicingPlaneRenderable2D(val source: SlicingPosition) extends Renderable
+
   }
 
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
+
     import Scene.SlicingPosition.Precision
 
     protected[ui] override def visualizationProvider = SlicingPosition
+
     protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
 
     private var _visible = true
+
     def visible = _visible
+
     def visible_=(nv: Boolean) = {
       if (_visible != nv) {
         _visible = nv
@@ -76,7 +122,11 @@ object Scene {
     }
 
     private var _point: Option[Point3D] = None
-    def point = this.synchronized {_point.getOrElse(Point3D((boundingBox.xMin + boundingBox.xMax) / 2,(boundingBox.yMin + boundingBox.yMax) / 2,(boundingBox.zMin + boundingBox.zMax) / 2))}
+
+    def point = this.synchronized {
+      _point.getOrElse(Point3D((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
+    }
+
     private def point_=(np: Point3D) = this.synchronized {
       if (!_point.isDefined || _point.get != np) {
         _point = Some(np)
@@ -85,7 +135,9 @@ object Scene {
     }
 
     private var _precision: Precision.Value = Precision.MmWhole
+
     def precision = _precision
+
     def precision_=(np: Precision.Value): Unit = {
       if (precision != np) {
         _precision = np
@@ -93,14 +145,22 @@ object Scene {
       }
     }
 
-    def x = this.synchronized{point.x}
-    def y = this.synchronized{point.y}
-    def z = this.synchronized{point.z}
+    def x = this.synchronized {
+      point.x
+    }
+
+    def y = this.synchronized {
+      point.y
+    }
+
+    def z = this.synchronized {
+      point.z
+    }
 
     def x_=(nv: Float) = this.synchronized {
       val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
       if (x != sv) {
-        point_=(new Point3D(sv,y, z))
+        point_=(new Point3D(sv, y, z))
       }
     }
 
@@ -114,7 +174,7 @@ object Scene {
     def z_=(nv: Float) = this.synchronized {
       val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
       if (z != sv) {
-        point = new Point3D(x ,y, sv)
+        point = new Point3D(x, y, sv)
       }
     }
 
@@ -130,17 +190,28 @@ object Scene {
     }
 
     private[Scene] def updateBoundingBox() = {
-      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({case (bb, vp) =>
-        bb.union(vp.currentBoundingBox)
+      boundingBox = scene.viewports.foldLeft(BoundingBox.None)({
+        case (bb, vp) =>
+          bb.union(vp.currentBoundingBox)
       })
     }
 
   }
+
 }
 
 class Scene extends SceneTreeObject {
   deafTo(this)
-  org.statismo.stk.core.initialize()
+
+  if (!org.statismo.stk.core.initialized) {
+    if (SwingUtilities.isEventDispatchThread) {
+      org.statismo.stk.core.initialize()
+    } else {
+      Swing.onEDTWait {
+        org.statismo.stk.core.initialize()
+      }
+    }
+  }
 
   name = "Scene"
   protected[ui] override lazy val isNameUserModifiable = false
@@ -172,6 +243,7 @@ class Scene extends SceneTreeObject {
   protected[ui] def publishVisibilityChanged() = {
     publishEdt(Scene.VisibilityChanged(this))
   }
+
   protected[ui] def viewports = perspective.viewports
 
   val shapeModels = new ShapeModels
@@ -207,7 +279,9 @@ class Scene extends SceneTreeObject {
   lazy val visualizations: Visualizations = new Visualizations
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
-  protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = {
+  protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {
+    o => true
+  }): Seq[Visualizable[_]] = {
     Seq(super.visualizables(filter), Seq(slicingPosition).filter(filter)).flatten
   }
 
