@@ -71,7 +71,6 @@ class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit overrid
 
   protected[ui] override def children = instances.children
 
-  lazy val landmarkNameGenerator: NameGenerator = NameGenerator.defaultGenerator
   val landmarks = new ReferenceLandmarks(this)
 
   lazy val gaussianProcess: SpecializedLowRankGaussianProcess[ThreeD] = {

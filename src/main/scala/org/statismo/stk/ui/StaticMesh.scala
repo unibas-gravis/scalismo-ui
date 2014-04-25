@@ -18,7 +18,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
     createFromFile(file, None, file.getName)
   }
 
-  def createFromFile(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
+  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
     for {
       raw <- MeshIO.readMesh(file)
     } yield {
@@ -26,14 +26,14 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
     }
   }
 
-  def createFromPeer(peer: TriangleMesh, parent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMesh = {
+  def createFromPeer(peer: TriangleMesh, parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMesh = {
     new StaticMesh(peer, parent, name)
   }
 }
 
-class StaticMesh protected[ui] (override val peer: TriangleMesh, initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
+class StaticMesh protected[ui] (override val peer: TriangleMesh, initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
   name_=(name.getOrElse(Nameable.NoName))
-  override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
+  override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
   def addLandmarkAt(point: Point3D) = {
     val landmarks = parent.landmarks
