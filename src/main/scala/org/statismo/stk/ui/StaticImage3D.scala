@@ -22,7 +22,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     createFromFile(file, None, file.getName)
   }
 
-  def createFromFile(file: File, parent: Option[ThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage3D[_]] = {
+  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage3D[_]] = {
     {
       // Short
       val peerTry = ImageIO.read3DScalarImage[Short](file)
@@ -47,14 +47,14 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     Failure(new IllegalArgumentException("could not load "+file.getAbsoluteFile))
   }
 
-  def createFromPeer[S: ScalarValue: ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
+  def createFromPeer[S: ScalarValue: ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
     new StaticImage3D(peer, parent, name)
   }
 }
 
-class StaticImage3D[S: ScalarValue: ClassTag : TypeTag] protected[ui] (override val peer: DiscreteScalarImage3D[S], initialParent: Option[ThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
+class StaticImage3D[S: ScalarValue: ClassTag : TypeTag] protected[ui] (override val peer: DiscreteScalarImage3D[S], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
   name_=(name.getOrElse(Nameable.NoName))
-  override lazy val parent: ThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
+  override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
   parent.representations.add(this)
 }
