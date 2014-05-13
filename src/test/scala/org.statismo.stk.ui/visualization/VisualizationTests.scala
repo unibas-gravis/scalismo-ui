@@ -34,7 +34,9 @@ class VisualizationTests  extends FunSpec with Matchers {
   /* This method *is* time-sensitive. Make sure you give the garbage collector some time.
   * Something like (at least) 100 ms seems to be sensible.
   */
-  def garbageCollectAnd[R] (f: => R, gracePeriodMs: Long = 500) : R = {
+  def garbageCollectAnd[R] (f: => R, gracePeriodMs: Long = 1000) : R = {
+    System.gc()
+    Thread.sleep(gracePeriodMs)
     System.gc()
     Thread.sleep(gracePeriodMs)
     System.gc()
