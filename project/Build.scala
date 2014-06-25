@@ -4,7 +4,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "org.statismo"
-  val buildVersion = "0.1.0-SNAPSHOT"
+  val buildVersion = "0.1.0"
   val buildScalaVersion = "2.10.3"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo"))
 
@@ -52,16 +52,12 @@ object Resolvers {
 object Dependencies {
   import BuildSettings._
 
+  val stkCore = "org.statismo" %% "stkcore" % "0.3.0"
   val scalatest = "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
-  val breezeMath = "org.scalanlp" %% "breeze-math" % "0.4"
-  val breezeViz = "org.scalanlp" %% "breeze-viz" % "0.4"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
-  val twitterUtilCollection = "com.twitter" % "util-collection" % "5.3.10"
-  val twitterUtilEval = "com.twitter" %% "util-eval" % "6.2.4"
-  val stkCore = "org.statismo" %% "stkcore" % "0.3.0-SNAPSHOT"
-  val scalaInterpreterPanel= "de.sciss" %% "scalainterpreterpane" % "1.6.+"
+  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.6.+"
 }
 
 object STKBuild extends Build {
@@ -71,14 +67,12 @@ object STKBuild extends Build {
 
   // Sub-project specific dependencies
   val commonDeps = Seq(
+    stkCore,
     scalatest,
-    breezeMath,
-    breezeViz,
     scalaReflect,
     scalaSwing,
     scalaAsync,
-    stkCore,
-    scalaInterpreterPanel)
+    scalaInterpreterPane)
 
   lazy val cdap2 = Project(
     "stk-ui",

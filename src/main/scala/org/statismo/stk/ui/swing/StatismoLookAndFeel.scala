@@ -1,7 +1,7 @@
 package org.statismo.stk.ui.swing
 
 import scala.swing.{SimpleSwingApplication, Swing}
-import javax.swing.{SwingUtilities, UIManager}
+import javax.swing.{ToolTipManager, SwingUtilities, UIManager}
 
 object StatismoLookAndFeel {
   def initializeWith(lookAndFeelClassName: String): Unit = {
@@ -14,6 +14,7 @@ object StatismoLookAndFeel {
         defaults.put("Tree.drawVerticalLines", true)
       }
       UIManager.put("FileChooser.readOnly", true)
+      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
     }
     if (SwingUtilities.isEventDispatchThread) {
       doit()

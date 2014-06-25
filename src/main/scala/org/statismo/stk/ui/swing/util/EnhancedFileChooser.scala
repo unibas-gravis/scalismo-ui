@@ -99,7 +99,7 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
             override def mouseMoved(e: MouseEvent) = {
               affectedItem(e.getPoint) match {
                 case None => setToolTipText(null)
-                case Some(f) => setToolTipText(f.tooltip)
+                case Some(f) => peer.setToolTipText(f.tooltip)
               }
             }
           })

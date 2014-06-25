@@ -3,10 +3,11 @@ package org.statismo.stk.ui.swing
 import scala.swing._
 
 import org.statismo.stk.ui._
-import javax.swing.{JLabel, JButton, OverlayLayout, JPanel}
+import javax.swing._
 import scala.collection.{immutable, mutable}
 import org.statismo.stk.ui.swing.CardPanel.CardableComponent
-import java.awt.{Color, Graphics}
+import java.awt.{BorderLayout, Color, Graphics}
+import scala.Some
 
 class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   listenTo(workspace.scene)
@@ -34,13 +35,16 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   }
 
   private val cards = new TrackingCardPanel
-  private val center = new Panel {
-    override lazy val peer = new JPanel
-    peer.setLayout(new OverlayLayout(peer))
-    peer.add(ViewportRenderingPanelPool.jpanel)
-    peer.add(cards.peer)
-  }
-  layout(center) = BorderPanel.Position.Center
+//  private val center = new Panel {
+//    override lazy val peer = new JPanel {
+//      setLayout(new BorderLayout())
+//      //setBorder(BorderFactory.createLineBorder(Color.RED, 4))
+//    }
+////    peer.setLayout(new OverlayLayout(peer))
+////    peer.add(ViewportRenderingPanelPool.jpanel)
+//    peer.add(cards.peer, BorderLayout.CENTER)
+//  }
+  layout(cards) = BorderPanel.Position.Center
   updateUi()
 
   def updateUi() = {

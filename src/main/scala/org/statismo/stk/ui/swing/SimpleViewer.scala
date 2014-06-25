@@ -1,46 +1,29 @@
 package org.statismo.stk.ui.swing
 
-import org.statismo.stk.ui.{Perspectives, Scene, StatismoApp, StatismoFrame}
-import scala.swing.Swing
-import vtk.vtkObjectBase
-import java.util.concurrent.TimeUnit
-import org.statismo.stk.ui.visualization.SphereLike
-import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
+import org.statismo.stk.ui._
+import scala.swing.MenuItem
+import org.statismo.stk.ui.swing.actions.LoadAction
+import java.io.File
+import scala.util.{Success, Try}
+import javax.swing.ToolTipManager
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
   override def startup(args: Array[String]): Unit = {
+    val openItem = new MenuItem({
+      def doLoad(file: File): Try[Unit] = {
+        ShapeModel.tryCreate(file)(scene).map(ok => Success(()))
+      }
+      new LoadAction(doLoad, ShapeModel, "Open Statistical Shape Model...")
+    })
+    this.menuBar.fileMenu.contents.insert(0, openItem)
+
     super.startup(args)
+
     args foreach {
       scene.tryLoad(_)
     }
-
-    new Thread() {
-      override def run() = {
-        while (!disposed) {
-          Perspectives.availablePerspectives.foreach {
-            f =>
-              if (!disposed) {
-                Thread.sleep(5000)
-                Swing.onEDTWait {
-                  scene.perspective = f.apply()(scene)
-                }
-              }
-          }
-        }
-      }
-    }//.start()
   }
-
-  var disposed = false
-
-  override def dispose = {
-    val x = vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector
-    x.Stop()
-    disposed = true
-    super.dispose
-  }
-
 }
 
 object SimpleViewer {

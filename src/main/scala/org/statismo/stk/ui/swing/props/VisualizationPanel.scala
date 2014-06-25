@@ -44,7 +44,7 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
         }
       }
       val name = new Label(viewport.name)
-      val fixme = new Label("visSelect (FIXME)")
+      val fixme = new Label("")
     }
 
     class EntryTable extends GridBagPanel {
@@ -54,7 +54,7 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
         const.ipadx = 10
         if (position._1 == 0) {
           const.anchor = Anchor.East
-        } else if (position._1 == 2) {
+        } else {
           const.anchor = Anchor.West
         }
         super.add(comp, const)

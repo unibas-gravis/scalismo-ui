@@ -13,10 +13,10 @@ import javax.swing.JPanel
 import vtk.vtkPNGWriter
 import vtk.vtkWindowToImageFilter
 import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
-import org.statismo.stk.ui.swing.{ViewportPanel, ViewportRenderingPanel}
+import org.statismo.stk.ui.swing.{ViewportPanel}
 import scala.swing.event.Event
 
-class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
+class VtkPanel extends Component with EdtPublisher {
   lazy val vtkUi = new VtkCanvas(this)
   lazy val vtkViewport: VtkViewport = new VtkViewport(this, vtkUi.GetRenderer(), vtkUi.interactor)
   listenTo(vtkViewport)
@@ -24,6 +24,11 @@ class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
   protected [vtk] var viewportOption: Option[Viewport] = None
   protected [vtk] var workspaceOption: Option[Workspace] = None
 
+  override lazy val peer = {
+    val panel = new JPanel(new BorderLayout())
+    panel.add(vtkUi, BorderLayout.CENTER)
+    panel
+  }
 
   //  {
 //    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
@@ -38,32 +43,32 @@ class VtkPanel extends ViewportRenderingPanel with EdtPublisher {
       resetCamera()
   }
 
-  override lazy val target = vtkUi
+  //override lazy val target = vtkUi
 
-  override def attach(source: ViewportPanel) = {
-    super.attach(source)
-    vtkUi.GetRenderWindow().SetOffScreenRendering(0)
+  def attach(source: ViewportPanel) = {
+    //super.attach(source)
+    //vtkUi.GetRenderWindow().SetOffScreenRendering(0)
     viewportOption = source.viewportOption
     workspaceOption = source.workspaceOption
     workspaceOption.map(listenTo(_))
     vtkViewport.attach()
   }
 
-  override def detach() = {
+  def detach() = {
     workspaceOption.map(deafTo(_))
-    vtkUi.GetRenderWindow().SetOffScreenRendering(1)
+    //vtkUi.GetRenderWindow().SetOffScreenRendering(1)
     vtkViewport.detach()
     vtkUi.disableDeferredRendering()
     workspaceOption = None
     viewportOption = None
-    super.detach()
+    //super.detach()
   }
 
-  override def resetCamera() = {
+  def resetCamera() = {
     vtkViewport.resetCamera()
   }
 
-  override def screenshot(file: File) = Try {
+  def screenshot(file: File) = Try {
     val filter = new vtkWindowToImageFilter
     filter.SetInput(vtkUi.GetRenderWindow())
     filter.SetInputBufferTypeToRGBA()

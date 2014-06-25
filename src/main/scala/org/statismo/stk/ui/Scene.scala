@@ -5,8 +5,6 @@ import scala.swing.event.Event
 import scala.util.Try
 import org.statismo.stk.ui.visualization._
 import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.core.utils.Visualization
-import org.statismo.stk.core.geometry.Point3D
 import scala.Some
 import scala.Tuple2
 import scala.collection.immutable

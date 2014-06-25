@@ -18,112 +18,11 @@ import java.awt.event.{ComponentEvent, ComponentListener}
 import org.statismo.stk.ui.vtk.VtkPanel
 import org.statismo.stk.ui.swing.util.EdtSlider
 
-object ViewportRenderingPanelPool {
-  val jpanel = new JPanel {
-    setLayout(null)
-
-    override def paintComponent(g: Graphics) = {}
-
-    override def paintBorder(g: Graphics) = {}
-  }
-
-  private[ViewportRenderingPanelPool] class Entry(val panel: ViewportRenderingPanel, var available: Boolean = true)
-
-  private var pool: immutable.Seq[Entry] = Nil
-
-  def allocate: ViewportRenderingPanel = this.synchronized {
-    val entry = pool.find(e => e.available).getOrElse {
-      val panel: ViewportRenderingPanel = new VtkPanel
-      val entry = new Entry(panel)
-      pool ++= immutable.Seq(entry)
-      jpanel.add(panel.target)
-      entry
-    }
-    entry.available = false
-    entry.panel
-  }
-
-  def free(panel: ViewportRenderingPanel): Unit = this.synchronized {
-    pool.find(e => e.panel eq panel).map {
-      entry =>
-        entry.available = true
-    }
-  }
-}
-
-trait ViewportRenderingPanel extends ComponentListener {
-  def screenshot(file: File): Try[Unit]
-
-  def resetCamera(): Unit
-
-  def target: java.awt.Component
-
-  private var source: Option[ViewportPanel] = None
-
-  def attach(source: ViewportPanel): Unit = this.synchronized {
-    this.source = Some(source)
-    source.renderStub.peer.addComponentListener(this)
-    sourceVisibilityChanged
-    sourcePositionChanged
-  }
-
-  def detach(): Unit = this.synchronized {
-    source.map {
-      s =>
-        s.renderStub.peer.removeComponentListener(this)
-        source = None
-        //target.setBounds(0,0,1,1)
-        //target.invisible = true
-        ViewportRenderingPanelPool.free(this)
-    }
-    source = None
-  }
-
-  override def componentHidden(e: ComponentEvent) = sourceVisibilityChanged
-
-  override def componentShown(e: ComponentEvent) = sourceVisibilityChanged
-
-  override def componentMoved(e: ComponentEvent) = sourcePositionChanged
-
-  override def componentResized(e: ComponentEvent) = sourcePositionChanged
-
-  protected def sourceVisibilityChanged = {
-    source.map {
-      s =>
-        val p = s.renderStub.peer
-        target.setVisible(p.isVisible)
-    }
-  }
-
-  protected def sourcePositionChanged = {
-    source.map {
-      s =>
-        val p = s.renderStub.peer
-        target.setBounds(SwingUtilities.convertRectangle(p.getParent, p.getBounds, target.getParent))
-        target.getParent.getParent.invalidate()
-        target.getParent.getParent.repaint()
-    }
-  }
-}
-
-//class DummyViewportRenderingPanel extends ViewportRenderingPanel {
-//  override lazy val target = new java.awt.Component {
-//    override def paint(g: Graphics) = {
-//      g.setColor(Color.RED)
-//      g.fillRect(0, 0, getWidth, getHeight)
-//    }
-//  }
-//
-//  override def resetCamera() = {}
-//
-//  override def screenshot(file: File) = Try(())
-//}
-
 class ViewportPanel extends BorderPanel {
 
   protected var viewport: Option[Viewport] = None
   protected var workspace: Option[Workspace] = None
-  protected var renderer: Option[ViewportRenderingPanel] = None
+  protected var renderer: VtkPanel = new VtkPanel
 
   def viewportOption: Option[Viewport] = viewport
   def workspaceOption: Option[Workspace] = workspace
@@ -134,33 +33,18 @@ class ViewportPanel extends BorderPanel {
     this.workspace = Some(workspace)
     listenTo(viewport)
     title.setTitle(viewport.name)
-    renderer = Some(ViewportRenderingPanelPool.allocate)
-    renderer.get.attach(this)
+    renderer.attach(this)
   }
 
   def hide() = this.synchronized {
-    viewport.map {
-      v =>
-        deafTo(v)
-    }
-    renderer.map(_.detach())
-    renderer = None
-    viewport = None
-    workspace = None
+    viewport.map {deafTo(_)}
+    renderer.detach()
   }
 
   val title = new TitledBorder(null, "", TitledBorder.LEADING, 0, null, null)
   border = title
 
-  protected[ui] val renderStub = new Component {
-    override lazy val peer = new JComponent {
-      override def paint(g: Graphics) = {
-        g.fillRect(0, 0, getWidth, getHeight)
-      }
-    }
-  }
-
-  layout(renderStub) = Center
+  layout(renderer) = Center
 
   reactions += {
     case Nameable.NameChanged(v) =>
@@ -180,32 +64,28 @@ class ViewportPanel extends BorderPanel {
     orientation = Orientation.Horizontal
   }
 
+
   toolbar.add(new Action("SS") {
-    def doSave(file: File): Try[Unit] = renderer.map(_.screenshot(file)).getOrElse(Failure(new IllegalStateException("no renderer")))
+    def doSave(file: File): Try[Unit] = renderer.screenshot(file)
 
     override def apply() = {
       new SaveAction(doSave, PngFileIoMetadata).apply()
     }
-  })
+  }).tooltip = "Screenshot"
+
+  toolbar.add(new Action("RC") {
+    override def apply() = {
+      renderer.resetCamera()
+    }
+  }).tooltip = "Reset Camera"
 
 }
 
 class ThreeDViewportPanel extends ViewportPanel {
-  toolbar.add(new Action("RC") {
-    override def apply() = {
-      renderer.map(_.resetCamera())
-    }
-  })
   layout(toolbar) = BorderPanel.Position.North
 }
 
 class TwoDViewportPanel extends ViewportPanel {
-  toolbar.add(new Action("RC") {
-    override def apply() = {
-      renderer.map(_.resetCamera())
-    }
-  })
-
   override def show(workspace: Workspace, viewport: Viewport) = {
     super.show(workspace, viewport)
     slider.update(viewport.scene.slicingPosition)
