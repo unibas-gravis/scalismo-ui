@@ -131,7 +131,7 @@ class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) ex
 
 
 object SlicerAltPerspective extends PerspectiveFactory {
-  override lazy val name = "Slicer (alt.)"
+  override lazy val name = "Orthogonal Slices"
 
   override def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
 }
@@ -153,7 +153,7 @@ class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene)
 
 
 object XOnlyPerspective extends PerspectiveFactory {
-  override lazy val name = "X Only"
+  override lazy val name = "X Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
 }
@@ -171,7 +171,7 @@ class XOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
 
 
 object YOnlyPerspective extends PerspectiveFactory {
-  override lazy val name = "Y Only"
+  override lazy val name = "Y Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
 }
@@ -189,7 +189,7 @@ class YOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
 
 
 object ZOnlyPerspective extends PerspectiveFactory {
-  override lazy val name = "Z Only"
+  override lazy val name = "Z Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
 }

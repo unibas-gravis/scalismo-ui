@@ -107,7 +107,7 @@ object Scene {
 
     protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
 
-    private var _visible = true
+    private var _visible = false
 
     def visible = _visible
 
