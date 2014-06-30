@@ -43,9 +43,7 @@ object Resolvers {
   val sonatypeRelease = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
   val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
   val twitter = "twitter" at "http://maven.twttr.com/"
-//  val statismoSnapshot = "statismo" at "file:///export/contrib/statismo/repo"
   val statismoSnapshot = "statismo" at "http://statismo.cs.unibas.ch/repository"
-
   val stkResolvers = Seq(statismoSnapshot, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
 }
 
