@@ -6,7 +6,7 @@ object BuildSettings {
   val buildOrganization = "org.statismo"
   val buildVersion = "develop-SNAPSHOT"
   val buildScalaVersion = "2.10.3"
-  val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo"))
+  val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
@@ -39,12 +39,17 @@ object ShellPrompt {
 }
 
 object Resolvers {
-  val sonatypeSnapshots = "Sonatype SNAPSHOTs" at "https://oss.sonatype.org/content/repositories/snapshots/"
-  val sonatypeRelease = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
-  val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
-  val twitter = "twitter" at "http://maven.twttr.com/"
-  val statismoSnapshot = "statismo" at "http://statismo.cs.unibas.ch/repository"
-  val stkResolvers = Seq(statismoSnapshot, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
+  private val sonatypeSnapshots = "Sonatype SNAPSHOTs" at "https://oss.sonatype.org/content/repositories/snapshots/"
+  private val sonatypeRelease = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
+  private val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
+  private val twitter = "twitter" at "http://maven.twttr.com/"
+  private val statismoPublic = "Statismo (public)" at "http://statismo.cs.unibas.ch/repository/public"
+  private val statismoPrivate = "Statismo (private)" at "https://statismo.cs.unibas.ch/repository/private"
+  val stkResolvers = Seq(statismoPublic, statismoPrivate, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
+}
+
+object Creds {
+  val statismoPrivate = Credentials(Path.userHome / ".ivy2" / ".credentials-statismo-private")
 }
 
 object Dependencies {
@@ -78,6 +83,7 @@ object STKBuild extends Build {
     settings = buildSettings ++ Seq(
       libraryDependencies ++= commonDeps,
       resolvers ++= stkResolvers,
+      credentials += Creds.statismoPrivate,
       publishTo := Some(publishURL),
       EclipseKeys.withSource := true))
 }
