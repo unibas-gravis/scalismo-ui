@@ -10,7 +10,9 @@ trait SingleRenderableActor extends RenderableActor {
   override lazy val vtkActors = Seq(vtkActor)
 
   private var _empty = false
+
   protected def empty = _empty
+
   protected def empty_=(nv: Boolean) = {
     _empty = nv
   }

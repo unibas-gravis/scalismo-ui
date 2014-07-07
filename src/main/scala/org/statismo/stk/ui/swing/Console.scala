@@ -24,7 +24,7 @@ class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
   layout(Component.wrap(split.component)) = BorderPanel.Position.Center
 }
 
-class ConsoleFrame(parent: Console) (implicit statismo: StatismoFrame) extends Frame {
+class ConsoleFrame(parent: Console)(implicit statismo: StatismoFrame) extends Frame {
   title = "Statismo Console"
   contents = new ConsolePanel()
 
@@ -35,7 +35,9 @@ class ConsoleFrame(parent: Console) (implicit statismo: StatismoFrame) extends F
 }
 
 object Console {
+
   case class VisibilityChanged(source: Console) extends Event
+
 }
 
 class Console(implicit statismo: StatismoFrame) extends EdtPublisher {
@@ -43,8 +45,10 @@ class Console(implicit statismo: StatismoFrame) extends EdtPublisher {
   private var needToDispose = false
 
   private var _visible = false
+
   def visible = _visible
-  def visible_=(v: Boolean) = this.synchronized{
+
+  def visible_=(v: Boolean) = this.synchronized {
     if (_visible != v) {
       _visible = v
       needToDispose = true

@@ -18,6 +18,7 @@ trait Removeable extends EdtPublisher {
 
 trait RemoveableChildren {
   protected[ui] def children: Seq[Removeable]
+
   def removeAll(): Unit
 }
 

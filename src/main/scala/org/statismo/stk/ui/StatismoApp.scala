@@ -8,6 +8,7 @@ import javax.swing.{SwingUtilities, UIManager, WindowConstants}
 import org.statismo.stk.ui.swing.menu.MainMenuBar
 
 object StatismoApp {
+
   import StatismoFrame.FrameConstructor
 
   def defaultFrameConstructor: FrameConstructor = {
@@ -39,6 +40,7 @@ class StatismoApp(val top: StatismoFrame) extends SimpleSwingApplication {
 
 object StatismoFrame {
   type FrameConstructor = (Scene => StatismoFrame)
+
   def apply(constructor: FrameConstructor, scene: Scene = new Scene): StatismoFrame = {
     var result: Option[StatismoFrame] = None
     Swing.onEDTWait {

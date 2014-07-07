@@ -40,19 +40,20 @@ class SettingsFile(directory: File, name: String) {
     lines.filter(_.startsWith(prefix)).map(l => l.substring(prefixLength))
   }
 
-  def setValues(key: String, vals: immutable.Seq[String]) : Unit = {
+  def setValues(key: String, vals: immutable.Seq[String]): Unit = {
     val oldLines = readFile().zipWithIndex
     var position: Option[Int] = None
     val prefix = s"$key="
-    val newLines = oldLines.filter({case (l, p) =>
-      if (l.startsWith(prefix)) {
-        if (position == None) {
-          position = Some(p)
+    val newLines = oldLines.filter({
+      case (l, p) =>
+        if (l.startsWith(prefix)) {
+          if (position == None) {
+            position = Some(p)
+          }
+          false
+        } else {
+          true
         }
-        false
-      } else {
-        true
-      }
     }).map(_._1).zipWithIndex
     val (before, after) = position match {
       case Some(index) => (newLines.filter(_._2 < index).map(_._1), newLines.filter(_._2 >= index).map(_._1))

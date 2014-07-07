@@ -6,18 +6,22 @@ import scala.swing.event.Event
 import org.statismo.stk.ui.{BoundingBox, EdtPublisher, Scene, Viewport}
 
 import vtk.{vtkCamera, vtkRenderer}
-import org.statismo.stk.ui.visualization.{Renderable, Visualizable}
-import scala.util.{Try, Success, Failure}
+import org.statismo.stk.ui.visualization.Renderable
+import scala.util.{Success, Failure}
 
 trait VtkContext extends EdtPublisher
 
 object VtkContext {
+
   case class ResetCameraRequest(source: VtkContext) extends Event
-  case class RenderRequest(source: VtkContext, immediately: Boolean=false) extends Event
+
+  case class RenderRequest(source: VtkContext, immediately: Boolean = false) extends Event
+
 }
 
 object VtkViewport {
-  private [VtkViewport] case class InitialCameraState(position: Array[Double], focalPoint: Array[Double], viewUp: Array[Double])
+
+  private[VtkViewport] case class InitialCameraState(position: Array[Double], focalPoint: Array[Double], viewUp: Array[Double])
 
   private var _initialCameraState: Option[InitialCameraState] = None
 
@@ -31,7 +35,7 @@ object VtkViewport {
 }
 
 class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interactor: VtkRenderWindowInteractor) extends VtkContext {
-  private implicit val myself: VtkViewport  = this
+  private implicit val myself: VtkViewport = this
   deafTo(myself)
 
   private var actors = new HashMap[Renderable, Option[RenderableActor]]
@@ -41,20 +45,24 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   def refresh(scene: Scene): Unit = {
     val renderables = parent.viewportOption match {
       case Some(viewport) =>
-        scene.visualizables{f => f.isVisibleIn(viewport)}.flatMap {obj =>
-        scene.visualizations.tryGet(obj, viewport) match {
-          case Failure(f) =>
-            f.printStackTrace()
-            Nil
-          case Success(vis) => vis(obj)
+        scene.visualizables {
+          f => f.isVisibleIn(viewport)
+        }.flatMap {
+          obj =>
+            scene.visualizations.tryGet(obj, viewport) match {
+              case Failure(f) =>
+                f.printStackTrace()
+                Nil
+              case Success(vis) => vis(obj)
+            }
         }
-      }
       case _ => Nil
     }
     //FIXME
     //refresh(Nil, parent.viewportOption)
     refresh(renderables, parent.viewportOption)
   }
+
   def refresh(backend: Seq[Renderable], viewportOption: Option[Viewport]): Unit = /*Swing.onEDT*/ {
     //println("refresh: "+backend.length)
     this.synchronized {
@@ -136,9 +144,12 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   }
 
   def updateBoundingBox() = {
-    val boundingBox = actors.values.foldLeft(BoundingBox.None)({case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.None)).get)})
+    val boundingBox = actors.values.foldLeft(BoundingBox.None)({
+      case (bb, a) => bb.union(a.map(_.currentBoundingBox).orElse(Some(BoundingBox.None)).get)
+    })
     parent.viewportOption.map(_.currentBoundingBox = boundingBox)
   }
+
   listenTo(parent)
 
   reactions += {
@@ -171,7 +182,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
     }
   }
 
-  def resetCamera(force: Boolean = false ) = {
+  def resetCamera(force: Boolean = false) = {
     renderer.ResetCamera()
     publishEdt(VtkContext.RenderRequest(this, force))
   }

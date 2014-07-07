@@ -1,14 +1,17 @@
 package org.statismo.stk.ui
 
 object BoundingBox {
-  private class DummyBoundingBox extends BoundingBox(0,0,0,0,0,0) {
+
+  private class DummyBoundingBox extends BoundingBox(0, 0, 0, 0, 0, 0) {
     override lazy val isDummy = true
   }
+
   val None: BoundingBox = new DummyBoundingBox
 }
 
 case class BoundingBox(xMin: Float, xMax: Float, yMin: Float, yMax: Float, zMin: Float, zMax: Float) {
   protected[BoundingBox] lazy val isDummy = false
+
   def union(that: BoundingBox): BoundingBox = {
     if (this.isDummy) {
       that
@@ -19,7 +22,7 @@ case class BoundingBox(xMin: Float, xMax: Float, yMin: Float, yMax: Float, zMin:
     }
   }
 
-  override def toString : String = {
+  override def toString: String = {
     s"BoundingBox ($xMin -> $xMax)($yMin -> $yMax)($zMin -> $zMax) (dummy: $isDummy)"
   }
 }

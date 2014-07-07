@@ -5,13 +5,15 @@ import scala.util.Try
 import scala.reflect.ClassTag
 import org.statismo.stk.ui.visualization.Visualizable
 import scala.collection.mutable
-import org.statismo.stk.ui
 
 object SceneTreeObject {
 
   case class ChildrenChanged(source: SceneTreeObject) extends Event
+
   case class VisibilityChanged(source: SceneTreeObject) extends Event
+
   case class Destroyed(source: SceneTreeObject) extends Event
+
 }
 
 trait SceneTreeObject extends Nameable {
@@ -29,7 +31,9 @@ trait SceneTreeObject extends Nameable {
 
   scene.listenTo(this)
 
-  protected [ui] def visualizables(filter: Visualizable[_] => Boolean = {o => true}): Seq[Visualizable[_]] = findAny[Visualizable[_]](filter, None, 1, 0)
+  protected[ui] def visualizables(filter: Visualizable[_] => Boolean = {
+    o => true
+  }): Seq[Visualizable[_]] = findAny[Visualizable[_]](filter, None, 1, 0)
 
   reactions += {
     case Removeable.Removed(o) => if (o eq this) {
@@ -39,7 +43,7 @@ trait SceneTreeObject extends Nameable {
 
   protected final def destroy() {
     children.foreach(_.destroy())
-    publish (SceneTreeObject.Destroyed(this))
+    publish(SceneTreeObject.Destroyed(this))
   }
 
   def find[A <: SceneTreeObject : ClassTag](filter: A => Boolean = {
@@ -86,14 +90,16 @@ class Visibility(container: SceneTreeObject) {
       map(viewport) = nv
       true
     } else false
-    val notify = container.children.foldLeft(selfChanged)({case (b,c) => c.visible.update(viewport, nv, isTop = false) || b})
+    val notify = container.children.foldLeft(selfChanged)({
+      case (b, c) => c.visible.update(viewport, nv, isTop = false) || b
+    })
     if (isTop && notify) {
       container.scene.publishVisibilityChanged()
     }
     notify
   }
 
-//  initialize with parent visibility
+  //  initialize with parent visibility
   if (container ne container.parent) {
     for (v <- container.scene.viewports) {
       if (!container.parent.visible(v)) {

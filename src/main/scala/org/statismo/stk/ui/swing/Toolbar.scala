@@ -20,9 +20,11 @@ class Toolbar extends Component with Orientable.Wrapper {
   }
 
   def floatable: Boolean = peer.isFloatable
+
   def floatable_=(b: Boolean) = peer.setFloatable(b)
 
   def rollover: Boolean = peer.isRollover
+
   def rollover_=(b: Boolean) = peer.setRollover(b)
 
 

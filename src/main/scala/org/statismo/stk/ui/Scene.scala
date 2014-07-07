@@ -201,13 +201,11 @@ object Scene {
 class Scene extends SceneTreeObject {
   deafTo(this)
 
-  if (!org.statismo.stk.core.initialized) {
-    if (SwingUtilities.isEventDispatchThread) {
+  if (SwingUtilities.isEventDispatchThread) {
+    org.statismo.stk.core.initialize()
+  } else {
+    Swing.onEDTWait {
       org.statismo.stk.core.initialize()
-    } else {
-      Swing.onEDTWait {
-        org.statismo.stk.core.initialize()
-      }
     }
   }
 

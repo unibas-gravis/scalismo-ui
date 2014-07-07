@@ -36,7 +36,8 @@ object NameGenerator {
 
 trait NameGenerator {
   def nextName: String
-  def reset() : Unit 
+
+  def reset(): Unit
 }
 
 object AlphaNumericNameGenerator {
@@ -58,10 +59,10 @@ class AlphaNumericNameGenerator extends NameGenerator {
 
     name
   }
-  
-  def reset = this.synchronized{
-    prefix=0
-    suffix=0
+
+  def reset = this.synchronized {
+    prefix = 0
+    suffix = 0
   }
 }
 
@@ -71,9 +72,9 @@ class NumericNameGenerator extends NameGenerator {
   def nextName = this.synchronized {
     last += 1
     last.toString
-  } 
-  
-  def reset = this.synchronized{
-    last=0
+  }
+
+  def reset = this.synchronized {
+    last = 0
   }
 }

@@ -31,6 +31,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
   }
 
   protected[vtk] def workspaceOption: Option[Workspace] = parent.workspaceOption
+
   protected[vtk] def viewportOption: Option[Viewport] = parent.viewportOption
 
   def renderer = GetRenderWindow().GetRenderers().GetFirstRenderer()

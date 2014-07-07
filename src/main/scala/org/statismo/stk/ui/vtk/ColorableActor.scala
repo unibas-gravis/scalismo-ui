@@ -5,6 +5,7 @@ import org.statismo.stk.ui.visualization.VisualizationProperty
 
 trait ColorableActor extends SingleRenderableActor {
   def color: ColorProperty
+
   def opacity: OpacityProperty
 
 

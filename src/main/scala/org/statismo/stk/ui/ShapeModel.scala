@@ -3,7 +3,7 @@ package org.statismo.stk.ui
 import java.io.File
 
 import scala.swing.event.Event
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import scala.collection.immutable
 
 import org.statismo.stk.core.geometry.Point3D
@@ -14,15 +14,20 @@ import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
 import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
 
 import breeze.linalg.DenseVector
+import org.statismo.stk.core.io.StatismoIO.{StatismoModelType, CatalogEntry}
+import org.statismo.stk.ui.UiFramework.{SelectionTableModel, TableRow}
+
 
 class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
   override lazy val parent = scene
   name = "Statistical Shape Models"
   protected[ui] override lazy val isNameUserModifiable = false
 
-  def createFromFile(file: File, numberOfInstances: Int = 1) : Try[ShapeModel] = ShapeModel.createFromFile(file, numberOfInstances)
-  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int = 1) : ShapeModel = ShapeModel.createFromPeer(peer, numberOfInstances)
-  def createFromPeer(peer: StatisticalMeshModel, template: ShapeModel) : ShapeModel = ShapeModel.createFromPeer(peer, template)
+  def createFromFile(file: File, numberOfInstances: Int = 1): Try[ShapeModel] = ShapeModel.createFromFile(file, numberOfInstances)
+
+  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int = 1): ShapeModel = ShapeModel.createFromPeer(peer, numberOfInstances)
+
+  def createFromPeer(peer: StatisticalMeshModel, template: ShapeModel): ShapeModel = ShapeModel.createFromPeer(peer, template)
 }
 
 object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata {
@@ -32,13 +37,59 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
 
   protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[ShapeModel] = createFromFile(file, 1)
 
+  private def selectPathFromFile(file: File): Try[String] = {
+    val catalogTry = StatismoIO.readModelCatalog(file)
+
+    catalogTry match {
+
+      case Failure(ex) =>
+        if (ex == StatismoIO.NoCatalogPresentException) {
+          // no catalog, assuming a single contained model
+          Success("/")
+        } else Failure(ex)
+
+      case Success(catalog) =>
+        val entries = catalog.filter(e => e.modelType == StatismoModelType.Polygon_Mesh)
+
+        if (entries.length == 0) {
+          Failure(new IllegalArgumentException("File does not contain any usable model"))
+        } else if (entries.length == 1) {
+          Success(entries.head.modelPath)
+        } else {
+          val title = "Select shape model to load"
+          val description = "The file contains more that one shape model. Please select the one you wish to load."
+          val columns = immutable.Seq("Name", "Path")
+
+          class Row(payload: CatalogEntry) extends TableRow[CatalogEntry](payload) {
+            override val columnNames: immutable.Seq[String] = columns
+
+            override def columnValue(index: Int) = if (index == 0) payload.name else payload.modelPath
+          }
+
+          val rows = entries.map(e => new Row(e)).to[immutable.Seq]
+          val table = new SelectionTableModel[CatalogEntry](rows)
+
+          UiFramework.instance.selectFromTable(table, title, description, canMultiSelect = false, canCancel = true)
+          val path = table.selected.headOption.map(_.modelPath).getOrElse(null)
+          if (path != null) {
+            Success(path)
+          } else {
+            Failure(CommonExceptions.UserCancelledActionException)
+          }
+        }
+    }
+  }
+
   def createFromFile(file: File, numberOfInstances: Int)(implicit scene: Scene): Try[ShapeModel] = {
     for {
-      raw <- StatismoIO.readStatismoMeshModel(file)
+      path <- selectPathFromFile(file)
+      raw <- StatismoIO.readStatismoMeshModel(file, modelPath = path)
     } yield {
       val shape = new ShapeModel(raw)
       shape.name = file.getName
-      0 until numberOfInstances foreach {i => shape.instances.create()}
+      0 until numberOfInstances foreach {
+        i => shape.instances.create()
+      }
       shape
     }
   }
@@ -52,13 +103,15 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
 
   def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int)(implicit scene: Scene) = {
     val nm = new ShapeModel(peer)
-    0 until numberOfInstances foreach {i => nm.instances.create()}
+    0 until numberOfInstances foreach {
+      i => nm.instances.create()
+    }
     nm
   }
 
 }
 
-class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
+class ShapeModel protected[ui](val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
   override lazy val parent: ShapeModels = scene.shapeModels
 
   override lazy val saveableMetadata = ShapeModel
@@ -84,7 +137,9 @@ class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit overrid
     val vector = DenseVector[Float](coefficients.toArray)
     val ptdefs = gaussianProcess.instanceAtPoints(vector).toMap
 
-    peer.mesh.warp({p => p + ptdefs(p)})
+    peer.mesh.warp({
+      p => p + ptdefs(p)
+    })
   }
 
   parent.add(this)

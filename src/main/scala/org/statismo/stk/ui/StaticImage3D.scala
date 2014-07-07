@@ -4,13 +4,11 @@ import java.io.File
 
 import scala.util.{Failure, Success, Try}
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
 import reflect.runtime.universe.TypeTag
-import org.statismo.stk.ui.visualization.SimpleVisualizationFactory
 import scala.collection.immutable
 
 object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileIoMetadata {
@@ -44,15 +42,15 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
         return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
       }
     }
-    Failure(new IllegalArgumentException("could not load "+file.getAbsoluteFile))
+    Failure(new IllegalArgumentException("could not load " + file.getAbsoluteFile))
   }
 
-  def createFromPeer[S: ScalarValue: ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
+  def createFromPeer[S: ScalarValue : ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
     new StaticImage3D(peer, parent, name)
   }
 }
 
-class StaticImage3D[S: ScalarValue: ClassTag : TypeTag] protected[ui] (override val peer: DiscreteScalarImage3D[S], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
+class StaticImage3D[S: ScalarValue : ClassTag : TypeTag] protected[ui](override val peer: DiscreteScalarImage3D[S], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 

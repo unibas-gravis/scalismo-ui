@@ -2,7 +2,6 @@ package org.statismo.stk.ui.swing.menu
 
 import scala.swing.Menu
 import scala.swing.RadioMenuItem
-import scala.swing.event.ButtonClicked
 
 import org.statismo.stk.ui._
 import scala.swing.event.ButtonClicked

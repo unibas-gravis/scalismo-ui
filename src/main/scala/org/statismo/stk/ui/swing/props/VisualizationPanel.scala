@@ -11,6 +11,7 @@ import scala.util.Failure
 
 trait VisualizationsPropertyPanel extends PropertyPanel {
   def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean
+
   override final def setObject(obj: Option[AnyRef]): Boolean = {
     throw new UnsupportedOperationException
   }
@@ -19,7 +20,7 @@ trait VisualizationsPropertyPanel extends PropertyPanel {
 class VisualizationPanel(override val description: String, delegates: VisualizationsPropertyPanel*) extends BorderPanel with PropertyPanel {
   type Target = SceneTreeObject with VisualizationProvider[_]
 
-  private [VisualizationPanel] class WorkersPanel extends CombinedPropertiesPanel(description, delegates:_*) with VisualizationsPropertyPanel {
+  private[VisualizationPanel] class WorkersPanel extends CombinedPropertiesPanel(description, delegates: _*) with VisualizationsPropertyPanel {
     override def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean = {
       val ok = delegates.map(d => delegatedSetVisualizations(d, visualizations)).foldLeft(false)({
         (x, y) => x || y
@@ -35,9 +36,10 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
     }
   }
 
-  private [VisualizationPanel] class SelectionPanel extends BorderPanel {
+  private[VisualizationPanel] class SelectionPanel extends BorderPanel {
+
     class Entry(viewport: Viewport) {
-      val checkbox = new CheckBox{
+      val checkbox = new CheckBox {
         selected = true
         reactions += {
           case x: ButtonClicked => setViewportInScope(viewport, selected)
@@ -66,11 +68,12 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
         add(entry.fixme, (2, index))
       }
 
-      def setEntries(entries: immutable.Seq[Entry]) : Unit = {
+      def setEntries(entries: immutable.Seq[Entry]): Unit = {
         peer.removeAll()
         val indexed = entries.zipWithIndex
-        indexed.foreach{ case (e,i)=>
-          add(e,i)
+        indexed.foreach {
+          case (e, i) =>
+            add(e, i)
         }
         SelectionPanel.this.revalidate()
       }
@@ -83,9 +86,10 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
 
     def setTarget(target: Target): Unit = {
       val entries: immutable.Seq[Entry] = {
-        val viewports = target.scene.viewports.map {viewport =>
+        val viewports = target.scene.viewports.map {
+          viewport =>
           //val visTries = target.scene.visualizations.tryGet(target, viewport)
-          viewport
+            viewport
         }
         viewports.map(vp => new Entry(vp)).toList
       }
@@ -100,6 +104,7 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
   layout(selection) = BorderPanel.Position.North
 
   private var scope: Target = null
+
   override def setObject(obj: Option[AnyRef]): Boolean = {
     outOfScope.clear()
     obj match {
@@ -124,12 +129,13 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
   }
 
   def visualizationsInScope(vp: Target): immutable.Seq[Visualization[_]] = {
-    val tries = vp.scene.viewports.map {viewport =>
-      if (outOfScope.getOrElse(viewport, false)) {
-        Failure(new IllegalStateException("out of scope"))
-      } else {
-        vp.scene.visualizations.tryGet(vp, viewport)
-      }
+    val tries = vp.scene.viewports.map {
+      viewport =>
+        if (outOfScope.getOrElse(viewport, false)) {
+          Failure(new IllegalStateException("out of scope"))
+        } else {
+          vp.scene.visualizations.tryGet(vp, viewport)
+        }
     }
     tries.filter(_.isSuccess).map(_.get).toList
   }

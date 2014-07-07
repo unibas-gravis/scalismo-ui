@@ -4,7 +4,6 @@ import java.awt.BorderLayout
 import java.io.File
 
 import scala.swing.Component
-import scala.swing.Reactor
 import scala.util.Try
 
 import org.statismo.stk.ui.{EdtPublisher, Viewport, Workspace}
@@ -12,17 +11,15 @@ import org.statismo.stk.ui.{EdtPublisher, Viewport, Workspace}
 import javax.swing.JPanel
 import vtk.vtkPNGWriter
 import vtk.vtkWindowToImageFilter
-import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
-import org.statismo.stk.ui.swing.{ViewportPanel}
-import scala.swing.event.Event
+import org.statismo.stk.ui.swing.ViewportPanel
 
 class VtkPanel extends Component with EdtPublisher {
   lazy val vtkUi = new VtkCanvas(this)
   lazy val vtkViewport: VtkViewport = new VtkViewport(this, vtkUi.GetRenderer(), vtkUi.interactor)
   listenTo(vtkViewport)
 
-  protected [vtk] var viewportOption: Option[Viewport] = None
-  protected [vtk] var workspaceOption: Option[Workspace] = None
+  protected[vtk] var viewportOption: Option[Viewport] = None
+  protected[vtk] var workspaceOption: Option[Workspace] = None
 
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
@@ -31,10 +28,10 @@ class VtkPanel extends Component with EdtPublisher {
   }
 
   //  {
-//    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
-//      vtkUi.Render()
-//    }
-//  }
+  //    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
+  //      vtkUi.Render()
+  //    }
+  //  }
 
   reactions += {
     case VtkContext.RenderRequest(s, immediately) =>

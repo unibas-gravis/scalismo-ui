@@ -9,9 +9,8 @@ import org.statismo.stk.ui.swing.actions.SaveAction
 import javax.swing.border.TitledBorder
 import javax.swing._
 import scala.swing.event.{Event, ValueChanged}
-import java.awt.{Color, Graphics}
+import java.awt.Graphics
 import scala.collection.immutable
-import scala.util.Failure
 import scala.Some
 import scala.swing.Action
 import java.awt.event.{ComponentEvent, ComponentListener}
@@ -25,6 +24,7 @@ class ViewportPanel extends BorderPanel {
   protected var renderer: VtkPanel = new VtkPanel
 
   def viewportOption: Option[Viewport] = viewport
+
   def workspaceOption: Option[Workspace] = workspace
 
   def show(workspace: Workspace, viewport: Viewport) = this.synchronized {
@@ -37,7 +37,9 @@ class ViewportPanel extends BorderPanel {
   }
 
   def hide() = this.synchronized {
-    viewport.map {deafTo(_)}
+    viewport.map {
+      deafTo(_)
+    }
     renderer.detach()
   }
 

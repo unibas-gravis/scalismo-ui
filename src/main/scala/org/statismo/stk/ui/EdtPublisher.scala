@@ -12,7 +12,7 @@ trait EdtPublisher extends Publisher {
   }
 
   /* this is the preferred method to use */
-  def publishEdt(e:Event) = {
+  def publishEdt(e: Event) = {
     if (SwingUtilities.isEventDispatchThread) {
       doPublish(e)
     } else {
@@ -24,6 +24,8 @@ trait EdtPublisher extends Publisher {
 
   private def doPublish(e: Event) = {
     val copy = listeners.map(l => l)
-    copy.foreach {l => if (l.isDefinedAt(e)) l(e) }
+    copy.foreach {
+      l => if (l.isDefinedAt(e)) l(e)
+    }
   }
 }

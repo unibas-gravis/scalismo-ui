@@ -2,7 +2,6 @@ package org.statismo.stk.ui.swing.props
 
 import scala.swing.BorderPanel
 
-import org.statismo.stk.ui.SceneTreeObject
 
 class CombinedPropertiesPanel(override val description: String, delegates: PropertyPanel*) extends BorderPanel with PropertyPanel {
   def setObject(obj: Option[AnyRef]): Boolean = {

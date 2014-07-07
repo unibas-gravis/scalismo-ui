@@ -31,7 +31,7 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
   }
 }
 
-class StaticMesh protected[ui] (override val peer: TriangleMesh, initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
+class StaticMesh protected[ui](override val peer: TriangleMesh, initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 

@@ -12,10 +12,12 @@ class ToggleLandmarkPickingButton(val workspace: Workspace) extends ToggleButton
   reactions += {
     case ButtonClicked(s) =>
       workspace.landmarkClickMode = peer.isSelected
-    updateTooltip()
+      updateTooltip()
   }
 
   def updateTooltip() = {
-    tooltip = "Landmark Clicking (" + {if (peer.isSelected) "on" else "off"} +")"
+    tooltip = "Landmark Clicking (" + {
+      if (peer.isSelected) "on" else "off"
+    } + ")"
   }
 }

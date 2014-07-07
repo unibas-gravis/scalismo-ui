@@ -4,10 +4,11 @@ import scala.swing.event.Event
 
 object Workspace {
 
-  case class SelectedObjectChanged protected[Workspace] (workspace: Workspace) extends Event
+  case class SelectedObjectChanged protected[Workspace](workspace: Workspace) extends Event
 
   // this is a hack
-  case class PleaseLayoutAgain protected[Workspace] (workspace: Workspace) extends Event
+  case class PleaseLayoutAgain protected[Workspace](workspace: Workspace) extends Event
+
 }
 
 class Workspace(val scene: Scene) extends EdtPublisher {

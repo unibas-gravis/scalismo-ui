@@ -10,7 +10,7 @@ class ImageActor3D(source: Image3D[_])(implicit viewport: VtkViewport) extends R
   val x = ImageActor2D(source, points, Axis.X)
   val y = ImageActor2D(source, points, Axis.Y)
   val z = ImageActor2D(source, points, Axis.Z)
-  override lazy val vtkActors: Seq[ImageActor2D] = Seq(x,y,z)
+  override lazy val vtkActors: Seq[ImageActor2D] = Seq(x, y, z)
 
   override def onDestroy() = this.synchronized {
     deafTo(viewport.interactor, source.scene)

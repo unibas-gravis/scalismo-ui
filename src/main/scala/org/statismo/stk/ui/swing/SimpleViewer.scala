@@ -5,7 +5,6 @@ import scala.swing.MenuItem
 import org.statismo.stk.ui.swing.actions.LoadAction
 import java.io.File
 import scala.util.{Success, Try}
-import javax.swing.ToolTipManager
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 

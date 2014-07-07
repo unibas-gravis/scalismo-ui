@@ -5,8 +5,10 @@ import scala.collection.immutable.IndexedSeq
 import scala.collection.immutable
 
 object MutableObjectContainer {
+
   import scala.language.implicitConversions
-  implicit def containerToChildrenSeq[Child <: AnyRef] (container: MutableObjectContainer[Child]): immutable.Seq[Child] = container.children.to[immutable.Seq]
+
+  implicit def containerToChildrenSeq[Child <: AnyRef](container: MutableObjectContainer[Child]): immutable.Seq[Child] = container.children.to[immutable.Seq]
 }
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
@@ -33,9 +35,10 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     val copy = _children.map({
       c => c
     })
-    copy.foreach {c =>
+    copy.foreach {
+      c =>
       //println(s"removing $c")
-      remove(c)
+        remove(c)
     }
   }
 

@@ -4,7 +4,7 @@ import java.io.File
 import scala.util.{Success, Failure, Try}
 
 object SettingsDirectory {
-  private val Name =".statismo"
+  private val Name = ".statismo"
 
   // this only indicates if the root directory can be created at all, not necessarily if it exists.
   private lazy val root: Option[File] = {
@@ -29,7 +29,7 @@ object SettingsDirectory {
   private def getOrCreate(dir: File): Try[File] = {
     if (dir.exists()) {
       if (dir.isDirectory) Success(dir)
-      else Failure(new IllegalStateException(dir+ " was expected to be a directory, but is a file"))
+      else Failure(new IllegalStateException(dir + " was expected to be a directory, but is a file"))
     }
     else {
       if (!dir.mkdirs()) {

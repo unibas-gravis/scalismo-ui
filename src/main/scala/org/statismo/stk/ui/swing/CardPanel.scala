@@ -11,9 +11,11 @@ import java.util.UUID
 // and slightly extended
 
 object CardPanel {
+
   trait CardableComponent extends Component {
     lazy val uniqueId: String = UUID.randomUUID().toString
   }
+
 }
 
 class CardPanel extends Panel with LayoutContainer {

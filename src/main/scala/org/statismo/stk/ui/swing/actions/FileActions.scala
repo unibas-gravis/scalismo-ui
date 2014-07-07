@@ -9,9 +9,7 @@ import scala.swing.FileChooser
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-import org.statismo.stk.ui.FileIoMetadata
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.SceneTreeObjectFactory
+import org.statismo.stk.ui.{CommonExceptions, FileIoMetadata, SceneTreeObject, SceneTreeObjectFactory}
 import org.statismo.stk.ui.swing.util.FileNameExtensionFilterWrapper
 import javax.swing.filechooser.FileNameExtensionFilter
 import org.statismo.stk.ui.swing.util.EnhancedFileChooser
@@ -146,7 +144,9 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onFailure(file: File, exception: Throwable) {
-    exception.printStackTrace()
-    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Load failed", Dialog.Message.Error)
+    if (exception != CommonExceptions.UserCancelledActionException) {
+      exception.printStackTrace()
+      Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Load failed", Dialog.Message.Error)
+    }
   }
 }

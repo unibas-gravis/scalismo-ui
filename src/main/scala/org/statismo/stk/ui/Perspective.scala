@@ -15,7 +15,7 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
   val factory: PerspectiveFactory
   name = factory.name
 
-  def reuseOrInstantiate3D(perspective: Option[Perspective], count: Int)(implicit scene: Scene) : immutable.Seq[ThreeDViewport] = {
+  def reuseOrInstantiate3D(perspective: Option[Perspective], count: Int)(implicit scene: Scene): immutable.Seq[ThreeDViewport] = {
     val existing = perspective match {
       case Some(p) => p.viewports.filter(vp => vp.isInstanceOf[ThreeDViewport]).asInstanceOf[immutable.Seq[ThreeDViewport]]
       case None => Nil
@@ -26,7 +26,7 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
     } else existing.take(count)
   }
 
-  def reuseOrInstantiate2D(perspective: Option[Perspective], axis: Axis.Value, count: Int)(implicit scene: Scene) : immutable.Seq[TwoDViewport] = {
+  def reuseOrInstantiate2D(perspective: Option[Perspective], axis: Axis.Value, count: Int)(implicit scene: Scene): immutable.Seq[TwoDViewport] = {
     val existing = perspective match {
       case Some(p) => p.viewports.filter(vp => vp.isInstanceOf[TwoDViewport]).asInstanceOf[immutable.Seq[TwoDViewport]].filter(vp => vp.axis == axis)
       case None => Nil
@@ -49,7 +49,6 @@ trait PerspectiveFactory {
 }
 
 
-
 object SingleViewportPerspective extends PerspectiveFactory {
   override lazy val name = "Single 3D Window"
 
@@ -65,7 +64,6 @@ class SingleViewportPerspective(template: Option[Perspective])(implicit val scen
     List(only)
   }
 }
-
 
 
 object TwoViewportsPerspective extends PerspectiveFactory {
@@ -86,7 +84,6 @@ class TwoViewportsPerspective(template: Option[Perspective])(implicit val scene:
 }
 
 
-
 object FourViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Four 3D Windows"
 
@@ -105,7 +102,6 @@ class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Sc
     vp
   }
 }
-
 
 
 object SlicerPerspective extends PerspectiveFactory {
@@ -129,7 +125,6 @@ class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) ex
 }
 
 
-
 object SlicerAltPerspective extends PerspectiveFactory {
   override lazy val name = "Orthogonal Slices"
 
@@ -151,7 +146,6 @@ class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene)
 }
 
 
-
 object XOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "X Slice"
 
@@ -169,7 +163,6 @@ class XOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
 }
 
 
-
 object YOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Y Slice"
 
@@ -185,7 +178,6 @@ class YOnlyPerspective(template: Option[Perspective])(implicit val scene: Scene)
     List(only)
   }
 }
-
 
 
 object ZOnlyPerspective extends PerspectiveFactory {

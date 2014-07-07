@@ -15,8 +15,8 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
   private var slicingPosition: Option[Scene.SlicingPosition] = None
 
-  private [SlicingPositionPanel] class Dimension (axis: Axis.Value) {
-    val nameLabel = new Label(axis.toString +":")
+  private[SlicingPositionPanel] class Dimension(axis: Axis.Value) {
+    val nameLabel = new Label(axis.toString + ":")
     val current = new Label(format(0))
     val minimum = new Label(format(0))
     val maximum = new Label(format(0))
@@ -32,7 +32,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       } else 0
     }
 
-    def format(value:Float): String = {
+    def format(value: Float): String = {
       if (slicingPosition.isDefined) {
         slicingPosition.get.precision.format(value)
       } else {
@@ -61,12 +61,12 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   val y = new Dimension(Axis.Y)
   val z = new Dimension(Axis.Z)
 
-  private def dimensions = Seq(x,y,z)
+  private def dimensions = Seq(x, y, z)
 
   val position = new GridBagPanel {
     border = new TitledBorder(null, "Position", TitledBorder.LEADING, 0, null, null)
 
-    def add(comp: Component, position: (Int, Int)) : Unit = {
+    def add(comp: Component, position: (Int, Int)): Unit = {
       val const = pair2Constraints(position)
       const.ipadx = 10
       if (position._2 == 0) {
@@ -78,7 +78,9 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
           Anchor.Center
         } else Anchor.East
       }
-      super.add(new BorderPanel {layout(comp) = BorderPanel.Position.Center}, const)
+      super.add(new BorderPanel {
+        layout(comp) = BorderPanel.Position.Center
+      }, const)
     }
 
     add(new Label("Dim."), (0, 0))
@@ -106,20 +108,22 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     private class ValueButton(val value: Scene.SlicingPosition.Precision.Value) extends RadioButton(value.name)
 
     val g = new ButtonGroup()
-    Scene.SlicingPosition.Precision.values.foreach {p =>
-      g.buttons += new ValueButton(p) {
-        reactions += {
-          case ButtonClicked(_) => slicingPosition.map(sp => sp.precision = p)
+    Scene.SlicingPosition.Precision.values.foreach {
+      p =>
+        g.buttons += new ValueButton(p) {
+          reactions += {
+            case ButtonClicked(_) => slicingPosition.map(sp => sp.precision = p)
+          }
         }
-      }
     }
     contents ++= g.buttons
 
     def set(np: Scene.SlicingPosition.Precision.Value) {
-      g.buttons.foreach { b =>
-        if (b.asInstanceOf[ValueButton].value == np) {
-          b.selected = true
-        }
+      g.buttons.foreach {
+        b =>
+          if (b.asInstanceOf[ValueButton].value == np) {
+            b.selected = true
+          }
       }
     }
   }
@@ -155,14 +159,16 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     slicingPosition = None
   }
 
-  def updateUi() : Unit = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
-    slicingPosition.map { sp =>
-      precision.set(sp.precision)
-      dimensions.foreach { d =>
-        d.update()
-      }
-      visibility.check.selected = sp.visible
+    slicingPosition.map {
+      sp =>
+        precision.set(sp.precision)
+        dimensions.foreach {
+          d =>
+            d.update()
+        }
+        visibility.check.selected = sp.visible
     }
     revalidate()
     listenToOwnEvents()
@@ -183,12 +189,16 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     case Scene.SlicingPosition.PointChanged(sp) => updateUi()
     case ValueChanged(slider: EdtSlider) =>
       slider match {
-        case x.slider => slicingPosition.map{_.x = x.value}
+        case x.slider => slicingPosition.map {
+          _.x = x.value
+        }
         case y.slider => slicingPosition.map(_.y = y.value)
         case z.slider => slicingPosition.map(_.z = z.value)
       }
     case ButtonClicked(b: CheckBox) if b eq visibility.check =>
-      slicingPosition.map{_.visible = visibility.check.selected}
+      slicingPosition.map {
+        _.visible = visibility.check.selected
+      }
   }
 
   listenToOwnEvents()

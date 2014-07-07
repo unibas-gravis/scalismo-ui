@@ -20,10 +20,11 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   private var polyMesh: Option[vtkPolyData] = None
   private var meshOrNone: Option[Mesh] = None
 
-  source.meshOrNone.map { m =>
-    listenTo(m)
-    polyMesh = Some(MeshConversion.meshToVTKPolyData(m.peer, None))
-    meshOrNone = Some(m)
+  source.meshOrNone.map {
+    m =>
+      listenTo(m)
+      polyMesh = Some(MeshConversion.meshToVTKPolyData(m.peer, None))
+      meshOrNone = Some(m)
   }
 
   val plane = new vtkPlane()
@@ -42,19 +43,20 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   mapper.SetInputConnection(cutEdges.GetOutputPort())
 
   def update(withGeometry: Boolean = false) = {
-    meshOrNone.map { mesh =>
-      if (withGeometry) {
-        polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
-        cutEdges.SetInputData(polyMesh.get)
-      }
-      cutEdges.SetValue(0, viewport.axis match {
-        case Axis.X => scene.slicingPosition.x
-        case Axis.Y => scene.slicingPosition.y
-        case Axis.Z => scene.slicingPosition.z
-      })
-      cutEdges.Update()
-      publishEdt(VtkContext.ResetCameraRequest(this))
-      publishEdt(VtkContext.RenderRequest(this))
+    meshOrNone.map {
+      mesh =>
+        if (withGeometry) {
+          polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
+          cutEdges.SetInputData(polyMesh.get)
+        }
+        cutEdges.SetValue(0, viewport.axis match {
+          case Axis.X => scene.slicingPosition.x
+          case Axis.Y => scene.slicingPosition.y
+          case Axis.Z => scene.slicingPosition.z
+        })
+        cutEdges.Update()
+        publishEdt(VtkContext.ResetCameraRequest(this))
+        publishEdt(VtkContext.RenderRequest(this))
     }
   }
 
@@ -70,12 +72,16 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   }
 
   override def clicked(point: Point3D) = {
-    meshOrNone.map {m => m.addLandmarkAt(point) }
+    meshOrNone.map {
+      m => m.addLandmarkAt(point)
+    }
   }
 
   override def onDestroy() = this.synchronized {
     deafTo(scene)
-    meshOrNone.map { m => deafTo(m)}
+    meshOrNone.map {
+      m => deafTo(m)
+    }
     super.onDestroy()
     polyMesh.map(m => m.Delete())
     cutEdges.Delete()

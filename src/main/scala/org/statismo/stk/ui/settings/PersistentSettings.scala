@@ -11,6 +11,7 @@ object PersistentSettings {
   }
 
   class KeyDoesNotExistException extends Exception("Key not found")
+
   val KeyDoesNotExist = new KeyDoesNotExistException
 
   object Codecs {
@@ -27,14 +28,15 @@ object PersistentSettings {
         case _ => None
       }
       if (!codec.isDefined) {
-        throw new IllegalArgumentException("Settings of type " + typeOf[A].toString +" are not currently supported")
+        throw new IllegalArgumentException("Settings of type " + typeOf[A].toString + " are not currently supported")
       }
       codec.get.asInstanceOf[Codec[A]]
     }
 
     abstract class Codec[A] {
-      def toString(target: A) : String = target.toString
-      def fromString(s: String) : A
+      def toString(target: A): String = target.toString
+
+      def fromString(s: String): A
     }
 
     object StringCodec extends Codec[String] {
@@ -66,6 +68,7 @@ object PersistentSettings {
     }
 
   }
+
   def get[A: TypeTag](key: String, default: Option[A] = None, useDefaultOnFailure: Boolean = false): Try[A] = {
     typeOf[A] match {
       case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
@@ -85,7 +88,7 @@ object PersistentSettings {
     val codec = Codecs.get[A]
 
     Try(doGet(key)) match {
-      case Failure(error) => if(useDefaultOnFailure) Success(default.get) else Failure(error)
+      case Failure(error) => if (useDefaultOnFailure) Success(default.get) else Failure(error)
       case ok@Success(r) =>
         if (r.isEmpty) {
           if (default.isDefined) Success(default.get)
@@ -104,7 +107,7 @@ object PersistentSettings {
     setList(key, List(value))
   }
 
-  def setList[A: TypeTag](key: String, values: List[A]) : Try[Unit] = {
+  def setList[A: TypeTag](key: String, values: List[A]): Try[Unit] = {
     val codec = Codecs.get[A]
 
     Try(doSet(key, values.map(v => codec.toString(v)))) match {
@@ -113,7 +116,7 @@ object PersistentSettings {
     }
   }
 
-  private def doGet(key: String) : Seq[String] = {
+  private def doGet(key: String): Seq[String] = {
     val sf: SettingsFile = settingsFile
     sf.getValues(key)
   }

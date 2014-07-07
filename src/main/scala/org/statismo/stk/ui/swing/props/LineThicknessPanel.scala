@@ -1,26 +1,18 @@
 package org.statismo.stk.ui.swing.props
 
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Graphics
 
 import scala.swing.BorderPanel
-import scala.swing.Component
 import scala.swing.Label
 import scala.swing.Slider
-import scala.swing.event.Event
 import scala.swing.event.ValueChanged
 
-import org.statismo.stk.ui.swing.util.{EdtSlider, ColorPickerPanel}
+import org.statismo.stk.ui.swing.util.EdtSlider
 
-import javax.swing.JPanel
 import javax.swing.border.TitledBorder
-import javax.swing.event.ChangeEvent
-import javax.swing.event.ChangeListener
 
 import scala.language.reflectiveCalls
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
-import org.statismo.stk.ui.visualization.props.{HasLineThickness, HasColorAndOpacity}
+import org.statismo.stk.ui.visualization.props.HasLineThickness
 import scala.collection.immutable
 
 class LineThicknessPanel extends BorderPanel with VisualizationsPropertyPanel {
@@ -64,7 +56,9 @@ class LineThicknessPanel extends BorderPanel with VisualizationsPropertyPanel {
 
   def cleanup() = {
     if (target.isDefined) {
-      target.get.foreach{t => deafTo(t.lineThickness)}
+      target.get.foreach {
+        t => deafTo(t.lineThickness)
+      }
       target = None
     }
   }
@@ -75,7 +69,9 @@ class LineThicknessPanel extends BorderPanel with VisualizationsPropertyPanel {
     if (!usable.isEmpty) {
       target = Some(usable)
       updateUi()
-      target.get.foreach{t => listenTo(t.lineThickness)}
+      target.get.foreach {
+        t => listenTo(t.lineThickness)
+      }
       true
     } else {
       false

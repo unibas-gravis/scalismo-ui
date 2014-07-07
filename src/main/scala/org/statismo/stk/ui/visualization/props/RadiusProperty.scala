@@ -2,9 +2,11 @@ package org.statismo.stk.ui.visualization.props
 
 import org.statismo.stk.ui.visualization.VisualizationProperty
 
-class RadiusProperty(initial: Option[Float]) extends VisualizationProperty[Float, RadiusProperty]{
+class RadiusProperty(initial: Option[Float]) extends VisualizationProperty[Float, RadiusProperty] {
   override def newInstance() = new RadiusProperty(None)
+
   override def defaultValue = 0
+
   initial.map(c => value = c)
 }
 

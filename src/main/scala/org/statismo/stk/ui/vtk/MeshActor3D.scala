@@ -4,7 +4,7 @@ import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
 
-import vtk.{vtkObjectBase, vtkPolyData}
+import vtk.vtkPolyData
 import org.statismo.stk.ui.Mesh.MeshRenderable3D
 
 class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
@@ -18,9 +18,10 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   this.GetProperty().SetInterpolationToGouraud()
-  source.meshOrNone.map{m =>
-    setGeometry(m)
-    listenTo(m)
+  source.meshOrNone.map {
+    m =>
+      setGeometry(m)
+      listenTo(m)
   }
 
   reactions += {
@@ -30,7 +31,8 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   def setGeometry(mesh: Mesh) = this.synchronized {
     val obsolete = polyMesh
     polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
-    obsolete.map {v =>
+    obsolete.map {
+      v =>
       //v.Delete()
     }
 
@@ -41,7 +43,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
     mapper.RemoveAllInputs()
     mapper.SetInputData(normals.GetOutput())
 
-   mapper.Modified()
+    mapper.Modified()
 
     publishEdt(VtkContext.RenderRequest(this))
   }

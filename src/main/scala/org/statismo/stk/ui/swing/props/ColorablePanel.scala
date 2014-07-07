@@ -131,7 +131,9 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
 
   def cleanup() = {
     if (target.isDefined) {
-      target.get.foreach{t => deafTo(t.color); deafTo(t.opacity)}
+      target.get.foreach {
+        t => deafTo(t.color); deafTo(t.opacity)
+      }
       target = None
     }
   }
@@ -142,7 +144,9 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
     if (!usable.isEmpty) {
       target = Some(usable)
       updateUi()
-      target.get.foreach{t => listenTo(t.color); listenTo(t.opacity)}
+      target.get.foreach {
+        t => listenTo(t.color); listenTo(t.opacity)
+      }
       true
     } else {
       false

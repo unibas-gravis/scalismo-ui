@@ -13,14 +13,17 @@ object EnhancedFileChooser {
   val LastUsedDirectoriesSettingsKey = "common.lastUsedDirectories"
 }
 
-class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
+class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
+
   import EnhancedFileChooser._
+
   override lazy val peer = new EnhancedJFileChooser
+
   def this() = this(null)
 
   val MaxDirs = 13
 
-  def lastUsedDirectories : Seq[File] = {
+  def lastUsedDirectories: Seq[File] = {
     val dirNames = PersistentSettings.getList[String](LastUsedDirectoriesSettingsKey, Some(Nil))
     if (dirNames.isSuccess) {
       dirNames.get.map(n => new File(n)).filter(d => d.isDirectory).take(MaxDirs)
@@ -57,7 +60,7 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
 
   override def selectedFiles_=(files: File*) = {
     lastUsedDirectories = files
-    super.selectedFiles_=(files:_*)
+    super.selectedFiles_=(files: _*)
   }
 
   override def selectedFile_=(file: File) = {
@@ -65,10 +68,11 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
     super.selectedFile_=(file)
   }
 
-  private [EnhancedFileChooser] class EnhancedJFileChooser extends JFileChooser {
+  private[EnhancedFileChooser] class EnhancedJFileChooser extends JFileChooser {
 
-    private [EnhancedJFileChooser] class FileEntry(val dir: File) {
+    private[EnhancedJFileChooser] class FileEntry(val dir: File) {
       override def toString = dir.getName
+
       def tooltip = dir.getCanonicalPath
     }
 
@@ -81,14 +85,16 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
 
       val data = lastDirs.map(d => new FileEntry(d)).toArray[Object]
       val panel = new BorderPanel {
-        val title = new BorderPanel{layout(new Label("Recent Folders:")) = BorderPanel.Position.West}
+        val title = new BorderPanel {
+          layout(new Label("Recent Folders:")) = BorderPanel.Position.West
+        }
         layout(title) = BorderPanel.Position.North
 
         val list = new UntypedJList(data) {
           def affectedItem(point: Point): Option[FileEntry] = {
             val m = peer.getModel
             val index = peer.locationToIndex(point)
-            if (index > -1 && peer.getCellBounds(index,index).contains(point)) {
+            if (index > -1 && peer.getCellBounds(index, index).contains(point)) {
               Some(m.getElementAt(index).asInstanceOf[FileEntry])
             } else {
               None
@@ -104,7 +110,7 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
             }
           })
 
-          peer.addMouseListener(new MouseAdapter{
+          peer.addMouseListener(new MouseAdapter {
             override def mouseClicked(e: MouseEvent) = {
               if (e.getClickCount >= 2 && e.getButton == MouseEvent.BUTTON1) {
                 affectedItem(e.getPoint).map(f => EnhancedJFileChooser.this.setCurrentDirectory(f.dir))
@@ -114,9 +120,11 @@ class EnhancedFileChooser(dir:File)  extends scala.swing.FileChooser(dir) {
         }
 
         list.peer.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1))
-        layout(new Component {override lazy val peer = list.peer}) = BorderPanel.Position.Center
+        layout(new Component {
+          override lazy val peer = list.peer
+        }) = BorderPanel.Position.Center
       }
-      panel.border = BorderFactory.createEmptyBorder(17,10,12,8)
+      panel.border = BorderFactory.createEmptyBorder(17, 10, 12, 8)
       panel
     }
 

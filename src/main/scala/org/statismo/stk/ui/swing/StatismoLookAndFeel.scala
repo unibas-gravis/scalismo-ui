@@ -2,10 +2,12 @@ package org.statismo.stk.ui.swing
 
 import scala.swing.{SimpleSwingApplication, Swing}
 import javax.swing.{ToolTipManager, SwingUtilities, UIManager}
+import org.statismo.stk.ui.UiFramework
 
 object StatismoLookAndFeel {
   def initializeWith(lookAndFeelClassName: String): Unit = {
     def doit() = {
+      UiFramework.instance = new SwingUiFramework
       UIManager.setLookAndFeel(lookAndFeelClassName)
       val laf = UIManager.getLookAndFeel
       if (laf.getClass.getSimpleName.startsWith("Nimbus")) {

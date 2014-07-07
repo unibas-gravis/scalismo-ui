@@ -6,7 +6,7 @@ import org.statismo.stk.ui.{BoundingBox, Scene}
 class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends PolyDataActor {
   val scene = source.source.scene
 
-  this.GetProperty().SetColor(1,1,1)
+  this.GetProperty().SetColor(1, 1, 1)
   listenTo(scene)
   update(withEvent = false)
 

@@ -55,7 +55,7 @@ object Creds {
 object Dependencies {
   import BuildSettings._
 
-  val stkCore = "org.statismo" %% "stkcore" % "0.3.0"
+  val stkCore = "org.statismo" %% "stkcore" % "develop-SNAPSHOT"
   val scalatest = "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion

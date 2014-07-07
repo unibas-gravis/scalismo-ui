@@ -5,10 +5,9 @@ import scala.swing.Label
 import scala.swing.Slider
 import scala.swing.event.ValueChanged
 
-import org.statismo.stk.ui.SceneTreeObject
 
 import javax.swing.border.TitledBorder
-import org.statismo.stk.ui.visualization.props.{HasColorAndOpacity, HasRadius}
+import org.statismo.stk.ui.visualization.props.HasRadius
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
 import scala.collection.immutable
 import org.statismo.stk.ui.swing.util.EdtSlider

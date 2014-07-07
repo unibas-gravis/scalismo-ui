@@ -3,8 +3,6 @@ package org.statismo.stk.ui.vtk
 import java.awt.Color
 import java.awt.Graphics
 
-import org.statismo.stk.ui.Viewport
-import org.statismo.stk.ui.Workspace
 
 import vtk.vtkCanvas
 import vtk.vtkInteractorStyleTrackballCamera
@@ -25,7 +23,7 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
 
   private def RenderReal() = {
     def doIt() = {
-        super.Render()
+      super.Render()
     }
     if (SwingUtilities.isEventDispatchThread) {
       doIt()
@@ -42,9 +40,10 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
 
   private class DeferredRenderer extends Timer(true) {
 
-    private [DeferredRenderer] class Skipped {
+    private[DeferredRenderer] class Skipped {
       var count: Int = 0
     }
+
     val skipped = new Skipped
 
     private var pending: Option[DeferredRenderTask] = None
@@ -83,6 +82,7 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
   /* This is a somewhat awkward combination, but it seems to do the trick. */
 
   private var _allowDeferredRendering = false
+
   def disableDeferredRendering() = {
     _allowDeferredRendering = false
   }

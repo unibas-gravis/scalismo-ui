@@ -2,13 +2,12 @@ package org.statismo.stk.ui.swing
 
 import scala.swing.BorderPanel
 import org.statismo.stk.ui.Workspace
-import org.statismo.stk.ui.StatismoFrame
 
 class WorkspacePanel(val workspace: Workspace) extends BorderPanel {
   lazy val toolbar: StatismoToolbar = new StatismoToolbar(workspace)
   lazy val properties = new PropertiesPanel(workspace)
   lazy val perspectives = new PerspectivesPanel(workspace)
-//  lazy val console = new ConsolePanel
+  //  lazy val console = new ConsolePanel
 
   setupUi()
 

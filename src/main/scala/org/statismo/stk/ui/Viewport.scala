@@ -4,9 +4,13 @@ import scala.swing.event.Event
 import java.awt.Point
 
 object Viewport {
+
   case class Destroyed(source: Viewport) extends Event
+
   case class BoundingBoxChanged(source: Viewport) extends Event
+
   case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
+
   val NoInitialCameraChange = InitialCameraChange(None, None, None)
 
   val ThreeDViewportClassName = "org.statismo.stk.ui.ThreeDViewport"
@@ -20,16 +24,23 @@ trait Viewport extends Nameable {
     publishEdt(Viewport.Destroyed(this))
   }
 
-  def onLeftButtonDown(pt: Point) : Boolean = true
-  def onLeftButtonUp(pt: Point) : Boolean = true
-  def onMiddleButtonDown(pt: Point) : Boolean = true
-  def onMiddleButtonUp(pt: Point) : Boolean = true
-  def onRightButtonDown(pt: Point) : Boolean = true
-  def onRightButtonUp(pt: Point) : Boolean = true
+  def onLeftButtonDown(pt: Point): Boolean = true
+
+  def onLeftButtonUp(pt: Point): Boolean = true
+
+  def onMiddleButtonDown(pt: Point): Boolean = true
+
+  def onMiddleButtonUp(pt: Point): Boolean = true
+
+  def onRightButtonDown(pt: Point): Boolean = true
+
+  def onRightButtonUp(pt: Point): Boolean = true
 
   private var _currentBoundingBox = BoundingBox.None
+
   def currentBoundingBox = _currentBoundingBox
-  private [ui] def currentBoundingBox_=(nb: BoundingBox) = {
+
+  private[ui] def currentBoundingBox_=(nb: BoundingBox) = {
     if (currentBoundingBox != nb) {
       _currentBoundingBox = nb
       publishEdt(Viewport.BoundingBoxChanged(this))
@@ -53,6 +64,7 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
   }
 
   override def onLeftButtonUp(pt: Point) = false
+
   override def onLeftButtonDown(pt: Point) = false
 }
 
