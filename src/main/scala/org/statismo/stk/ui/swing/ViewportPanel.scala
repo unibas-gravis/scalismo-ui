@@ -9,11 +9,10 @@ import org.statismo.stk.ui.swing.actions.SaveAction
 import javax.swing.border.TitledBorder
 import javax.swing._
 import scala.swing.event.{Event, ValueChanged}
-import java.awt.Graphics
 import scala.collection.immutable
 import scala.Some
 import scala.swing.Action
-import java.awt.event.{ComponentEvent, ComponentListener}
+import java.awt.event.ComponentListener
 import org.statismo.stk.ui.vtk.VtkPanel
 import org.statismo.stk.ui.swing.util.EdtSlider
 

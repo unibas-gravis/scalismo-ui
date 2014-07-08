@@ -81,14 +81,15 @@ trait SimpleVisualizationFactory[A <: Visualizable[A]] extends VisualizationFact
 trait VisualizationProvider[A <: Visualizable[A]] {
   protected[ui] def visualizationProvider: VisualizationProvider[A]
 
-  def visualizations(implicit scene:Scene): immutable.Map[Viewport, Visualization[A]] = {
+  def visualizations(implicit scene: Scene): immutable.Map[Viewport, Visualization[A]] = {
     var map = new immutable.HashMap[Viewport, Visualization[A]]
     val viss = scene.visualizations
-    scene.perspective.viewports.foreach { viewport =>
-      viss.tryGet(this, viewport) match {
-        case Success(vis: Visualization[A]) => map += Tuple2(viewport, vis)
-        case _ => // do nothing
-      }
+    scene.perspective.viewports.foreach {
+      viewport =>
+        viss.tryGet(this, viewport) match {
+          case Success(vis: Visualization[A]) => map += Tuple2(viewport, vis)
+          case _ => // do nothing
+        }
     }
     map
   }

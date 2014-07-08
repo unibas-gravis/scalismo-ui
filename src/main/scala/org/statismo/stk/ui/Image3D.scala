@@ -12,10 +12,10 @@ import org.statismo.stk.core.image.DiscreteScalarImage3D
 import scala.Tuple2
 import org.statismo.stk.core.geometry.Point3D
 import scala.swing.Reactor
-import scala.collection.immutable.HashMap
 import scala.collection.immutable
 
 object Image3DVisualizationFactory {
+
   class Visualization3D[A] extends Visualization[Image3D[A]] {
     override protected def createDerived() = new Visualization3D
 
@@ -49,10 +49,10 @@ object Image3DVisualizationFactory {
 
   private var _instances = new immutable.HashMap[Type, Image3DVisualizationFactory[_]]
 
-  def getInstance[A: TypeTag]() : Image3DVisualizationFactory[A] = {
+  def getInstance[A: TypeTag](): Image3DVisualizationFactory[A] = {
     val tpe = typeOf[A]
     val instanceOption = _instances.get(tpe)
-    instanceOption.getOrElse{
+    instanceOption.getOrElse {
       val newInstance = new Image3DVisualizationFactory[A]
       _instances += Tuple2(tpe, newInstance)
       newInstance
@@ -62,7 +62,9 @@ object Image3DVisualizationFactory {
 }
 
 class Image3DVisualizationFactory[A] private[ui] extends SimpleVisualizationFactory[Image3D[A]] {
+
   import Image3DVisualizationFactory._
+
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D[A]))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D[A]))
 }

@@ -4,7 +4,7 @@ package org.statismo.stk.ui.vtk
 import vtk.vtkActor
 import org.statismo.stk.ui.visualization.{SphereLike, Renderable}
 import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
-import org.statismo.stk.ui.{Image3DVisualizationFactory, Scene, BoundingBox, Image3D}
+import org.statismo.stk.ui.{Image3DVisualizationFactory, Scene, BoundingBox}
 import scala.None
 import scala.util.Try
 

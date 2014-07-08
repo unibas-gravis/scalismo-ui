@@ -4,7 +4,6 @@ import scala.swing._
 
 import org.statismo.stk.ui._
 import scala.collection.{immutable, mutable}
-import java.awt.BorderLayout
 import scala.Some
 
 class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
