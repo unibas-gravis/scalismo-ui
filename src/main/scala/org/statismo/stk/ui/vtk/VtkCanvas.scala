@@ -76,7 +76,7 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
   private val deferredRenderer = new DeferredRenderer
 
   override def Render() = {
-    render(true)
+    render(immediately = true)
   }
 
   /* This is a somewhat awkward combination, but it seems to do the trick. */

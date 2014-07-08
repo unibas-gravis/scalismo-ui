@@ -58,8 +58,6 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
         }
       case _ => Nil
     }
-    //FIXME
-    //refresh(Nil, parent.viewportOption)
     refresh(renderables, parent.viewportOption)
   }
 
@@ -130,7 +128,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
                 camMod.pitch.map(v => cam.Elevation(v))
                 camMod.roll.map(v => cam.Roll(v))
                 cam.OrthogonalizeViewUp()
-                resetCamera(true)
+                resetCamera(force = true)
               } else {
                 publishEdt(VtkContext.RenderRequest(this))
               }
@@ -155,9 +153,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interacto
   reactions += {
 
     case Scene.TreeTopologyChanged(s) => refresh(s)
-    case Scene.VisibilityChanged(s) => {
-      refresh(s)
-    }
+    case Scene.VisibilityChanged(s) => refresh(s)
     case Scene.PerspectiveChangeCompleted(s) => refresh(s)
 
     case VtkContext.ResetCameraRequest(s) => publishEdt(VtkContext.ResetCameraRequest(this))
