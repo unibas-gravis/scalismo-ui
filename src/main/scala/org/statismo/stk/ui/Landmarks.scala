@@ -117,7 +117,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
 
   def addAt(position: Point3D)
 
-  override def visualizationProvider = VisualizableLandmark
+  protected[ui] override def visualizationProvider = VisualizableLandmark
 }
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {

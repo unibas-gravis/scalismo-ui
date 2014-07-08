@@ -272,7 +272,7 @@ class Scene extends SceneTreeObject {
     super.onViewportsChanged(viewports)
   }
 
-  lazy val visualizations: Visualizations = new Visualizations
+  protected[ui] lazy val visualizations: Visualizations = new Visualizations
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {

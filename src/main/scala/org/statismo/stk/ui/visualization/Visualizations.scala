@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.visualization
 
-import org.statismo.stk.ui.{SceneTreeObject, EdtPublisher, Viewport}
+import org.statismo.stk.ui.{Scene, SceneTreeObject, EdtPublisher, Viewport}
 import scala.util.{Failure, Success, Try}
 import scala.ref.WeakReference
 import scala.swing.event.Event
@@ -59,7 +59,7 @@ class Visualizations {
 
 }
 
-trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A] {
+trait VisualizationFactory[A <: Visualizable[A]] extends VisualizationProvider[A] {
   protected[ui] override final val visualizationProvider = null
 
   protected[ui] def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
@@ -72,14 +72,26 @@ trait VisualizationFactory[A <: Visualizable[_]] extends VisualizationProvider[A
   }
 }
 
-trait SimpleVisualizationFactory[A <: Visualizable[_]] extends VisualizationFactory[A] {
+trait SimpleVisualizationFactory[A <: Visualizable[A]] extends VisualizationFactory[A] {
   protected var visualizations = new immutable.HashMap[String, Seq[Visualization[A]]]
 
   final override def visualizationsFor(viewportClassName: String): Seq[Visualization[A]] = visualizations.getOrElse(viewportClassName, Nil)
 }
 
-trait VisualizationProvider[-A <: Visualizable[_]] {
+trait VisualizationProvider[A <: Visualizable[A]] {
   protected[ui] def visualizationProvider: VisualizationProvider[A]
+
+  def visualizations(implicit scene:Scene): immutable.Map[Viewport, Visualization[A]] = {
+    var map = new immutable.HashMap[Viewport, Visualization[A]]
+    val viss = scene.visualizations
+    scene.perspective.viewports.foreach { viewport =>
+      viss.tryGet(this, viewport) match {
+        case Success(vis: Visualization[A]) => map += Tuple2(viewport, vis)
+        case _ => // do nothing
+      }
+    }
+    map
+  }
 }
 
 trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {

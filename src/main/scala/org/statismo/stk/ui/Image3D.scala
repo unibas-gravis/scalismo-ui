@@ -5,35 +5,34 @@ import scala.util.Try
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.core.common.ScalarValue
 import scala.reflect.ClassTag
-import reflect.runtime.universe.TypeTag
+import reflect.runtime.universe.{TypeTag, typeOf, Type}
 import scala.language.existentials
 import org.statismo.stk.ui.visualization._
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import scala.Tuple2
 import org.statismo.stk.core.geometry.Point3D
 import scala.swing.Reactor
+import scala.collection.immutable.HashMap
+import scala.collection.immutable
 
-object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
-  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
-
-  class Visualization3D extends Visualization[Image3D[_]] {
+object Image3DVisualizationFactory {
+  class Visualization3D[A] extends Visualization[Image3D[A]] {
     override protected def createDerived() = new Visualization3D
 
-    override protected def instantiateRenderables(source: Image3D[_]) = {
+    override protected def instantiateRenderables(source: Image3D[A]) = {
       Seq(new Renderable3D(source))
     }
   }
 
-  class Visualization2D extends Visualization[Image3D[_]] {
+  class Visualization2D[A] extends Visualization[Image3D[A]] {
     override protected def createDerived() = new Visualization2D
 
-    override protected def instantiateRenderables(source: Image3D[_]) = {
+    override protected def instantiateRenderables(source: Image3D[A]) = {
       Seq(new Renderable2D(source))
     }
   }
 
-  private[Image3D] class BaseRenderable(source: Image3D[_]) extends Renderable with Reactor {
+  private[Image3DVisualizationFactory] class BaseRenderable[A](source: Image3D[A]) extends Renderable with Reactor {
     private var _imageOrNone: Option[Image3D[_]] = Some(source)
 
     def imageOrNone = _imageOrNone
@@ -44,16 +43,34 @@ object Image3D extends SimpleVisualizationFactory[Image3D[_]] {
     }
   }
 
-  class Renderable3D(source: Image3D[_]) extends BaseRenderable(source)
+  class Renderable3D[A](source: Image3D[A]) extends BaseRenderable(source)
 
-  class Renderable2D(source: Image3D[_]) extends BaseRenderable(source)
+  class Renderable2D[A](source: Image3D[A]) extends BaseRenderable(source)
 
+  private var _instances = new immutable.HashMap[Type, Image3DVisualizationFactory[_]]
+
+  def getInstance[A: TypeTag]() : Image3DVisualizationFactory[A] = {
+    val tpe = typeOf[A]
+    val instanceOption = _instances.get(tpe)
+    instanceOption.getOrElse{
+      val newInstance = new Image3DVisualizationFactory[A]
+      _instances += Tuple2(tpe, newInstance)
+      newInstance
+    }.asInstanceOf[Image3DVisualizationFactory[A]]
+  }
+
+}
+
+class Image3DVisualizationFactory[A] private[ui] extends SimpleVisualizationFactory[Image3D[A]] {
+  import Image3DVisualizationFactory._
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D[A]))
+  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D[A]))
 }
 
 class Image3D[S: ScalarValue : ClassTag : TypeTag](val peer: DiscreteScalarImage3D[S]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable {
   protected[ui] override lazy val saveableMetadata = StaticImage3D
 
-  protected[ui] override def visualizationProvider: VisualizationProvider[Image3D[S]] = Image3D
+  protected[ui] override lazy val visualizationProvider = Image3DVisualizationFactory.getInstance()
 
   protected[ui] lazy val asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
 
