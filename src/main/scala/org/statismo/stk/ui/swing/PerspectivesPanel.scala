@@ -66,7 +66,7 @@ object PerspectivePanels {
   mappings.put(XOnlyPerspective, new SingleTwoDViewportPanel)
   mappings.put(YOnlyPerspective, new SingleTwoDViewportPanel)
   mappings.put(ZOnlyPerspective, new SingleTwoDViewportPanel)
-  mappings.put(SlicerAltPerspective, new SlicerAltViewportsPanel)
+  mappings.put(OrthogonalSlicesPerspective, new OrthogonalSliceViewportsPanel)
   mappings.put(FourViewportsPerspective, new FourViewportsPanel)
   mappings.put(TwoViewportsPerspective, new TwoViewportsPanel)
 }
@@ -97,7 +97,7 @@ class SingleThreeDViewportPanel extends BorderPanel with PerspectivePanel {
   layout(viewportPanels.head) = BorderPanel.Position.Center
 }
 
-class SlicerAltViewportsPanel extends GridPanel(2, 2) with PerspectivePanel {
+class OrthogonalSliceViewportsPanel extends GridPanel(2, 2) with PerspectivePanel {
   override lazy val viewportPanels = immutable.Seq(new ThreeDViewportPanel, new TwoDViewportPanel, new TwoDViewportPanel, new TwoDViewportPanel)
   viewportPanels.foreach {
     p => this.contents += p

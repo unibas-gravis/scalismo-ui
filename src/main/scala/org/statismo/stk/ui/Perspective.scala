@@ -39,7 +39,7 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
 }
 
 object Perspectives {
-  lazy val availablePerspectives: immutable.Seq[PerspectiveFactory] = immutable.Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, /*SlicerPerspective,*/ SlicerAltPerspective, XOnlyPerspective, YOnlyPerspective, ZOnlyPerspective)
+  lazy val availablePerspectives: immutable.Seq[PerspectiveFactory] = immutable.Seq(SingleViewportPerspective, TwoViewportsPerspective, FourViewportsPerspective, /*SlicerPerspective,*/ OrthogonalSlicesPerspective, XOnlyPerspective, YOnlyPerspective, ZOnlyPerspective)
 }
 
 trait PerspectiveFactory {
@@ -104,35 +104,14 @@ class FourViewportsPerspective(template: Option[Perspective])(implicit scene: Sc
 }
 
 
-object SlicerPerspective extends PerspectiveFactory {
-  override lazy val name = "Slicer"
-
-  override def apply()(implicit scene: Scene): Perspective = new SlicerPerspective(Some(scene.perspective))
-}
-
-class SlicerPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
-  override lazy val factory = SlicerPerspective
-
-  protected override def createViewports() = {
-    val threeD = reuseOrInstantiate3D(template, 1).head
-    val x = reuseOrInstantiate2D(template, Axis.X, 1).head
-    val y = reuseOrInstantiate2D(template, Axis.Y, 1).head
-    val z = reuseOrInstantiate2D(template, Axis.Z, 1).head
-    threeD.name = "3D"
-    Seq(x, y, z).foreach(v => v.name = v.axis.toString)
-    immutable.Seq(threeD, x, y, z)
-  }
-}
-
-
-object SlicerAltPerspective extends PerspectiveFactory {
+object OrthogonalSlicesPerspective extends PerspectiveFactory {
   override lazy val name = "Orthogonal Slices"
 
-  override def apply()(implicit scene: Scene): Perspective = new SlicerAltPerspective(Some(scene.perspective))
+  override def apply()(implicit scene: Scene): Perspective = new OrthogonalSlicesPerspective(Some(scene.perspective))
 }
 
-class SlicerAltPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
-  override lazy val factory = SlicerAltPerspective
+class OrthogonalSlicesPerspective(template: Option[Perspective])(implicit scene: Scene) extends Perspective(template) {
+  override lazy val factory = OrthogonalSlicesPerspective
 
   protected override def createViewports() = {
     val threeD = reuseOrInstantiate3D(template, 1).head
