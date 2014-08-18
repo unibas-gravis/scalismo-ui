@@ -21,7 +21,19 @@ trait Landmark extends Nameable with Removeable {
   def point: Point3D
 }
 
-class ReferenceLandmark(val point: Point3D) extends Landmark
+class ReferenceLandmark(initalpoint: Point3D) extends Landmark with DirectlyRepositionable {
+  private var _point = initalpoint
+  override def point = _point
+  override def getCurrentPosition = _point
+
+  override def setCurrentPosition(newPosition: Point3D) = this.synchronized {
+    if (_point != newPosition) {
+      _point = newPosition
+      publishEdt(Landmarks.LandmarkChanged(this))
+      publishEdt(Repositionable.CurrentPositionChanged(this))
+    }
+  }
+}
 
 object Landmarks extends FileIoMetadata {
 
@@ -134,8 +146,19 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
   }
 }
 
-class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) {
-  var point = initialCenter
+class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) with DirectlyRepositionable {
+  var _point = initialCenter
+  override def point = _point
+
+  override def getCurrentPosition = _point
+
+  override def setCurrentPosition(newPosition: Point3D) = this.synchronized {
+    if (_point != newPosition) {
+      _point = newPosition
+      publishEdt(Landmarks.LandmarkChanged(this))
+      publishEdt(Repositionable.CurrentPositionChanged(this))
+    }
+  }
 }
 
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
@@ -151,8 +174,10 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
 
 }
 
-class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) {
-  name = source.name
+class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) with IndirectlyRepositionable {
+  override def name = source.name
+  override def directlyRepositionableObject = source
+
   listenTo(container.instance.meshRepresentation, source)
 
   override def remove() = {
@@ -168,6 +193,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
         this.name = source.name
       } else if (n eq this) {
         source.name = this.name
+      }
+    case Repositionable.CurrentPositionChanged(r) =>
+      if (r eq source) {
+        setCenter()
       }
     case Removeable.Removed(r) if r eq source =>
       deafTo(container.instance.meshRepresentation, source)
@@ -185,8 +214,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   def setCenter(): Unit = {
     point = calculateCenter()
     publishEdt(Landmarks.LandmarkChanged(this))
+    publishEdt(Repositionable.CurrentPositionChanged(this))
   }
 
+  override def getCurrentPosition = point
 }
 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
