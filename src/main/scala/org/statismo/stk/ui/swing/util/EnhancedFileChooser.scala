@@ -138,8 +138,11 @@ class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
     def decorateDialog(dialog: JDialog) = {
       val cp = dialog.getContentPane
       leftComponent match {
-        case Some(c) => cp.add(c.peer, BorderLayout.WEST)
+        case Some(c) =>  cp.add(c.peer, BorderLayout.WEST)
         case None =>
+      }
+      if (dialog.getPreferredSize.getWidth > dialog.getSize.getWidth) {
+        dialog.setSize(dialog.getPreferredSize)
       }
       dialog
     }
