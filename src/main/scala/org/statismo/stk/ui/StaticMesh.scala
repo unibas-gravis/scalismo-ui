@@ -11,7 +11,7 @@ import scala.collection.immutable
 
 object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata {
   override val description = "Static Mesh"
-  override val fileExtensions = immutable.Seq("vtk")
+  override val fileExtensions = immutable.Seq("vtk", "stl")
   protected[ui] override val ioMetadata = this
 
   protected[ui] override def tryCreate(file: File)(implicit scene: Scene): Try[StaticMesh] = {

@@ -119,7 +119,7 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
 abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark] {
   override def parent = container
 
-  override def visualizationProvider = container
+  protected[ui] override def visualizationProvider = container
 }
 
 abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with VisualizationProvider[VisualizableLandmark] with RemoveableChildren {
