@@ -1,5 +1,8 @@
 package org.statismo.stk.ui.swing
 
+
+import javax.media.opengl.Threading
+
 import org.statismo.stk.ui._
 import scala.swing.MenuItem
 import org.statismo.stk.ui.swing.actions.LoadAction
@@ -22,11 +25,27 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
     args foreach {
       scene.tryLoad(_)
     }
+
+    val t = new Thread() {
+      setDaemon(true)
+      override def run() = {
+        val perspectives = Perspectives.availablePerspectives.reverse
+        while (true) {
+          for (f <- perspectives) {
+            Thread.sleep(10000)
+            scene.perspective = f.apply()(scene)
+          }
+        }
+      }
+    }
+    //t.start()
   }
 }
 
 object SimpleViewer {
   def main(args: Array[String]): Unit = {
+//    org.statismo.stk.core.initialize()
+//    playground.JoglConeRendering.main(args)
     StatismoApp(args, frame = {
       s: Scene => new SimpleViewer(s)
     })

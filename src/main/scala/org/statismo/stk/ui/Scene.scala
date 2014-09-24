@@ -1,15 +1,13 @@
 package org.statismo.stk.ui
 
+import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.ui.util.EdtUtil
+import org.statismo.stk.ui.visualization._
+
+import scala.collection.immutable
 import scala.collection.immutable.List
 import scala.swing.event.Event
 import scala.util.Try
-import org.statismo.stk.ui.visualization._
-import org.statismo.stk.core.geometry.Point3D
-import scala.Some
-import scala.Tuple2
-import scala.collection.immutable
-import javax.swing.SwingUtilities
-import scala.swing.Swing
 
 object Scene {
 
@@ -101,7 +99,7 @@ object Scene {
 
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
 
-    import Scene.SlicingPosition.Precision
+    import org.statismo.stk.ui.Scene.SlicingPosition.Precision
 
     protected[ui] override def visualizationProvider = SlicingPosition
 
@@ -193,7 +191,6 @@ object Scene {
           bb.union(vp.currentBoundingBox)
       })
     }
-
   }
 
 }
@@ -201,13 +198,7 @@ object Scene {
 class Scene extends SceneTreeObject {
   deafTo(this)
 
-  if (SwingUtilities.isEventDispatchThread) {
-    org.statismo.stk.core.initialize()
-  } else {
-    Swing.onEDTWait {
-      org.statismo.stk.core.initialize()
-    }
-  }
+  EdtUtil.onEdt(org.statismo.stk.core.initialize(), wait = true)
 
   name = "Scene"
   protected[ui] override lazy val isNameUserModifiable = false
@@ -280,7 +271,6 @@ class Scene extends SceneTreeObject {
   }): Seq[Visualizable[_]] = {
     Seq(super.visualizables(filter), Seq(slicingPosition).filter(filter)).flatten
   }
-
 }
 
 class AuxiliaryObjects()(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[VisualizableSceneTreeObject[_]] {

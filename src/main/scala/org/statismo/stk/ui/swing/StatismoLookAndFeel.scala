@@ -1,12 +1,15 @@
 package org.statismo.stk.ui.swing
 
-import scala.swing.{SimpleSwingApplication, Swing}
-import javax.swing.{ToolTipManager, SwingUtilities, UIManager}
+import javax.swing.{SwingUtilities, ToolTipManager, UIManager}
+
 import org.statismo.stk.ui.UiFramework
+import org.statismo.stk.ui.util.EdtUtil
+
+import scala.swing.SimpleSwingApplication
 
 object StatismoLookAndFeel {
   def initializeWith(lookAndFeelClassName: String): Unit = {
-    def doit() = {
+    EdtUtil.onEdt({
       UiFramework.instance = new SwingUiFramework
       UIManager.setLookAndFeel(lookAndFeelClassName)
       val laf = UIManager.getLookAndFeel
@@ -17,24 +20,19 @@ object StatismoLookAndFeel {
       }
       UIManager.put("FileChooser.readOnly", true)
       ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
-    }
-    if (SwingUtilities.isEventDispatchThread) {
-      doit()
-    } else {
-      Swing.onEDTWait(doit())
-    }
+    }, wait = true)
+  }
+
+  def defaultLookAndFeelClassName: String = {
+    val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
+    if (nimbus.nonEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
 }
 
 trait StatismoLookAndFeel extends SimpleSwingApplication {
   override def main(args: Array[String]) = {
-    StatismoLookAndFeel.initializeWith(defaultLookAndFeelClassName)
+    StatismoLookAndFeel.initializeWith(StatismoLookAndFeel.defaultLookAndFeelClassName)
     super.main(args)
-  }
-
-  def defaultLookAndFeelClassName: String = {
-    val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
-    if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
 
   override def startup(args: Array[String]) {
