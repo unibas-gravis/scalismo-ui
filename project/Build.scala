@@ -4,8 +4,8 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "org.statismo"
-  val buildVersion = "0.2.0"
-  val buildScalaVersion = "2.10.3"
+  val buildVersion = "0.2.1"
+  val buildScalaVersion = "2.10.4"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -55,7 +55,11 @@ object Creds {
 object Dependencies {
   import BuildSettings._
 
+<<<<<<< HEAD
   val stkCore = "org.statismo" %% "stkcore" % "0.3.3"
+=======
+  val stkCore = "org.statismo" %% "stkcore" % "0.3.6"
+>>>>>>> develop
   val scalatest = "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion

@@ -107,7 +107,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
       var x, y = 0
       for (axis <- Axes) {
         { // axis label
-          val constraint = pair2Constraints(x, y)
+          val constraint = pair2Constraints((x, y))
           constraint.anchor = Anchor.West
           constraint.ipadx = 10
           add(new Label(s"${axis._1.toString}:"), constraint)

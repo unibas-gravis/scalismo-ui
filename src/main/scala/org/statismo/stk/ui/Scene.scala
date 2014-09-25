@@ -201,13 +201,7 @@ object Scene {
 class Scene extends SceneTreeObject {
   deafTo(this)
 
-  if (SwingUtilities.isEventDispatchThread) {
-    org.statismo.stk.core.initialize()
-  } else {
-    Swing.onEDTWait {
-      org.statismo.stk.core.initialize()
-    }
-  }
+  org.statismo.stk.core.initialize()
 
   name = "Scene"
   protected[ui] override lazy val isNameUserModifiable = false
