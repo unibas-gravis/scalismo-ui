@@ -198,7 +198,7 @@ object Scene {
 class Scene extends SceneTreeObject {
   deafTo(this)
 
-  EdtUtil.onEdt(org.statismo.stk.core.initialize(), wait = true)
+  org.statismo.stk.core.initialize()
 
   name = "Scene"
   protected[ui] override lazy val isNameUserModifiable = false
