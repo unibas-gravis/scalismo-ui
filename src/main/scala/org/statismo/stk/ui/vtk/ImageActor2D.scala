@@ -1,15 +1,14 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.utils.ImageConversion
-import org.statismo.stk.ui._
-
 import _root_.vtk._
 import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.ui.vtk.VtkContext.{ResetCameraRequest, RenderRequest}
+import org.statismo.stk.core.utils.ImageConversion
+import org.statismo.stk.ui._
+import org.statismo.stk.ui.vtk.VtkContext.{RenderRequest, ResetCameraRequest}
 
 object ImageActor2D {
   def apply(source: Image3D[_])(implicit vtkViewport: VtkViewport): ImageActor2D = {
-    val points = ImageConversion.image3DTovtkStructuredPoints(source.asFloatImage)
+    val points = Caches.ImageCache.getOrCreate(source, ImageConversion.image3DTovtkStructuredPoints(source.asFloatImage))
     val axis = vtkViewport.viewport.asInstanceOf[TwoDViewport].axis
     new ImageActor2D(source, points, axis, true)
   }
@@ -51,23 +50,28 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
   slice.SetInputData(points)
   slice.ThresholdValueOff()
   slice.ThresholdCellsOff()
-  slice.SetExtent(0, exmax, 0, eymax, 0, ezmax)
+
+  val intensityRange = Caches.ImageIntensityRangeCache.getOrCreate(points, {
+    // this required to correctly show reasonable grayscale values, but is expensive -- which is why it's cached.
+    slice.SetExtent(0, exmax, 0, eymax, 0, ezmax)
+    slice.Update()
+    val r = slice.GetOutput().GetScalarRange()
+    (r(0), r(1))
+  })
+
+  slice.SetExtent(0, 0, 0, 0, 0, 0)
   slice.Update()
+
   mapper.SetInputData(slice.GetOutput())
 
   val grayscale = new vtkLookupTable
-
-  {
-    val r = slice.GetOutput().GetScalarRange()
-    mapper.SetScalarRange(r(0), r(1))
-
-    grayscale.SetTableRange(r(0), r(1))
-    grayscale.SetSaturationRange(0, 0)
-    grayscale.SetHueRange(0, 0)
-    grayscale.SetValueRange(0, 1)
-    grayscale.Build()
-    mapper.SetLookupTable(grayscale)
-  }
+  mapper.SetScalarRange(intensityRange._1, intensityRange._2)
+  grayscale.SetTableRange(intensityRange._1, intensityRange._2)
+  grayscale.SetSaturationRange(0, 0)
+  grayscale.SetHueRange(0, 0)
+  grayscale.SetValueRange(0, 1)
+  grayscale.Build()
+  mapper.SetLookupTable(grayscale)
 
   //mapper.SetScalarVisibility(0)
   update(source.scene.slicingPosition.point)
@@ -100,9 +104,6 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], points: vtkStructur
     super.onDestroy()
     slice.Delete()
     grayscale.Delete()
-    if (isStandalone) {
-      points.Delete()
-    }
   }
 
   override def clicked(point: Point3D) = source.addLandmarkAt(point)

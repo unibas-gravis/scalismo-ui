@@ -1,12 +1,14 @@
 package org.statismo.stk.ui.swing
 
 
-import javax.media.opengl.Threading
+import java.io.File
 
 import org.statismo.stk.ui._
-import scala.swing.MenuItem
 import org.statismo.stk.ui.swing.actions.LoadAction
-import java.io.File
+
+import scala.async.Async.async
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.swing.MenuItem
 import scala.util.{Success, Try}
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
@@ -22,30 +24,33 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
     super.startup(args)
 
-    args foreach {
-      scene.tryLoad(_)
+    args foreach { file =>
+      async {
+        scene.tryLoad(file)
+      }
     }
 
-    val t = new Thread() {
-      setDaemon(true)
-      override def run() = {
-        val perspectives = Perspectives.availablePerspectives.reverse
-        while (true) {
-          for (f <- perspectives) {
-            Thread.sleep(10000)
-            scene.perspective = f.apply()(scene)
+    /* for testing: inifinitely cycle through all perspectives */
+    if (false) {
+      val t = new Thread() {
+        setDaemon(true)
+        override def run() = {
+          val perspectives = Perspectives.availablePerspectives.reverse
+          while (true) {
+            for (f <- perspectives) {
+              Thread.sleep(10000)
+              scene.perspective = f.apply()(scene)
+            }
           }
         }
       }
+      t.start()
     }
-    //t.start()
   }
 }
 
 object SimpleViewer {
   def main(args: Array[String]): Unit = {
-//    org.statismo.stk.core.initialize()
-//    playground.JoglConeRendering.main(args)
     StatismoApp(args, frame = {
       s: Scene => new SimpleViewer(s)
     })

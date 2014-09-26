@@ -14,8 +14,8 @@ import vtk.vtkWindowToImageFilter
 import org.statismo.stk.ui.swing.ViewportPanel
 
 class VtkPanel extends Component with EdtPublisher {
-  lazy val vtkUi = new VtkCanvas2(this)
-  lazy val vtkViewport: VtkViewport = new VtkViewport(this, vtkUi.getRenderer(), vtkUi.interactor)
+  lazy val canvas = new VtkCanvas(this)
+  lazy val vtkViewport: VtkViewport = new VtkViewport(this, canvas.getRenderer, canvas.interactor)
   listenTo(vtkViewport)
 
   protected[vtk] var viewportOption: Option[Viewport] = None
@@ -23,7 +23,7 @@ class VtkPanel extends Component with EdtPublisher {
 
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
-    panel.add(vtkUi.getComponent, BorderLayout.CENTER)
+    panel.add(canvas.getComponent, BorderLayout.CENTER)
     panel
   }
 
@@ -35,7 +35,7 @@ class VtkPanel extends Component with EdtPublisher {
 
   reactions += {
     case VtkContext.RenderRequest(s, immediately) =>
-      vtkUi.render(immediately)
+      canvas.render(immediately)
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
   }
@@ -55,7 +55,7 @@ class VtkPanel extends Component with EdtPublisher {
     workspaceOption.map(deafTo(_))
     //vtkUi.GetRenderWindow().SetOffScreenRendering(1)
     vtkViewport.detach()
-    vtkUi.disableDeferredRendering()
+    canvas.disableDeferredRendering()
     workspaceOption = None
     viewportOption = None
     //super.detach()
@@ -67,7 +67,7 @@ class VtkPanel extends Component with EdtPublisher {
 
   def screenshot(file: File) = Try {
     val filter = new vtkWindowToImageFilter
-    filter.SetInput(vtkUi.getRenderWindow())
+    filter.SetInput(canvas.getRenderWindow)
     filter.SetInputBufferTypeToRGBA()
     filter.Update()
 
