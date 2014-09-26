@@ -3,9 +3,8 @@ package org.statismo.stk.ui.vtk
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
-
-import vtk.vtkPolyData
 import org.statismo.stk.ui.Mesh.MeshRenderable3D
+import vtk.vtkPolyData
 
 class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
   override lazy val color = source.color
@@ -29,12 +28,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   def setGeometry(mesh: Mesh) = this.synchronized {
-    val obsolete = polyMesh
-    polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
-    obsolete.map {
-      v =>
-      //v.Delete()
-    }
+    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh)))
 
     normals.RemoveAllInputs()
     normals.SetInputData(polyMesh.get)
@@ -56,7 +50,6 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
     source.meshOrNone.map(m => deafTo(m))
     super.onDestroy()
     normals.Delete()
-    polyMesh.map(m => m.Delete())
+    // do NOT delete polymesh, it may be shared.
   }
-
 }

@@ -1,34 +1,36 @@
 package org.statismo.stk.ui.vtk
 
-import java.awt.Color
-import java.awt.Graphics
+import java.util.{Timer, TimerTask}
 
+import org.statismo.stk.ui.util.EdtUtil
 
-import vtk.vtkCanvas
-import vtk.vtkInteractorStyleTrackballCamera
-import scala.swing.Swing
-import java.util.{TimerTask, Timer}
-import javax.swing.SwingUtilities
+class VtkCanvas(parent: VtkPanel) extends VtkJoglCanvasComponent(new VtkRenderWindowInteractor(parent)) {
 
-class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
-  lazy val interactor = new VtkRenderWindowInteractor(parent)
-  iren = interactor
+  private var deferredRenderingAllowed = false
+  private val deferredRenderer = new DeferredRenderer
 
-  iren.SetRenderWindow(rw)
-  iren.SetSize(this.getSize.width, this.getSize.height)
-  iren.ConfigureEvent()
-  iren.SetInteractorStyle(new vtkInteractorStyleTrackballCamera)
+  def disableDeferredRendering() = {
+    deferredRenderingAllowed = false
+  }
 
-  //this.LightFollowCameraOn()
+  override def Render() = {
+    render(immediately = true)
+  }
+
+  def render(immediately: Boolean = false) = {
+    if (immediately || !deferredRenderingAllowed) {
+      RenderReal()
+      if (immediately) {
+        deferredRenderingAllowed = true
+      }
+    } else {
+      deferredRenderer.request()
+    }
+  }
 
   private def RenderReal() = {
-    def doIt() = {
+    EdtUtil.onEdt {
       super.Render()
-    }
-    if (SwingUtilities.isEventDispatchThread) {
-      doIt()
-    } else {
-      Swing.onEDTWait(doIt())
     }
   }
 
@@ -52,10 +54,9 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
       override def run(): Unit = {
         RenderReal()
         skipped.synchronized {
-          if (skipped.count > 0) {
-            //FIXME
-            //println(s"DEBUG: Skipped ${skipped.count} render requests")
-          }
+//          if (skipped.count > 0) {
+//            println(s"DEBUG: Skipped ${skipped.count} render requests")
+//          }
           skipped.count = 0
           pending = None
         }
@@ -71,36 +72,5 @@ class VtkCanvas(parent: VtkPanel) extends vtkCanvas {
         skipped.count += 1
       }
     }
-  }
-
-  private val deferredRenderer = new DeferredRenderer
-
-  override def Render() = {
-    render(immediately = true)
-  }
-
-  /* This is a somewhat awkward combination, but it seems to do the trick. */
-
-  private var _allowDeferredRendering = false
-
-  def disableDeferredRendering() = {
-    _allowDeferredRendering = false
-  }
-
-  def render(immediately: Boolean = false) = {
-    if (immediately || !_allowDeferredRendering) {
-      RenderReal()
-      if (immediately) {
-        _allowDeferredRendering = true
-      }
-    } else {
-      deferredRenderer.request()
-    }
-  }
-
-  override def paint(g: Graphics) = this.synchronized {
-    g.setColor(Color.BLACK)
-    g.fillRect(0, 0, getWidth, getHeight)
-    super.paint(g)
   }
 }

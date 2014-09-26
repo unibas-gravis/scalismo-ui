@@ -1,12 +1,10 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.utils.MeshConversion
-import org.statismo.stk.ui._
-
 import _root_.vtk.{vtkCutter, vtkPlane, vtkPolyData}
-import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
 import org.statismo.stk.core.geometry.Point3D
-import scala.Some
+import org.statismo.stk.core.utils.MeshConversion
+import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
+import org.statismo.stk.ui._
 
 class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: VtkViewport) extends PolyDataActor with LineActor with ClickableActor {
   override lazy val color = source.color
@@ -23,7 +21,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   source.meshOrNone.map {
     m =>
       listenTo(m)
-      polyMesh = Some(MeshConversion.meshToVTKPolyData(m.peer, None))
+      polyMesh = Some(Caches.MeshCache.getOrCreate(m.peer, MeshConversion.meshToVTKPolyData(m.peer, None)))
       meshOrNone = Some(m)
   }
 
@@ -46,7 +44,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
     meshOrNone.map {
       mesh =>
         if (withGeometry) {
-          polyMesh = Some(MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh))
+          polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, None)))
           cutEdges.SetInputData(polyMesh.get)
         }
         cutEdges.SetValue(0, viewport.axis match {
@@ -83,9 +81,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
       m => deafTo(m)
     }
     super.onDestroy()
-    polyMesh.map(m => m.Delete())
     cutEdges.Delete()
     plane.Delete()
   }
-
 }

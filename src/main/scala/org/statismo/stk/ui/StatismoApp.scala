@@ -1,6 +1,7 @@
 package org.statismo.stk.ui
 
 import _root_.vtk.vtkObjectBase
+import org.statismo.stk.ui.util.EdtUtil
 import scala.Array.canBuildFrom
 import scala.swing._
 import org.statismo.stk.ui.swing._
@@ -15,16 +16,11 @@ object StatismoApp {
     s: Scene => new StatismoFrame(s)
   }
 
-  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeelClassName: String = defaultLookAndFeelClassName): StatismoApp = {
+  def apply(args: Array[String] = new Array[String](0), scene: Scene = new Scene, frame: FrameConstructor = defaultFrameConstructor, lookAndFeelClassName: String = StatismoLookAndFeel.defaultLookAndFeelClassName): StatismoApp = {
     StatismoLookAndFeel.initializeWith(lookAndFeelClassName)
     val app = new StatismoApp(StatismoFrame(frame, scene))
     app.main(args)
     app
-  }
-
-  def defaultLookAndFeelClassName: String = {
-    val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
-    if (!nimbus.isEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
   }
 }
 
@@ -43,10 +39,10 @@ object StatismoFrame {
 
   def apply(constructor: FrameConstructor, scene: Scene = new Scene): StatismoFrame = {
     var result: Option[StatismoFrame] = None
-    Swing.onEDTWait {
+    EdtUtil.onEdt({
       val theFrame = constructor(scene)
       result = Some(theFrame)
-    }
+    }, wait = true)
     result.get
   }
 }
