@@ -15,7 +15,7 @@ import org.statismo.stk.ui.swing.ViewportPanel
 
 class VtkPanel extends Component with EdtPublisher {
   lazy val canvas = new VtkCanvas(this)
-  lazy val vtkViewport: VtkViewport = new VtkViewport(this, canvas.getRenderer, canvas.interactor)
+  lazy val vtkViewport: VtkViewport = new VtkViewport(this, canvas.getRenderer)
   listenTo(vtkViewport)
 
   protected[vtk] var viewportOption: Option[Viewport] = None
