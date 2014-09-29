@@ -77,7 +77,6 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
                 }
 
                 // Init VTK OpenGL RenderWindow
-                self.renderWindow.SetMapped(1);
                 self.renderWindow.SetPosition(0, 0);
                 self.setSize(drawable.getWidth(), drawable.getHeight());
                 self.renderWindow.OpenGLInit();
