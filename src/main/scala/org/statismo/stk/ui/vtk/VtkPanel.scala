@@ -27,12 +27,6 @@ class VtkPanel extends Component with EdtPublisher {
     panel
   }
 
-  //  {
-  //    if (!workspace.scene.visualizables(d => d.isVisibleIn(viewport) && d.isInstanceOf[VisualizableSceneTreeObject[_]]).isEmpty) {
-  //      vtkUi.Render()
-  //    }
-  //  }
-
   reactions += {
     case VtkContext.RenderRequest(s, immediately) =>
       canvas.render(immediately)
@@ -40,25 +34,19 @@ class VtkPanel extends Component with EdtPublisher {
       resetCamera()
   }
 
-  //override lazy val target = vtkUi
-
   def attach(source: ViewportPanel) = {
-    //super.attach(source)
-    //vtkUi.GetRenderWindow().SetOffScreenRendering(0)
     viewportOption = source.viewportOption
     workspaceOption = source.workspaceOption
-    workspaceOption.map(listenTo(_))
     vtkViewport.attach()
+    workspaceOption.map(listenTo(_))
   }
 
   def detach() = {
     workspaceOption.map(deafTo(_))
-    //vtkUi.GetRenderWindow().SetOffScreenRendering(1)
     vtkViewport.detach()
     canvas.disableDeferredRendering()
     workspaceOption = None
     viewportOption = None
-    //super.detach()
   }
 
   def resetCamera() = {
