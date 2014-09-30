@@ -28,13 +28,13 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
     protected GLEventListener glEventListener;
 
 
-    public VtkJoglCanvasComponent(VtkRenderWindowInteractor interactor) {
+    public VtkJoglCanvasComponent(VtkPanel panel) {
         final VtkJoglCanvasComponent self = this;
 
         inRenderCall = false;
         renderWindow = new vtkGenericOpenGLRenderWindow();
         renderer = new vtkRenderer();
-        this.interactor = interactor;
+        interactor = new VtkRenderWindowInteractor(panel);
         lock = new ReentrantLock();
 
         // Init interactor
