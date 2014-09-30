@@ -4,7 +4,7 @@ import java.util.{Timer, TimerTask}
 
 import org.statismo.stk.ui.util.EdtUtil
 
-class VtkCanvas(parent: VtkPanel) extends VtkJoglCanvasComponent(new VtkRenderWindowInteractor(parent)) {
+class VtkCanvas(parent: VtkPanel) extends VtkJoglPanelComponent(parent) {
 
   private var deferredRenderingAllowed = false
   private val deferredRenderer = new DeferredRenderer

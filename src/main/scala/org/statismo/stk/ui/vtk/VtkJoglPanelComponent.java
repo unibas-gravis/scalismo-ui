@@ -6,15 +6,16 @@ import vtk.rendering.vtkInteractorForwarder;
 import vtk.*;
 
 import javax.media.opengl.*;
-import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.awt.GLJPanel;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * This is essentially the same as the original vtk.vtkJoglCanvasComponent class, except that
- * the interactor is a VtkRenderWindowInteractor.
+ * This is essentially the same as the original vtk.vtkJoglPanelComponent class, except that
+ * the interactor is a VtkRenderWindowInteractor, and that it contains a workaround to
+ * prevent deadlocks on Windows.
  */
 
-public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
+public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
     protected vtkGenericOpenGLRenderWindow renderWindow;
     protected vtkRenderer renderer;
     protected vtkCamera camera;
@@ -23,18 +24,17 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
     protected ReentrantLock lock;
     protected boolean inRenderCall;
 
-    protected GLCanvas uiComponent;
+    protected GLJPanel uiComponent;
     protected boolean isWindowCreated;
     protected GLEventListener glEventListener;
 
-
-    public VtkJoglCanvasComponent(VtkRenderWindowInteractor interactor) {
-        final VtkJoglCanvasComponent self = this;
+    public VtkJoglPanelComponent(VtkPanel panel) {
+        final VtkJoglPanelComponent self = this;
 
         inRenderCall = false;
         renderWindow = new vtkGenericOpenGLRenderWindow();
         renderer = new vtkRenderer();
-        this.interactor = interactor;
+        interactor = new VtkRenderWindowInteractor(panel);
         lock = new ReentrantLock();
 
         // Init interactor
@@ -60,7 +60,7 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
 
 
         isWindowCreated = false;
-        uiComponent = new GLCanvas(new GLCapabilities(GLProfile.getDefault()));
+        uiComponent = new GLJPanel(new GLCapabilities(GLProfile.getDefault()));
         renderWindow.SetIsDirect(1);
         renderWindow.SetSupportsOpenGL(1);
         renderWindow.SetIsCurrent(true);
@@ -76,8 +76,6 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
                     ctx.makeCurrent();
                 }
 
-                // Init VTK OpenGL RenderWindow
-                self.renderWindow.SetMapped(1);
                 self.renderWindow.SetPosition(0, 0);
                 self.setSize(drawable.getWidth(), drawable.getHeight());
                 self.renderWindow.OpenGLInit();
@@ -207,7 +205,7 @@ public class VtkJoglCanvasComponent implements vtkComponent<GLCanvas> {
         vtkAbstractComponent.attachOrientationAxes(this);
     }
 
-    public GLCanvas getComponent() {
+    public GLJPanel getComponent() {
         return uiComponent;
     }
 
