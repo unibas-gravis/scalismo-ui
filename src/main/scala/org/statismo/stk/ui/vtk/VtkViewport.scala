@@ -34,7 +34,7 @@ object VtkViewport {
   }
 }
 
-class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer, val interactor: VtkRenderWindowInteractor) extends VtkContext {
+class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkContext {
   private implicit val myself: VtkViewport = this
   deafTo(myself)
 

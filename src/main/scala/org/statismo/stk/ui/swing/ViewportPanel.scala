@@ -1,20 +1,18 @@
 package org.statismo.stk.ui.swing
 
 import java.io.File
-import scala.swing._
-import scala.swing.BorderPanel.Position.Center
-import scala.util.Try
+import javax.swing._
+import javax.swing.border.TitledBorder
+
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.SaveAction
-import javax.swing.border.TitledBorder
-import javax.swing._
-import scala.swing.event.{Event, ValueChanged}
-import scala.collection.immutable
-import scala.Some
-import scala.swing.Action
-import java.awt.event.ComponentListener
-import org.statismo.stk.ui.vtk.VtkPanel
 import org.statismo.stk.ui.swing.util.EdtSlider
+import org.statismo.stk.ui.vtk.VtkPanel
+
+import scala.swing.BorderPanel.Position.Center
+import scala.swing.{Action, _}
+import scala.swing.event.ValueChanged
+import scala.util.Try
 
 class ViewportPanel extends BorderPanel {
 
@@ -26,7 +24,7 @@ class ViewportPanel extends BorderPanel {
 
   def workspaceOption: Option[Workspace] = workspace
 
-  def show(workspace: Workspace, viewport: Viewport) = this.synchronized {
+  def show(workspace: Workspace, viewport: Viewport): Unit = this.synchronized {
     hide() // just in case someone forgot to call it
     this.viewport = Some(viewport)
     this.workspace = Some(workspace)
@@ -79,7 +77,6 @@ class ViewportPanel extends BorderPanel {
       renderer.resetCamera()
     }
   }).tooltip = "Reset Camera"
-
 }
 
 class ThreeDViewportPanel extends ViewportPanel {
@@ -87,7 +84,7 @@ class ThreeDViewportPanel extends ViewportPanel {
 }
 
 class TwoDViewportPanel extends ViewportPanel {
-  override def show(workspace: Workspace, viewport: Viewport) = {
+  override def show(workspace: Workspace, viewport: Viewport): Unit = {
     super.show(workspace, viewport)
     slider.update(viewport.scene.slicingPosition)
     slider.listenTo(viewport.scene)

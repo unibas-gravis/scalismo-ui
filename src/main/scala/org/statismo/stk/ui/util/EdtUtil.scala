@@ -18,7 +18,7 @@ object EdtUtil {
     }
   }
 
-  def onEdt[R: ClassTag](op: => R): R = {
+  def onEdtWithResult[R: ClassTag](op: => R): R = {
     if (SwingUtilities.isEventDispatchThread) {
       op
     } else {
