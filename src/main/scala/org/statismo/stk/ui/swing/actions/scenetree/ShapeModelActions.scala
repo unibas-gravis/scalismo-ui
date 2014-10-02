@@ -5,7 +5,7 @@ import java.io.File
 import scala.util.Success
 import scala.util.Try
 
-import org.statismo.stk.ui.{StaticMesh, SceneTreeObject, ShapeModel, ShapeModels}
+import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.{SaveAction, LoadAction}
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {
@@ -71,7 +71,7 @@ class CreateShapeModelInstanceAction extends SceneTreePopupAction("Create new In
 
 class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove all Instances") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel] && !context.get.asInstanceOf[ShapeModel].instances.children.isEmpty
+    context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].instances.children.nonEmpty
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
@@ -82,7 +82,7 @@ class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove al
   }
 }
 
-class AddReferenceMeshAction extends SceneTreePopupAction("Add Reference as Static Object") {
+class AddReferenceAsStaticObjectAction extends SceneTreePopupAction("Add Reference Mesh as new Static Object") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context.isDefined && context.get.isInstanceOf[ShapeModel]
   }
@@ -91,6 +91,22 @@ class AddReferenceMeshAction extends SceneTreePopupAction("Add Reference as Stat
     if (isContextSupported(context)) {
       val model = context.get.asInstanceOf[ShapeModel]
       StaticMesh.createFromPeer(model.peer.mesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
+    }
+  }
+}
+
+class CloneInstanceAsStaticObjectAction extends SceneTreePopupAction("Clone as new Static Object") {
+  def isContextSupported(context: Option[SceneTreeObject]) = {
+    context match {
+      case Some(r: ShapeModelInstance.MeshRepresentation) => true
+      case _ => false
+    }
+  }
+
+  override def apply(context: Option[SceneTreeObject]) = {
+    if (isContextSupported(context)) {
+      val mesh = context.get.asInstanceOf[ShapeModelInstance.MeshRepresentation]
+      StaticMesh.createFromPeer(mesh.peer, None, Some(s"${mesh.parent.name}-copy"))(mesh.parent.scene)
     }
   }
 }

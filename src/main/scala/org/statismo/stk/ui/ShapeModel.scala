@@ -2,6 +2,8 @@ package org.statismo.stk.ui
 
 import java.io.File
 
+import org.statismo.stk.ui.ShapeModelInstance.MeshRepresentation
+
 import scala.swing.event.Event
 import scala.util.{Failure, Success, Try}
 import scala.collection.immutable
@@ -172,6 +174,25 @@ object ShapeModelInstance {
 
   case class CoefficientsChanged(source: ShapeModelInstance) extends Event
 
+  class MeshRepresentation(override val parent: ShapeModelInstance) extends Mesh {
+    name = "Mesh"
+    protected[ui] override lazy val isNameUserModifiable = false
+    protected[ui] override lazy val isCurrentlyRemoveable = false
+    private var mesh: TriangleMesh = parent.shapeModel.calculateMesh(parent.coefficients)
+
+    def peer = {
+      mesh
+    }
+
+    private[ShapeModelInstance] def peer_=(newMesh: TriangleMesh) = {
+      mesh = newMesh
+      publishEdt(Mesh.GeometryChanged(this))
+    }
+
+    def addLandmarkAt(point: Point3D) = {
+      parent.landmarks.addAt(point)
+    }
+  }
 }
 
 class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
@@ -179,7 +200,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
   override lazy val parent = shapeModel
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.gaussianProcess.rank)(0.0f)
 
-  val meshRepresentation = new ShapeModelInstanceMeshRepresentation
+  val meshRepresentation = new MeshRepresentation(this)
 
   def coefficients: IndexedSeq[Float] = {
     _coefficients
@@ -197,27 +218,5 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
   representations.add(meshRepresentation)
 
   override val landmarks = new MoveableLandmarks(this)
-
-  class ShapeModelInstanceMeshRepresentation extends Mesh {
-    name = "Mesh"
-    protected[ui] override lazy val isNameUserModifiable = false
-    protected[ui] override lazy val isCurrentlyRemoveable = false
-    private var _mesh: TriangleMesh = shapeModel.calculateMesh(_coefficients)
-
-    def peer = {
-      _mesh
-    }
-
-    private[ShapeModelInstance] def peer_=(newMesh: TriangleMesh) = {
-      _mesh = newMesh
-      publishEdt(Mesh.GeometryChanged(this))
-    }
-
-    override lazy val parent = ShapeModelInstance.this
-
-    def addLandmarkAt(point: Point3D) = {
-      parent.landmarks.addAt(point)
-    }
-  }
 
 }
