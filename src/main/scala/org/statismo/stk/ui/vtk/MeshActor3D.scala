@@ -19,16 +19,18 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   this.GetProperty().SetInterpolationToGouraud()
   source.meshOrNone.map {
     m =>
-      setGeometry(m)
+      setGeometry(m, useTemplate = true)
       listenTo(m)
   }
 
   reactions += {
-    case Mesh.GeometryChanged(m) => setGeometry(m)
+    case Mesh.GeometryChanged(m) => setGeometry(m, useTemplate = true)
+    case Mesh.Reloaded(m) => setGeometry(m, useTemplate = false)
   }
 
-  def setGeometry(mesh: Mesh) = this.synchronized {
-    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, polyMesh)))
+  def setGeometry(mesh: Mesh, useTemplate: Boolean) = this.synchronized {
+    val template = if (useTemplate) polyMesh else None
+    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, template)))
 
     normals.RemoveAllInputs()
     normals.SetInputData(polyMesh.get)

@@ -2,21 +2,20 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.swing.event.Event
-import scala.util.Try
-
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.ui.visualization._
-import scala.collection.immutable.Seq
 import org.statismo.stk.ui.visualization.props._
-import scala.Tuple2
-import scala.Some
+
+import scala.collection.immutable.Seq
 import scala.swing.Reactor
+import scala.swing.event.Event
+import scala.util.Try
 
 object Mesh extends SimpleVisualizationFactory[Mesh] {
 
   case class GeometryChanged(source: Mesh) extends Event
+  case class Reloaded(source: Mesh) extends Event
 
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D(None)))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2DOutline(None)))

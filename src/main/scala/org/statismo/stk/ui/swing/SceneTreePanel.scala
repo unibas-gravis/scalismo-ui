@@ -3,9 +3,9 @@ package org.statismo.stk.ui.swing
 import java.awt.Frame
 import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import java.util.EventObject
-import javax.swing.{JPopupMenu, JTree}
 import javax.swing.event.{TreeSelectionEvent, TreeSelectionListener}
 import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel, TreePath, TreeSelectionModel}
+import javax.swing.{JPopupMenu, JTree}
 
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.scenetree._
@@ -17,6 +17,7 @@ import scala.swing.{BorderPanel, Component, Reactor, ScrollPane}
 
 object SceneTreePanel {
   lazy val popupActions: Seq[SceneTreePopupAction] = Seq(
+    new ReloadReloadableAction,
     new LoadLoadableAction,
     new SaveSaveableAction,
     new RemoveRemoveableAction,

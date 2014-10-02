@@ -64,6 +64,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   reactions += {
     case Scene.SlicingPosition.PointChanged(s) => update()
     case Mesh.GeometryChanged(m) => update(withGeometry = true)
+    case Mesh.Reloaded(m) => update(withGeometry = true)
     case SceneTreeObject.Destroyed(m) =>
       deafTo(m)
       meshOrNone = None
