@@ -5,9 +5,7 @@ import java.io.File
 import scala.util.Success
 import scala.util.Try
 
-import org.statismo.stk.ui.SceneTreeObject
-import org.statismo.stk.ui.ShapeModel
-import org.statismo.stk.ui.ShapeModels
+import org.statismo.stk.ui.{StaticMesh, SceneTreeObject, ShapeModel, ShapeModels}
 import org.statismo.stk.ui.swing.actions.{SaveAction, LoadAction}
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {
@@ -83,3 +81,17 @@ class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove al
     }
   }
 }
+
+class AddReferenceMeshAction extends SceneTreePopupAction("Add Reference as Static Object") {
+  def isContextSupported(context: Option[SceneTreeObject]) = {
+    context.isDefined && context.get.isInstanceOf[ShapeModel]
+  }
+
+  override def apply(context: Option[SceneTreeObject]) = {
+    if (isContextSupported(context)) {
+      val model = context.get.asInstanceOf[ShapeModel]
+      StaticMesh.createFromPeer(model.peer.mesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
+    }
+  }
+}
+

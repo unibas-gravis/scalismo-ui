@@ -38,6 +38,7 @@ object SceneTreePanel {
     new SaveShapeModelLandmarksAction,
     new CreateShapeModelInstanceAction,
     new RemoveAllShapeModelInstancesAction,
+    new AddReferenceMeshAction,
     new CreateStaticThreeDObjectFromMeshAction,
     new CreateStaticThreeDObjectFromImageAction,
     new AddMeshRepresentationToStaticThreeDObjectAction,
