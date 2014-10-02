@@ -1,32 +1,19 @@
 package org.statismo.stk.ui.swing
 
 import java.awt.Frame
-import java.awt.event.KeyAdapter
-import java.awt.event.KeyEvent
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
+import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import java.util.EventObject
+import javax.swing.{JPopupMenu, JTree}
+import javax.swing.event.{TreeSelectionEvent, TreeSelectionListener}
+import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel, TreePath, TreeSelectionModel}
+
+import org.statismo.stk.ui._
+import org.statismo.stk.ui.swing.actions.scenetree._
 
 import scala.Array.canBuildFrom
 import scala.collection.JavaConversions.enumerationAsScalaIterator
-import scala.swing.BorderPanel
 import scala.swing.BorderPanel.Position.Center
-import scala.swing.Component
-import scala.swing.Reactor
-import scala.swing.ScrollPane
-
-import org.statismo.stk.ui._
-
-import javax.swing.JPopupMenu
-import javax.swing.JTree
-import javax.swing.event.TreeSelectionEvent
-import javax.swing.event.TreeSelectionListener
-import javax.swing.tree.DefaultMutableTreeNode
-import javax.swing.tree.DefaultTreeModel
-import javax.swing.tree.TreePath
-import javax.swing.tree.TreeSelectionModel
-import org.statismo.stk.ui.swing.actions.scenetree._
-import scala.Some
+import scala.swing.{BorderPanel, Component, Reactor, ScrollPane}
 
 object SceneTreePanel {
   lazy val popupActions: Seq[SceneTreePopupAction] = Seq(
@@ -38,6 +25,8 @@ object SceneTreePanel {
     new SaveShapeModelLandmarksAction,
     new CreateShapeModelInstanceAction,
     new RemoveAllShapeModelInstancesAction,
+    new AddReferenceAsStaticObjectAction,
+    new CloneInstanceAsStaticObjectAction,
     new CreateStaticThreeDObjectFromMeshAction,
     new CreateStaticThreeDObjectFromImageAction,
     new AddMeshRepresentationToStaticThreeDObjectAction,
@@ -120,7 +109,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   def handlePopup(target: SceneTreeObject, x: Int, y: Int): Unit = {
     val applicable = popupActions.filter(a => a.setContext(Some(target)))
-    if (!applicable.isEmpty) {
+    if (applicable.nonEmpty) {
       val pop = new JPopupMenu()
       applicable.foreach {
         a =>
