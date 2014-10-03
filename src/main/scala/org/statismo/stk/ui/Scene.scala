@@ -1,7 +1,6 @@
 package org.statismo.stk.ui
 
 import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization._
 
 import scala.collection.immutable
@@ -174,6 +173,15 @@ object Scene {
       }
     }
 
+    private def revalidatePoint() = this.synchronized {
+      val sx = Math.min(Math.max(boundingBox.xMin, x), boundingBox.xMax)
+      val sy = Math.min(Math.max(boundingBox.yMin, y), boundingBox.yMax)
+      val sz = Math.min(Math.max(boundingBox.zMin, z), boundingBox.zMax)
+      if (x != sx || y != sy || z != sz) {
+        point = new Point3D(sx, sy, sz)
+      }
+    }
+
     private var _boundingBox = BoundingBox.None
 
     def boundingBox = this.synchronized(_boundingBox)
@@ -183,6 +191,7 @@ object Scene {
         _boundingBox = nb
         scene.publishEdt(Scene.SlicingPosition.BoundingBoxChanged(this))
       }
+      revalidatePoint()
     }
 
     private[Scene] def updateBoundingBox() = {
