@@ -1,19 +1,15 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.utils.{Benchmark, ImageConversion}
 import org.statismo.stk.ui.vtk.VtkContext.RenderRequest
-
 import org.statismo.stk.ui.{Axis, Image3D}
 
 class ImageActor3D(source: Image3D[_])(implicit viewport: VtkViewport) extends RenderableActor {
-  val points = Caches.ImageCache.getOrCreate(source, ImageConversion.image3DTovtkStructuredPoints(source.asFloatImage))
-
-  val x = ImageActor2D(source, points, Axis.X)
-  val y = ImageActor2D(source, points, Axis.Y)
-  val z = ImageActor2D(source, points, Axis.Z)
+  val x = ImageActor2D(source, Axis.X)
+  val y = ImageActor2D(source, Axis.Y)
+  val z = ImageActor2D(source, Axis.Z)
 
   deafTo(this)
-  listenTo(x,y,z)
+  listenTo(x, y, z)
 
   reactions += {
     // simply forward render requests
@@ -29,5 +25,6 @@ class ImageActor3D(source: Image3D[_])(implicit viewport: VtkViewport) extends R
     vtkActors.foreach(_.onDestroy())
   }
 
-  override def currentBoundingBox = VtkUtils.bounds2BoundingBox(points.GetBounds())
+  /* all slices return the same bounding box (of the entire volume), so it doesn't matter which slice we take it from */
+  override def currentBoundingBox = x.currentBoundingBox
 }

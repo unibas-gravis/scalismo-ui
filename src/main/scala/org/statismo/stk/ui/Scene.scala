@@ -173,13 +173,11 @@ object Scene {
       }
     }
 
-    private def revalidatePoint() = this.synchronized {
+    private def recalculatePoint() = this.synchronized {
       val sx = Math.min(Math.max(boundingBox.xMin, x), boundingBox.xMax)
       val sy = Math.min(Math.max(boundingBox.yMin, y), boundingBox.yMax)
       val sz = Math.min(Math.max(boundingBox.zMin, z), boundingBox.zMax)
-      if (x != sx || y != sy || z != sz) {
-        point = new Point3D(sx, sy, sz)
-      }
+      point = new Point3D(sx, sy, sz)
     }
 
     private var _boundingBox = BoundingBox.None
@@ -191,7 +189,7 @@ object Scene {
         _boundingBox = nb
         scene.publishEdt(Scene.SlicingPosition.BoundingBoxChanged(this))
       }
-      revalidatePoint()
+      recalculatePoint()
     }
 
     private[Scene] def updateBoundingBox() = {
