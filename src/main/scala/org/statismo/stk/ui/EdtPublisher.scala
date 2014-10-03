@@ -12,20 +12,13 @@ trait EdtPublisher extends Publisher {
 
   /* this is the preferred method to use */
   def publishEdt(e: Event) = {
-    doPublish(e)
+    EdtUtil.onEdt(doPublish(e), wait = true)
   }
 
   private def doPublish(e: Event) = {
     val copy = listeners.map(l => l)
     copy.foreach {
-      l =>
-        new Thread() {
-          override def run() = {
-            if (l.isDefinedAt(e)) {
-              EdtUtil.onEdt(l(e))
-            }
-          }
-        }.start()
+      l => if (l.isDefinedAt(e)) l(e)
     }
   }
 }
