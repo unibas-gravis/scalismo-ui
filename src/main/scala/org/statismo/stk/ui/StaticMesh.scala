@@ -2,12 +2,13 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.util.Try
-
 import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
+import org.statismo.stk.ui.Reloadable.{FileReloader, ImmutableReloader, Reloader}
+
 import scala.collection.immutable
+import scala.util.{Failure, Success, Try}
 
 object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata {
   override val description = "Static Mesh"
@@ -18,21 +19,39 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
     createFromFile(file, None, file.getName)
   }
 
-  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
-    for {
-      raw <- MeshIO.readMesh(file)
-    } yield {
-      new StaticMesh(raw, parent, Some(name))
+  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = Try {
+    val reloader = new FileReloader[TriangleMesh](file) {
+      override def load() = MeshIO.readMesh(file)
     }
+    new StaticMesh(reloader, parent, Some(name))
   }
 
   def createFromPeer(peer: TriangleMesh, parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMesh = {
-    new StaticMesh(peer, parent, name)
+    new StaticMesh(new ImmutableReloader[TriangleMesh](peer), parent, name)
   }
 }
 
-class StaticMesh protected[ui](override val peer: TriangleMesh, initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh {
+class StaticMesh private[StaticMesh](peerLoader: Reloader[TriangleMesh], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Mesh with Reloadable {
+
+  override def peer = _peer
+  private var _peer = peerLoader.load().get
+
   name_=(name.getOrElse(Nameable.NoName))
+
+  override def reload() = {
+    peerLoader.load() match {
+      case ok@Success(newPeer) =>
+        if (newPeer != peer) {
+          _peer = newPeer
+          publishEdt(Mesh.Reloaded(this))
+        }
+        Success(())
+      case Failure(ex) => Failure(ex)
+    }
+  }
+
+  override def isCurrentlyReloadable = peerLoader.isReloadable
+
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
   def addLandmarkAt(point: Point3D) = {
