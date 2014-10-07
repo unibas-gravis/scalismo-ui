@@ -1,21 +1,18 @@
 package org.statismo.stk.ui
 
+import java.awt.Color
 import java.io.File
 
+import breeze.linalg.DenseVector
+import org.statismo.stk.core.geometry.{Point3D, ThreeD}
+import org.statismo.stk.core.io.LandmarkIO
+import org.statismo.stk.ui.util.EdtUtil
+import org.statismo.stk.ui.visualization._
+import org.statismo.stk.ui.visualization.props.{ColorProperty, OpacityProperty, RadiusProperty}
+
+import scala.collection.immutable
 import scala.swing.event.Event
 import scala.util.Try
-
-import org.statismo.stk.core.geometry.ThreeD
-import org.statismo.stk.core.io.LandmarkIO
-import scala.collection.immutable
-
-import breeze.linalg.DenseVector
-import org.statismo.stk.ui.visualization._
-import org.statismo.stk.core.geometry.Point3D
-import scala.Some
-import scala.Tuple2
-import org.statismo.stk.ui.visualization.props.{RadiusProperty, ColorProperty, OpacityProperty}
-import java.awt.Color
 
 trait Landmark extends Nameable with Removeable {
   def point: Point3D
@@ -49,7 +46,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   val saveableMetadata = Landmarks
   val loadableMetadata = Landmarks
 
-  override def isCurrentlySaveable: Boolean = !children.isEmpty
+  override def isCurrentlySaveable: Boolean = children.nonEmpty
 
   def create(peer: Point3D, name: Option[String]): Unit
 
@@ -171,7 +168,6 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
   }
-
 }
 
 class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) with IndirectlyRepositionable {
@@ -244,9 +240,9 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
 
   syncWithPeer()
 
-  def syncWithPeer() = {
+  def syncWithPeer() = EdtUtil.onEdt({
     var changed = false
-    _children.length until peer.children.length foreach {
+    children.length until peer.children.length foreach {
       i =>
         changed = true
         add(new MoveableLandmark(this, peer(i)))
@@ -254,5 +250,5 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
     if (changed) {
       publishEdt(SceneTreeObject.ChildrenChanged(this))
     }
-  }
+  }, wait = true)
 }
