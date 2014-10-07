@@ -101,6 +101,7 @@ trait Visualizable[X <: Visualizable[X]] extends VisualizationProvider[X] {
 
 trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends SceneTreeObject with Visualizable[X] {
   protected[ui] override def isVisibleIn(viewport: Viewport): Boolean = visible(viewport)
+
 }
 
 trait Derivable[A <: AnyRef] {

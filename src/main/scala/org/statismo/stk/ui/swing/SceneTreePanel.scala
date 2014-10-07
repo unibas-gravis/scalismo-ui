@@ -1,14 +1,19 @@
 package org.statismo.stk.ui.swing
 
+import java.awt
 import java.awt.Frame
 import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 import java.util.EventObject
-import javax.swing.{JPopupMenu, JTree}
 import javax.swing.event.{TreeSelectionEvent, TreeSelectionListener}
-import javax.swing.tree.{DefaultMutableTreeNode, DefaultTreeModel, TreePath, TreeSelectionModel}
+import javax.swing.tree._
+import javax.swing.{Icon, JPopupMenu, JTree}
 
 import org.statismo.stk.ui._
+import org.statismo.stk.ui.swing.SceneTreePanel.TreeNode
 import org.statismo.stk.ui.swing.actions.scenetree._
+import org.statismo.stk.ui.util.{ObjectId, Cache}
+import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
+import org.statismo.stk.ui.visualization.icons.IconFactory
 
 import scala.Array.canBuildFrom
 import scala.collection.JavaConversions.enumerationAsScalaIterator
@@ -33,15 +38,54 @@ object SceneTreePanel {
     new AddImageRepresentationToStaticThreeDObjectAction,
     new VisibilityAction,
     new RenameNameableAction)
-}
-
-class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor {
 
   private[SceneTreePanel] class TreeNode(backend: SceneTreeObject) extends DefaultMutableTreeNode(backend) {
     override def getUserObject: SceneTreeObject = {
       super.getUserObject.asInstanceOf[SceneTreeObject]
     }
   }
+
+  class CellRenderer(implicit val scene: Scene) extends DefaultTreeCellRenderer {
+
+    object Icons {
+      /* note: this uses the "closed" icon for leaves. */
+      final val DefaultIcons = new Icons(getDefaultOpenIcon, getDefaultClosedIcon, getDefaultClosedIcon)
+
+      def getForNode(node: SceneTreeObject): Icons = {
+        node match {
+          case vis: VisualizableSceneTreeObject[_] =>
+            IconFactory.iconFor(vis) match {
+              case None => DefaultIcons
+              case Some(icon) =>
+                new Icons(icon, icon, icon)
+            }
+          case _ => DefaultIcons
+        }
+      }
+    }
+
+    class Icons(open: Icon, closed: Icon, leaf: Icon) {
+      // the invocation context is a call to getTreeCellRendererComponent().
+      def apply() = {
+        setOpenIcon(open)
+        setClosedIcon(closed)
+        setLeafIcon(leaf)
+      }
+    }
+
+
+    override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): awt.Component = {
+      val sceneTreeObject = value.asInstanceOf[TreeNode].getUserObject
+
+      Icons.getForNode(sceneTreeObject).apply()
+
+      super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus)
+    }
+  }
+
+}
+
+class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor {
 
   val scene = workspace.scene
   listenTo(scene)
@@ -128,6 +172,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   }
 
   val jtree = new JTree(tree) {
+    setCellRenderer(new SceneTreePanel.CellRenderer()(scene))
     getSelectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION)
     addTreeSelectionListener(listener)
     addKeyListener(listener)

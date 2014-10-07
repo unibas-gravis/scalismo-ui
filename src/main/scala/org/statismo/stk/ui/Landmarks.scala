@@ -49,7 +49,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   val saveableMetadata = Landmarks
   val loadableMetadata = Landmarks
 
-  override def isCurrentlySaveable: Boolean = !children.isEmpty
+  override def isCurrentlySaveable: Boolean = children.nonEmpty
 
   def create(peer: Point3D, name: Option[String]): Unit
 
