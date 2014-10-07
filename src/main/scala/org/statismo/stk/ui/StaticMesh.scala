@@ -19,11 +19,12 @@ object StaticMesh extends SceneTreeObjectFactory[StaticMesh] with FileIoMetadata
     createFromFile(file, None, file.getName)
   }
 
-  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = Try {
-    val reloader = new FileReloader[TriangleMesh](file) {
-      override def load() = MeshIO.readMesh(file)
-    }
-    new StaticMesh(reloader, parent, Some(name))
+  def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMesh] = {
+    Try {
+      new FileReloader[TriangleMesh](file) {
+        override def doLoad() = MeshIO.readMesh(file)
+      }
+    }.map(reloader => new StaticMesh(reloader, parent, Some(name)))
   }
 
   def createFromPeer(peer: TriangleMesh, parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMesh = {

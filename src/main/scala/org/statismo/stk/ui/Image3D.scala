@@ -76,9 +76,9 @@ object Image3D {
   }
 }
 
-class Image3D[S: ScalarValue : ClassTag : TypeTag](initialPeer: DiscreteScalarImage3D[S], reloaderOption: Option[Reloader[DiscreteScalarImage3D[S]]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
+class Image3D[S: ScalarValue : ClassTag : TypeTag](reloader: Reloader[DiscreteScalarImage3D[S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
 
-  private var _peer = initialPeer
+  private var _peer = reloader.load().get
   def peer: DiscreteScalarImage3D[S] = _peer
 
   protected[ui] override lazy val saveableMetadata = StaticImage3D
@@ -95,20 +95,16 @@ class Image3D[S: ScalarValue : ClassTag : TypeTag](initialPeer: DiscreteScalarIm
     parent.asInstanceOf[ThreeDObject].landmarks.addAt(point)
   }
   override def reload() = {
-    reloaderOption match {
-      case Some(rld) =>
-        rld.load() match {
-          case (Success(newPeer)) =>
-            if (newPeer != _peer) {
-              _peer = newPeer
-              publishEdt(Image3D.Reloaded(this))
-            }
-            Success(())
-          case Failure(ex) => Failure(ex)
+    reloader.load() match {
+      case (Success(newPeer)) =>
+        if (newPeer != _peer) {
+          _peer = newPeer
+          publishEdt(Image3D.Reloaded(this))
         }
-      case None => Failure(new IllegalStateException("not reloadable"))
+        Success(())
+      case Failure(ex) => Failure(ex)
     }
   }
 
-  override def isCurrentlyReloadable = reloaderOption.isDefined
+  override def isCurrentlyReloadable = reloader.isReloadable
 }

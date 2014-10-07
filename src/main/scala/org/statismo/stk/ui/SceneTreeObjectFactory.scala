@@ -17,12 +17,12 @@ object SceneTreeObjectFactory {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))
     val file = new File(filename)
     val errors = candidates map {
-      f =>
-        val so = f.tryCreate(file)
-        if (so.isSuccess) {
-          return so
+      factory =>
+        val outcome = factory.tryCreate(file)
+        if (outcome.isSuccess) {
+          return outcome
         }
-        so
+        outcome
     }
     val allErrors = errors.map {
       case Failure(ex) => ex.getMessage
