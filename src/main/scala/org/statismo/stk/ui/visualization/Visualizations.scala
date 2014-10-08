@@ -62,6 +62,9 @@ class Visualizations {
 trait VisualizationFactory[A <: Visualizable[A]] extends VisualizationProvider[A] {
   protected[ui] override final val visualizationProvider = null
 
+  override protected[ui] def visualizationFactory: VisualizationFactory[A] = this
+
+  protected[ui] final def visualizationsFor(viewport: Viewport): Seq[Visualization[A]] = visualizationsFor(viewport.getClass.getCanonicalName)
   protected[ui] def visualizationsFor(viewportClassName: String): Seq[Visualization[A]]
 
   protected[ui] final def instantiate(viewportClassName: String): Visualization[A] = {
@@ -80,6 +83,7 @@ trait SimpleVisualizationFactory[A <: Visualizable[A]] extends VisualizationFact
 
 trait VisualizationProvider[A <: Visualizable[A]] {
   protected[ui] def visualizationProvider: VisualizationProvider[A]
+  protected[ui] def visualizationFactory: VisualizationFactory[A] = visualizationProvider.visualizationFactory
 
   def visualizations(implicit scene: Scene): immutable.Map[Viewport, Visualization[A]] = {
     var map = new immutable.HashMap[Viewport, Visualization[A]]
@@ -127,6 +131,10 @@ trait Derivable[A <: AnyRef] {
 trait Visualization[A <: Visualizable[_]] extends Derivable[Visualization[A]] {
   private val mappings = new mutable.WeakHashMap[A, Seq[Renderable]]
 
+  def description: String
+
+  override final def toString = description
+
   final def apply(target: Visualizable[_]) = {
     val typed: A = target.asInstanceOf[A]
     mappings.getOrElseUpdate(typed, instantiateRenderables(typed))
@@ -139,6 +147,8 @@ final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
   override protected def createDerived() = new NullVisualization[A]
 
   override protected def instantiateRenderables(source: A) = Nil
+
+  override val description = "invisible"
 }
 
 object VisualizationProperty {

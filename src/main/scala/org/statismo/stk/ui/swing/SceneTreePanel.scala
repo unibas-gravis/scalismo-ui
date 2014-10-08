@@ -11,7 +11,6 @@ import javax.swing.{Icon, JPopupMenu, JTree}
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.SceneTreePanel.TreeNode
 import org.statismo.stk.ui.swing.actions.scenetree._
-import org.statismo.stk.ui.util.{ObjectId, Cache}
 import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
 import org.statismo.stk.ui.visualization.icons.IconFactory
 

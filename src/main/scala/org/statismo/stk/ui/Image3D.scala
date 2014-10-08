@@ -22,6 +22,8 @@ object Image3DVisualizationFactory {
     override protected def instantiateRenderables(source: Image3D[A]) = {
       Seq(new Renderable3D(source))
     }
+
+    override val description = "Slices"
   }
 
   class Visualization2D[A] extends Visualization[Image3D[A]] {
@@ -30,6 +32,8 @@ object Image3DVisualizationFactory {
     override protected def instantiateRenderables(source: Image3D[A]) = {
       Seq(new Renderable2D(source))
     }
+
+    override val description = "Slice"
   }
 
   private[Image3DVisualizationFactory] class BaseRenderable[A](source: Image3D[A]) extends Renderable with Reactor {
