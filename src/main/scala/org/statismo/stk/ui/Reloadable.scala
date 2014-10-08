@@ -44,6 +44,6 @@ object Reloadable {
 
   class ImmutableReloader[T](value: T) extends Reloader[T] {
     override def isReloadable = false
-    override val doLoad = Success(value)
+    override lazy val doLoad = Success(value)
   }
 }
