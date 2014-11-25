@@ -69,7 +69,7 @@ class StatismoFrame(val scene: Scene) extends MainFrame with Reactor {
   lazy val console = new Console()(this)
 
   lazy val workspace = new Workspace(scene)
-  private lazy val workspacePanel: WorkspacePanel = new WorkspacePanel(workspace)
+  lazy val workspacePanel: TunableWorkspacePanel = new TunableWorkspacePanel(workspace)
 
   def toolbar: StatismoToolbar = workspacePanel.toolbar
 

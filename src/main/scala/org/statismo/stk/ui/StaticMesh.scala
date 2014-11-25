@@ -55,9 +55,9 @@ class StaticMesh private[StaticMesh](peerLoader: Reloader[TriangleMesh], initial
 
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
-  def addLandmarkAt(point: Point3D) = {
+  override def addLandmarkAt(point: Point3D, nameOpt: Option[String]) = {
     val landmarks = parent.landmarks
-    landmarks.addAt(point)
+    landmarks.addAt(point, nameOpt)
   }
 
   parent.representations.add(this)

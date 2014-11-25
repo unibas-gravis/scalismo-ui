@@ -91,8 +91,8 @@ class Image3D[S: ScalarValue : ClassTag : TypeTag](reloader: Reloader[DiscreteSc
     ImageIO.writeImage(peer, f)
   }
 
-  override def addLandmarkAt(point: Point3D) = {
-    parent.asInstanceOf[ThreeDObject].landmarks.addAt(point)
+  override def addLandmarkAt(point: Point3D, nameOpt: Option[String]) = {
+    parent.asInstanceOf[ThreeDObject].landmarks.addAt(point, nameOpt)
   }
   override def reload() = {
     reloader.load() match {

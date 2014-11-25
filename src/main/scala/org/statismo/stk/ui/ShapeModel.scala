@@ -5,7 +5,7 @@ import java.io.File
 import org.statismo.stk.ui.ShapeModelInstance.MeshRepresentation
 
 import scala.swing.event.Event
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 import scala.collection.immutable
 
 import org.statismo.stk.core.geometry.Point3D
@@ -16,9 +16,8 @@ import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
 import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
 
 import breeze.linalg.DenseVector
-import org.statismo.stk.core.io.StatismoIO.{StatismoModelType, CatalogEntry}
-import org.statismo.stk.ui.UiFramework.{SelectionTableModel, TableRow}
-
+import org.statismo.stk.core.io.StatismoIO.{ StatismoModelType, CatalogEntry }
+import org.statismo.stk.ui.UiFramework.{ SelectionTableModel, TableRow }
 
 class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTreeObjectContainer[ShapeModel] with RemoveableChildren {
   override lazy val parent = scene
@@ -103,8 +102,9 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
     nm
   }
 
-  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int)(implicit scene: Scene) = {
+  def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int, nameOpt: Option[String] = None)(implicit scene: Scene) = {
     val nm = new ShapeModel(peer)
+    nameOpt.map(n => nm.name = n)
     0 until numberOfInstances foreach {
       i => nm.instances.create()
     }
@@ -113,7 +113,7 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
 
 }
 
-class ShapeModel protected[ui](val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
+class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit override val scene: Scene) extends SceneTreeObject with Saveable with Removeable {
   override lazy val parent: ShapeModels = scene.shapeModels
 
   override lazy val saveableMetadata = ShapeModel
@@ -189,8 +189,8 @@ object ShapeModelInstance {
       publishEdt(Mesh.GeometryChanged(this))
     }
 
-    def addLandmarkAt(point: Point3D) = {
-      parent.landmarks.addAt(point)
+    override def addLandmarkAt(point: Point3D, nameOpt : Option[String]) = {
+      parent.landmarks.addAt(point, nameOpt)
     }
   }
 }
