@@ -14,6 +14,7 @@ object BuildSettings {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     shellPrompt := ShellPrompt.buildShellPrompt)
+
 }
 
 // Shell prompt which show the current project,
@@ -86,4 +87,5 @@ object STKBuild extends Build {
       credentials += Creds.statismoPrivate,
       publishTo := Some(publishURL),
       EclipseKeys.withSource := true))
+
 }

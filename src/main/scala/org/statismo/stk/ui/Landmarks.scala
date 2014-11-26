@@ -124,7 +124,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 
-  def addAt(position: Point3D)
+  def addAt(position: Point3D, nameOption: Option[String])
 
   protected[ui] override def visualizationProvider = VisualizableLandmark
 }
@@ -161,7 +161,7 @@ class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
-  def addAt(peer: Point3D) = create(peer)
+  def addAt(peer: Point3D, nameOpt : Option[String] = None) = create(peer, nameOpt)
 
   def create(peer: Point3D, name: Option[String] = None): Unit = {
     val lm = new StaticLandmark(peer, this)
@@ -219,8 +219,8 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  def addAt(peer: Point3D) = this.synchronized {
-    create(peer, None)
+  def addAt(peer: Point3D, name : Option[String] = None) = this.synchronized {
+    create(peer, name)
   }
 
   override def create(peer: Point3D, name: Option[String]): Unit = this.synchronized {

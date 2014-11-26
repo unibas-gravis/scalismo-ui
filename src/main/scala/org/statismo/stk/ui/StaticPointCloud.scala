@@ -22,9 +22,9 @@ class StaticPointCloud private[StaticPointCloud](override val peer: immutable.In
 
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
-  override def addLandmarkAt(point: Point3D) = {
+  override def addLandmarkAt(point: Point3D,  nameOpt: Option[String]) = {
     val landmarks = parent.landmarks
-    landmarks.addAt(point)
+    landmarks.addAt(point, nameOpt)
   }
 
   parent.representations.add(this)
