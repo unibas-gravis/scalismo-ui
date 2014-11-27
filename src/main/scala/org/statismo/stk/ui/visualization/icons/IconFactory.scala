@@ -65,7 +65,7 @@ object IconFactory {
   def iconFor(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[ImageIcon] = {
     node match {
       case mesh: Mesh => imageFor(colorOf(node), IconResources.Mesh, whiteIsTransparent = true).map(new ImageIcon(_))
-      case pc: PointCloud => imageFor(colorOf(node), IconResources.Mesh, whiteIsTransparent = true).map(new ImageIcon(_))
+      case pc: PointCloud => imageFor(colorOf(node), IconResources.PointCloud, whiteIsTransparent = true).map(new ImageIcon(_))
       case lm: Landmark => imageFor(colorOf(node), IconResources.Landmark, whiteIsTransparent = false).map(new ImageIcon(_))
       case _ => None
     }
