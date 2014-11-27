@@ -1,20 +1,15 @@
 package org.statismo.stk.ui.swing.props
 
 import java.awt.Dimension
-import scala.swing.BorderPanel
-import scala.swing.BorderPanel.Position.Center
-import scala.swing.BorderPanel.Position.North
-import scala.swing.Component
-import scala.swing.Reactor
-import scala.swing.ScrollPane
-import scala.swing.Swing
-import org.statismo.stk.ui.EdtPublisher
-import org.statismo.stk.ui.Workspace
 import javax.swing.JComboBox
-import scala.language.existentials
-import scala.language.reflectiveCalls
-import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
+
+import org.statismo.stk.ui.{EdtPublisher, Workspace}
 import org.statismo.stk.ui.swing._
+import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
+
+import scala.language.{existentials, reflectiveCalls}
+import scala.swing.BorderPanel.Position.{Center, North}
+import scala.swing.{BorderPanel, Component, Reactor, ScrollPane, Swing}
 import scala.swing.event.SelectionChanged
 
 trait PropertyPanel extends CardPanel.CardableComponent {
@@ -70,34 +65,6 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
   }
   layout(combo) = North
 
-  listenTo(workspace)
-  listenTo(combo)
-  updateListAndContent()
-
-  reactions += {
-    case SelectionChanged(e) => updateContent()
-    case Workspace.SelectedObjectChanged(ws) if ws eq workspace =>
-      updateListAndContent()
-  }
-
-  def updateListAndContent() {
-    val currentObject = workspace.selectedObject
-    val applicable = availableProviders.filter(_.setObject(currentObject))
-    applicableViews.model.removeAllElements()
-    applicable foreach {
-      v =>
-        applicableViews.addElement(v)
-    }
-    applicable.foreach {
-      p =>
-        if (cards.current == p.uniqueId) {
-          applicableViews.model.setSelectedItem(p)
-        }
-    }
-    combo.enabled = !applicable.isEmpty
-    updateContent()
-  }
-
   val scroll = new ScrollPane() {
     horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
     verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
@@ -106,11 +73,42 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
 
   layout(scroll) = Center
 
-  def updateContent() {
+  listenTo(workspace)
+  listenTo(combo)
+  updateListAndContent()
+
+  reactions += {
+    case Workspace.SelectedObjectChanged(ws) if ws eq workspace => updateListAndContent()
+    case SelectionChanged(e) if e == combo && combo.enabled => updateContent()
+  }
+
+  def updateListAndContent() {
+    // side effect: the SelectionChanged event still fires on addElement, setSelectedItem,
+    // but is ignored because the combo is not enabled (see reactions above)
+    combo.enabled = false
+    val currentObject = workspace.selectedObject
+
+    applicableViews.model.removeAllElements()
+    val applicable = availableProviders.filter(_.setObject(currentObject))
+    applicable foreach applicableViews.addElement
+
+    // if cards.current also applies to the newly selected object,
+    // keep it showing (and update the combobox accordingly)
+    val alreadyShowing = applicable.find(_.uniqueId == cards.current)
+    alreadyShowing match {
+      case Some(view) => applicableViews.model.setSelectedItem(view)
+      case None => updateContent()
+    }
+    combo.enabled = applicable.nonEmpty
+  }
+
+  def updateContent(): Unit = {
     val view = applicableViews.model.getSelectedItem.asInstanceOf[PropertyPanel]
     if (view != null) {
       if (cards.current != view.uniqueId) {
         cards.show(view)
+        // scroll to top of view
+        scroll.peer.getVerticalScrollBar.setValue(0)
         // this is a hack...
         if (cards.preferredSize.width > cards.size.width) {
           workspace.publishPleaseLayoutAgain()
