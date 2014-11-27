@@ -12,13 +12,13 @@ import org.statismo.stk.ui.swing.util.MultiOutputStream
 import java.io.PrintStream
 import scala.swing.event.Event
 
-class ConsolePanel(implicit frame: StatismoFrame) extends BorderPanel {
+class ConsolePanel(imports : List[String] = List())(implicit frame: StatismoFrame) extends BorderPanel {
   val icfg = Interpreter.Config()
-  icfg.imports :+= "org.statismo.stk.ui._"
+  icfg.imports =  icfg.imports ++ (imports:+"org.statismo.stk.ui._") 
   icfg.bindings ++= Seq(NamedParam("frame", frame)).toIndexedSeq
 
   val codeCfg = CodePane.Config()
-  codeCfg.style = Style.Light
+  codeCfg.style = Style.BlueForest
   val split = MSplitPane(InterpreterPane.Config().build, icfg.build, codeCfg.build)
   split.component.setResizeWeight(0.5)
   layout(Component.wrap(split.component)) = BorderPanel.Position.Center
