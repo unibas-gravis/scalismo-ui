@@ -52,7 +52,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
       t.start()
     }
 
-    if (true) {
+    if (false) {
       // sample: add a point cloud
       val pointSeq = immutable.IndexedSeq(Point3D(0, 0, 0), Point3D(0, 100, 0), Point3D(100, 100, 0), Point3D(100, 0, 0), Point3D(0, 0, 100), Point3D(0, 100, 100), Point3D(100, 100, 100), Point3D(100, 0, 100))
       StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
