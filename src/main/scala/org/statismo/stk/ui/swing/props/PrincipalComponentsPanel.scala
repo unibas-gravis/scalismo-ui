@@ -1,28 +1,17 @@
 package org.statismo.stk.ui.swing.props
 
-import java.awt.event.MouseAdapter
-import java.awt.event.MouseEvent
-
-import scala.collection.immutable
-import scala.collection.mutable
-import scala.swing.BorderPanel
-import scala.swing.BorderPanel.Position.Center
-import scala.swing.BorderPanel.Position.North
-import scala.swing.Button
-import scala.swing.Component
-import scala.swing.GridBagPanel
-import scala.swing.GridBagPanel.Anchor
-import scala.swing.GridPanel
-import scala.swing.Label
-import scala.swing.Slider
-import scala.swing.event.ButtonClicked
-import scala.swing.event.ValueChanged
-
-import org.statismo.stk.ui.ShapeModelInstance
+import java.awt.event.{MouseAdapter, MouseEvent}
+import javax.swing.JSlider
 
 import breeze.stats.distributions.Gaussian
-import javax.swing.JSlider
+import org.statismo.stk.ui.ShapeModelInstance
 import org.statismo.stk.ui.swing.util.EdtSlider
+
+import scala.collection.{immutable, mutable}
+import scala.swing.BorderPanel.Position.{Center, North}
+import scala.swing.GridBagPanel.Anchor
+import scala.swing.{BorderPanel, Button, Component, GridBagPanel, GridPanel, Label, Slider}
+import scala.swing.event.{ButtonClicked, ValueChanged}
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with PropertyPanel {
   val description = "Shape Parameters"
@@ -176,12 +165,9 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       val index = slider.name.toInt
       val value = slider.value / granularity
       setCoefficient(index, value)
-    case ButtonClicked(b) =>
-      if (b == reset) {
-        resetValues()
-      } else if (b == random) {
-        randomizeValues()
-      }
+    case ButtonClicked(`reset`) => resetValues()
+    case ButtonClicked(`random`) => randomizeValues()
+
     case ShapeModelInstance.CoefficientsChanged(m) =>
       updateDisplayedCoefficients()
   }

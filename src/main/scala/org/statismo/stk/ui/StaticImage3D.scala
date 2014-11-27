@@ -2,14 +2,15 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import scala.util.{Failure, Success, Try}
-
+import org.statismo.stk.core.common.ScalarValue
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
-import org.statismo.stk.core.common.ScalarValue
-import scala.reflect.ClassTag
-import reflect.runtime.universe.TypeTag
+import org.statismo.stk.ui.Reloadable.{FileReloader, ImmutableReloader, Reloader}
+
 import scala.collection.immutable
+import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.TypeTag
+import scala.util.{Failure, Success, Try}
 
 object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileIoMetadata {
   override val description = "Static 3D Image"
@@ -23,34 +24,46 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
   def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage3D[_]] = {
     {
       // Short
-      val peerTry = ImageIO.read3DScalarImage[Short](file)
-      if (peerTry.isSuccess) {
-        return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
+      val reloaderTry = Try {
+        new FileReloader[DiscreteScalarImage3D[Short]](file) {
+          override def doLoad() = ImageIO.read3DScalarImage[Short](file)
+        }
+      }
+      if (reloaderTry.isSuccess) {
+        return Success(new StaticImage3D(reloaderTry.get, parent, Some(name)))
       }
     }
     {
       // Float
-      val peerTry = ImageIO.read3DScalarImage[Float](file)
-      if (peerTry.isSuccess) {
-        return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
+      val reloaderTry = Try {
+        new FileReloader[DiscreteScalarImage3D[Float]](file) {
+          override def doLoad() = ImageIO.read3DScalarImage[Float](file)
+        }
+      }
+      if (reloaderTry.isSuccess) {
+        return Success(new StaticImage3D(reloaderTry.get, parent, Some(name)))
       }
     }
     {
       // Double
-      val peerTry = ImageIO.read3DScalarImage[Double](file)
-      if (peerTry.isSuccess) {
-        return Success(new StaticImage3D(peerTry.get, parent, Some(name)))
+      val reloaderTry = Try {
+        new FileReloader[DiscreteScalarImage3D[Double]](file) {
+          override def doLoad() = ImageIO.read3DScalarImage[Double](file)
+        }
+      }
+      if (reloaderTry.isSuccess) {
+        return Success(new StaticImage3D(reloaderTry.get, parent, Some(name)))
       }
     }
     Failure(new IllegalArgumentException("could not load " + file.getAbsoluteFile))
   }
 
   def createFromPeer[S: ScalarValue : ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
-    new StaticImage3D(peer, parent, name)
+    new StaticImage3D(new ImmutableReloader[DiscreteScalarImage3D[S]](peer), parent, name)
   }
 }
 
-class StaticImage3D[S: ScalarValue : ClassTag : TypeTag] protected[ui](override val peer: DiscreteScalarImage3D[S], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](peer) {
+class StaticImage3D[S: ScalarValue : ClassTag : TypeTag] private[StaticImage3D](reloader: Reloader[DiscreteScalarImage3D[S]], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](reloader) {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 

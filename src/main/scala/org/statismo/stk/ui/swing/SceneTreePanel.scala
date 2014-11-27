@@ -21,6 +21,7 @@ import scala.swing.{BorderPanel, Component, Reactor, ScrollPane}
 
 object SceneTreePanel {
   lazy val popupActions: Seq[SceneTreePopupAction] = Seq(
+    new ReloadReloadableAction,
     new LoadLoadableAction,
     new SaveSaveableAction,
     new RemoveRemoveableAction,

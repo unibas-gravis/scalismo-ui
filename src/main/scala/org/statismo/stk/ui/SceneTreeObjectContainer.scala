@@ -1,5 +1,7 @@
 package org.statismo.stk.ui
 
+import org.statismo.stk.ui.util.EdtUtil
+
 import scala.swing.Reactor
 import scala.collection.immutable.IndexedSeq
 import scala.collection.immutable
@@ -12,18 +14,19 @@ object MutableObjectContainer {
 }
 
 trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
-  protected var _children: IndexedSeq[Child] = Nil.toIndexedSeq
+  // Note: all operations modifying _children MUST be wrapped inside EdtUtil.onEdt(..., wait=true)
+  private var _children: IndexedSeq[Child] = Nil.toIndexedSeq
 
   protected[ui] def children: Seq[Child] = _children
 
-  def add(child: Child): Unit = this.synchronized {
+  def add(child: Child): Unit = EdtUtil.onEdt({
     child match {
       case removeable: Removeable =>
         listenTo(removeable)
       case _ =>
     }
     _children = Seq(_children, Seq(child)).flatten.toIndexedSeq
-  }
+  }, wait=true)
 
   reactions += {
     case Removeable.Removed(c) =>
@@ -31,7 +34,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
       remove(child, silent = true)
   }
 
-  def removeAll() = this.synchronized {
+  def removeAll() = EdtUtil.onEdt({
     val copy = _children.map({
       c => c
     })
@@ -40,9 +43,9 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
       //println(s"removing $c")
         remove(c)
     }
-  }
+  }, wait=true)
 
-  protected def remove(child: Child, silent: Boolean): Boolean = this.synchronized {
+  protected def remove(child: Child, silent: Boolean): Boolean = EdtUtil.onEdtWithResult {
     if (!silent && child.isInstanceOf[Removeable]) {
       // this will publish a message which is handled in the reactions
       child.asInstanceOf[Removeable].remove()

@@ -6,6 +6,7 @@ import java.io.File
 import breeze.linalg.DenseVector
 import org.statismo.stk.core.geometry.{Point3D, ThreeD}
 import org.statismo.stk.core.io.LandmarkIO
+import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization._
 import org.statismo.stk.ui.visualization.props.{ColorProperty, OpacityProperty, RadiusProperty}
 
@@ -171,7 +172,6 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
     lm.name = name.getOrElse(nameGenerator.nextName)
     add(lm)
   }
-
 }
 
 class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) with IndirectlyRepositionable {
@@ -245,9 +245,9 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
 
   syncWithPeer()
 
-  def syncWithPeer() = {
+  def syncWithPeer() = EdtUtil.onEdt({
     var changed = false
-    _children.length until peer.children.length foreach {
+    children.length until peer.children.length foreach {
       i =>
         changed = true
         add(new MoveableLandmark(this, peer(i)))
@@ -255,5 +255,5 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
     if (changed) {
       publishEdt(SceneTreeObject.ChildrenChanged(this))
     }
-  }
+  }, wait = true)
 }

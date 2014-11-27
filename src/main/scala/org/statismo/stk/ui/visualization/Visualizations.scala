@@ -148,7 +148,7 @@ final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
 
   override protected def instantiateRenderables(source: A) = Nil
 
-  override val description = "invisible"
+  override val description = "(invisible)"
 }
 
 // this object can be subscribed to to receive events when /any/ VisualizationProperty has changed,

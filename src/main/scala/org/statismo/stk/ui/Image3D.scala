@@ -1,18 +1,21 @@
 package org.statismo.stk.ui
 
 import java.io.File
-import scala.util.Try
-import org.statismo.stk.core.io.ImageIO
+
 import org.statismo.stk.core.common.ScalarValue
-import scala.reflect.ClassTag
-import reflect.runtime.universe.{TypeTag, typeOf, Type}
-import scala.language.existentials
-import org.statismo.stk.ui.visualization._
-import org.statismo.stk.core.image.DiscreteScalarImage3D
-import scala.Tuple2
 import org.statismo.stk.core.geometry.Point3D
-import scala.swing.Reactor
+import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.io.ImageIO
+import org.statismo.stk.ui.Reloadable.Reloader
+import org.statismo.stk.ui.visualization._
+
 import scala.collection.immutable
+import scala.language.existentials
+import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.{Type, TypeTag, typeOf}
+import scala.swing.Reactor
+import scala.swing.event.Event
+import scala.util.{Failure, Success, Try}
 
 object Image3DVisualizationFactory {
 
@@ -67,18 +70,30 @@ object Image3DVisualizationFactory {
 
 class Image3DVisualizationFactory[A] private[ui] extends SimpleVisualizationFactory[Image3D[A]] {
 
-  import Image3DVisualizationFactory._
+  import org.statismo.stk.ui.Image3DVisualizationFactory._
 
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D[A]))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D[A]))
 }
 
-class Image3D[S: ScalarValue : ClassTag : TypeTag](val peer: DiscreteScalarImage3D[S]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable {
+
+object Image3D {
+
+  case class Reloaded(source: Image3D[_]) extends Event
+
+}
+
+class Image3D[S: ScalarValue : ClassTag : TypeTag](reloader: Reloader[DiscreteScalarImage3D[S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
+
+  private var _peer = reloader.load().get
+
+  def peer: DiscreteScalarImage3D[S] = _peer
+
   protected[ui] override lazy val saveableMetadata = StaticImage3D
 
   protected[ui] override lazy val visualizationProvider = Image3DVisualizationFactory.getInstance()
 
-  protected[ui] lazy val asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
+  protected[ui] def asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
 
   override def saveToFile(f: File) = Try[Unit] {
     ImageIO.writeImage(peer, f)
@@ -87,4 +102,18 @@ class Image3D[S: ScalarValue : ClassTag : TypeTag](val peer: DiscreteScalarImage
   override def addLandmarkAt(point: Point3D) = {
     parent.asInstanceOf[ThreeDObject].landmarks.addAt(point)
   }
+
+  override def reload() = {
+    reloader.load() match {
+      case (Success(newPeer)) =>
+        if (newPeer != _peer) {
+          _peer = newPeer
+          publishEdt(Image3D.Reloaded(this))
+        }
+        Success(())
+      case Failure(ex) => Failure(ex)
+    }
+  }
+
+  override def isCurrentlyReloadable = reloader.isReloadable
 }
