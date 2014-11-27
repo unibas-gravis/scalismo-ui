@@ -20,7 +20,9 @@ trait Landmark extends Nameable with Removeable {
 
 class ReferenceLandmark(initalpoint: Point3D) extends Landmark with DirectlyRepositionable {
   private var _point = initalpoint
+
   override def point = _point
+
   override def getCurrentPosition = _point
 
   override def setCurrentPosition(newPosition: Point3D) = this.synchronized {
@@ -84,7 +86,6 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
 object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
-  //visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
   class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
@@ -96,6 +97,8 @@ object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandm
     override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
 
     override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new SphereRenderable(source, color, opacity, radius))
+
+    override val description = "Sphere"
   }
 
   class SphereRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with SphereLike {
@@ -145,6 +148,7 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
 
 class StaticLandmark(initialCenter: Point3D, container: StaticLandmarks) extends VisualizableLandmark(container) with DirectlyRepositionable {
   var _point = initialCenter
+
   override def point = _point
 
   override def getCurrentPosition = _point
@@ -172,6 +176,7 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
 
 class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) with IndirectlyRepositionable {
   override def name = source.name
+
   override def directlyRepositionableObject = source
 
   listenTo(container.instance.meshRepresentation, source)

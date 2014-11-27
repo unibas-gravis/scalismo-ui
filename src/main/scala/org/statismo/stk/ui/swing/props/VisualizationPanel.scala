@@ -1,13 +1,18 @@
 package org.statismo.stk.ui.swing.props
 
+import javax.swing.{JComboBox, JLabel, JComponent}
+
+import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
+import org.statismo.stk.ui.util.ObjectId
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProvider}
 import org.statismo.stk.ui.{Viewport, SceneTreeObject}
 import scala.collection.{mutable, immutable}
 import scala.swing._
-import scala.Some
-import scala.swing.GridBagPanel.Anchor
+import scala.language.existentials
+import scala.swing.GridBagPanel.{Fill, Anchor}
 import scala.swing.event.ButtonClicked
 import scala.util.Failure
+import java.awt.{Dimension => JDimension}
 
 trait VisualizationsPropertyPanel extends PropertyPanel {
   def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean
@@ -38,15 +43,32 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
 
   private[VisualizationPanel] class SelectionPanel extends BorderPanel {
 
-    class Entry(viewport: Viewport) {
-      val checkbox = new CheckBox {
+    class Entry(viewport: Viewport, alternatives: Seq[Visualization[_]], current: Option[Class[Visualization[_]]]) {
+      val inScope = new CheckBox {
         selected = true
         reactions += {
           case x: ButtonClicked => setViewportInScope(viewport, selected)
         }
       }
       val name = new Label(viewport.name)
-      val fixme = new Label("")
+
+      val visualization: Component = {
+        if (alternatives.length == 0) {
+          new Label("--- no visualizations ---")
+        } else if (alternatives.length == 1) {
+          new Label(alternatives.head.description)
+        } else {
+          val model = new UntypedComboBoxModel
+          alternatives.foreach { entry =>
+            model.addElement(entry)
+          }
+          // WTF? can't directly extend combo, not even like so: (scala 2.10.x):
+          // val combo = new JComboBox(model.model) {}
+          // ... can't extend, illegal inheritance etc.
+          val combo = new JComboBox(model.model)
+          Component.wrap(combo)
+        }
+      }
     }
 
     class EntryTable extends GridBagPanel {
@@ -63,9 +85,9 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
       }
 
       def add(entry: Entry, index: Int): Unit = {
-        add(entry.checkbox, (0, index))
+        add(entry.inScope, (0, index))
         add(entry.name, (1, index))
-        add(entry.fixme, (2, index))
+        add(entry.visualization, (2, index))
       }
 
       def setEntries(entries: immutable.Seq[Entry]): Unit = {
@@ -79,21 +101,26 @@ class VisualizationPanel(override val description: String, delegates: Visualizat
       }
     }
 
-    val table = new EntryTable
+    val entriesTable = new EntryTable
+
     layout(new BorderPanel {
-      layout(table) = BorderPanel.Position.West
+      layout(entriesTable) = BorderPanel.Position.West
     }) = BorderPanel.Position.Center
 
     def setTarget(target: Target): Unit = {
+      implicit val scene = target.scene
       val entries: immutable.Seq[Entry] = {
-        val viewports = target.scene.viewports.map {
-          viewport =>
-          //val visTries = target.scene.visualizations.tryGet(target, viewport)
-            viewport
-        }
-        viewports.map(vp => new Entry(vp)).toList
+        target.scene.viewports.map { viewport =>
+          val viewportOption = target.visualizations.get(viewport)
+          val currentClassOption: Option[Class[Visualization[_]]] = viewportOption match {
+            case (Some(vp)) => Some(vp.getClass.asInstanceOf[Class[Visualization[_]]])
+            case _ => None
+          }
+          val alternatives = target.visualizationFactory.visualizationsFor(viewport)
+          new Entry(viewport, alternatives, currentClassOption)
+        }.toList
       }
-      table.setEntries(entries)
+      entriesTable.setEntries(entries)
     }
   }
 

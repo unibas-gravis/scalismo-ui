@@ -22,7 +22,7 @@ import scala.language.reflectiveCalls
 import org.statismo.stk.ui.visualization.{Visualization, VisualizationProperty}
 import org.statismo.stk.ui.visualization.props.HasColorAndOpacity
 import scala.collection.immutable
-import org.statismo.stk.ui.EdtPublisher
+import org.statismo.stk.ui.{Constants, EdtPublisher}
 
 class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
   type Target = Visualization[_] with HasColorAndOpacity
@@ -42,7 +42,7 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
     override lazy val peer = new JPanel {
       override def paintComponent(g: Graphics) {
         val dim: Dimension = getSize
-        g.setColor(Color.GRAY); // this approximates what you'll see when rendering in a black panel
+        g.setColor(Constants.Visualization.PerceivedBackgroundColor)
         g.fillRect(0, 0, dim.width, dim.height)
         // now paint the selected color on the gray background
         g.setColor(getBackground)
@@ -141,7 +141,7 @@ class ColorablePanel extends BorderPanel with VisualizationsPropertyPanel {
   override def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean = {
     cleanup()
     val usable = visualizations.filter(v => v.isInstanceOf[Target]).asInstanceOf[TargetSeq]
-    if (!usable.isEmpty) {
+    if (usable.nonEmpty) {
       target = Some(usable)
       updateUi()
       target.get.foreach {

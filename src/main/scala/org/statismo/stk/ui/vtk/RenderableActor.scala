@@ -4,7 +4,7 @@ package org.statismo.stk.ui.vtk
 import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
 import org.statismo.stk.ui.PointCloud.PointCloudRenderable3D
 import org.statismo.stk.ui.visualization.{Renderable, SphereLike}
-import org.statismo.stk.ui.{BoundingBox, Image3D, Scene}
+import org.statismo.stk.ui.{BoundingBox, Image3DVisualizationFactory, Scene}
 import vtk.vtkActor
 
 import scala.util.Try
@@ -34,12 +34,12 @@ object RenderableActor {
         case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
         case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
         case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
-        case pc3d: PointCloudRenderable3D=> Some(new PointCloudActor3D(pc3d))
+        case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
-        case img3d: Image3D.VisualizationFactory.Renderable3D[_] => img3d.imageOrNone.map {
+        case img3d: Image3DVisualizationFactory.Renderable3D[_] => img3d.imageOrNone.map {
           source => new ImageActor3D(source)
         }
-        case img2d: Image3D.VisualizationFactory.Renderable2D[_] => img2d.imageOrNone.map {
+        case img2d: Image3DVisualizationFactory.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
         case s: SphereLike => Some(new SphereActor(s))

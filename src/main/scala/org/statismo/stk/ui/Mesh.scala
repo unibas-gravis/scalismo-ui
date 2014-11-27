@@ -29,6 +29,8 @@ object Mesh extends SimpleVisualizationFactory[Mesh] {
     protected def instantiateRenderables(source: Mesh) = {
       Seq(new MeshRenderable3D(source, color, opacity))
     }
+
+    override val description = "Mesh"
   }
 
   class MeshRenderable3D(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity with Reactor {
@@ -51,6 +53,9 @@ object Mesh extends SimpleVisualizationFactory[Mesh] {
     protected def instantiateRenderables(source: Mesh) = {
       Seq(new MeshRenderable2DOutline(source, color, opacity, lineThickness))
     }
+
+    override val description = "Outline"
+
   }
 
   class MeshRenderable2DOutline(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineThickness: LineThicknessProperty) extends Renderable with HasColorAndOpacity with HasLineThickness with Reactor {

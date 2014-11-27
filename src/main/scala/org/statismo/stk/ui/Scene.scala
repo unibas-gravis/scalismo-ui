@@ -78,6 +78,9 @@ object Scene {
         new SlicingPlaneRenderable3D(source, Axis.Y),
         new SlicingPlaneRenderable3D(source, Axis.Z)
       )
+
+      override val description = "bounding box and slices"
+
     }
 
     class Visualization2D extends Visualization[SlicingPosition] {
@@ -86,6 +89,10 @@ object Scene {
       override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
         new SlicingPlaneRenderable2D(source)
       )
+
+      override val description = "slice position"
+
+
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
@@ -93,6 +100,7 @@ object Scene {
     class SlicingPlaneRenderable3D(val source: SlicingPosition, val axis: Axis.Value) extends Renderable
 
     class SlicingPlaneRenderable2D(val source: SlicingPosition) extends Renderable
+
 
   }
 

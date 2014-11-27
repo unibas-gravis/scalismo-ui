@@ -29,6 +29,8 @@ object PointCloud extends SimpleVisualizationFactory[PointCloud] {
     protected def instantiateRenderables(source: PointCloud) = {
       Seq(new PointCloudRenderable3D(source, color, opacity, radius))
     }
+
+    override val description: String = "Spheres"
   }
 
   class PointCloudRenderable3D(val source: PointCloud, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with HasColorAndOpacity with HasRadius

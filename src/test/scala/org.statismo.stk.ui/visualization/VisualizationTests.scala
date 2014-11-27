@@ -2,6 +2,7 @@ package org.statismo.stk.ui.visualization
 
 import org.scalatest._
 import org.statismo.stk.ui.{Scene, Viewport}
+
 import scala.collection.immutable
 import scala.util.{Failure, Success}
 
@@ -131,6 +132,9 @@ class VisualizationTests  extends FunSpec with Matchers {
 
     it("returns visualizations only for registered viewport classes") {
       class TestVisualization extends Visualization[TestVisualizable] {
+
+        override def description: String = "testing"
+
         override protected def createDerived()  = new TestVisualization
 
         override def instantiateRenderables(target: TestVisualizable) = Nil
