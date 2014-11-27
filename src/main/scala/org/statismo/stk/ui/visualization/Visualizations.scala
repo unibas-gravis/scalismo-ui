@@ -151,10 +151,17 @@ final class NullVisualization[A <: Visualizable[_]] extends Visualization[A] {
   override val description = "invisible"
 }
 
-object VisualizationProperty {
+// this object can be subscribed to to receive events when /any/ VisualizationProperty has changed,
+// without having to subscribe to each property individually
+object VisualizationProperty extends EdtPublisher {
 
   case class ValueChanged[V, C <: VisualizationProperty[V, C]](source: VisualizationProperty[V, C]) extends Event
 
+  def publishValueChanged[V, C <: VisualizationProperty[V, C]](source: VisualizationProperty[V, C]) = {
+    val event = ValueChanged(source)
+    source.publishEdt(event)
+    this.publishEdt(event)
+  }
 }
 
 trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivable[C] with EdtPublisher {
@@ -168,7 +175,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivab
     if (newValue != value) {
       _value = Some(newValue)
       derived.foreach(_.value = newValue)
-      publishEdt(VisualizationProperty.ValueChanged(this))
+      VisualizationProperty.publishValueChanged(this)
     }
   }
 

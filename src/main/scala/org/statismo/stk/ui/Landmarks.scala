@@ -84,8 +84,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 }
 
 object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None), new NullVisualization[VisualizableLandmark]))
-  //visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
   class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {

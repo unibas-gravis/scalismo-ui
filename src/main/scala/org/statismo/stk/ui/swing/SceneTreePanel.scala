@@ -11,7 +11,7 @@ import javax.swing.{Icon, JPopupMenu, JTree}
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.SceneTreePanel.TreeNode
 import org.statismo.stk.ui.swing.actions.scenetree._
-import org.statismo.stk.ui.visualization.VisualizableSceneTreeObject
+import org.statismo.stk.ui.visualization.{VisualizationProperty, VisualizableSceneTreeObject}
 import org.statismo.stk.ui.visualization.icons.IconFactory
 
 import scala.Array.canBuildFrom
@@ -193,6 +193,13 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
   val view: Component = {
     val ctree = new Component {
       override lazy val peer = jtree
+
+      // this is essentially a hack, to ensure that the tree gets repainted
+      // whenever a visualization property changes
+      listenTo(VisualizationProperty)
+      reactions += {
+        case VisualizationProperty.ValueChanged(_) => jtree.repaint()
+      }
     }
     val scroll = new ScrollPane(ctree)
     scroll
