@@ -1,16 +1,15 @@
 package org.statismo.stk.ui.swing.props
 
 import java.awt.Dimension
-import javax.swing.JComboBox
+import javax.swing.{JLabel, JTabbedPane}
 
-import org.statismo.stk.ui.{EdtPublisher, Workspace}
 import org.statismo.stk.ui.swing._
-import org.statismo.stk.ui.swing.util.UntypedComboBoxModel
+import org.statismo.stk.ui.swing.props.SceneObjectPropertiesPanel.{TabChanged, TabsComponent}
+import org.statismo.stk.ui.{EdtPublisher, Workspace}
 
-import scala.language.{existentials, reflectiveCalls}
-import scala.swing.BorderPanel.Position.{Center, North}
-import scala.swing.{BorderPanel, Component, Reactor, ScrollPane, Swing}
-import scala.swing.event.SelectionChanged
+import scala.swing.BorderPanel.Position._
+import scala.swing.event.Event
+import scala.swing.{BorderPanel, Component, Reactor, ScrollPane}
 
 trait PropertyPanel extends CardPanel.CardableComponent {
   def setObject(obj: Option[AnyRef]): Boolean
@@ -19,9 +18,7 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 
   private[props] var workspace: Option[Workspace] = None
 
-  override def toString(): String = {
-    description
-  }
+  override def toString(): String = description
 
   override def revalidate() = {
     super.revalidate()
@@ -35,87 +32,125 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
-  private val appearance = new VisualizationPanel("Appearance", new RadiusPanel, new LineThicknessPanel, new ColorablePanel)
+  private val appearance = new VisualizationPanel("Appearance", new ColorablePanel, new RadiusPanel, new LineThicknessPanel)
   val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel)
+
+  class TabsComponent extends Component with EdtPublisher {
+    outer =>
+    override lazy val peer: JTabbedPane = new JTabbedPane() {
+      override def setSelectedIndex(index: Int) = {
+        super.setSelectedIndex(index)
+        if (getTabCount > index) {
+          val tab = getTabComponentAt(index).asInstanceOf[TabComponent]
+          if (tab != null) {
+            outer.publishEdt(TabChanged(outer, tab.view))
+          }
+        }
+      }
+    }
+
+    def add(view: PropertyPanel) = this.synchronized {
+      val index = peer.getTabCount
+      peer.addTab(null, null)
+      peer.setTabComponentAt(index, new TabComponent(view))
+    }
+
+    def setSelectedItem(view: PropertyPanel): Boolean = {
+      for (index <- 0 to peer.getTabCount) {
+        val tv = peer.getTabComponentAt(index).asInstanceOf[TabComponent].view
+        if (tv.uniqueId == view.uniqueId) {
+          peer.setSelectedIndex(index)
+          return true
+        }
+      }
+      false
+    }
+
+  }
+
+  class TabComponent(val view: PropertyPanel) extends JLabel(view.description)
+
+  case class TabChanged(source: TabsComponent, selected: PropertyPanel) extends Event
+
 }
 
 class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel with Reactor {
   lazy val availableProviders = SceneObjectPropertiesPanel.DefaultViewProviders
-  private val applicableViews = new UntypedComboBoxModel
 
   private val emptyPanel = new BorderPanel with CardPanel.CardableComponent {
-    peer.setPreferredSize(new Dimension(1, 1))
+    val zero = new Dimension(0, 0)
+    peer.setPreferredSize(zero)
+    peer.setMinimumSize(zero)
+    peer.setMaximumSize(zero)
+    peer.setSize(zero)
   }
 
   lazy val cards = new CardPanel {
     add(emptyPanel, emptyPanel.uniqueId)
-    availableProviders.foreach {
-      p =>
-        add(p)
-        p.workspace = Some(workspace)
-    }
   }
 
-  lazy val combo = new Component with EdtPublisher {
-    override lazy val peer = new JComboBox(applicableViews.model)
-    peer.addActionListener(Swing.ActionListener {
-      e =>
-        publishEdt(SelectionChanged(this))
-    })
+  availableProviders.foreach { p =>
+    cards.add(p)
+    p.workspace = Some(workspace)
   }
-  layout(combo) = North
+  cards.peer.revalidate()
+  // initialize once
+  cards.layoutManager.minimumWidth = cards.peer.getPreferredSize.width
 
   val scroll = new ScrollPane() {
-    horizontalScrollBarPolicy = ScrollPane.BarPolicy.Always
-    verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
     contents = cards
+    enabled = false
+
+    horizontalScrollBarPolicy = ScrollPane.BarPolicy.AsNeeded
+    verticalScrollBarPolicy = ScrollPane.BarPolicy.Always
   }
 
   layout(scroll) = Center
 
+  val tabs = new TabsComponent
+  layout(tabs) = North
+
   listenTo(workspace)
-  listenTo(combo)
+  listenTo(tabs)
   updateListAndContent()
 
   reactions += {
     case Workspace.SelectedObjectChanged(ws) if ws eq workspace => updateListAndContent()
-    case SelectionChanged(e) if e == combo && combo.enabled => updateContent()
+    case TabChanged(t, v) if t == tabs && tabs.enabled => updateContent(Some(v))
   }
 
   def updateListAndContent() {
-    // side effect: the SelectionChanged event still fires on addElement, setSelectedItem,
-    // but is ignored because the combo is not enabled (see reactions above)
-    combo.enabled = false
+    // side effect: some events might still fire, but they
+    // are ignored because the tabs are not enabled (see reactions above)
+    tabs.enabled = false
     val currentObject = workspace.selectedObject
 
-    applicableViews.model.removeAllElements()
+    tabs.peer.removeAll()
     val applicable = availableProviders.filter(_.setObject(currentObject))
-    applicable foreach applicableViews.addElement
+    cards.considerOnly(applicable)
+    applicable foreach (view => tabs.add(view))
 
     // if cards.current also applies to the newly selected object,
-    // keep it showing (and update the combobox accordingly)
-    val alreadyShowing = applicable.find(_.uniqueId == cards.current)
+    // keep it showing (and update the selected tab accordingly)
+    val alreadyShowing = applicable.find(_.uniqueId == cards.currentId)
     alreadyShowing match {
-      case Some(view) => applicableViews.model.setSelectedItem(view)
-      case None => updateContent()
+      case Some(view) => tabs.setSelectedItem(view)
+      case None => updateContent(applicable.headOption)
     }
-    combo.enabled = applicable.nonEmpty
+    tabs.enabled = applicable.nonEmpty
   }
 
-  def updateContent(): Unit = {
-    val view = applicableViews.model.getSelectedItem.asInstanceOf[PropertyPanel]
-    if (view != null) {
-      if (cards.current != view.uniqueId) {
-        cards.show(view)
-        // scroll to top of view
-        scroll.peer.getVerticalScrollBar.setValue(0)
-        // this is a hack...
-        if (cards.preferredSize.width > cards.size.width) {
-          workspace.publishPleaseLayoutAgain()
-        }
-      }
-    } else {
-      cards.show(emptyPanel)
+  def updateContent(viewOption: Option[PropertyPanel]): Unit = {
+    val (enableScroll, display) = viewOption match {
+      case Some(view) => (true, view)
+      case None => (false, emptyPanel)
     }
+
+    scroll.enabled = enableScroll
+
+    cards.show(display)
+    scroll.peer.getVerticalScrollBar.setValue(0)
+    val updateLayout = cards.preferredSize.width > cards.size.width
+    if (updateLayout) workspace.publishPleaseLayoutAgain()
   }
 }
