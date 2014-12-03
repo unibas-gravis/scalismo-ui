@@ -77,7 +77,7 @@ public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
                 }
 
                 self.renderWindow.SetPosition(0, 0);
-                self.setSize(drawable.getWidth(), drawable.getHeight());
+                self.setSize(drawable.getSurfaceWidth(), drawable.getSurfaceHeight());
                 self.renderWindow.OpenGLInit();
             }
 
