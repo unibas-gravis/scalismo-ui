@@ -92,8 +92,8 @@ object MSplitPane {
     intCfg.out = Some(lp.writer)
     val ip = InterpreterPane(paneConfig, intCfg.build, codePaneConfig)(exec)
     val sp = new JSplitPane(SwingConstants.HORIZONTAL)
-    sp.setTopComponent(ip.component)
-    sp.setBottomComponent(lp.component)
+    sp.setTopComponent(ip.component.self)
+    sp.setBottomComponent(lp.component.self)
     new Impl(sp, ip)
   }
 

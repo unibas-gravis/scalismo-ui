@@ -4,7 +4,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "org.statismo"
-  val buildVersion = "develop-SNAPSHOT"
+  val buildVersion = "develop-SNAPSHOT-customPanel"
   val buildScalaVersion = "2.10.4"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
@@ -61,7 +61,7 @@ object Dependencies {
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
-  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.6.+"
+  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.0-forTuto"
 }
 
 object STKBuild extends Build {
