@@ -14,7 +14,7 @@ import scala.collection.immutable
 import scala.swing.event.Event
 import scala.util.Try
 
-trait Landmark extends Nameable with Removeable {
+trait Landmark extends Nameable with Removeable with Uncertainty {
   def point: Point3D
 }
 

@@ -33,7 +33,7 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
   private val appearance = new VisualizationPanel("Appearance", new ColorablePanel, new RadiusPanel, new LineThicknessPanel)
-  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel)
+  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel, new UncertaintyPanel)
 
   class TabsComponent extends Component with EdtPublisher {
     outer =>
