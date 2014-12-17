@@ -61,7 +61,7 @@ object Dependencies {
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
-  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.6.+"
+  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
 }
 
 object STKBuild extends Build {
