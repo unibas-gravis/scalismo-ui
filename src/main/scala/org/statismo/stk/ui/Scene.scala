@@ -1,6 +1,6 @@
 package org.statismo.stk.ui
 
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.ui.visualization._
 
 import scala.collection.immutable
@@ -124,13 +124,13 @@ object Scene {
       }
     }
 
-    private var _point: Option[Point3D] = None
+    private var _point: Option[Point[_3D]] = None
 
     def point = this.synchronized {
-      _point.getOrElse(Point3D((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
+      _point.getOrElse(Point((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
     }
 
-    private def point_=(np: Point3D) = this.synchronized {
+    private def point_=(np: Point[_3D]) = this.synchronized {
       if (!_point.isDefined || _point.get != np) {
         _point = Some(np)
       }
@@ -149,35 +149,35 @@ object Scene {
     }
 
     def x = this.synchronized {
-      point.x
+      point(0)
     }
 
     def y = this.synchronized {
-      point.y
+      point(1)
     }
 
     def z = this.synchronized {
-      point.z
+      point(2)
     }
 
     def x_=(nv: Float) = this.synchronized {
       val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
       if (x != sv) {
-        point_=(new Point3D(sv, y, z))
+        point_=(Point(sv, y, z))
       }
     }
 
     def y_=(nv: Float) = this.synchronized {
       val sv = Math.min(Math.max(boundingBox.yMin, nv), boundingBox.yMax)
       if (y != sv) {
-        point = new Point3D(x, sv, z)
+        point = Point(x, sv, z)
       }
     }
 
     def z_=(nv: Float) = this.synchronized {
       val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
       if (z != sv) {
-        point = new Point3D(x, y, sv)
+        point = Point(x, y, sv)
       }
     }
 
@@ -185,7 +185,7 @@ object Scene {
       val sx = Math.min(Math.max(boundingBox.xMin, x), boundingBox.xMax)
       val sy = Math.min(Math.max(boundingBox.yMin, y), boundingBox.yMax)
       val sz = Math.min(Math.max(boundingBox.zMin, z), boundingBox.zMax)
-      point = new Point3D(sx, sy, sz)
+      point = Point(sx, sy, sz)
     }
 
     private var _boundingBox = BoundingBox.None

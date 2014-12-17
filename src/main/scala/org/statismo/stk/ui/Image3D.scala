@@ -3,7 +3,7 @@ package org.statismo.stk.ui
 import java.io.File
 
 import org.statismo.stk.core.common.ScalarValue
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{Point, _3D}
 import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.ui.Reloadable.Reloader
@@ -99,7 +99,7 @@ class Image3D[S: ScalarValue : ClassTag : TypeTag](reloader: Reloader[DiscreteSc
     ImageIO.writeImage(peer, f)
   }
 
-  override def addLandmarkAt(point: Point3D, nameOpt: Option[String]) = {
+  override def addLandmarkAt(point: Point[_3D], nameOpt: Option[String]) = {
     parent.asInstanceOf[ThreeDObject].landmarks.addAt(point, nameOpt)
   }
 

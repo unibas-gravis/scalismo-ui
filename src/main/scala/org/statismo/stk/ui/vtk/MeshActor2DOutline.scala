@@ -1,7 +1,7 @@
 package org.statismo.stk.ui.vtk
 
 import _root_.vtk.{vtkCutter, vtkPlane, vtkPolyData}
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh.MeshRenderable2DOutline
 import org.statismo.stk.ui._
@@ -70,7 +70,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
       meshOrNone = None
   }
 
-  override def clicked(point: Point3D) = {
+  override def clicked(point: Point[_3D]) = {
     meshOrNone.map {
       m => m.addLandmarkAt(point)
     }

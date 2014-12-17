@@ -20,7 +20,7 @@ class SphereActor(source: SphereLike) extends PolyDataActor with ColorableActor 
   }
 
   def setGeometry() = this.synchronized {
-    sphere.SetCenter(source.center.x, source.center.y, source.center.z)
+    sphere.SetCenter(source.center(0), source.center(1), source.center(2))
     sphere.SetRadius(source.radius.value)
     sphere.Modified()
     mapper.Modified()

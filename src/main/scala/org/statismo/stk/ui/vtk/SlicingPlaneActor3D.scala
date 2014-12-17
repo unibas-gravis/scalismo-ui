@@ -25,14 +25,14 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
 
     axis match {
       case Axis.X =>
-        points.InsertNextPoint(p.x, bb.yMin, bb.zMin)
-        points.InsertNextPoint(p.x, bb.yMax, bb.zMax)
+        points.InsertNextPoint(p(0), bb.yMin, bb.zMin)
+        points.InsertNextPoint(p(0), bb.yMax, bb.zMax)
       case Axis.Y =>
-        points.InsertNextPoint(bb.xMin, p.y, bb.zMin)
-        points.InsertNextPoint(bb.xMax, p.y, bb.zMax)
+        points.InsertNextPoint(bb.xMin, p(1), bb.zMin)
+        points.InsertNextPoint(bb.xMax, p(1), bb.zMax)
       case Axis.Z =>
-        points.InsertNextPoint(bb.xMin, bb.yMin, p.z)
-        points.InsertNextPoint(bb.xMax, bb.yMax, p.z)
+        points.InsertNextPoint(bb.xMin, bb.yMin, p(2))
+        points.InsertNextPoint(bb.xMax, bb.yMax, p(2))
     }
 
     val poly = new vtk.vtkPolyData()
