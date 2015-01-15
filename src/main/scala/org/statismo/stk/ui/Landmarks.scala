@@ -4,7 +4,7 @@ import java.awt.Color
 import java.io.File
 
 import breeze.linalg.DenseVector
-import org.statismo.stk.core.geometry.{Point, _3D}
+import org.statismo.stk.core.geometry.{Point, _3D, Landmark => CLandmark}
 import org.statismo.stk.core.io.LandmarkIO
 import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization._
@@ -34,19 +34,26 @@ class ReferenceLandmark(initalpoint: Point[_3D]) extends Landmark with DirectlyR
   }
 }
 
-object Landmarks extends FileIoMetadata {
+object Landmarks {
 
   case class LandmarksChanged(source: AnyRef) extends Event
 
   case class LandmarkChanged(source: Landmark) extends Event
 
-  override val description = "Landmarks"
-  override val fileExtensions = immutable.Seq("csv")
+  object ReaderMetadata extends FileIoMetadata {
+    override val description = "Landmarks"
+    override val fileExtensions = immutable.Seq("csv","json")
+  }
+
+  object WriterMetadata extends FileIoMetadata {
+    override val description = "Landmarks"
+    override val fileExtensions = immutable.Seq("json")
+  }
 }
 
 trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublisher with Saveable with Loadable {
-  val saveableMetadata = Landmarks
-  val loadableMetadata = Landmarks
+  val saveableMetadata = Landmarks.WriterMetadata
+  val loadableMetadata = Landmarks.ReaderMetadata
 
   override def isCurrentlySaveable: Boolean = children.nonEmpty
 
@@ -65,17 +72,18 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def saveToFile(file: File): Try[Unit] = this.synchronized {
     val seq = children.map {
-      lm => (lm.name, lm.point)
-    }.toIndexedSeq
-    LandmarkIO.writeLandmarks[_3D](file, seq)
+      lm => CLandmark(lm.name, lm.point)
+    }.toList
+    LandmarkIO.writeLandmarksJson(file, seq)
   }
 
   override def loadFromFile(file: File): Try[Unit] = this.synchronized {
     this.removeAll()
+    val legacyFormat = file.getName.toLowerCase.endsWith("csv")
     val status = for {
-      saved <- LandmarkIO.readLandmarks3D(file)
+      saved <- if (legacyFormat) LandmarkIO.readLandmarksCsv[_3D](file) else LandmarkIO.readLandmarksJson[_3D](file)
       newLandmarks = saved.map {
-        case (name, point) =>
+        case CLandmark(name, point,_,_) =>
           this.create(point, Some(name))
       }
     } yield {}
@@ -205,7 +213,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
       publishEdt(Removeable.Removed(this))
   }
 
-  var point = calculateCenter()
+  private var _point = calculateCenter()
 
   def calculateCenter(): Point[_3D] = {
     val coeffs = DenseVector(container.instance.coefficients.toArray)
@@ -213,11 +221,12 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   }
 
   def setCenter(): Unit = {
-    point = calculateCenter()
+    _point = calculateCenter()
     publishEdt(Landmarks.LandmarkChanged(this))
     publishEdt(Repositionable.CurrentPositionChanged(this))
   }
 
+  override def point = _point
   override def getCurrentPosition = point
 }
 
@@ -230,7 +239,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
 
   override def create(peer: Point[_3D], name: Option[String]): Unit = this.synchronized {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
-    val refPoint = instance.shapeModel.peer.mesh.points(index).asInstanceOf[Point[_3D]]
+    val refPoint = instance.shapeModel.peer.mesh.points(index)
     instance.shapeModel.landmarks.create(refPoint, name)
   }
 
