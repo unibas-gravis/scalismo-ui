@@ -7,7 +7,7 @@ import org.statismo.stk.ui.{IndirectlyRepositionable, DirectlyRepositionable, Ax
 import org.statismo.stk.ui.Repositionable.Amount
 import scala.Some
 import scala.util.Try
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.Point
 import scala.swing.GridBagPanel.{Anchor, Fill}
 
 
@@ -76,7 +76,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
       target match {
         case Some(d: DirectlyRepositionable) => Try {
           val v = Axes.map(t => t._2.text.toFloat)
-          val point = Point3D(v(0), v(1), v(2))
+          val point = Point(v(0), v(1), v(2))
           d.setCurrentPosition(point)
         }
         case _ => /* do nothing */

@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.ui.PointCloud.PointCloudRenderable3D
 import org.statismo.stk.ui.visualization.VisualizationProperty
 import vtk.{vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource}
@@ -54,7 +54,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
     sphere.Delete()
   }
 
-  override def clicked(point: Point3D): Unit = {
+  override def clicked(point: Point[_3D]): Unit = {
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
     val cloudPoints = renderable.source.peer
     // just in case
@@ -62,7 +62,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
       val vector = point.toVector
       val vectorsWithIndex = cloudPoints.map(_.toVector - vector).zipWithIndex
       val minIndex = vectorsWithIndex.minBy(_._1.norm2)._2
-      renderable.source.addLandmarkAt(cloudPoints(minIndex).asInstanceOf[Point3D])
+      renderable.source.addLandmarkAt(cloudPoints(minIndex))
     }
   }
 }

@@ -2,7 +2,7 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import org.statismo.stk.core.geometry.{ThreeD, Point}
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.ui.visualization._
@@ -39,7 +39,7 @@ object PointCloud extends SimpleVisualizationFactory[PointCloud] {
 
 
 trait PointCloud extends ThreeDRepresentation[PointCloud] with Landmarkable {
-  def peer: immutable.IndexedSeq[Point[ThreeD]]
+  def peer: immutable.IndexedSeq[Point[_3D]]
 
   protected[ui] override def visualizationProvider: VisualizationProvider[PointCloud] = PointCloud
 }

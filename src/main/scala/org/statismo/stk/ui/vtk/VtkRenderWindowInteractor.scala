@@ -1,19 +1,20 @@
 package org.statismo.stk.ui.vtk
 
+import org.statismo.stk.core.geometry.{_3D, Point}
+
 import scala.swing.event.Event
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui.EdtPublisher
 import org.statismo.stk.ui.Viewport
 import org.statismo.stk.ui.Workspace
 
 import vtk.vtkCellPicker
 import vtk.vtkGenericRenderWindowInteractor
-import java.awt.Point
+import java.awt.{Point => APoint}
 
 object VtkRenderWindowInteractor {
 
-  case class PointClicked(point: Point3D) extends Event
+  case class PointClicked(point: Point[_3D]) extends Event
 
 }
 
@@ -22,11 +23,11 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
   SetPicker(cellPicker)
 
   private var height = 0
-  private var currentPt = new Point
-  private var lastPt = new Point
+  private var currentPt = new APoint
+  private var lastPt = new APoint
 
   override def SetEventInformationFlipY(x: Int, y: Int, ctrl: Int, shift: Int, unk1: Char, unk2: Int, unk3: String) = {
-    currentPt = new Point(x, y)
+    currentPt = new APoint(x, y)
     super.SetEventInformationFlipY(x, y, ctrl, shift, unk1, unk2, unk3)
   }
 
@@ -40,7 +41,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
     (workspaceOption, viewportOption) match {
       case (Some(workspace), Some(viewport)) =>
         if (workspace.landmarkClickMode) {
-          lastPt = new Point(currentPt.x, currentPt.y)
+          lastPt = new APoint(currentPt.x, currentPt.y)
         }
         //FIXME: this is ugly
         val ok = viewport.onLeftButtonDown(currentPt)
@@ -77,13 +78,13 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
               if (prop != null) {
                 prop match {
                   case clickable: ClickableActor =>
-                    clickable.clicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
+                    clickable.clicked(Point(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat))
                   case _: RenderableActor =>
                   // do nothing. We found one of our own actors, but it doesn't react to clicks
                   case _ =>
                     // we found an actor, but it's none of our own (probably one from an image plane). Since we don't know how to handle this ourselves,
                     // we publish an event instead
-                    publishEdt(VtkRenderWindowInteractor.PointClicked(Point3D(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
+                    publishEdt(VtkRenderWindowInteractor.PointClicked(Point(pickpos(0).toFloat, pickpos(1).toFloat, pickpos(2).toFloat)))
                 }
               }
             }

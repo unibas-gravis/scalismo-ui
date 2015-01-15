@@ -2,14 +2,13 @@ package org.statismo.stk.ui
 
 import java.io.File
 
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.ui.ShapeModelInstance.MeshRepresentation
 
 import scala.swing.event.Event
 import scala.util.{ Failure, Success, Try }
 import scala.collection.immutable
 
-import org.statismo.stk.core.geometry.Point3D
-import org.statismo.stk.core.geometry.ThreeD
 import org.statismo.stk.core.io.StatismoIO
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
@@ -128,10 +127,10 @@ class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit overrid
 
   val landmarks = new ReferenceLandmarks(this)
 
-  lazy val gaussianProcess: SpecializedLowRankGaussianProcess[ThreeD] = {
+  lazy val gaussianProcess: SpecializedLowRankGaussianProcess[_3D] = {
     peer.gp match {
-      case specializedGP: SpecializedLowRankGaussianProcess[ThreeD] => specializedGP
-      case gp => gp.specializeForPoints(peer.mesh.points.force)
+      case specializedGP: SpecializedLowRankGaussianProcess[_3D] => specializedGP
+      case gp => gp.specializeForPoints(peer.mesh.points.toIndexedSeq)
     }
   }
 
@@ -189,7 +188,7 @@ object ShapeModelInstance {
       publishEdt(Mesh.GeometryChanged(this))
     }
 
-    override def addLandmarkAt(point: Point3D, nameOpt : Option[String]) = {
+    override def addLandmarkAt(point: Point[_3D], nameOpt : Option[String]) = {
       parent.landmarks.addAt(point, nameOpt)
     }
   }

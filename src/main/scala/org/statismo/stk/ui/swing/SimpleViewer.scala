@@ -3,7 +3,6 @@ package org.statismo.stk.ui.swing
 
 import java.io.File
 
-import org.statismo.stk.core.geometry.Point3D
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.LoadAction
 
@@ -12,6 +11,7 @@ import scala.collection.immutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.MenuItem
 import scala.util.{Success, Try}
+import org.statismo.stk.core.geometry.Point
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
@@ -54,7 +54,7 @@ class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 
     if (false) {
       // sample: add a point cloud
-      val pointSeq = immutable.IndexedSeq(Point3D(0, 0, 0), Point3D(0, 100, 0), Point3D(100, 100, 0), Point3D(100, 0, 0), Point3D(0, 0, 100), Point3D(0, 100, 100), Point3D(100, 100, 100), Point3D(100, 0, 100))
+      val pointSeq = immutable.IndexedSeq(Point(0, 0, 0), Point(0, 100, 0), Point(100, 100, 0), Point(100, 0, 0), Point(0, 0, 100), Point(0, 100, 100), Point(100, 100, 100), Point(100, 0, 100))
       StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
     }
   }

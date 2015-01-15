@@ -1,6 +1,7 @@
 package org.statismo.stk.ui
 
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
+
 import scala.swing.event.Event
 import org.statismo.stk.ui.Repositionable.Amount
 
@@ -23,7 +24,7 @@ object Repositionable {
 }
 
 trait Repositionable extends EdtPublisher {
-  def getCurrentPosition: Point3D
+  def getCurrentPosition: Point[_3D]
   def increaseCurrentCoordinate(axis: Axis.Value, amount: Amount.Value): Unit
   def decreaseCurrentCoordinate(axis: Axis.Value, amount: Amount.Value): Unit
 }
@@ -42,13 +43,13 @@ trait IndirectlyRepositionable extends Repositionable {
 
   private def modifyCurrentPosition(axis: Axis.Value, offset: Float): Unit = {
     val oldPosition = directlyRepositionableObject.getCurrentPosition
-    val (ox, oy, oz) = (oldPosition.x, oldPosition.y, oldPosition.z)
+    val (ox, oy, oz) = (oldPosition(0), oldPosition(1), oldPosition(2))
     val (nx, ny, nz) = axis match {
       case Axis.X => (ox + offset, oy, oz)
       case Axis.Y => (ox, oy + offset, oz)
       case Axis.Z => (ox, oy, oz + offset)
     }
-    directlyRepositionableObject.setCurrentPosition(Point3D(nx,ny,nz))
+    directlyRepositionableObject.setCurrentPosition(Point(nx,ny,nz))
   }
 }
 
@@ -56,5 +57,5 @@ trait DirectlyRepositionable extends IndirectlyRepositionable {
   override final def directlyRepositionableObject = this
 
   /* Note: it is up to the implementation to publishEdt() a CurrentPositionChanged event. */
-  def setCurrentPosition(newPosition: Point3D): Unit
+  def setCurrentPosition(newPosition: Point[_3D]): Unit
 }

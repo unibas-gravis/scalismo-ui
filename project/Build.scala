@@ -56,12 +56,12 @@ object Creds {
 object Dependencies {
   import BuildSettings._
 
-  val stkCore = "org.statismo" %% "stkcore" % "0.4.1"
-  val scalatest = "org.scalatest" % "scalatest_2.10" % "2.1.0" % "test"
+  val stkCore = "org.statismo" %% "stkcore" % "0.6.1"
+  val scalatest = "org.scalatest" %% "scalatest" % "2.1.0" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
-  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.6.+"
+  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
 }
 
 object STKBuild extends Build {

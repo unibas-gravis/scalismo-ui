@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.vtk
 
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.core.utils.MeshConversion
 import org.statismo.stk.ui.Mesh
 import org.statismo.stk.ui.Mesh.MeshRenderable3D
@@ -44,7 +44,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  def clicked(point: Point3D) = {
+  def clicked(point: Point[_3D]) = {
     source.meshOrNone.map(m => m.addLandmarkAt(point))
   }
 

@@ -1,7 +1,7 @@
 package org.statismo.stk.ui.vtk
 
 import _root_.vtk._
-import org.statismo.stk.core.geometry.Point3D
+import org.statismo.stk.core.geometry.{_3D, Point}
 import org.statismo.stk.core.utils.ImageConversion
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.vtk.ImageActor2D.InstanceData
@@ -60,11 +60,11 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], axis: Axis.Value, i
 
   override def currentBoundingBox = VtkUtils.bounds2BoundingBox(data.points.GetBounds())
 
-  def point3DToExtent(p: Point3D, axis: Axis.Value) = {
+  def point3DToExtent(p: Point[_3D], axis: Axis.Value) = {
     val (fmin, fmax, fval, tmax) = axis match {
-      case Axis.X => (data.min, data.max, p.x, data.exmax)
-      case Axis.Y => (data.min, data.max, p.y, data.eymax)
-      case Axis.Z => (data.min, data.max, p.z, data.ezmax)
+      case Axis.X => (data.min, data.max, p(0), data.exmax)
+      case Axis.Y => (data.min, data.max, p(1), data.eymax)
+      case Axis.Z => (data.min, data.max, p(2), data.ezmax)
     }
     val idx = if (fval < fmin || fval > fmax) ImageActor2D.OutOfBounds
     else {
@@ -82,7 +82,7 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], axis: Axis.Value, i
     update(source.scene.slicingPosition.point)
   }
 
-  def update(point: Point3D) = {
+  def update(point: Point[_3D]) = {
     val i = point3DToExtent(point, axis)
     if (i == ImageActor2D.OutOfBounds) {
       SetVisibility(0)
@@ -115,5 +115,5 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], axis: Axis.Value, i
     super.onDestroy()
   }
 
-  override def clicked(point: Point3D) = source.addLandmarkAt(point)
+  override def clicked(point: Point[_3D]) = source.addLandmarkAt(point)
 }
