@@ -59,7 +59,7 @@ object SimpleAPI {
   }
 
   /**
-   * Removes the first object with a matching name from the scene
+   * Removes all objects with a matching name from the scene
    *
    * @param name of the object to remove
    */
