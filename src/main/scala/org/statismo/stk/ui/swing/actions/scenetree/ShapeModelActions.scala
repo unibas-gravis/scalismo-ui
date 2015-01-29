@@ -90,7 +90,7 @@ class AddReferenceAsStaticObjectAction extends SceneTreePopupAction("Add Referen
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val model = context.get.asInstanceOf[ShapeModel]
-      StaticMesh.createFromPeer(model.peer.mesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
+      StaticMesh.createFromPeer(model.peer.referenceMesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
     }
   }
 }

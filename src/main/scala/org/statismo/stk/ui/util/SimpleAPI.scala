@@ -1,6 +1,6 @@
 package org.statismo.stk.ui.util
 
-import org.statismo.stk.core.common.ScalarValue
+import org.statismo.stk.core.image.DiscreteScalarImage
 import org.statismo.stk.ui.Landmarkable
 import org.statismo.stk.ui.ThreeDRepresentation
 import org.statismo.stk.ui.ShapeModel
@@ -8,7 +8,6 @@ import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
 import scala.reflect.ClassTag
 import org.statismo.stk.ui.StaticMesh
 import org.statismo.stk.ui.StaticThreeDObject
-import org.statismo.stk.core.image.DiscreteScalarImage3D
 import org.statismo.stk.ui.StaticPointCloud
 import org.statismo.stk.ui.StaticImage3D
 import org.statismo.stk.ui.Scene
@@ -19,6 +18,7 @@ import org.statismo.stk.ui.Removeable
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.core.geometry._3D
 import scala.reflect.runtime.universe.TypeTag
+import spire.math.Numeric
 
 /**
  * Defines a minimal set of methods to easily interact with an stk.ui scene in order to display and retrieve objects.
@@ -37,7 +37,7 @@ object SimpleAPI {
       landmarks.foreach { l => a.addLandmarkAt(l.point, Some(l.id)) }
     }
 
-    if (t.isDefined == false) s.find[ShapeModel](_.name == sceneObjectName).headOption.map { a =>
+    if (! t.isDefined) s.find[ShapeModel](_.name == sceneObjectName).headOption.map { a =>
       landmarks.foreach { l => a.instances(0).meshRepresentation.addLandmarkAt(l.point, Some(l.id))
       }
     }
@@ -74,7 +74,7 @@ object SimpleAPI {
    * @param name to associate to the image
    * @tparam P The type of the pixel (Short, Int, Float, Double).
    */
-  def show[P: ScalarValue: ClassTag: TypeTag](image: DiscreteScalarImage3D[P], name: String)(implicit s: Scene) {
+  def show[P: Numeric: ClassTag: TypeTag](image: DiscreteScalarImage[_3D, P], name: String)(implicit s: Scene) {
     StaticImage3D.createFromPeer(image, None, Some(name))
   }
 

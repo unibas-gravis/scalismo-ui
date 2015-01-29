@@ -2,8 +2,8 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import org.statismo.stk.core.common.ScalarValue
-import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.geometry._3D
+import org.statismo.stk.core.image.DiscreteScalarImage
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.ui.Reloadable.{FileReloader, ImmutableReloader, Reloader}
 
@@ -11,6 +11,7 @@ import scala.collection.immutable
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 import scala.util.{Failure, Success, Try}
+import spire.math.Numeric
 
 object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileIoMetadata {
   override val description = "Static 3D Image"
@@ -25,7 +26,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     {
       // Short
       val reloaderTry = Try {
-        new FileReloader[DiscreteScalarImage3D[Short]](file) {
+        new FileReloader[DiscreteScalarImage[_3D,Short]](file) {
           override def doLoad() = ImageIO.read3DScalarImage[Short](file)
         }
       }
@@ -36,7 +37,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     {
       // Float
       val reloaderTry = Try {
-        new FileReloader[DiscreteScalarImage3D[Float]](file) {
+        new FileReloader[DiscreteScalarImage[_3D,Float]](file) {
           override def doLoad() = ImageIO.read3DScalarImage[Float](file)
         }
       }
@@ -47,7 +48,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     {
       // Double
       val reloaderTry = Try {
-        new FileReloader[DiscreteScalarImage3D[Double]](file) {
+        new FileReloader[DiscreteScalarImage[_3D, Double]](file) {
           override def doLoad() = ImageIO.read3DScalarImage[Double](file)
         }
       }
@@ -58,12 +59,12 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     Failure(new IllegalArgumentException("could not load " + file.getAbsoluteFile))
   }
 
-  def createFromPeer[S: ScalarValue : ClassTag : TypeTag](peer: DiscreteScalarImage3D[S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
-    new StaticImage3D(new ImmutableReloader[DiscreteScalarImage3D[S]](peer), parent, name)
+  def createFromPeer[S: Numeric : ClassTag : TypeTag](peer: DiscreteScalarImage[_3D, S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3D[S] = {
+    new StaticImage3D(new ImmutableReloader[DiscreteScalarImage[_3D,S]](peer), parent, name)
   }
 }
 
-class StaticImage3D[S: ScalarValue : ClassTag : TypeTag] private[StaticImage3D](reloader: Reloader[DiscreteScalarImage3D[S]], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](reloader) {
+class StaticImage3D[S: Numeric : ClassTag : TypeTag] private[StaticImage3D](reloader: Reloader[DiscreteScalarImage[_3D,S]], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends Image3D[S](reloader) {
   name_=(name.getOrElse(Nameable.NoName))
   override lazy val parent: StaticThreeDObject = initialParent.getOrElse(new StaticThreeDObject(Some(scene.staticObjects), name))
 
