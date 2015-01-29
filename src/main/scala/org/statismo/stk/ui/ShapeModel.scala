@@ -11,7 +11,6 @@ import scala.collection.immutable
 
 import org.statismo.stk.core.io.StatismoIO
 import org.statismo.stk.core.mesh.TriangleMesh
-import org.statismo.stk.core.statisticalmodel.SpecializedLowRankGaussianProcess
 import org.statismo.stk.core.statisticalmodel.StatisticalMeshModel
 
 import breeze.linalg.DenseVector
@@ -70,7 +69,7 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
           val table = new SelectionTableModel[CatalogEntry](rows)
 
           UiFramework.instance.selectFromTable(table, title, description, canMultiSelect = false, canCancel = true)
-          val path = table.selected.headOption.map(_.modelPath).getOrElse(null)
+          val path = table.selected.headOption.map(_.modelPath).orNull
           if (path != null) {
             Success(path)
           } else {
@@ -127,20 +126,9 @@ class ShapeModel protected[ui] (val peer: StatisticalMeshModel)(implicit overrid
 
   val landmarks = new ReferenceLandmarks(this)
 
-  lazy val gaussianProcess: SpecializedLowRankGaussianProcess[_3D] = {
-    peer.gp match {
-      case specializedGP: SpecializedLowRankGaussianProcess[_3D] => specializedGP
-      case gp => gp.specializeForPoints(peer.mesh.points.toIndexedSeq)
-    }
-  }
-
   def calculateMesh(coefficients: IndexedSeq[Float]) = {
     val vector = DenseVector[Float](coefficients.toArray)
-    val ptdefs = gaussianProcess.instanceAtPoints(vector).toMap
-
-    peer.mesh.warp({
-      p => p + ptdefs(p)
-    })
+    peer.instance(vector)
   }
 
   parent.add(this)
@@ -197,7 +185,7 @@ object ShapeModelInstance {
 class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
   lazy val shapeModel = container.shapeModel
   override lazy val parent = shapeModel
-  private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.gaussianProcess.rank)(0.0f)
+  private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.peer.gp.rank)(0.0f)
 
   val meshRepresentation = new MeshRepresentation(this)
 

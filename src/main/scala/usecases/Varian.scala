@@ -1,15 +1,11 @@
 package usecases
 
-import org.statismo.stk.core.filters.DistanceTransform
 import org.statismo.stk.core.geometry._3D
-import org.statismo.stk.core.image.{ContinuousScalarImage3D, DiscreteScalarImage3D, Interpolation}
+import org.statismo.stk.core.image.filter.DiscreteImageFilter
+import org.statismo.stk.core.image.{DifferentiableScalarImage, DiscreteScalarImage}
 import org.statismo.stk.core.mesh.Mesh
-import org.statismo.stk.core.numerics.LBFGSOptimizerConfiguration
-import org.statismo.stk.core.numerics.LBFGSOptimizer
-import org.statismo.stk.core.numerics.Integrator
-import org.statismo.stk.core.numerics.IntegratorConfiguration
-import org.statismo.stk.core.numerics.FixedPointsUniformMeshSampler3D
-import org.statismo.stk.core.registration.{RegistrationConfiguration, RKHSNormRegularizer, Registration, MeanSquaresMetric3D, GaussianProcessTransformationSpace}
+import org.statismo.stk.core.numerics.{FixedPointsUniformMeshSampler3D, Integrator, LBFGSOptimizer}
+import org.statismo.stk.core.registration.{GaussianProcessTransformationSpace, MeanSquaresMetric3D, RKHSNormRegularizer, Registration, RegistrationConfiguration}
 import org.statismo.stk.ui.{Mesh => UiMesh, _}
 
 import scala.collection.mutable.ArrayBuffer
@@ -39,7 +35,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
   listenTo(scene)
   reactions += {
     case Scene.TreeTopologyChanged(s) =>
-      if (!scene.shapeModels.isEmpty) {
+      if (scene.shapeModels.nonEmpty) {
         if (!orgModel.isDefined) {
           orgModel = Some(scene.shapeModels(0))
           lastModel = Some(orgModel.get)
@@ -47,7 +43,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
           listenTo(modelLm.get)
         }
       }
-      if (!scene.staticObjects.isEmpty) {
+      if (scene.staticObjects.nonEmpty) {
         if (!targetLm.isDefined) {
           targetLm = Some(scene.staticObjects(0).landmarks)
           listenTo(targetLm.get)
@@ -66,9 +62,9 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
       if (modelLm.get.length == targetLm.get.length) {
         val refLms = lastModel.get.landmarks.map(_.point).toIndexedSeq
         val targetLms = targetLm.get.map(_.point).toIndexedSeq
-        val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (refPt, tgtPt - refPt)}
-        val newModel = if (!trainingData.isEmpty) {
-          val posteriorModel = orgModel.get.peer.posterior(trainingData, 2, computeMeanOnly)
+        val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (lastModel.get.peer.referenceMesh.findClosestPoint(refPt)._2, tgtPt)}
+        val newModel = if (trainingData.nonEmpty) {
+          val posteriorModel = orgModel.get.peer.posterior(trainingData, 2 /*, computeMeanOnly*/)
           val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
           nm.landmarks.foreach { l => l.remove()}
           lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point)}
@@ -96,31 +92,31 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
     coeffs ++= lastModel.get.instances(0).coefficients
 
     def fittingConfig(statmodel: ShapeModel) = {
-      val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.mesh, 1000, seed = 42)
-      val integr = Integrator[_3D](IntegratorConfiguration(sampler))
+      val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.referenceMesh, 1000, seed = 42)
+      val integr = Integrator[_3D](sampler)
       RegistrationConfiguration[_3D](
-        optimizer = LBFGSOptimizer(LBFGSOptimizerConfiguration(numIterations = 10, 5, 0.001)),
+        optimizer = LBFGSOptimizer(numIterations = 10, 5, 0.001),
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0)),
         integrator = integr,
         metric = MeanSquaresMetric3D(integr),
-        transformationSpace = GaussianProcessTransformationSpace(statmodel.gaussianProcess),
+        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolate()),
         regularizer = RKHSNormRegularizer,
-        regularizationWeight = 0.01,
-        initialParametersOrNone = None)
+        regularizationWeight = 0.01)
     }
 
     val config = fittingConfig(lastModel.get)
-    val refDm = Mesh.meshToDistanceImage(lastModel.get.peer.mesh)
+    val refDm = Mesh.meshToDistanceImage(lastModel.get.peer.referenceMesh)
 
-    val targetDm: ContinuousScalarImage3D = {
+    val targetDm: DifferentiableScalarImage[_3D] = {
       scene.staticObjects(0).representations(0) match {
-        case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
+        case m: UiMesh => Mesh.meshToDistanceImage(m.peer).asInstanceOf[DifferentiableScalarImage[_3D]]
         case imgUi: Image3D[_] =>
-          val img = imgUi.peer.asInstanceOf[DiscreteScalarImage3D[Short]]
-          val timg: DiscreteScalarImage3D[Short] = img.map(v => if (v > 10) 1 else 0)
+          val img = imgUi.peer.asInstanceOf[DiscreteScalarImage[_3D, Short]]
+          val timg: DiscreteScalarImage[_3D, Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))
-          Interpolation.interpolate(DistanceTransform.euclideanDistanceTransform(timg), 1)
+          val dt = DiscreteImageFilter.distanceTransform(timg)
+          dt.interpolate(1)
       }
     }
     for (regstate <- Registration.iterations(config)(refDm, targetDm)) {

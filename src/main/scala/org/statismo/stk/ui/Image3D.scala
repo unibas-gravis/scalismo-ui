@@ -2,9 +2,8 @@ package org.statismo.stk.ui
 
 import java.io.File
 
-import org.statismo.stk.core.common.ScalarValue
 import org.statismo.stk.core.geometry.{Point, _3D}
-import org.statismo.stk.core.image.DiscreteScalarImage3D
+import org.statismo.stk.core.image.DiscreteScalarImage
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.ui.Reloadable.Reloader
 import org.statismo.stk.ui.visualization._
@@ -16,6 +15,7 @@ import scala.reflect.runtime.universe.{Type, TypeTag, typeOf}
 import scala.swing.Reactor
 import scala.swing.event.Event
 import scala.util.{Failure, Success, Try}
+import spire.math.Numeric
 
 object Image3DVisualizationFactory {
 
@@ -83,20 +83,29 @@ object Image3D {
 
 }
 
-class Image3D[S: ScalarValue : ClassTag : TypeTag](reloader: Reloader[DiscreteScalarImage3D[S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
+class Image3D[S: Numeric : ClassTag : TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
 
   private var _peer = reloader.load().get
 
-  def peer: DiscreteScalarImage3D[S] = _peer
+  def peer: DiscreteScalarImage[_3D, S] = _peer
 
   protected[ui] override lazy val saveableMetadata = StaticImage3D
 
   protected[ui] override lazy val visualizationProvider = Image3DVisualizationFactory.getInstance()
 
-  protected[ui] def asFloatImage: DiscreteScalarImage3D[Float] = peer.map[Float](p => implicitly[ScalarValue[S]].toFloat(p))
+  protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = peer.map[Float](p => implicitly[Numeric[S]].toFloat(p))
 
-  override def saveToFile(f: File) = Try[Unit] {
-    ImageIO.writeImage(peer, f)
+  override def saveToFile(f: File) : Try[Unit] = {
+    val extension = {
+      val dot = f.getName.lastIndexOf('.')
+      // dot == 0 example: ".file"
+      if (dot > 0) Success(f.getName.substring(dot + 1)) else Failure(new IllegalArgumentException("No file extension given"))
+    }
+    extension flatMap {
+      case "vtk" => ImageIO.writeVTK[_3D,S](peer, f)
+      case "nii" | "nia" => ImageIO.writeNifti(peer, f)
+      case _ => Failure(new IllegalArgumentException("Unsupported file extension: " + extension.get))
+    }
   }
 
   override def addLandmarkAt(point: Point[_3D], nameOpt: Option[String]) = {

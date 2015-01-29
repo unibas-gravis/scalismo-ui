@@ -3,8 +3,7 @@ package org.statismo.stk.ui
 import java.awt.Color
 import java.io.File
 
-import breeze.linalg.DenseVector
-import org.statismo.stk.core.geometry.{Point, _3D, Landmark => CLandmark}
+import org.statismo.stk.core.geometry.{Landmark => CLandmark, Point, _3D}
 import org.statismo.stk.core.io.LandmarkIO
 import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization._
@@ -13,6 +12,7 @@ import org.statismo.stk.ui.visualization.props.{ColorProperty, OpacityProperty, 
 import scala.collection.immutable
 import scala.swing.event.Event
 import scala.util.Try
+import breeze.linalg.DenseVector
 
 trait Landmark extends Nameable with Removeable with Uncertainty {
   def point: Point[_3D]
@@ -42,13 +42,14 @@ object Landmarks {
 
   object ReaderMetadata extends FileIoMetadata {
     override val description = "Landmarks"
-    override val fileExtensions = immutable.Seq("csv","json")
+    override val fileExtensions = immutable.Seq("csv", "json")
   }
 
   object WriterMetadata extends FileIoMetadata {
     override val description = "Landmarks"
     override val fileExtensions = immutable.Seq("json")
   }
+
 }
 
 trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublisher with Saveable with Loadable {
@@ -83,7 +84,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     val status = for {
       saved <- if (legacyFormat) LandmarkIO.readLandmarksCsv[_3D](file) else LandmarkIO.readLandmarksJson[_3D](file)
       newLandmarks = saved.map {
-        case CLandmark(name, point,_,_) =>
+        case CLandmark(name, point, _, _) =>
           this.create(point, Some(name))
       }
     } yield {}
@@ -173,7 +174,7 @@ class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) exte
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
-  def addAt(peer: Point[_3D], nameOpt : Option[String] = None) = create(peer, nameOpt)
+  def addAt(peer: Point[_3D], nameOpt: Option[String] = None) = create(peer, nameOpt)
 
   def create(peer: Point[_3D], name: Option[String] = None): Unit = {
     val lm = new StaticLandmark(peer, this)
@@ -217,7 +218,8 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
   def calculateCenter(): Point[_3D] = {
     val coeffs = DenseVector(container.instance.coefficients.toArray)
-    source.point + container.instance.shapeModel.gaussianProcess.instance(coeffs)(source.point)
+    val (_, ptId) = container.instance.shapeModel.peer.referenceMesh.findClosestPoint(source.point)
+    container.instance.shapeModel.peer.instance(coeffs)(ptId)
   }
 
   def setCenter(): Unit = {
@@ -227,19 +229,20 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   }
 
   override def point = _point
+
   override def getCurrentPosition = point
 }
 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  def addAt(peer: Point[_3D], name : Option[String] = None) = this.synchronized {
+  def addAt(peer: Point[_3D], name: Option[String] = None) = this.synchronized {
     create(peer, name)
   }
 
   override def create(peer: Point[_3D], name: Option[String]): Unit = this.synchronized {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
-    val refPoint = instance.shapeModel.peer.mesh.points(index)
+    val refPoint = instance.shapeModel.peer.referenceMesh.points(index)
     instance.shapeModel.landmarks.create(refPoint, name)
   }
 
