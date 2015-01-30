@@ -186,7 +186,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     case Scene.SlicingPosition.VisibilityChanged(s) => updateUi()
     case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
     case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
-    case Scene.SlicingPosition.PointChanged(sp) => updateUi()
+    case Scene.SlicingPosition.PointChanged(sp,_,_) => updateUi()
     case ValueChanged(slider: EdtSlider) =>
       slider match {
         case x.slider => slicingPosition.map {

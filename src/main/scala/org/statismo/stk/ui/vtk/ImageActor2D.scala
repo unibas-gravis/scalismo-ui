@@ -96,14 +96,15 @@ class ImageActor2D private[ImageActor2D](source: Image3D[_], axis: Axis.Value, i
       data.slice.Update()
       mapper.Update()
     }
-    publishEdt(if (isStandalone) new ResetCameraRequest(this) else new RenderRequest(this))
+    //FIXME: correctly handle slicing position changes
+    publishEdt(new RenderRequest(this))
   }
 
   listenTo(source.scene, source)
   reload()
 
   reactions += {
-    case Scene.SlicingPosition.PointChanged(sp) =>
+    case Scene.SlicingPosition.PointChanged(sp,_,_) =>
       update(sp.point)
     case Image3D.Reloaded(img) =>
       data = new InstanceData(img, axis)

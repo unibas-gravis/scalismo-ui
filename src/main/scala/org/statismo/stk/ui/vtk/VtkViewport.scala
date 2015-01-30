@@ -2,8 +2,8 @@ package org.statismo.stk.ui.vtk
 
 import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization.Renderable
-import org.statismo.stk.ui.{BoundingBox, EdtPublisher, Scene, Viewport}
-import vtk.{vtkCamera, vtkRenderer}
+import org.statismo.stk.ui._
+import _root_.vtk.{vtkCamera, vtkRenderer}
 
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
@@ -14,7 +14,7 @@ trait VtkContext extends EdtPublisher
 object VtkContext {
 
   case class ResetCameraRequest(source: VtkContext) extends Event
-
+  case class MoveCameraRequest(source: VtkContext, axis: Axis.Value, amount: Double) extends Event
   case class RenderRequest(source: VtkContext, immediately: Boolean = false) extends Event
 
 }
@@ -165,6 +165,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
     case VtkContext.RenderRequest(s, now) =>
       updateBoundingBox()
       publishEdt(VtkContext.RenderRequest(this, now))
+    case VtkContext.MoveCameraRequest(src, axis, amount) => moveCamera(axis, amount)
   }
 
   def attach() = this.synchronized {
@@ -181,6 +182,16 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
         refresh(Nil, Some(viewport))
       case _ =>
     }
+  }
+
+  def moveCamera(axis: Axis.Value, amount: Double) = EdtUtil.onEdt {
+    val pos = renderer.GetActiveCamera().GetPosition()
+    axis match {
+      case Axis.X => pos(0) += amount
+      case Axis.Y => pos(1) += amount
+      case Axis.Z => pos(2) += amount
+    }
+    renderer.GetActiveCamera().SetPosition(pos)
   }
 
   def resetCamera(force: Boolean = false) = EdtUtil.onEdt {

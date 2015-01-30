@@ -1,5 +1,6 @@
 package org.statismo.stk.ui.vtk
 
+import org.statismo.stk.core.geometry.{_3D, Point, Vector}
 import org.statismo.stk.ui.{TwoDViewport, Axis, BoundingBox, Scene}
 import vtk.vtkPoints
 
@@ -7,17 +8,19 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
   val scene = source.scene
 
   listenTo(scene)
-  update(withEvent = false)
+  update()
 
   reactions += {
     case Scene.SlicingPosition.BoundingBoxChanged(s) => update()
-    case Scene.SlicingPosition.PointChanged(s) => update()
+    case Scene.SlicingPosition.PointChanged(s,current,previous) => updateWithSlicingPositionChange(current, previous)
     case Scene.SlicingPosition.VisibilityChanged(s) => update()
   }
 
-  def update(withEvent: Boolean = true) = this.synchronized {
-    // FIXME: this is essentially a quick hack for now, because we're "abusing" the bounding box functionality.
+  def updateWithSlicingPositionChange(current: Point[_3D], previous: Option[Point[_3D]]): Unit = {
+    update(previous.map(current - _))
+  }
 
+  def update(camMove: Option[Vector[_3D]] = None) = this.synchronized {
     val bb = source.boundingBox
     val p = source.point
 
@@ -60,10 +63,20 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
       }
     }
 
-    if (withEvent) {
-      publishEdt(VtkContext.RenderRequest(this))
-    }
-  }
+    val needEvent = camMove.map { m =>
+      val diff = axis match {
+        case Axis.X => m(0)
+        case Axis.Y => m(1)
+        case Axis.Z => m(2)
+      }
+      if (diff != 0) {
+        publishEdt(VtkContext.MoveCameraRequest(this, axis, diff))
+        false
+      } else true
+    }.getOrElse(true)
+
+    if(needEvent) publishEdt(VtkContext.RenderRequest(this))
+}
 
   override def onDestroy() = this.synchronized {
     deafTo(scene)
@@ -73,6 +86,11 @@ class SlicingPlaneActor(source: Scene.SlicingPosition, axis: Axis.Value)(implici
 
 class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, plane.axis) {
   override lazy val currentBoundingBox = BoundingBox.None
+
+  override def updateWithSlicingPositionChange(current: Point[_3D], previous: Option[Point[_3D]]): Unit = {
+    // in 3D, we don't want to change the camera position
+    update(None)
+  }
 }
 
 class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, vtkViewport.viewport.asInstanceOf[TwoDViewport].axis) {

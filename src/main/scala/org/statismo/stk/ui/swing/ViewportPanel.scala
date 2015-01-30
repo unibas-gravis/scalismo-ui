@@ -104,7 +104,7 @@ class TwoDViewportPanel extends ViewportPanel {
     peer.setOrientation(SwingConstants.VERTICAL)
 
     reactions += {
-      case Scene.SlicingPosition.PointChanged(sp) => update(sp)
+      case Scene.SlicingPosition.PointChanged(sp,_,_) => update(sp)
       case Scene.SlicingPosition.PrecisionChanged(sp) => update(sp)
       case Scene.SlicingPosition.BoundingBoxChanged(sp) => update(sp)
       case ValueChanged(c) if c eq this =>

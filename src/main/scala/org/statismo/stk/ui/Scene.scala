@@ -22,7 +22,7 @@ object Scene {
 
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
 
-    case class PointChanged(slicingPosition: SlicingPosition) extends Event
+    case class PointChanged(slicingPosition: SlicingPosition, current: Point[_3D], previous: Option[Point[_3D]]) extends Event
 
     case class PrecisionChanged(slicingPosition: SlicingPosition) extends Event
 
@@ -34,7 +34,7 @@ object Scene {
 
       case class Val(name: String, format: Float => String, toIntValue: Float => Int, fromInt: Int => Float) extends super.Val(nextId, name)
 
-      implicit def valueToPrecisionVal(x: Value) = x.asInstanceOf[Val]
+      implicit def valueToPrecisionVal(x: Value): Val = x.asInstanceOf[Val]
 
       val MmWhole = new Val("1 mm", {
         value => f"$value%1.0f"
@@ -131,10 +131,11 @@ object Scene {
     }
 
     private def point_=(np: Point[_3D]) = this.synchronized {
+      val previous = _point
       if (!_point.isDefined || _point.get != np) {
         _point = Some(np)
       }
-      scene.publishEdt(Scene.SlicingPosition.PointChanged(this))
+      scene.publishEdt(Scene.SlicingPosition.PointChanged(this, np, previous))
     }
 
     private var _precision: Precision.Value = Precision.MmWhole
