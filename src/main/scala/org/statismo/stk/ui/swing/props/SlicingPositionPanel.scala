@@ -130,8 +130,19 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
   val visibility = new BorderPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
-    val check = new CheckBox("Draw outlines")
-    layout(check) = BorderPanel.Position.Center
+    val flow = new FlowPanel
+
+    val check = new CheckBox("Show bounding box/slices")
+
+    val opacity = new EdtSlider {
+      val s = preferredSize
+      s.width /= 2
+      preferredSize = s
+    }
+
+    flow.contents ++= Seq(new Label("3D opacity"), opacity)
+    layout(check) = BorderPanel.Position.West
+    layout(flow) = BorderPanel.Position.East
   }
 
   layout(new BorderPanel {
@@ -169,17 +180,18 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
             d.update()
         }
         visibility.check.selected = sp.visible
+        visibility.opacity.value = (sp.opacity * 100).toInt
     }
     revalidate()
     listenToOwnEvents()
   }
 
   def deafToOwnEvents() = {
-    deafTo(x.slider, y.slider, z.slider, visibility.check)
+    deafTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
   }
 
   def listenToOwnEvents() = {
-    listenTo(x.slider, y.slider, z.slider, visibility.check)
+    listenTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
   }
 
   reactions += {
@@ -189,11 +201,10 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     case Scene.SlicingPosition.PointChanged(sp,_,_) => updateUi()
     case ValueChanged(slider: EdtSlider) =>
       slider match {
-        case x.slider => slicingPosition.map {
-          _.x = x.value
-        }
+        case x.slider => slicingPosition.map(_.x = x.value)
         case y.slider => slicingPosition.map(_.y = y.value)
         case z.slider => slicingPosition.map(_.z = z.value)
+        case visibility.opacity => slicingPosition.map(_.opacity = visibility.opacity.value / 100.0)
       }
     case ButtonClicked(b: CheckBox) if b eq visibility.check =>
       slicingPosition.map {

@@ -28,6 +28,8 @@ object Scene {
 
     case class VisibilityChanged(slicingPosition: SlicingPosition) extends Event
 
+    case class OpacityChanged(slicingPosition: SlicingPosition) extends Event
+
     object Precision extends Enumeration {
 
       import scala.language.implicitConversions
@@ -121,6 +123,18 @@ object Scene {
         _visible = nv
         scene.publish(Scene.SlicingPosition.VisibilityChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
+      }
+    }
+
+    private var _opacity = 0.5
+
+    def opacity = _opacity
+
+    def opacity_=(nv: Double) = {
+      val sane = Math.max(0.0, Math.min(1.0, nv))
+      if (_opacity != sane) {
+        _opacity = nv
+        scene.publish(Scene.SlicingPosition.OpacityChanged(this))
       }
     }
 
