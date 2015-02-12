@@ -3,7 +3,7 @@ import Keys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
-  val buildOrganization = "org.statismo"
+  val buildOrganization = "ch.unibas.cs.gravis"
   val buildVersion = "develop-SNAPSHOT"
   val buildScalaVersion = "2.10.4"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
@@ -44,19 +44,20 @@ object Resolvers {
   private val sonatypeRelease = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
   private val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
   private val twitter = "twitter" at "http://maven.twttr.com/"
-  private val statismoPublic = "Statismo (public)" at "http://statismo.cs.unibas.ch/repository/public"
-  private val statismoPrivate = "Statismo (private)" at "https://statismo.cs.unibas.ch/repository/private"
-  val stkResolvers = Seq(statismoPublic, statismoPrivate, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
+  private val scalismoPublic = "Scalismo (public)" at "http://shapemodelling.cs.unibas.ch/repository/public"
+  private val scalismoPrivate = "Scalismo (private)" at "https://statismo.cs.unibas.ch/repository/private"
+  val stkResolvers = Seq(scalismoPublic, scalismoPrivate, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
 }
 
 object Creds {
-  val statismoPrivate = Credentials(Path.userHome / ".ivy2" / ".credentials-statismo-private")
+  val scalismoPrivate = Credentials(Path.userHome / ".ivy2" / ".credentials-statismo-private")
 }
 
 object Dependencies {
   import BuildSettings._
 
-  val stkCore = "org.statismo" %% "stkcore" % "develop-SNAPSHOT"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.0.+"
   val scalatest = "org.scalatest" %% "scalatest" % "2.1.0" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
@@ -71,7 +72,8 @@ object STKBuild extends Build {
 
   // Sub-project specific dependencies
   val commonDeps = Seq(
-    stkCore,
+    scalismo,
+    scalismoNative,
     scalatest,
     scalaReflect,
     scalaSwing,
@@ -79,12 +81,12 @@ object STKBuild extends Build {
     scalaInterpreterPane)
 
   lazy val cdap2 = Project(
-    "stk-ui",
+    "scalismo-ui",
     file("."),
     settings = buildSettings ++ Seq(
       libraryDependencies ++= commonDeps,
       resolvers ++= stkResolvers,
-      credentials += Creds.statismoPrivate,
+      credentials += Creds.scalismoPrivate,
       publishTo := Some(publishURL),
       EclipseKeys.withSource := true))
 

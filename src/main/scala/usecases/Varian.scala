@@ -1,17 +1,18 @@
 package usecases
 
-import org.statismo.stk.core.geometry._3D
-import org.statismo.stk.core.image.filter.DiscreteImageFilter
-import org.statismo.stk.core.image.{DifferentiableScalarImage, DiscreteScalarImage}
-import org.statismo.stk.core.mesh.Mesh
-import org.statismo.stk.core.numerics.{FixedPointsUniformMeshSampler3D, Integrator, LBFGSOptimizer}
-import org.statismo.stk.core.registration.{GaussianProcessTransformationSpace, MeanSquaresMetric3D, RKHSNormRegularizer, Registration, RegistrationConfiguration}
-import org.statismo.stk.ui.{Mesh => UiMesh, _}
+import scalismo.geometry._3D
+import scalismo.image.filter.DiscreteImageFilter
+import scalismo.image.{ DifferentiableScalarImage, DiscreteScalarImage }
+import scalismo.mesh.Mesh
+import scalismo.numerics.{ FixedPointsUniformMeshSampler3D, Integrator, LBFGSOptimizer }
+import scalismo.registration._
+import scalismo.ui.swing.{ ScalismoApp, ScalismoFrame }
+import scalismo.ui.{ Mesh => UiMesh, _ }
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.Action
 
-class Varian(scene: Scene) extends StatismoFrame(scene) {
+class Varian(scene: Scene) extends ScalismoFrame(scene) {
 
   override def startup(args: Array[String]): Unit = {
     super.startup(args)
@@ -62,12 +63,12 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
       if (modelLm.get.length == targetLm.get.length) {
         val refLms = lastModel.get.landmarks.map(_.point).toIndexedSeq
         val targetLms = targetLm.get.map(_.point).toIndexedSeq
-        val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (lastModel.get.peer.referenceMesh.findClosestPoint(refPt)._2, tgtPt)}
+        val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (lastModel.get.peer.referenceMesh.findClosestPoint(refPt)._2, tgtPt) }
         val newModel = if (trainingData.nonEmpty) {
-          val posteriorModel = orgModel.get.peer.posterior(trainingData, 2 /*, computeMeanOnly*/)
+          val posteriorModel = orgModel.get.peer.posterior(trainingData, 2 /*, computeMeanOnly*/ )
           val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
-          nm.landmarks.foreach { l => l.remove()}
-          lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point, Some(lm.name), lm.uncertainty)}
+          nm.landmarks.foreach { l => l.remove() }
+          lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point, Some(lm.name), lm.uncertainty) }
           nm
         } else {
           val nm = ShapeModel.createFromPeer(orgModel.get.peer, orgModel.get)
@@ -93,12 +94,10 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
     def fittingConfig(statmodel: ShapeModel) = {
       val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.referenceMesh, 1000, seed = 42)
-      val integr = Integrator[_3D](sampler)
-      RegistrationConfiguration[_3D](
+      RegistrationConfiguration[_3D, GaussianProcessTransformationSpace[_3D]](
         optimizer = LBFGSOptimizer(numIterations = 10, 5, 0.001),
-        //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0)),
-        integrator = integr,
-        metric = MeanSquaresMetric3D(integr),
+        //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0))
+        metric = MeanSquaresMetric[_3D](sampler),
         transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolate()),
         regularizer = RKHSNormRegularizer,
         regularizationWeight = 0.01)
@@ -128,7 +127,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
 object Varian {
   def main(args: Array[String]): Unit = {
-    StatismoApp(args, frame = { s: Scene => new Varian(s)})
+    ScalismoApp(args, frame = { s: Scene => new Varian(s) })
   }
 }
 

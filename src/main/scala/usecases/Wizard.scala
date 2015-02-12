@@ -1,27 +1,26 @@
 package usecases
 
-import org.statismo.stk.ui.{Workspace, StatismoFrame, Scene, StatismoApp}
-import org.statismo.stk.ui.swing._
+import scalismo.ui.{ Workspace, Scene }
+import scalismo.ui.swing._
 import scala.swing._
 
 /* This class is just a really simple and crude example for now. It needs to be revised to become more useful.*/
-object Wizard extends SimpleSwingApplication with StatismoLookAndFeel {
+object Wizard extends SimpleSwingApplication with ScalismoLookAndFeel {
 
   lazy val scene = new Scene
   lazy val workspace = new Workspace(scene)
-
 
   val MaxSteps = 3
 
   lazy val previous = new Button(new Action("<-- previous") {
     override def apply(): Unit = {
-      current = new WizardPanel(current.step-1)
+      current = new WizardPanel(current.step - 1)
     }
   })
 
   lazy val next = new Button(new Action("next -->") {
     override def apply(): Unit = {
-      current = new WizardPanel(current.step+1)
+      current = new WizardPanel(current.step + 1)
     }
   })
 
@@ -33,7 +32,7 @@ object Wizard extends SimpleSwingApplication with StatismoLookAndFeel {
     mainPanel.revalidate()
   }
 
-  lazy val mainPanel = new BorderPanel{
+  lazy val mainPanel = new BorderPanel {
     val buttons = new BoxPanel(Orientation.Horizontal)
     buttons.contents += (previous, next)
     layout(buttons) = BorderPanel.Position.North
