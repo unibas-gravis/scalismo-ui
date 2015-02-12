@@ -1,12 +1,13 @@
 package scalismo.ui.vtk
 
 import java.awt.BorderLayout
+import java.awt.image.BufferedImage
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.JPanel
 
 import scalismo.ui.swing.ViewportPanel
 import scalismo.ui.{ EdtPublisher, Viewport, Workspace }
-import vtk.{ vtkPNGWriter, vtkWindowToImageFilter }
 
 import scala.swing.Component
 import scala.util.Try
@@ -51,17 +52,18 @@ class VtkPanel extends Component with EdtPublisher {
     vtkViewport.resetCamera()
   }
 
-  def screenshot(file: File) = Try {
-    val filter = new vtkWindowToImageFilter
-    filter.SetInput(canvas.getRenderWindow)
-    filter.SetInputBufferTypeToRGBA()
-    filter.Update()
+  def screenshot(file: File): Try[Unit] = Try {
+    val source = canvas.uiComponent
+    val image = new BufferedImage(source.getWidth, source.getHeight, BufferedImage.TYPE_INT_RGB)
+    val g = image.createGraphics()
 
-    val writer = new vtkPNGWriter
-    writer.SetFileName(file.getAbsolutePath)
-    writer.SetInputConnection(filter.GetOutputPort())
-    writer.Write()
-    writer.Delete()
-    filter.Delete()
+    // parameter description: see
+    // https://jogamp.org/deployment/jogamp-next/javadoc/jogl/javadoc/javax/media/opengl/awt/GLJPanel.html#setupPrint%28double,%20double,%20int,%20int,%20int%29
+    source.setupPrint(1, 1, 0, -1, -1)
+    source.printAll(g)
+    source.releasePrint()
+
+    image.flush()
+    ImageIO.write(image, "png", file)
   }
 }
