@@ -62,7 +62,7 @@ class LineThicknessPanel extends BorderPanel with VisualizationsPropertyPanel {
   override def setVisualizations(visualizations: immutable.Seq[Visualization[_]]): Boolean = {
     cleanup()
     val usable = visualizations.filter(v => v.isInstanceOf[Target]).asInstanceOf[TargetSeq]
-    if (!usable.isEmpty) {
+    if (usable.nonEmpty) {
       target = Some(usable)
       updateUi()
       target.get.foreach {

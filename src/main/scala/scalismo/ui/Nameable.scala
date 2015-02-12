@@ -60,7 +60,7 @@ class AlphaNumericNameGenerator extends NameGenerator {
     name
   }
 
-  def reset = this.synchronized {
+  override def reset() = this.synchronized {
     prefix = 0
     suffix = 0
   }
@@ -74,7 +74,7 @@ class NumericNameGenerator extends NameGenerator {
     last.toString
   }
 
-  def reset = this.synchronized {
+  override def reset() = this.synchronized {
     last = 0
   }
 }

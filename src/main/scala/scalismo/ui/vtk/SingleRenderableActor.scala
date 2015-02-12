@@ -5,7 +5,7 @@ import vtk.vtkActor
 
 trait SingleRenderableActor extends RenderableActor {
   // this MUST be overridden. You'll get an exception if you don't.
-  lazy val vtkActor: vtkActor = ???
+  lazy val vtkActor: vtkActor = throw new NotImplementedError
 
   override lazy val vtkActors = Seq(vtkActor)
 

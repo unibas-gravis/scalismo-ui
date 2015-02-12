@@ -61,7 +61,7 @@ class SwingUiFramework extends UiFramework {
           }.map {
             case (r, i) => r.payload
           }
-          ok.enabled = !model.selected.isEmpty
+          ok.enabled = model.selected.nonEmpty
         }
       }
     })

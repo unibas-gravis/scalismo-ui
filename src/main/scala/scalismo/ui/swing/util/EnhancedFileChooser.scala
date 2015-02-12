@@ -36,7 +36,7 @@ class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
 
   def lastUsedDirectories_=(files: Seq[File]) = {
     val dirs = files.map(f => if (f.isDirectory) f else f.getParentFile).distinct
-    if (!dirs.isEmpty) {
+    if (dirs.nonEmpty) {
       val old = lastUsedDirectories.diff(dirs)
       val current = Seq(dirs, old).flatten.take(MaxDirs)
       PersistentSettings.setList[String](LastUsedDirectoriesSettingsKey, current.map(_.getAbsolutePath).toList) match {

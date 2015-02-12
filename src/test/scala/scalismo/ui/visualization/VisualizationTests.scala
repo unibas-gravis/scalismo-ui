@@ -17,7 +17,7 @@ class VisualizationTests extends FunSpec with Matchers {
   }
 
   class DummyViewport extends Viewport {
-    override def scene: Scene = ???
+    override def scene: Scene = throw new NotImplementedError
   }
 
   object TestVisualizableFactory extends SimpleVisualizationFactory[TestVisualizable] {
