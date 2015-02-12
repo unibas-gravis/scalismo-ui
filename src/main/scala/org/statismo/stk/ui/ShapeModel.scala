@@ -177,7 +177,7 @@ object ShapeModelInstance {
     }
 
     override def addLandmarkAt(point: Point[_3D], nameOpt : Option[String]) = {
-      parent.landmarks.addAt(point, nameOpt)
+      parent.landmarks.addAt(point, nameOpt, createLandmarkUncertainty(point))
     }
   }
 }

@@ -67,7 +67,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
           val posteriorModel = orgModel.get.peer.posterior(trainingData, 2 /*, computeMeanOnly*/)
           val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
           nm.landmarks.foreach { l => l.remove()}
-          lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point)}
+          lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point, Some(lm.name), lm.uncertainty)}
           nm
         } else {
           val nm = ShapeModel.createFromPeer(orgModel.get.peer, orgModel.get)
@@ -109,7 +109,7 @@ class Varian(scene: Scene) extends StatismoFrame(scene) {
 
     val targetDm: DifferentiableScalarImage[_3D] = {
       scene.staticObjects(0).representations(0) match {
-        case m: UiMesh => Mesh.meshToDistanceImage(m.peer).asInstanceOf[DifferentiableScalarImage[_3D]]
+        case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
         case imgUi: Image3D[_] =>
           val img = imgUi.peer.asInstanceOf[DiscreteScalarImage[_3D, Short]]
           val timg: DiscreteScalarImage[_3D, Short] = img.map(v => if (v > 10) 1 else 0)

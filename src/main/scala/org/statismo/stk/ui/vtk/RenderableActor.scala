@@ -3,7 +3,7 @@ package org.statismo.stk.ui.vtk
 
 import org.statismo.stk.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
 import org.statismo.stk.ui.PointCloud.PointCloudRenderable3D
-import org.statismo.stk.ui.visualization.{Renderable, SphereLike}
+import org.statismo.stk.ui.visualization.{Renderable, EllipsoidLike}
 import org.statismo.stk.ui.{BoundingBox, Image3DVisualizationFactory, Scene}
 import vtk.vtkActor
 
@@ -42,7 +42,7 @@ object RenderableActor {
         case img2d: Image3DVisualizationFactory.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
-        case s: SphereLike => Some(new SphereActor(s))
+        case s: EllipsoidLike => Some(new EllipsoidActor(s))
         case _ => None
       }
   }

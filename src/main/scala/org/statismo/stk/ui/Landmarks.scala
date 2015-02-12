@@ -3,22 +3,22 @@ package org.statismo.stk.ui
 import java.awt.Color
 import java.io.File
 
-import org.statismo.stk.core.geometry.{Landmark => CLandmark, Point, _3D}
+import breeze.linalg.DenseVector
+import org.statismo.stk.core.geometry.{Landmark => CLandmark, Point, Vector, _3D}
 import org.statismo.stk.core.io.LandmarkIO
 import org.statismo.stk.ui.util.EdtUtil
 import org.statismo.stk.ui.visualization._
-import org.statismo.stk.ui.visualization.props.{ColorProperty, OpacityProperty, RadiusProperty}
+import org.statismo.stk.ui.visualization.props.{ColorProperty, OpacityProperty, RadiusesProperty, RotationProperty}
 
 import scala.collection.immutable
 import scala.swing.event.Event
 import scala.util.Try
-import breeze.linalg.DenseVector
 
-trait Landmark extends Nameable with Removeable with Uncertainty {
+trait Landmark extends Nameable with Removeable with HasUncertainty[_3D] {
   def point: Point[_3D]
 }
 
-class ReferenceLandmark(initalpoint: Point[_3D]) extends Landmark with DirectlyRepositionable {
+class ReferenceLandmark(initalpoint: Point[_3D]) extends Landmark with DirectlyRepositionable with HasUncertainty.SimpleImplementation[_3D] {
   private var _point = initalpoint
 
   override def point = _point
@@ -58,7 +58,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   override def isCurrentlySaveable: Boolean = children.nonEmpty
 
-  def create(peer: Point[_3D], name: Option[String]): Unit
+  def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit
 
   override def add(lm: L): Unit = this.synchronized {
     super.add(lm)
@@ -72,8 +72,9 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
   }
 
   override def saveToFile(file: File): Try[Unit] = this.synchronized {
-    val seq = children.map {
-      lm => CLandmark(lm.name, lm.point)
+    val seq = children.map { lm =>
+      val u = Uncertainty.toNDimensionalNormalDistribution(lm.uncertainty)
+      CLandmark(lm.name, lm.point, uncertainty = Some(u))
     }.toList
     LandmarkIO.writeLandmarksJson(file, seq)
   }
@@ -84,8 +85,9 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     val status = for {
       saved <- if (legacyFormat) LandmarkIO.readLandmarksCsv[_3D](file) else LandmarkIO.readLandmarksJson[_3D](file)
       newLandmarks = saved.map {
-        case CLandmark(name, point, _, _) =>
-          this.create(point, Some(name))
+        case CLandmark(name, point, _, uncertainty) =>
+          val u = uncertainty.map(nd => Uncertainty.fromNDimensionalNormalDistribution(nd))
+          this.create(point, Some(name), u.getOrElse(Uncertainty.defaultUncertainty3D()))
       }
     } yield {}
     publishEdt(Landmarks.LandmarksChanged(this))
@@ -94,27 +96,34 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 }
 
 object VisualizableLandmark extends SimpleVisualizationFactory[VisualizableLandmark] {
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsSphere(None)))
+  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new ThreeDVisualizationAsEllipsoid(None)))
   visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VisualizableLandmark]))
 
-  class ThreeDVisualizationAsSphere(from: Option[ThreeDVisualizationAsSphere]) extends Visualization[VisualizableLandmark] with SphereLike {
+  class ThreeDVisualizationAsEllipsoid(from: Option[ThreeDVisualizationAsEllipsoid]) extends Visualization[VisualizableLandmark] with EllipsoidLike {
     override val color: ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(Some(Color.BLUE))
     override val opacity: OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(Some(1.0))
-    override val radius: RadiusProperty = if (from.isDefined) from.get.radius.derive() else new RadiusProperty(Some(3.0f))
+    // FIXME: smarter determination of radiuses and rotation
+    override val radiuses: RadiusesProperty[_3D] = if (from.isDefined) from.get.radiuses.derive() else new RadiusesProperty(Some(Vector(3.0f, 3.0f, 3.0f)))
+    override val rotation: RotationProperty = if (from.isDefined) from.get.rotation.derive() else new RotationProperty(None)
 
 
-    override protected def createDerived() = new ThreeDVisualizationAsSphere(Some(this))
+    override protected def createDerived() = new ThreeDVisualizationAsEllipsoid(Some(this))
 
-    override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new SphereRenderable(source, color, opacity, radius))
+    override protected def instantiateRenderables(source: VisualizableLandmark) = immutable.Seq(new EllipsoidRenderable(source, color, opacity, radiuses, rotation))
 
-    override val description = "Sphere"
+    override val description = "Ellipsoid"
   }
 
-  class SphereRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radius: RadiusProperty) extends Renderable with SphereLike {
+  class EllipsoidRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radiuses: RadiusesProperty[_3D], override val rotation: RotationProperty) extends Renderable with EllipsoidLike {
+    radiuses.value = source.uncertainty.stdDevs
+    rotation.value = Some(source.uncertainty.rotationMatrix)
     setCenter(source)
     listenTo(source)
     reactions += {
       case Landmarks.LandmarkChanged(src) => setCenter(src)
+      case HasUncertainty.UncertaintyChanged(_) =>
+        radiuses.value = source.uncertainty.stdDevs
+        rotation.value = Some(source.uncertainty.rotationMatrix)
       case SceneTreeObject.Destroyed(src) => deafTo(src)
     }
 
@@ -136,7 +145,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 
-  def addAt(position: Point[_3D], nameOption: Option[String])
+  def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D])
 
   protected[ui] override def visualizationProvider = VisualizableLandmark
 }
@@ -145,17 +154,18 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   def create(template: ReferenceLandmark): Unit = {
-    create(template.point, Some(template.name))
+    create(template.point, Some(template.name), template.uncertainty)
   }
 
-  def create(peer: Point[_3D], name: Option[String] = None): Unit = this.synchronized {
+  def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = this.synchronized {
     val lm = new ReferenceLandmark(peer)
     lm.name = name.getOrElse(nameGenerator.nextName)
+    lm.uncertainty = uncertainty
     add(lm)
   }
 }
 
-class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) extends VisualizableLandmark(container) with DirectlyRepositionable {
+class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) extends VisualizableLandmark(container) with DirectlyRepositionable with HasUncertainty.SimpleImplementation[_3D] {
   var _point = initialCenter
 
   override def point = _point
@@ -169,16 +179,18 @@ class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) exte
       publishEdt(Repositionable.CurrentPositionChanged(this))
     }
   }
+
 }
 
 class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
-  def addAt(peer: Point[_3D], nameOpt: Option[String] = None) = create(peer, nameOpt)
+  override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = create(peer, name, uncertainty)
 
-  def create(peer: Point[_3D], name: Option[String] = None): Unit = {
+  override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
     val lm = new StaticLandmark(peer, this)
     lm.name = name.getOrElse(nameGenerator.nextName)
+    lm.uncertainty = uncertainty
     add(lm)
   }
 }
@@ -195,6 +207,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
     // moveable landmarks get. And only then we invoke the actual remove functionality (in the reactions below)
     source.remove()
   }
+
+  override def uncertainty: Uncertainty[_3D] = source.uncertainty
+
+  override def uncertainty_=(newValue: Uncertainty[_3D]): Unit = source.uncertainty = newValue
 
   reactions += {
     case Mesh.GeometryChanged(m) => setCenter()
@@ -236,14 +252,14 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  def addAt(peer: Point[_3D], name: Option[String] = None) = this.synchronized {
-    create(peer, name)
+  override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = this.synchronized {
+    create(peer, name, uncertainty)
   }
 
-  override def create(peer: Point[_3D], name: Option[String]): Unit = this.synchronized {
+  override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = this.synchronized {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
     val refPoint = instance.shapeModel.peer.referenceMesh.points(index)
-    instance.shapeModel.landmarks.create(refPoint, name)
+    instance.shapeModel.landmarks.create(refPoint, name, uncertainty)
   }
 
   listenTo(peer)

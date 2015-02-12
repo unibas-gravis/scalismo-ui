@@ -9,7 +9,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
   private lazy val sphere = new vtkSphereSource
   override lazy val color = renderable.color
   override lazy val opacity = renderable.opacity
-  lazy val radius = renderable.radius
+  lazy val radius = renderable.radiuses
   listenTo(radius)
 
   val points = new vtkPoints {
@@ -37,7 +37,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
   }
 
   def setGeometry() = this.synchronized {
-    sphere.SetRadius(renderable.radius.value)
+    sphere.SetRadius(renderable.radiuses.value(0))
     sphere.Modified()
     glyph.Update()
     glyph.Modified()

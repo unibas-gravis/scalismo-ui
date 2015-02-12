@@ -1,106 +1,356 @@
 package org.statismo.stk.ui.swing.props
 
 
-import org.statismo.stk.ui.Repositionable.Amount
-import org.statismo.stk.ui._
+import java.awt.Color
+import java.awt.event.{ActionEvent, ActionListener}
+import javax.swing.border.{Border, LineBorder, TitledBorder}
+import javax.swing.event.{DocumentEvent, DocumentListener}
 
-import scala.swing.GridBagPanel.{Anchor, Fill}
+import org.statismo.stk.core.geometry.{SquareMatrix, Vector, _3D}
+import org.statismo.stk.ui._
+import org.statismo.stk.ui.swing.util.EdtSlider
+
 import scala.swing._
+import scala.swing.event.ValueChanged
 import scala.util.Try
 
 
 class UncertaintyPanel extends BorderPanel with PropertyPanel {
   override val description = "Uncertainty"
 
-  private var target: Option[Uncertainty] = None
+  private lazy val Unset = "(unset)"
+
+  private var target: Option[HasUncertainty[_]] = None
+
+  val (x, y, z, rotationValue) = {
+    def l(t: TextField, f: Boolean => Unit) = new DocumentListener {
+      override def insertUpdate(e: DocumentEvent): Unit = validateTextInput(t, f)
+      override def changedUpdate(e: DocumentEvent): Unit = validateTextInput(t, f)
+      override def removeUpdate(e: DocumentEvent): Unit = validateTextInput(t, f)
+    }
+
+    def c(f: Boolean => Unit) = new TextField() {
+      inputVerifier = {c => validateTextInput(c.asInstanceOf[TextField], f)}
+      peer.getDocument.addDocumentListener(l(this, f))
+    }
+    (c(onStddevInput), c(onStddevInput), c(onStddevInput), c(onRotationInput))
+  }
+
+  val (dx, dy, dz, px, py, pz) = {
+    def c = new Label(Unset)
+    (c, c, c, c, c, c)
+  }
+
+  private var stddev: Option[Vector[_3D]] = None
+  private var defaultStddev: Option[Vector[_3D]] = None
+  private var previousStddev: Option[Vector[_3D]] = None
+
+  private var originalRotationMatrix: Option[SquareMatrix[_3D]] = None
+  private var previousRotationMatrix: Option[SquareMatrix[_3D]] = None
+  private var rotationMatrix: Option[SquareMatrix[_3D]] = None
+
+  val set = new Button(new Action("Apply") {
+    override def apply(): Unit = applyChanges(updatePreviousStdDev = true)
+  })
+
+  val reset = new Button(new Action("Reset (undo)") {
+    override def apply(): Unit = {
+      stddev = previousStddev
+      updateStddev()
+      applyChanges(updatePreviousStdDev = false)
+    }
+  })
+
+  val toDefault = new Button(new Action("Save as default") {
+    override def apply(): Unit = {
+      stddev map(s => Uncertainty.defaultStdDevs3D = s)
+    }
+  })
+
+  val fromDefault = new Button(new Action("Load from default") {
+    override def apply(): Unit = {
+      stddev = defaultStddev
+      updateStddev()
+      applyChanges(updatePreviousStdDev = false)
+    }
+  })
+
+  val previousLabel = new Label("Previous:")
+  val defaultLabel = new Label("Default:")
+
+  val rotations = new FlowPanel()
+  val stddevs = new GridPanel(0, 3)
+  stddevs.contents ++= Seq(x, y, z)
+  stddevs.contents ++= Seq(set, reset, previousLabel)
+  stddevs.contents ++= Seq(px, py, pz)
+  stddevs.contents ++= Seq(toDefault, fromDefault, defaultLabel)
+  stddevs.contents ++= Seq(dx, dy, dz)
+
+  val rotationLabel = Array.fill(3,3)(new Label("X") {
+    border = new LineBorder(Color.BLACK)
+    peer.getInsets.set(5,5,5,5)
+  })
+
+  val rotationReset = new Button(new Action("Reset") {
+    override def apply(): Unit = {
+      previousRotationMatrix = originalRotationMatrix
+      rotationMatrix = previousRotationMatrix
+      rotationSlider.value = 0
+      applyRotation()
+    }
+  })
+
+
+//  val rotationSet = new Button(new Action("Set") {
+//    override def apply(): Unit = {
+//      applyRotation()
+//    }
+//  })
+
+  val rotationSlider = new EdtSlider {
+    min = -180
+    max = 180
+
+    reactions += {
+      case ValueChanged(_) =>
+        rotationValue.text = this.value.toString
+    }
+  }
+
+  val (rotationFirst, rotationSecond, rotationThird) = {
+    val group = new ButtonGroup()
+    val listener = new ActionListener {
+      override def actionPerformed(e: ActionEvent): Unit = {
+        previousRotationMatrix = rotationMatrix
+        rotationSlider.value = 0
+      }
+    }
+    def b(text: String) = {
+      val b = new RadioButton(text)
+      group.buttons += b
+      b.peer.addActionListener(listener)
+      b
+    }
+    (b("first"), b("second"),b("third"))
+  }
+  rotationFirst.selected = true
+
+  // layout for the UI
+  {
+    val stddevsPanel = new BorderPanel {
+      border = new TitledBorder(null, "Standard deviations (mm)", TitledBorder.LEADING, 0, null, null)
+      layout(stddevs) = BorderPanel.Position.Center
+    }
+    val rotationsPanel = new BorderPanel {
+      layoutManager.setHgap(20)
+      border = new TitledBorder(null, "Rotation", TitledBorder.LEADING, 0, null, null)
+      val matrix = new GridPanel(3,3) {
+        hGap = 0
+        vGap = 0
+        contents ++= rotationLabel.flatten.toSeq
+        border = new LineBorder(Color.BLACK)
+      }
+
+      val lines = new BoxPanel(Orientation.Vertical)
+      lines.contents += new BorderPanel {
+        layout(new Label("Rotate around axis:")) = BorderPanel.Position.West
+      }
+      lines.contents += new GridPanel(1,3) {
+        contents ++= Seq(rotationFirst, rotationSecond, rotationThird)
+      }
+      lines.contents += new BorderPanel{
+        layout(rotationSlider) = BorderPanel.Position.Center
+        layout(new Label(rotationSlider.min.toString)) = BorderPanel.Position.West
+        layout(new Label(rotationSlider.max.toString)) = BorderPanel.Position.East
+      }
+      lines.contents += new BorderPanel {
+        val west = new GridPanel(0,4) {
+          contents ++= Seq(rotationValue, new Label("degrees"), rotationReset)
+        }
+        layout(west) = BorderPanel.Position.Center
+//        layout(rotationReset) = BorderPanel.Position.Center
+      }
+      layout(matrix) = BorderPanel.Position.West
+      layout(lines) = BorderPanel.Position.Center
+    }
+    val bothPanel = new BorderPanel {
+      layout(rotationsPanel) = BorderPanel.Position.North
+      layout(stddevsPanel) = BorderPanel.Position.Center
+    }
+    layout(bothPanel) = BorderPanel.Position.North
+  }
+
+  reactions += {
+    case Uncertainty.DefaultStdDevs3DChanged => updateDefaultStddev()
+  }
+
+  def applyChanges(updatePreviousStdDev: Boolean): Unit = {
+    if (stddev.isDefined && rotationMatrix.isDefined) {
+      target.asInstanceOf[Option[HasUncertainty[_3D]]] map { t =>
+        t.uncertainty = Uncertainty(rotationMatrix.get, stddev.get)
+      }
+      if (updatePreviousStdDev) {
+        previousStddev = stddev
+        updatePreviousStddev()
+      }
+    }
+  }
 
   def cleanup() {
-    target.map {
-      r =>
-        deafTo(r)
-    }
+    target.map(r => deafTo(r))
+    deafTo(Uncertainty)
     target = None
-    table.setFooter(NoItem)
+    stddev = None
+    previousStddev = None
+    originalRotationMatrix = None
+    previousRotationMatrix = None
+    rotationMatrix = None
+    updateStddev()
+    updatePreviousStddev()
+    updateDefaultStddev()
+    updateRotationLabels()
   }
 
   override def setObject(objOption: Option[AnyRef]) = {
     cleanup()
+    rotationValue.peer.setMinimumSize(rotationValue.peer.getSize)
     objOption match {
-      case Some(r: Uncertainty) =>
+      case Some(r: HasUncertainty[_3D]) =>
         target = Some(r)
         listenTo(r)
-        updateUi()
+        listenTo(Uncertainty)
+        updateAll()
         true
       case _ => false
     }
   }
 
-  //  reactions += {
-  //    case Repositionable.CurrentPositionChanged(t) if target != None && target.get == t => updateCoordinates()
-  //  }
-
-  def updateUi() = {
+  def updateAll() = {
     target match {
-      case Some(d: Uncertainty) =>
-        Axes.foreach(t => t._2.enabled = true)
-      case _ =>
+      case Some(d: HasUncertainty[_3D]) =>
+        val u = d.uncertainty
+        // I have *no* clue why a direct assignment leads to a weird "type mismatch" error here. Ah, whatever.
+        previousStddev = Some(Vector(u.stdDevs.data))
+        stddev = previousStddev
+        originalRotationMatrix = Some(SquareMatrix(u.rotationMatrix.data))
+        previousRotationMatrix = originalRotationMatrix
+        rotationMatrix = previousRotationMatrix
+        rotationSlider.value = 0
+      case _ => /* do nothing */
     }
-    updateCoordinates()
+    updateStddev()
+    updatePreviousStddev()
+    updateDefaultStddev()
+    updateRotationLabels()
   }
 
-  def updateCoordinates() = {
-    target.map { t =>
-      val xyz = List(1,2,3)
-      val assign = Axes.map(t => t._2).zip(xyz)
-      assign.foreach { t =>
-        t._1.text = t._2.toString
-      }
+  def applyRotation() = {
+    if (previousRotationMatrix.isDefined && rotationMatrix.isDefined) Try {
+      val angle = Math.toRadians(rotationValue.text.toFloat)
+      val axisIndex = if (rotationThird.selected) 2 else if (rotationSecond.selected) 1 else 0
+      val axis = Uncertainty.Util.matrixToAxes(previousRotationMatrix.get).apply(axisIndex)
+
+      val rm = Uncertainty.Util.rotationMatrixFor(axis, angle)
+      rotationMatrix = Some(rm * previousRotationMatrix.get)
+      applyChanges(updatePreviousStdDev = false)
+      updateRotationLabels()
     }
   }
 
-  val Axes = Seq(Axis.X, Axis.Y, Axis.Z).map(axis => (axis, new TextField {
-    columns = 10
-  }))
-  val NoItem = new Label("No item selected.")
-
-  private class Table extends GridBagPanel {
-    val lastLine = new BorderPanel {
-      layout(NoItem) = BorderPanel.Position.Center
-    }
-
-    def setFooter(comp: Component) = {
-      lastLine.layout(comp) = BorderPanel.Position.Center
-    }
-
-    // constructor
-    {
-      var x, y = 0
-      for (axis <- Axes) {
-        {
-          // axis label
-          val constraint = pair2Constraints((x, y))
-          constraint.anchor = Anchor.West
-          constraint.ipadx = 10
-          add(new Label(s"${axis._1.toString}:"), constraint)
-          x += 1
+  def updateRotationLabels(): Unit = {
+    val cells = rotationLabel.flatten
+    rotationMatrix match {
+      case Some(m) =>
+        val data = m.t.data
+        require (data.length == cells.length)
+        for (i <- 0 until data.length) {
+          cells(i).text = f"${data(i)}%.02f"
         }
-        {
-          // coordinate textbox
-          val constraint = pair2Constraints((x, y))
-          constraint.fill = Fill.Horizontal
-          add(axis._2, constraint)
-          x += 1
-        }
-        y += 1
-        x = 0
-      }
-      val constraint = pair2Constraints((x, y))
-      constraint.fill = Fill.Horizontal
-      constraint.gridwidth = 8
-      add(lastLine, constraint)
+      case None => cells.foreach(_.text = "X")
     }
   }
 
-  private val table = new Table
-  layout(table) = BorderPanel.Position.North
+  def updateStddev() = {
+    stddev match {
+      case Some(v) =>
+        Seq(x, y, z) zip v.data foreach { t =>
+          t._1.enabled = true
+          t._1.text = t._2.toString
+        }
+        toDefault.enabled = true
+        set.enabled = true
+      case None =>
+        Seq(x, y, z) foreach { t =>
+          t.enabled = false
+          t.text = ""
+        }
+        toDefault.enabled = false
+        set.enabled = false
+    }
+  }
+
+  def updatePreviousStddev() = {
+    Seq(reset, previousLabel) map(_.enabled = previousStddev.isDefined)
+    previousStddev match {
+      case Some(v) =>
+        Seq(px, py, pz) zip v.data foreach { t =>
+          t._1.enabled = true
+          t._1.text = t._2.toString
+        }
+      case None =>
+        Seq(px, py, pz) foreach { t =>
+          t.enabled = false
+          t.text = Unset
+        }
+    }
+  }
+
+  def updateDefaultStddev() = {
+    defaultStddev = Some(Uncertainty.defaultStdDevs3D)
+
+    Seq(dx, dy, dz).foreach(_.enabled = true)
+    fromDefault.enabled = set.enabled
+    val s = defaultStddev.get.data.map(_.toString)
+    Seq(dx, dy, dz) zip s map (t => t._1.text = t._2)
+  }
+
+  def onRotationInput(valid: Boolean): Unit = {
+    if (valid) {
+      applyRotation()
+    }
+  }
+
+  def onStddevInput(valid: Boolean): Unit = {
+    set.enabled = valid
+    toDefault.enabled = valid
+    if (valid) {
+      val newStdDev = Try {
+        Vector(x.text.toFloat, y.text.toFloat, z.text.toFloat)
+      }
+      newStdDev.toOption.map(s => stddev = Some(s))
+    }
+  }
+
+  def validateTextInput(t: TextField, function: Boolean => Unit): Boolean = {
+    val f = Try(t.text.toFloat).toOption
+    f match {
+      case Some(v) =>
+        // value is ok, restore previous border if needed
+        t.border match {
+          case l: ErrorBorder => t.border = l.previousBorder
+          case _ => /* do nothing */
+        }
+      case None =>
+        // value is not ok, set error border if needed
+        t.border match {
+          case e: ErrorBorder => /* do nothing */
+          case b@_ => t.border = new ErrorBorder(b)
+        }
+    }
+    function(f.isDefined)
+    f.isDefined
+  }
+
+  private class ErrorBorder(val previousBorder: Border) extends LineBorder(Color.RED, 2, true)
+
 }

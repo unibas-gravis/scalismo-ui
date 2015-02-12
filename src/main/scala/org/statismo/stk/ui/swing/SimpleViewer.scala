@@ -3,6 +3,7 @@ package org.statismo.stk.ui.swing
 
 import java.io.File
 
+import org.statismo.stk.core.geometry.Point
 import org.statismo.stk.ui._
 import org.statismo.stk.ui.swing.actions.LoadAction
 
@@ -11,7 +12,6 @@ import scala.collection.immutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.MenuItem
 import scala.util.{Success, Try}
-import org.statismo.stk.core.geometry.Point
 
 class SimpleViewer(scene: Scene) extends StatismoFrame(scene) {
 

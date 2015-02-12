@@ -7,6 +7,7 @@ import org.statismo.stk.core.image.DiscreteScalarImage
 import org.statismo.stk.core.io.ImageIO
 import org.statismo.stk.ui.Reloadable.Reloader
 import org.statismo.stk.ui.visualization._
+import spire.math.Numeric
 
 import scala.collection.immutable
 import scala.language.existentials
@@ -15,7 +16,6 @@ import scala.reflect.runtime.universe.{Type, TypeTag, typeOf}
 import scala.swing.Reactor
 import scala.swing.event.Event
 import scala.util.{Failure, Success, Try}
-import spire.math.Numeric
 
 object Image3DVisualizationFactory {
 
@@ -95,21 +95,21 @@ class Image3D[S: Numeric : ClassTag : TypeTag](reloader: Reloader[DiscreteScalar
 
   protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = peer.map[Float](p => implicitly[Numeric[S]].toFloat(p))
 
-  override def saveToFile(f: File) : Try[Unit] = {
+  override def saveToFile(f: File): Try[Unit] = {
     val extension = {
       val dot = f.getName.lastIndexOf('.')
       // dot == 0 example: ".file"
       if (dot > 0) Success(f.getName.substring(dot + 1)) else Failure(new IllegalArgumentException("No file extension given"))
     }
     extension flatMap {
-      case "vtk" => ImageIO.writeVTK[_3D,S](peer, f)
+      case "vtk" => ImageIO.writeVTK[_3D, S](peer, f)
       case "nii" | "nia" => ImageIO.writeNifti(peer, f)
       case _ => Failure(new IllegalArgumentException("Unsupported file extension: " + extension.get))
     }
   }
 
   override def addLandmarkAt(point: Point[_3D], nameOpt: Option[String]) = {
-    parent.asInstanceOf[ThreeDObject].landmarks.addAt(point, nameOpt)
+    parent.asInstanceOf[ThreeDObject].landmarks.addAt(point, nameOpt, Uncertainty.defaultUncertainty3D())
   }
 
   override def reload() = {

@@ -2,6 +2,7 @@ package org.statismo.stk.ui
 
 import java.io.File
 
+import org.statismo.stk.core.geometry.{Point, _3D}
 import org.statismo.stk.core.io.MeshIO
 import org.statismo.stk.core.mesh.TriangleMesh
 import org.statismo.stk.ui.visualization._
@@ -15,6 +16,7 @@ import scala.util.Try
 object Mesh extends SimpleVisualizationFactory[Mesh] {
 
   case class GeometryChanged(source: Mesh) extends Event
+
   case class Reloaded(source: Mesh) extends Event
 
   visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D(None)))
@@ -81,4 +83,10 @@ trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable {
   protected[ui] override lazy val saveableMetadata = StaticMesh
 
   protected[ui] override def visualizationProvider: VisualizationProvider[Mesh] = Mesh
+
+  def createLandmarkUncertainty(point: Point[_3D]): Uncertainty[_3D] = {
+    val normal = peer.normalAtPoint(point)
+    val rotationMatrix = Uncertainty.Util.rotationMatrixFor(Uncertainty.Util.X3, normal)
+    Uncertainty(rotationMatrix, Uncertainty.defaultStdDevs3D)
+  }
 }
