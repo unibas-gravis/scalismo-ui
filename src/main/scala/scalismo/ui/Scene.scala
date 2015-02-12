@@ -124,7 +124,7 @@ object Scene {
       }
     }
 
-    private var _opacity = 0.5
+    private var _opacity = 0.0
 
     def opacity = _opacity
 
