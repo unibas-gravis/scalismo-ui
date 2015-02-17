@@ -1,5 +1,6 @@
 package scalismo.ui.api
 
+import breeze.linalg.DenseVector
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.TriangleMesh
@@ -108,8 +109,8 @@ trait SimpleAPI {
     scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients)
   }
 
-  def setCoefficientsOf(modelName: String, coefficients: IndexedSeq[Float]) = {
-    scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients = coefficients)
+  def setCoefficientsOf(modelName: String, coefficients: DenseVector[Float]) = {
+    scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
   }
 
   def show[A](a: A, name: String)(implicit show: Show[A]) = show.show(a, name)(scene)
