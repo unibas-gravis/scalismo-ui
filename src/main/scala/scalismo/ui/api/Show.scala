@@ -11,8 +11,8 @@ import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
 
-@implicitNotFound(msg = "Cannot show object of given type (no implicit defined for $A)")
-trait Show[A] {
+@implicitNotFound(msg = "Cannot show object of given type (no implicit defined for ${A})")
+trait Show[-A] {
   def show(a: A, name: String)(implicit scene: Scene): Unit
 
 }
