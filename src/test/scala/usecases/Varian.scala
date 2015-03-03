@@ -98,7 +98,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         optimizer = LBFGSOptimizer(numIterations = 10, 5, 0.001),
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0))
         metric = MeanSquaresMetric[_3D](sampler),
-        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolate()),
+        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolateNystrom()),
         regularizer = RKHSNormRegularizer,
         regularizationWeight = 0.01)
     }
