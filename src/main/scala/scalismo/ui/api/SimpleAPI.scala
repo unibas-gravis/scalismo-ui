@@ -9,9 +9,10 @@ import scalismo.ui.swing.ScalismoFrame
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.{ Landmarkable, Removeable, Scene, SceneTreeObject, ShapeModel, StaticThreeDObject, ThreeDRepresentation }
 import spire.math.Numeric
-
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
+import scalismo.geometry._2D
+import scalismo.geometry.Dim
 
 /**
  * Defines a minimal set of methods to easily interact with an stk.ui scene in order to display and retrieve objects.
@@ -71,8 +72,8 @@ trait SimpleAPI {
    * @param name to associate to the image
    * @tparam P The type of the pixel (Short, Int, Float, Double).
    */
-  def showImage[P: Numeric: ClassTag: TypeTag](image: DiscreteScalarImage[_3D, P], name: String) {
-    show[DiscreteScalarImage[_3D, P]](image, name)
+  def showImage[D <: Dim, P: Numeric: ClassTag: TypeTag](image: DiscreteScalarImage[D, P], name: String)(implicit show: Show[DiscreteScalarImage[D, P]]): Unit = {
+    show.show(image, name)(scene)
   }
 
   /**
