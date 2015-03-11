@@ -219,10 +219,8 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
       } else if (n eq this) {
         source.name = this.name
       }
-    case Repositionable.CurrentPositionChanged(r) =>
-      if (r eq source) {
-        setCenter()
-      }
+    case Repositionable.CurrentPositionChanged(s) if s eq source => setCenter()
+    case HasUncertainty.UncertaintyChanged(s) if s eq source => publishEdt(HasUncertainty.UncertaintyChanged(this))
     case Removeable.Removed(r) if r eq source =>
       deafTo(container.instance.meshRepresentation, source)
       container.remove(this, silent = true)
