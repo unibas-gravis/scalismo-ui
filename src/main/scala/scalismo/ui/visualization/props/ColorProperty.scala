@@ -18,9 +18,13 @@ class OpacityProperty(initial: Option[Double]) extends VisualizationProperty[Dou
   initial.map(c => value = c)
 }
 
-trait HasColorAndOpacity {
+trait HasColor {
   def color: ColorProperty
+}
 
+trait HasOpacity {
   def opacity: OpacityProperty
 }
+
+trait HasColorAndOpacity extends HasColor with HasOpacity
 

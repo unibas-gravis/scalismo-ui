@@ -4,7 +4,7 @@ assemblySettings
 
 jarName in assembly := "statismo-ui.jar"
 
-mainClass in assembly := Some("org.statismo.stk.ui.swing.Launcher")
+mainClass in assembly := Some("scalismo.ui.swing.Launcher")
 
 fork in run := true
 

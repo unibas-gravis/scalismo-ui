@@ -1,4 +1,4 @@
-package usecases
+package scalismo.usecases
 
 import scalismo.geometry._3D
 import scalismo.image.filter.DiscreteImageFilter
@@ -56,16 +56,20 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
   reactions += {
     case Landmarks.LandmarksChanged(lm) =>
       computeNewPosteriorModel(computeMeanOnly = true)
+    case HasUncertainty.UncertaintyChanged(x) =>
+      computeNewPosteriorModel(computeMeanOnly = true)
   }
 
   private def computeNewPosteriorModel(computeMeanOnly: Boolean): Unit = {
     if (modelLm.isDefined && targetLm.isDefined) {
       if (modelLm.get.length == targetLm.get.length) {
-        val refLms = lastModel.get.landmarks.map(_.point).toIndexedSeq
-        val targetLms = targetLm.get.map(_.point).toIndexedSeq
-        val trainingData = refLms.zip(targetLms).map { case (refPt, tgtPt) => (lastModel.get.peer.referenceMesh.findClosestPoint(refPt)._2, tgtPt) }
+        val refLms = lastModel.get.landmarks.toIndexedSeq
+        val targetLms = targetLm.get.toIndexedSeq
+        val trainingData = refLms.zip(targetLms).map {
+          case (refLm, tgtLm) => (lastModel.get.peer.referenceMesh.findClosestPoint(refLm.point)._2, tgtLm.point, Uncertainty.toNDimensionalNormalDistribution(tgtLm.uncertainty))
+        }
         val newModel = if (trainingData.nonEmpty) {
-          val posteriorModel = orgModel.get.peer.posterior(trainingData, 2 /*, computeMeanOnly*/ )
+          val posteriorModel = orgModel.get.peer.posterior(trainingData)
           val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
           nm.landmarks.foreach { l => l.remove() }
           lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point, Some(lm.name), lm.uncertainty) }
@@ -81,6 +85,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         deafTo(modelLm.get)
         modelLm = Some(newModel.landmarks)
         listenTo(modelLm.get)
+        targetLms.foreach(listenTo(_))
       }
     }
   }
