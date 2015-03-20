@@ -3,6 +3,7 @@ package scalismo.ui.swing
 import java.io.File
 
 import scalismo.geometry.Point
+import scalismo.io.StatismoIO
 import scalismo.ui._
 import scalismo.ui.swing.actions.LoadAction
 
@@ -52,9 +53,16 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
     }
 
     if (false) {
-      // sample: add a point cloud
+      // example: add a point cloud
       val pointSeq = immutable.IndexedSeq(Point(0, 0, 0), Point(0, 100, 0), Point(100, 100, 0), Point(100, 0, 0), Point(0, 0, 100), Point(0, 100, 100), Point(100, 100, 100), Point(100, 0, 100))
       StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
+    }
+
+    if (true) {
+      // example: add a vector field
+      val m = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
+      val vf = m.gp.mean
+      StaticVectorField.createFromPeer(vf, None, Some("Vector field"))
     }
   }
 }

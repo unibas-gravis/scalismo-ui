@@ -2,6 +2,7 @@ package scalismo.ui.vtk
 
 import scalismo.ui.Mesh.{ MeshRenderable2DOutline, MeshRenderable3D }
 import scalismo.ui.PointCloud.PointCloudRenderable3D
+import scalismo.ui.VectorField.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
 import scalismo.ui.{ BoundingBox, Image3DVisualizationFactory, Scene }
 import vtk.vtkActor
@@ -34,6 +35,7 @@ object RenderableActor {
         case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
         case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
+        case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
         case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
         case img3d: Image3DVisualizationFactory.Renderable3D[_] => img3d.imageOrNone.map {
           source => new ImageActor3D(source)
