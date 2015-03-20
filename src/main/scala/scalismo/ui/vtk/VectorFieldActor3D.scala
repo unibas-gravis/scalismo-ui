@@ -1,7 +1,6 @@
 package scalismo.ui.vtk
 
 import scalismo.ui.VectorField.VectorFieldRenderable3D
-import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.ColorProperty
 import vtk._
 
@@ -25,11 +24,12 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataAc
     val norms = Array.ofDim[Double](renderable.source.peer.domain.points.length)
 
     var i = 0
-    renderable.source.peer.pointsWithValues.foreach { case (point, vector) =>
-      points.InsertNextPoint(point(0), point(1), point(2))
-      vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
-      norms(i) = vector.norm
-      i += 1
+    renderable.source.peer.pointsWithValues.foreach {
+      case (point, vector) =>
+        points.InsertNextPoint(point(0), point(1), point(2))
+        vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
+        norms(i) = vector.norm
+        i += 1
     }
 
     if (norms.length > 0) {
@@ -49,7 +49,7 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataAc
   val glyph = new vtkGlyph3D {
     SetSourceConnection(arrow.GetOutputPort)
     SetInputData(polydata)
-//    ScalingOn()
+    //    ScalingOn()
     OrientOn()
     SetScaleModeToScaleByVector()
     SetVectorModeToUseVector()

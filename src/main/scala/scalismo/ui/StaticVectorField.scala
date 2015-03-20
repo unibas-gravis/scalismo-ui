@@ -9,7 +9,7 @@ object StaticVectorField {
   }
 }
 
-class StaticVectorField private[StaticVectorField](override val peer: DiscreteVectorField[_3D, _3D], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends VectorField {
+class StaticVectorField private[StaticVectorField] (override val peer: DiscreteVectorField[_3D, _3D], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends VectorField {
 
   name_=(name.getOrElse(Nameable.NoName))
 

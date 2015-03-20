@@ -1,11 +1,10 @@
 package scalismo.ui
 
 import scalismo.common.DiscreteVectorField
-import scalismo.geometry.{ Point, _1D, _3D }
+import scalismo.geometry._3D
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
 
-import scala.collection.immutable
 import scala.collection.immutable.Seq
 
 object VectorField extends SimpleVisualizationFactory[VectorField] {
