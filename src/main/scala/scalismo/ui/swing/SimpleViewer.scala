@@ -58,7 +58,7 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
       StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
     }
 
-    if (true) {
+    if (false) {
       // example: add a vector field
       val m = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
       val vf = m.gp.mean
