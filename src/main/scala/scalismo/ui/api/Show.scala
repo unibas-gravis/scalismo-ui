@@ -13,6 +13,7 @@ import scalismo.geometry._2D
 import scalismo.image.DiscreteImageDomain3D
 import scalismo.image.DiscreteImageDomain
 import scalismo.geometry.Index
+import scalismo.common.DiscreteVectorField
 
 @implicitNotFound(msg = "Cannot show object of given type (no implicit defined for ${A})")
 trait Show[-A] {
@@ -39,6 +40,12 @@ object Show {
     }
   }
 
+  implicit object ShowVectorFieldCloud extends Show[DiscreteVectorField[_3D, _3D]] {
+    override def show(vf: DiscreteVectorField[_3D, _3D], name: String)(implicit scene: Scene) {
+      StaticVectorField.createFromPeer(vf, None, Some(name))
+    }
+  }
+
   implicit def showImage[P: Numeric: ClassTag: TypeTag] = new Show[DiscreteScalarImage[_3D, P]] {
     def show(image: DiscreteScalarImage[_3D, P], name: String)(implicit scene: Scene) {
       StaticImage3D.createFromPeer(image, None, Some(name))
@@ -50,8 +57,7 @@ object Show {
       val oneSliceImageDomain = DiscreteImageDomain[_3D](
         Point(image.domain.origin(0), image.domain.origin(1), 0),
         Vector(image.domain.spacing(0), image.domain.spacing(1), 0),
-        Index(image.domain.size(0), image.domain.size(1), 1)
-      )
+        Index(image.domain.size(0), image.domain.size(1), 1))
 
       val oneSliceImage = DiscreteScalarImage(oneSliceImageDomain, image.values.toArray)
       StaticImage3D.createFromPeer(oneSliceImage, None, Some(name))
