@@ -2,12 +2,12 @@ package scalismo.ui
 
 import java.io.File
 
+import scalismo.common.Scalar
 import scalismo.geometry.{ Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.ui.Reloadable.Reloader
 import scalismo.ui.visualization._
-import spire.math.Numeric
 
 import scala.collection.immutable
 import scala.language.existentials
@@ -82,7 +82,7 @@ object Image3D {
 
 }
 
-class Image3D[S: Numeric: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
+class Image3D[S: Scalar: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
 
   private var _peer = reloader.load().get
 
@@ -92,7 +92,7 @@ class Image3D[S: Numeric: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarIm
 
   protected[ui] override lazy val visualizationProvider = Image3DVisualizationFactory.getInstance()
 
-  protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = peer.map[Float](p => implicitly[Numeric[S]].toFloat(p))
+  protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = peer.map[Float](p => implicitly[Scalar[S]].toFloat(p))
 
   override def saveToFile(f: File): Try[Unit] = {
     val extension = {

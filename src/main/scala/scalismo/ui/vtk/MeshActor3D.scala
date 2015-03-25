@@ -30,7 +30,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
 
   def setGeometry(mesh: Mesh, useTemplate: Boolean) = this.synchronized {
     val template = if (useTemplate) polyMesh else None
-    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, template)))
+    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVtkPolyData(mesh.peer, template)))
 
     normals.RemoveAllInputs()
     normals.SetInputData(polyMesh.get)

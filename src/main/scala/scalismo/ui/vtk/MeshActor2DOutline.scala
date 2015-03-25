@@ -21,7 +21,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   source.meshOrNone.map {
     m =>
       listenTo(m)
-      polyMesh = Some(Caches.MeshCache.getOrCreate(m.peer, MeshConversion.meshToVTKPolyData(m.peer, None)))
+      polyMesh = Some(Caches.MeshCache.getOrCreate(m.peer, MeshConversion.meshToVtkPolyData(m.peer, None)))
       meshOrNone = Some(m)
   }
 
@@ -44,7 +44,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
     meshOrNone.map {
       mesh =>
         if (withGeometry) {
-          polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVTKPolyData(mesh.peer, None)))
+          polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVtkPolyData(mesh.peer, None)))
           cutEdges.SetInputData(polyMesh.get)
         }
         cutEdges.SetValue(0, viewport.axis match {
