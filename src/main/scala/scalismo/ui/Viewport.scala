@@ -89,8 +89,8 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
       val dx = pt.x - start.x
       val dy = pt.y - start.y
       TwoDViewport.publishEdt(DragUpdateEvent(dx, dy))
-    }
-    false
+      false
+    }.getOrElse(true)
   }
 }
 
