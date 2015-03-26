@@ -78,7 +78,6 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
 
   override def onLeftButtonDown(pt: Point) = {
     if (!dragStart.isDefined) {
-      println("start dragging: " + pt)
       TwoDViewport.publishEdt(DragStartEvent)
       dragStart = Some(pt)
     }
