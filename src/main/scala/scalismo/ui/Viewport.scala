@@ -37,6 +37,8 @@ trait Viewport extends Nameable {
 
   def onRightButtonUp(pt: Point): Boolean = true
 
+  def onMouseMove(pt: Point): Boolean = true
+
   private var _currentBoundingBox = BoundingBox.None
 
   def currentBoundingBox = _currentBoundingBox
@@ -56,6 +58,7 @@ class ThreeDViewport(override val scene: Scene, name: Option[String] = None) ext
 }
 
 class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option[String] = None) extends Viewport {
+  import TwoDViewport._
   name_=(name.getOrElse(Nameable.NoName))
 
   override lazy val initialCameraChange = axis match {
@@ -64,8 +67,37 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
     case Axis.X => Viewport.InitialCameraChange(None, None, Some(90))
   }
 
-  override def onLeftButtonUp(pt: Point) = false
+  private var dragStart: Option[Point] = None
+  override def onLeftButtonUp(pt: Point) = {
+    if (dragStart.isDefined) {
+      TwoDViewport.publishEdt(DragEndEvent)
+    }
+    dragStart = None
+    false
+  }
 
-  override def onLeftButtonDown(pt: Point) = false
+  override def onLeftButtonDown(pt: Point) = {
+    if (!dragStart.isDefined) {
+      println("start dragging: " + pt)
+      TwoDViewport.publishEdt(DragStartEvent)
+      dragStart = Some(pt)
+    }
+    false
+  }
+
+  override def onMouseMove(pt: Point): Boolean = {
+    dragStart.map { start =>
+      val dx = pt.x - start.x
+      val dy = pt.y - start.y
+      TwoDViewport.publishEdt(DragUpdateEvent(dx, dy))
+    }
+    false
+  }
+}
+
+object TwoDViewport extends EdtPublisher {
+  case object DragStartEvent extends Event
+  case object DragEndEvent extends Event
+  case class DragUpdateEvent(deltaX: Int, deltaY: Int) extends Event
 }
 

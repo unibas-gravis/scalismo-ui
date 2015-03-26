@@ -7,7 +7,7 @@ import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.ui.Reloadable.{ FileReloader, ImmutableReloader, Reloader }
-import spire.math.{ULong, UByte, UInt, UShort}
+import spire.math.{ ULong, UByte, UInt, UShort }
 
 import scala.collection.immutable
 import scala.reflect.ClassTag
@@ -28,7 +28,7 @@ object StaticImage3D extends SceneTreeObjectFactory[StaticImage3D[_]] with FileI
     // (like: asking the framework what the type is). For now, we just try the most commonly used types first...
 
     import scala.language.implicitConversions
-    implicit def functionToPartialFunction[I,O](f: I => O): PartialFunction[I,O] = { case i => f(i)}
+    implicit def functionToPartialFunction[I, O](f: I => O): PartialFunction[I, O] = { case i => f(i) }
 
     def loadAs[T: Scalar: TypeTag: ClassTag](ignored: Throwable): Try[StaticImage3D[T]] = {
       val reloaderTry = Try {

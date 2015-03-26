@@ -3,8 +3,8 @@ package scalismo.ui
 import scala.collection.immutable
 
 object Perspective {
-  //def defaultPerspective(scene: Scene) = new SlicerAltPerspective(None)(scene)
   def defaultPerspective(scene: Scene) = new SingleViewportPerspective(None)(scene)
+  //def defaultPerspective(scene: Scene) = new OrthogonalSlicesPerspective(None)(scene)
 }
 
 abstract class Perspective(template: Option[Perspective]) extends Nameable {
