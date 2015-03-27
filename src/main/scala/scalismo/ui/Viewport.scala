@@ -106,6 +106,10 @@ object TwoDViewport {
 
   /**
    * A global singleton containing window/level settings for all 2D volume slices.
+   * Documentation about what window/level means can be found here:
+   * http://blogs.mathworks.com/steve/2006/02/17/all-about-pixel-colors-window-level/
+   * In one sentence: "Making the window wider or narrower decreases or increases the display contrast;
+   * moving the level left or right changes the display brightness."
    */
   object ImageWindowLevel extends EdtPublisher {
     private var _window: Double = 256
