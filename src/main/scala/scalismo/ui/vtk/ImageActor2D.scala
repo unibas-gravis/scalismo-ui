@@ -33,15 +33,10 @@ object ImageActor2D {
     // https://github.com/Slicer/Slicer/blob/121d28f3d03c418e13826a83df1ea1ffc586f0b7/Libs/MRML/DisplayableManager/vtkSliceViewInteractorStyle.cxx#L355-L370
     val windowLevel = new vtkImageMapToWindowLevelColors()
     windowLevel.SetInputData(points)
+    windowLevel.SetWindow(TwoDViewport.ImageWindowLevel.window)
+    windowLevel.SetLevel(TwoDViewport.ImageWindowLevel.level)
     windowLevel.Update()
-    //windowLevel.SetWindow(256)
-    //windowLevel.SetLevel(128)
     windowLevel.SetOutputFormatToLuminance()
-
-    val windowLevelGain = {
-      val r = points.GetScalarRange()
-      (r(1) - r(0)) / 500.0
-    }
 
     val slice = new vtkImageDataGeometryFilter
     slice.SetInputConnection(windowLevel.GetOutputPort())
@@ -97,11 +92,8 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
     publishEdt(new RenderRequest(this))
   }
 
-  listenTo(source.scene, source, TwoDViewport)
+  listenTo(source.scene, source, TwoDViewport.ImageWindowLevel)
   reload()
-
-  private var lastWindow: Option[Double] = None
-  private var lastLevel: Option[Double] = None
 
   reactions += {
     case Scene.SlicingPosition.PointChanged(sp, _, _) =>
@@ -109,35 +101,19 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
     case Image3D.Reloaded(img) =>
       data = new InstanceData(img, axis)
       reload()
-    case TwoDViewport.DragStartEvent =>
-      lastWindow = Some(data.windowLevel.GetWindow())
-      lastLevel = Some(data.windowLevel.GetLevel())
-    case TwoDViewport.DragEndEvent =>
-      lastWindow = None
-      lastLevel = None
-    case TwoDViewport.DragUpdateEvent(dx, dy) =>
-      (lastWindow, lastLevel) match {
-        case (Some(window), Some(level)) =>
-
-          val newWindow = Math.max(0, window + data.windowLevelGain * dx)
-          val newLevel = Math.max(0, level + data.windowLevelGain * dy)
-          if (newWindow != window || newLevel != level) {
-            if (newWindow != data.windowLevel.GetWindow() || newLevel != data.windowLevel.GetLevel()) {
-              data.windowLevel.SetWindow(newWindow)
-              data.windowLevel.SetLevel(newLevel)
-              data.windowLevel.Update()
-              data.slice.Update()
-              mapper.Update()
-              publishEdt(new RenderRequest(this))
-            }
-          }
-        case _ =>
+    case TwoDViewport.ImageWindowLevelChanged(window, level) =>
+      if (data.windowLevel.GetWindow() != window || data.windowLevel.GetLevel() != level) {
+        data.windowLevel.SetWindow(window)
+        data.windowLevel.SetLevel(level)
+        data.windowLevel.Update()
+        data.slice.Update()
+        mapper.Update()
+        publishEdt(new RenderRequest(this))
       }
-
   }
 
   override def onDestroy() {
-    deafTo(source.scene, source, TwoDViewport)
+    deafTo(source.scene, source, TwoDViewport.ImageWindowLevel)
     super.onDestroy()
   }
 

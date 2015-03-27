@@ -25,6 +25,11 @@ trait Viewport extends Nameable {
     publishEdt(Viewport.Destroyed(this))
   }
 
+  // Note: the on*() methods below return a boolean indicating whether
+  // the event should be handled by the rendering layer (i.e., VTK).
+  // Normally, you would return true, but by returning false you can
+  // "swallow" the event, and VTK will never know it happened.
+
   def onLeftButtonDown(pt: Point): Boolean = true
 
   def onLeftButtonUp(pt: Point): Boolean = true
@@ -68,19 +73,20 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
   }
 
   private var dragStart: Option[Point] = None
-  override def onLeftButtonUp(pt: Point) = {
-    if (dragStart.isDefined) {
-      TwoDViewport.publishEdt(DragEndEvent)
-    }
-    dragStart = None
-    false
-  }
 
   override def onLeftButtonDown(pt: Point) = {
     if (!dragStart.isDefined) {
-      TwoDViewport.publishEdt(DragStartEvent)
+      TwoDViewport.ImageWindowLevel.dragStart()
       dragStart = Some(pt)
     }
+    false
+  }
+
+  override def onLeftButtonUp(pt: Point) = {
+    if (dragStart.isDefined) {
+      TwoDViewport.ImageWindowLevel.dragEnd()
+    }
+    dragStart = None
     false
   }
 
@@ -88,15 +94,52 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
     dragStart.map { start =>
       val dx = pt.x - start.x
       val dy = pt.y - start.y
-      TwoDViewport.publishEdt(DragUpdateEvent(dx, dy))
+      TwoDViewport.ImageWindowLevel.dragUpdate(dx, dy)
       false
     }.getOrElse(true)
   }
 }
 
-object TwoDViewport extends EdtPublisher {
-  case object DragStartEvent extends Event
-  case object DragEndEvent extends Event
-  case class DragUpdateEvent(deltaX: Int, deltaY: Int) extends Event
+object TwoDViewport {
+
+  case class ImageWindowLevelChanged(window: Double, level: Double) extends Event
+
+  /**
+   * A global singleton containing window/level settings for all 2D volume slices.
+   */
+  object ImageWindowLevel extends EdtPublisher {
+    private var _window: Double = 256
+    private var _level: Double = 128
+
+    def window: Double = _window
+    def level: Double = _level
+
+    private var dragStartWindow: Option[Double] = None
+    private var dragStartLevel: Option[Double] = None
+
+    private[TwoDViewport] def dragStart() = {
+      dragStartWindow = Some(_window)
+      dragStartLevel = Some(_level)
+    }
+
+    private[TwoDViewport] def dragEnd() = {
+      dragStartWindow = None
+      dragStartLevel = None
+    }
+
+    private[TwoDViewport] def dragUpdate(deltaX: Double, deltaY: Double) = {
+      (dragStartWindow, dragStartLevel) match {
+        case (Some(sw), Some(sl)) =>
+          _window = Math.max(0, sw + deltaX)
+          _level = Math.max(0, sl + deltaY)
+
+          if (_window != sw || _level != sl) {
+            publishEdt(ImageWindowLevelChanged(_window, _level))
+          }
+
+        case _ => /* do nothing */
+      }
+    }
+  }
 }
 
