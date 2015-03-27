@@ -13,7 +13,7 @@ import scalismo.geometry._2D
 import scalismo.image.DiscreteImageDomain3D
 import scalismo.image.DiscreteImageDomain
 import scalismo.geometry.Index
-import scalismo.common.{ScalarArray, Scalar, DiscreteVectorField}
+import scalismo.common.{ ScalarArray, Scalar, DiscreteVectorField }
 
 @implicitNotFound(msg = "Cannot show object of given type (no implicit defined for ${A})")
 trait Show[-A] {

@@ -129,4 +129,14 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
       case _ =>
     }
   }
+
+  override def MouseMoveEvent(): Unit = {
+    (workspaceOption, viewportOption) match {
+      case (Some(workspace), Some(viewport)) =>
+        if (viewport.onMouseMove(currentPt)) {
+          super.MouseMoveEvent()
+        }
+      case _ =>
+    }
+  }
 }

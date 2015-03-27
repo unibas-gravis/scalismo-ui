@@ -29,28 +29,22 @@ object ImageActor2D {
       }
     }
 
+    // most of the windowLevel logic is stolen from Slicer :-)
+    // https://github.com/Slicer/Slicer/blob/121d28f3d03c418e13826a83df1ea1ffc586f0b7/Libs/MRML/DisplayableManager/vtkSliceViewInteractorStyle.cxx#L355-L370
+    val windowLevel = new vtkImageMapToWindowLevelColors()
+    windowLevel.SetInputData(points)
+    windowLevel.SetWindow(TwoDViewport.ImageWindowLevel.window)
+    windowLevel.SetLevel(TwoDViewport.ImageWindowLevel.level)
+    windowLevel.Update()
+    windowLevel.SetOutputFormatToLuminance()
+
     val slice = new vtkImageDataGeometryFilter
-    slice.SetInputData(points)
+    slice.SetInputConnection(windowLevel.GetOutputPort())
     slice.ThresholdValueOff()
     slice.ThresholdCellsOff()
-
-    val intensityRange = Caches.ImageIntensityRangeCache.getOrCreate(points, {
-      // this required to correctly show reasonable grayscale values, but is expensive -- which is why it's cached.
-      slice.SetExtent(0, exmax, 0, eymax, 0, ezmax)
-      slice.Update()
-      val r = slice.GetOutput().GetScalarRange()
-      (r(0), r(1))
-    })
-
     slice.SetExtent(0, 0, 0, 0, 0, 0)
     slice.Update()
 
-    val grayscale = new vtkLookupTable
-    grayscale.SetTableRange(intensityRange._1, intensityRange._2)
-    grayscale.SetSaturationRange(0, 0)
-    grayscale.SetHueRange(0, 0)
-    grayscale.SetValueRange(0, 1)
-    grayscale.Build()
   }
 
 }
@@ -78,8 +72,6 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
   def reload() = {
     mapper.RemoveAllInputs()
     mapper.SetInputData(data.slice.GetOutput())
-    mapper.SetScalarRange(data.grayscale.GetTableRange())
-    mapper.SetLookupTable(data.grayscale)
     update(source.scene.slicingPosition.point)
   }
 
@@ -97,11 +89,10 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
       data.slice.Update()
       mapper.Update()
     }
-    //FIXME: correctly handle slicing position changes
     publishEdt(new RenderRequest(this))
   }
 
-  listenTo(source.scene, source)
+  listenTo(source.scene, source, TwoDViewport.ImageWindowLevel)
   reload()
 
   reactions += {
@@ -110,10 +101,19 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
     case Image3D.Reloaded(img) =>
       data = new InstanceData(img, axis)
       reload()
+    case TwoDViewport.ImageWindowLevelChanged(window, level) =>
+      if (data.windowLevel.GetWindow() != window || data.windowLevel.GetLevel() != level) {
+        data.windowLevel.SetWindow(window)
+        data.windowLevel.SetLevel(level)
+        data.windowLevel.Update()
+        data.slice.Update()
+        mapper.Update()
+        publishEdt(new RenderRequest(this))
+      }
   }
 
   override def onDestroy() {
-    deafTo(source.scene, source)
+    deafTo(source.scene, source, TwoDViewport.ImageWindowLevel)
     super.onDestroy()
   }
 
