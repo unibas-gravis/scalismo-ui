@@ -24,7 +24,7 @@ class ViewportPanel extends BorderPanel {
 
   def workspaceOption: Option[Workspace] = workspace
 
-  def show(workspace: Workspace, viewport: Viewport): Unit = this.synchronized {
+  def show(workspace: Workspace, viewport: Viewport): Unit = {
     hide() // just in case someone forgot to call it
     this.viewport = Some(viewport)
     this.workspace = Some(workspace)
@@ -33,7 +33,7 @@ class ViewportPanel extends BorderPanel {
     renderer.attach(this)
   }
 
-  def hide() = this.synchronized {
+  def hide() = {
     viewport.map {
       deafTo(_)
     }

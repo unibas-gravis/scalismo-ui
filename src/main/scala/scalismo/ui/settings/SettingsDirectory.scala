@@ -17,7 +17,7 @@ object SettingsDirectory {
     }
   }
 
-  def get(allowInexistent: Boolean = true): Try[File] = this.synchronized {
+  def get(allowInexistent: Boolean = true): Try[File] = {
     if (!root.isDefined) {
       Failure(new IllegalStateException("Unable to determine settings directory"))
     } else {

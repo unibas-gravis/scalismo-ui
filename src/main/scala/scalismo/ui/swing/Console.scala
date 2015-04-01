@@ -48,7 +48,7 @@ class Console(implicit iframe: ScalismoFrame) extends EdtPublisher {
 
   def visible = _visible
 
-  def visible_=(v: Boolean) = this.synchronized {
+  def visible_=(v: Boolean) = {
     if (_visible != v) {
       _visible = v
       needToDispose = true

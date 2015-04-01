@@ -138,11 +138,11 @@ object Scene {
 
     private var _point: Option[Point[_3D]] = None
 
-    def point = this.synchronized {
+    def point = {
       _point.getOrElse(Point((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
     }
 
-    private def point_=(np: Point[_3D]) = this.synchronized {
+    private def point_=(np: Point[_3D]) = {
       val previous = _point
       if (!_point.isDefined || _point.get != np) {
         _point = Some(np)
@@ -161,40 +161,34 @@ object Scene {
       }
     }
 
-    def x = this.synchronized {
-      point(0)
-    }
+    def x = point(0)
 
-    def y = this.synchronized {
-      point(1)
-    }
+    def y = point(1)
 
-    def z = this.synchronized {
-      point(2)
-    }
+    def z = point(2)
 
-    def x_=(nv: Float) = this.synchronized {
+    def x_=(nv: Float) = {
       val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
       if (x != sv) {
         point_=(Point(sv, y, z))
       }
     }
 
-    def y_=(nv: Float) = this.synchronized {
+    def y_=(nv: Float) = {
       val sv = Math.min(Math.max(boundingBox.yMin, nv), boundingBox.yMax)
       if (y != sv) {
         point = Point(x, sv, z)
       }
     }
 
-    def z_=(nv: Float) = this.synchronized {
+    def z_=(nv: Float) = {
       val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
       if (z != sv) {
         point = Point(x, y, sv)
       }
     }
 
-    private def recalculatePoint() = this.synchronized {
+    private def recalculatePoint() = {
       val sx = Math.min(Math.max(boundingBox.xMin, x), boundingBox.xMax)
       val sy = Math.min(Math.max(boundingBox.yMin, y), boundingBox.yMax)
       val sz = Math.min(Math.max(boundingBox.zMin, z), boundingBox.zMax)
@@ -203,9 +197,9 @@ object Scene {
 
     private var _boundingBox = BoundingBox.None
 
-    def boundingBox = this.synchronized(_boundingBox)
+    def boundingBox = _boundingBox
 
-    private[Scene] def boundingBox_=(nb: BoundingBox) = this.synchronized {
+    private[Scene] def boundingBox_=(nb: BoundingBox) = {
       if (boundingBox != nb) {
         _boundingBox = nb
         scene.publishEdt(Scene.SlicingPosition.BoundingBoxChanged(this))

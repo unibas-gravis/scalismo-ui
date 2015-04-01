@@ -51,7 +51,7 @@ class AlphaNumericNameGenerator extends NameGenerator {
   private var prefix = 0
   private var suffix = 0
 
-  def nextName = this.synchronized {
+  def nextName = {
     val p = Prefixes(prefix)
     val name = if (suffix == 0) p.toString else s"${p}_$suffix"
     prefix = (prefix + 1) % Prefixes.length()
@@ -60,7 +60,7 @@ class AlphaNumericNameGenerator extends NameGenerator {
     name
   }
 
-  override def reset() = this.synchronized {
+  override def reset() = {
     prefix = 0
     suffix = 0
   }
@@ -69,12 +69,12 @@ class AlphaNumericNameGenerator extends NameGenerator {
 class NumericNameGenerator extends NameGenerator {
   private var last = 0
 
-  def nextName = this.synchronized {
+  def nextName = {
     last += 1
     last.toString
   }
 
-  override def reset() = this.synchronized {
+  override def reset() = {
     last = 0
   }
 }
