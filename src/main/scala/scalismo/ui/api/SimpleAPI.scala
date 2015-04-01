@@ -5,7 +5,7 @@ import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.TriangleMesh
 import scalismo.statisticalmodel.StatisticalMeshModel
-import scalismo.ui.swing.ScalismoFrame
+import scalismo.ui.swing.{ ScalismoLookAndFeel, ScalismoFrame }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.{ Landmarkable, Removeable, Scene, SceneTreeObject, ShapeModel, StaticThreeDObject, ThreeDRepresentation }
 import spire.math.Numeric
@@ -128,6 +128,9 @@ object SimpleAPI {
   }
 
   object ScalismoUI {
+
+    ScalismoLookAndFeel.initializeWith(ScalismoLookAndFeel.defaultLookAndFeelClassName)
+
     def apply(): ScalismoUI = {
 
       val frame = EdtUtil.onEdtWithResult {

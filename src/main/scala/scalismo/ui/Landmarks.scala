@@ -25,7 +25,7 @@ class ReferenceLandmark(initalpoint: Point[_3D]) extends Landmark with DirectlyR
 
   override def getCurrentPosition = _point
 
-  override def setCurrentPosition(newPosition: Point[_3D]) = this.synchronized {
+  override def setCurrentPosition(newPosition: Point[_3D]) = {
     if (_point != newPosition) {
       _point = newPosition
       publishEdt(Landmarks.LandmarkChanged(this))
@@ -37,8 +37,9 @@ class ReferenceLandmark(initalpoint: Point[_3D]) extends Landmark with DirectlyR
 object Landmarks {
 
   case class LandmarksChanged(source: AnyRef) extends Event
-
   case class LandmarkChanged(source: Landmark) extends Event
+
+  private[ui] case class LandmarksChangedInternal(source: AnyRef) extends Event
 
   object ReaderMetadata extends FileIoMetadata {
     override val description = "Landmarks"
@@ -60,18 +61,22 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
   def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit
 
-  override def add(lm: L): Unit = this.synchronized {
+  override def add(lm: L): Unit = {
     super.add(lm)
+    publishEdt(Landmarks.LandmarksChangedInternal(this))
     publishEdt(Landmarks.LandmarksChanged(this))
   }
 
-  override def remove(lm: L, silent: Boolean) = this.synchronized {
+  override def remove(lm: L, silent: Boolean) = {
     val changed = super.remove(lm, silent)
-    if (changed) publishEdt(Landmarks.LandmarksChanged(this))
+    if (changed) {
+      publishEdt(Landmarks.LandmarksChangedInternal(this))
+      publishEdt(Landmarks.LandmarksChanged(this))
+    }
     changed
   }
 
-  override def saveToFile(file: File): Try[Unit] = this.synchronized {
+  override def saveToFile(file: File): Try[Unit] = {
     val seq = children.map { lm =>
       val u = Uncertainty.toNDimensionalNormalDistribution(lm.uncertainty)
       CLandmark(lm.name, lm.point, uncertainty = Some(u))
@@ -79,17 +84,18 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     LandmarkIO.writeLandmarksJson(file, seq)
   }
 
-  override def loadFromFile(file: File): Try[Unit] = this.synchronized {
+  override def loadFromFile(file: File): Try[Unit] = {
     this.removeAll()
     val legacyFormat = file.getName.toLowerCase.endsWith("csv")
     val status = for {
       saved <- if (legacyFormat) LandmarkIO.readLandmarksCsv[_3D](file) else LandmarkIO.readLandmarksJson[_3D](file)
-      newLandmarks = saved.map {
+      unused = saved.map {
         case CLandmark(name, point, _, uncertainty) =>
           val u = uncertainty.map(nd => Uncertainty.fromNDimensionalNormalDistribution(nd))
           this.create(point, Some(name), u.getOrElse(Uncertainty.defaultUncertainty3D()))
       }
     } yield {}
+    publishEdt(Landmarks.LandmarksChangedInternal(this))
     publishEdt(Landmarks.LandmarksChanged(this))
     status
   }
@@ -156,7 +162,7 @@ class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[Reference
     create(template.point, Some(template.name), template.uncertainty)
   }
 
-  def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = this.synchronized {
+  def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
     val lm = new ReferenceLandmark(peer)
     lm.name = name.getOrElse(nameGenerator.nextName)
     lm.uncertainty = uncertainty
@@ -171,7 +177,7 @@ class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) exte
 
   override def getCurrentPosition = _point
 
-  override def setCurrentPosition(newPosition: Point[_3D]) = this.synchronized {
+  override def setCurrentPosition(newPosition: Point[_3D]) {
     if (_point != newPosition) {
       _point = newPosition
       publishEdt(Landmarks.LandmarkChanged(this))
@@ -197,6 +203,8 @@ class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(the
 class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) extends VisualizableLandmark(container) with IndirectlyRepositionable {
   override def name = source.name
 
+  override def name_=(newName: String): Unit = source.name = newName
+
   override def directlyRepositionableObject = source
 
   listenTo(container.instance.meshRepresentation, source)
@@ -213,12 +221,8 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
   reactions += {
     case Mesh.GeometryChanged(m) => setCenter()
-    case Nameable.NameChanged(n) =>
-      if (n eq source) {
-        this.name = source.name
-      } else if (n eq this) {
-        source.name = this.name
-      }
+    case Nameable.NameChanged(n) if n eq source => publishEdt(Nameable.NameChanged(this))
+
     case Repositionable.CurrentPositionChanged(s) if s eq source => setCenter()
     case HasUncertainty.UncertaintyChanged(s) if s eq source => publishEdt(HasUncertainty.UncertaintyChanged(this))
     case Removeable.Removed(r) if r eq source =>
@@ -249,11 +253,11 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
   val peer = instance.shapeModel.landmarks
 
-  override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = this.synchronized {
+  override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = {
     create(peer, name, uncertainty)
   }
 
-  override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = this.synchronized {
+  override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
     val refPoint = instance.shapeModel.peer.referenceMesh.points(index)
     instance.shapeModel.landmarks.create(refPoint, name, uncertainty)
@@ -262,23 +266,15 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
   listenTo(peer)
 
   reactions += {
-    case Landmarks.LandmarksChanged(source) =>
-      if (source eq peer) {
-        syncWithPeer()
-      }
+    case Landmarks.LandmarksChangedInternal(source) if source eq peer => syncWithPeer()
   }
 
   syncWithPeer()
 
-  def syncWithPeer() = EdtUtil.onEdt({
-    var changed = false
+  def syncWithPeer() {
     children.length until peer.children.length foreach {
       i =>
-        changed = true
         add(new MoveableLandmark(this, peer(i)))
     }
-    if (changed) {
-      publishEdt(SceneTreeObject.ChildrenChanged(this))
-    }
-  }, wait = true)
+  }
 }

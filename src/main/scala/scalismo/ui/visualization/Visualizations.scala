@@ -117,12 +117,12 @@ trait Derivable[A <: AnyRef] {
 
   protected[visualization] def derived: immutable.Seq[A] = derivedInUse.map(r => r.get).filter(o => o != None).map(o => o.get)
 
-  private def derivedInUse: immutable.Seq[WeakReference[A]] = this.synchronized {
+  private def derivedInUse: immutable.Seq[WeakReference[A]] = {
     _derived = _derived.filter(w => w.get != None)
     _derived
   }
 
-  final def derive(): A = this.synchronized {
+  final def derive(): A = {
     val child: A = createDerived()
     _derived = Seq(derivedInUse, Seq(new WeakReference[A](child))).flatten.to[immutable.Seq]
     child
@@ -174,7 +174,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivab
     _value.getOrElse(defaultValue)
   }
 
-  final def value_=(newValue: V): Unit = this.synchronized {
+  final def value_=(newValue: V): Unit = {
     if (newValue != value) {
       _value = Some(newValue)
       derived.foreach(_.value = newValue)

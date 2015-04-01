@@ -49,7 +49,7 @@ object SceneObjectPropertiesPanel extends EdtPublisher {
       }
     }
 
-    def add(view: PropertyPanel) = this.synchronized {
+    def add(view: PropertyPanel) = {
       val index = peer.getTabCount
       peer.addTab(null, null)
       peer.setTabComponentAt(index, new TabComponent(view))

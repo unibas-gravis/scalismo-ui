@@ -136,7 +136,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
   private val table = new Table
 
-  def updateDisplayedCoefficients() = this.synchronized {
+  def updateDisplayedCoefficients() = {
     if (model.isDefined) {
       val coeffs = model.get.coefficients
       0 until coeffs.size map {
