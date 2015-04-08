@@ -7,7 +7,7 @@ import scalismo.mesh.TriangleMesh
 import scalismo.statisticalmodel.StatisticalMeshModel
 import scalismo.ui.swing.{ ScalismoLookAndFeel, ScalismoFrame }
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.{ Landmarkable, Removeable, Scene, SceneTreeObject, ShapeModel, StaticThreeDObject, ThreeDRepresentation }
+import scalismo.ui._
 import spire.math.Numeric
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
@@ -47,12 +47,12 @@ trait SimpleAPI {
    */
   def getLandmarksOf(name: String): Option[Seq[Landmark[_3D]]] = {
     val t = scene.find[StaticThreeDObject](_.name == name).headOption.map(a => a.landmarks)
-      .map(d => d.map { case a => Landmark(a.name, a.point) })
+      .map(d => d.map { case a => Landmark(a.name, a.point, None, Some(Uncertainty.toNDimensionalNormalDistribution(a.uncertainty))) })
 
     if (t.isDefined) t
     else
       scene.find[ShapeModel](_.name == name).headOption.map(a => a.instances(0).landmarks)
-        .map(d => d.map { case a => Landmark(a.name, a.point) })
+        .map(d => d.map { case a => Landmark(a.name, a.point, None, Some(Uncertainty.toNDimensionalNormalDistribution(a.uncertainty))) })
   }
 
   /**
