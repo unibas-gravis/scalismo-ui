@@ -2,8 +2,10 @@ package scalismo.ui.swing
 
 import java.io.File
 
+import scalismo.common.ScalarArray
 import scalismo.geometry.Point
-import scalismo.io.StatismoIO
+import scalismo.io.{MeshIO, StatismoIO}
+import scalismo.mesh.ScalarMeshField
 import scalismo.ui._
 import scalismo.ui.swing.actions.LoadAction
 
@@ -11,7 +13,7 @@ import scala.async.Async.async
 import scala.collection.immutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.MenuItem
-import scala.util.{ Success, Try }
+import scala.util.{Success, Try}
 
 class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
 
@@ -64,6 +66,13 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
       val vf = m.gp.mean
       StaticVectorField.createFromPeer(vf, None, Some("Vector field"))
     }
+
+    if (false) {
+      val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
+      val df = new ScalarMeshField[Float](m, ScalarArray(m.points.zipWithIndex.map{case (pt,idx) => idx.toFloat}.toArray))
+      StaticScalarMeshField.createFromPeer(df, None, Some("Mesh"))
+    }
+
   }
 }
 
