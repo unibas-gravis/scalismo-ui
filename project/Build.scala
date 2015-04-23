@@ -57,7 +57,7 @@ object Dependencies {
   import BuildSettings._
 
   val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
-  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.0.+"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
   val scalatest = "org.scalatest" %% "scalatest" % "2.1.0" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
