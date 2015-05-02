@@ -2,6 +2,7 @@ package scalismo.ui.api
 
 import scalismo.geometry.{ Point, _3D, Vector }
 import scalismo.image.DiscreteScalarImage
+import scalismo.mesh
 import scalismo.mesh.TriangleMesh
 import scalismo.statisticalmodel.StatisticalMeshModel
 import scalismo.ui._
@@ -61,6 +62,20 @@ object Show {
 
       val oneSliceImage = DiscreteScalarImage(oneSliceImageDomain, ScalarArray(image.values.toArray))
       StaticImage3D.createFromPeer(oneSliceImage, None, Some(name))
+    }
+  }
+
+
+  implicit def showScalarField[P: Scalar: ClassTag: TypeTag] = new Show[scalismo.common.DiscreteScalarField[_3D, P]] {
+
+    override def show(scalarField: scalismo.common.DiscreteScalarField[_3D, P], name: String)(implicit scene: Scene): Unit = {
+      scalarField match {
+        case meshField: scalismo.mesh.ScalarMeshField[P] => {
+          StaticScalarMeshField.createFromPeer(meshField, None, Some(name))
+        }
+        case _ => StaticScalarField.createFromPeer(scalarField, None, Some(name))
+
+      }
     }
   }
 

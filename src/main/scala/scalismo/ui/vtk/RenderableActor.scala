@@ -1,11 +1,12 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.Mesh.{MeshRenderable2DOutline, MeshRenderable3D}
+import scalismo.ui.Mesh.{ MeshRenderable2DOutline, MeshRenderable3D }
 import scalismo.ui.PointCloud.PointCloudRenderable3D
+import scalismo.ui.ScalarField.{ ScalarFieldRenderable3D }
 import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
 import scalismo.ui.VectorField.VectorFieldRenderable3D
-import scalismo.ui.visualization.{EllipsoidLike, Renderable}
-import scalismo.ui.{BoundingBox, Image3DVisualizationFactory, Scene}
+import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
+import scalismo.ui.{ BoundingBox, Image3DVisualizationFactory, Scene }
 import vtk.vtkActor
 
 import scala.util.Try
@@ -35,7 +36,8 @@ object RenderableActor {
         case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
         case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
         case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
-        case sm3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(sm3d))
+        case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
+        case sf3d: ScalarFieldRenderable3D => Some(new ScalarFieldActor3D(sf3d))
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
         case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
