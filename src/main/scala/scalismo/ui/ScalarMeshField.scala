@@ -1,6 +1,5 @@
 package scalismo.ui
 
-import scalismo.common.DiscreteScalarField
 import scalismo.geometry._3D
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
@@ -30,7 +29,7 @@ object ScalarMeshField extends SimpleVisualizationFactory[ScalarMeshField] {
 }
 
 trait ScalarMeshField extends ThreeDRepresentation[ScalarMeshField] {
-  def peer: DiscreteScalarField[_3D, Float]
+  def peer: scalismo.mesh.ScalarMeshField[Float]
 
   protected[ui] override def visualizationProvider: VisualizationProvider[ScalarMeshField] = ScalarMeshField
 }

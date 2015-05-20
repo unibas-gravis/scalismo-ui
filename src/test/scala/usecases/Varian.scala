@@ -104,7 +104,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0))
         metric = MeanSquaresMetric[_3D](sampler),
         transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolateNystrom()),
-        regularizer = RKHSNormRegularizer,
+        regularizer = L2Regularizer,
         regularizationWeight = 0.01)
     }
 

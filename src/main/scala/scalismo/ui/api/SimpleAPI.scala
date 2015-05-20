@@ -1,6 +1,7 @@
 package scalismo.ui.api
 
 import breeze.linalg.DenseVector
+import scalismo.common.{ Scalar, DiscreteScalarField }
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.TriangleMesh
@@ -104,6 +105,14 @@ trait SimpleAPI {
    */
   def showModel(sm: StatisticalMeshModel, name: String) {
     show[StatisticalMeshModel](sm, name)
+  }
+
+  def showScalarField[A: Scalar: ClassTag: TypeTag](sf: DiscreteScalarField[_3D, A], name: String): Unit = {
+    show[DiscreteScalarField[_3D, A]](sf, name)
+  }
+
+  def showScalarMeshField[A: Scalar: ClassTag: TypeTag](smf: scalismo.mesh.ScalarMeshField[A], name: String): Unit = {
+    show[scalismo.mesh.ScalarMeshField[A]](smf, name)
   }
 
   def getCoefficientsOf(modelName: String): Option[IndexedSeq[Float]] = {
