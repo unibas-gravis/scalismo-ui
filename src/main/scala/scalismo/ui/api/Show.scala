@@ -47,12 +47,6 @@ object Show {
     }
   }
 
-  implicit def showImage[P: Scalar: ClassTag: TypeTag] = new Show[DiscreteScalarImage[_3D, P]] {
-    def show(image: DiscreteScalarImage[_3D, P], name: String)(implicit scene: Scene) {
-      StaticImage3D.createFromPeer(image, None, Some(name))
-    }
-  }
-
   implicit def show2DImage[P: Scalar: ClassTag: TypeTag] = new Show[DiscreteScalarImage[_2D, P]] {
     def show(image: DiscreteScalarImage[_2D, P], name: String)(implicit scene: Scene) {
       val oneSliceImageDomain = DiscreteImageDomain[_3D](
@@ -70,9 +64,8 @@ object Show {
 
     override def show(scalarField: scalismo.common.DiscreteScalarField[_3D, P], name: String)(implicit scene: Scene): Unit = {
       scalarField match {
-        case meshField: scalismo.mesh.ScalarMeshField[P] => {
-          StaticScalarMeshField.createFromPeer(meshField, None, Some(name))
-        }
+        case img: DiscreteScalarImage[_3D, P] => StaticImage3D.createFromPeer(img, None, Some(name))
+        case meshField: scalismo.mesh.ScalarMeshField[P] => StaticScalarMeshField.createFromPeer(meshField, None, Some(name))
         case _ => StaticScalarField.createFromPeer(scalarField, None, Some(name))
 
       }
