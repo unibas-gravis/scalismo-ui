@@ -55,7 +55,6 @@ object Show {
     }
   }
 
-
   implicit def showScalarField[P: Scalar: ClassTag: TypeTag] = new Show[scalismo.common.DiscreteScalarField[_3D, P]] {
 
     override def show(scalarField: scalismo.common.DiscreteScalarField[_3D, P], name: String)(implicit scene: Scene): Unit = {
@@ -84,8 +83,8 @@ object Show {
       }
 
       val profileCloud = allPointsWithValues.flatten
-      if (profileCloud.size > 0) {
-        val field = new DiscreteScalarField[_3D, Float](DiscreteDomain.fromSeq(profileCloud.map(_._1)), ScalarArray[Float](profileCloud.map(_._2).toArray))
+      if (profileCloud.nonEmpty) {
+        val field = new DiscreteScalarField[_3D, Float](UnstructuredPointsDomain(profileCloud.map(_._1)), ScalarArray[Float](profileCloud.map(_._2).toArray))
         StaticScalarField.createFromPeer(field, None, Some(name))
       }
     }
