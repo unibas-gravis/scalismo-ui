@@ -26,6 +26,28 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       value = 0
     }
 
+    val minus = new Button(new Action("-") {
+      override def apply(): Unit = {
+        if (slider.value > slider.min) {
+          slider.value = slider.value - 1
+        }
+      }
+    })
+
+    val plus = new Button(new Action("+") {
+      override def apply(): Unit = {
+        if (slider.value < slider.max) {
+          slider.value = slider.value + 1
+        }
+      }
+    })
+
+    val control = new BorderPanel {
+      layout(minus) = BorderPanel.Position.West
+      layout(slider) = BorderPanel.Position.Center
+      layout(plus) = BorderPanel.Position.East
+    }
+
     def value: Float = {
       if (slicingPosition.isDefined) {
         slicingPosition.get.precision.fromInt(slider.value)
@@ -93,7 +115,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       add(dim.nameLabel, (0, row))
       add(dim.current, (1, row))
       add(dim.minimum, (2, row))
-      add(dim.slider, (3, row))
+      add(dim.control, (3, row))
       add(dim.maximum, (4, row))
     }
   }
