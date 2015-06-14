@@ -74,7 +74,7 @@ object Show {
       val profilePointsAndVals = asmSample.featureField.pointsWithValues.toIndexedSeq
       val allPointsWithValues = profilePointsAndVals.map {
         case (p, vec) =>
-          val profPoints = asmSample.featureExtractor.featurePoints(asmSample.mesh, p)
+          val profPoints = asmSample.featureExtractor.featurePoints(asmSample.mesh, asmSample.mesh.findClosestPoint(p)._2, p)
           profPoints.map { pts =>
             if (pts.size == vec.size) {
               pts.zip(vec.toArray)
