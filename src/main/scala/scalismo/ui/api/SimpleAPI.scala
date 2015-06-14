@@ -1,19 +1,19 @@
 package scalismo.ui.api
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ Scalar, DiscreteScalarField }
-import scalismo.geometry.{ Landmark, Point, _3D }
+import scalismo.common.{ DiscreteScalarField, Scalar }
+import scalismo.geometry.{ Dim, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.TriangleMesh
 import scalismo.statisticalmodel.StatisticalMeshModel
-import scalismo.ui.swing.{ ScalismoLookAndFeel, ScalismoFrame }
-import scalismo.ui.util.EdtUtil
+import scalismo.statisticalmodel.asm.ASMSample
 import scalismo.ui._
+import scalismo.ui.swing.{ ScalismoFrame, ScalismoLookAndFeel }
+import scalismo.ui.util.EdtUtil
 import spire.math.Numeric
+
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
-import scalismo.geometry._2D
-import scalismo.geometry.Dim
 
 /**
  * Defines a minimal set of methods to easily interact with an stk.ui scene in order to display and retrieve objects.
@@ -122,6 +122,8 @@ trait SimpleAPI {
   def setCoefficientsOf(modelName: String, coefficients: DenseVector[Float]) = {
     scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
   }
+
+  def showASMSample(sample: ASMSample, name: String): Unit = show[ASMSample](sample, name)
 
   def show[A](a: A, name: String)(implicit show: Show[A]) = show.show(a, name)(scene)
 

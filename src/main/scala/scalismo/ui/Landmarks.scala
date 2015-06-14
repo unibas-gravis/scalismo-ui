@@ -234,9 +234,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   private var _point = calculateCenter()
 
   def calculateCenter(): Point[_3D] = {
-    val coeffs = DenseVector(container.instance.coefficients.toArray)
     val (_, ptId) = container.instance.shapeModel.peer.referenceMesh.findClosestPoint(source.point)
-    container.instance.shapeModel.peer.instance(coeffs)(ptId)
+    val coeffs = DenseVector(container.instance.coefficients.toArray)
+    val mesh = container.instance.shapeModel.peer.instance(coeffs)
+    mesh.point(ptId)
   }
 
   def setCenter(): Unit = {
@@ -259,7 +260,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
 
   override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
     val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
-    val refPoint = instance.shapeModel.peer.referenceMesh.points(index)
+    val refPoint = instance.shapeModel.peer.referenceMesh.point(index)
     instance.shapeModel.landmarks.create(refPoint, name, uncertainty)
   }
 

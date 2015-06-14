@@ -139,6 +139,29 @@ class TwoDViewportPanel extends ViewportPanel {
   }
 
   private val slider = new VpSlider
-  layout(slider) = BorderPanel.Position.East
+
+  private val minus = new Button(new Action("-") {
+    override def apply(): Unit = {
+      if (slider.value > slider.min) {
+        slider.value = slider.value - 1
+      }
+    }
+  })
+
+  private val plus = new Button(new Action("+") {
+    override def apply(): Unit = {
+      if (slider.value < slider.max) {
+        slider.value = slider.value + 1
+      }
+    }
+  })
+
+  private val control = new BorderPanel {
+    layout(plus) = BorderPanel.Position.North
+    layout(slider) = BorderPanel.Position.Center
+    layout(minus) = BorderPanel.Position.South
+  }
+
+  layout(control) = BorderPanel.Position.East
   layout(toolbar) = BorderPanel.Position.North
 }

@@ -1,13 +1,13 @@
 package scalismo.ui.vtk
 
-import _root_.vtk.{ vtkCamera, vtkRenderer }
+import _root_.vtk.{vtkActor, vtkCamera, vtkRenderer}
 import scalismo.ui._
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.visualization.Renderable
 
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 trait VtkContext extends EdtPublisher
 
@@ -110,6 +110,30 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
               })
             }
         })
+        // if needed, re-order the renderer's actors so that image actors come before all others. This prevents subtle drawing bugs (outlines sometimes disappearing)
+        if (changed) {
+          val actors = renderer.GetActors()
+          val count = actors.GetNumberOfItems()
+          if (count > 1) {
+            actors.InitTraversal()
+            val original = (0 until count) map { i => actors.GetNextActor() }
+
+            // we need to add images first, so that shape outlines always get drawn after images
+            def imagesFirst(a1: vtkActor, a2: vtkActor): Boolean = {
+              (a1, a2) match {
+                case (i1: ImageActor2D, i2: ImageActor2D) => false
+                case (i1: ImageActor2D, _) => true
+                case (_, _) => false
+              }
+            }
+
+            val sorted = original sortWith imagesFirst
+            if (sorted != original) {
+              original foreach renderer.RemoveActor
+              sorted foreach renderer.AddActor
+            }
+          }
+        }
         if (changed || firstTime) {
           viewportOption match {
             case Some(viewport) =>
