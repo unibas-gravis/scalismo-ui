@@ -5,6 +5,16 @@ import scala.util.{ Failure, Success, Try }
 
 object PersistentSettings {
 
+  object Keys {
+    final val WindowHeight = "common.windowHeight"
+    final val WindowWidth = "common.windowWidth"
+    final val WindowMaximized = "common.windowMaximized"
+    final val LastUsedDirectories = "common.lastUsedDirectories"
+    final val PerspectiveName = "common.perspective"
+    final val ImageWindowLevelWindow = "common.image.windowlevel.Window"
+    final val ImageWindowLevelLevel = "common.image.windowlevel.Level"
+  }
+
   val settingsFile = {
     new ScalismoSettingsFile
   }
@@ -24,9 +34,10 @@ object PersistentSettings {
         case t if t <:< typeOf[Byte] => Some(ByteCodec)
         case t if t <:< typeOf[Double] => Some(DoubleCodec)
         case t if t <:< typeOf[Float] => Some(FloatCodec)
+        case t if t <:< typeOf[Boolean] => Some(BooleanCodec)
         case _ => None
       }
-      if (!codec.isDefined) {
+      if (codec.isEmpty) {
         throw new IllegalArgumentException("Settings of type " + typeOf[A].toString + " are not currently supported")
       }
       codec.get.asInstanceOf[Codec[A]]
@@ -40,6 +51,10 @@ object PersistentSettings {
 
     object StringCodec extends Codec[String] {
       override def fromString(s: String) = s
+    }
+
+    object BooleanCodec extends Codec[Boolean] {
+      override def fromString(s: String) = java.lang.Boolean.parseBoolean(s)
     }
 
     object IntCodec extends Codec[Int] {
