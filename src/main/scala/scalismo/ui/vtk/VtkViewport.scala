@@ -1,13 +1,13 @@
 package scalismo.ui.vtk
 
-import _root_.vtk.{vtkActor, vtkCamera, vtkRenderer}
+import _root_.vtk.{ vtkActor, vtkCamera, vtkRenderer }
 import scalismo.ui._
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.visualization.Renderable
 
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 trait VtkContext extends EdtPublisher
 
