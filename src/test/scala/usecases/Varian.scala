@@ -98,12 +98,12 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
     coeffs ++= lastModel.get.instances(0).coefficients
 
     def fittingConfig(statmodel: ShapeModel) = {
-      val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.referenceMesh, 1000, seed = 42)
+      val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.referenceMesh, 10000, seed = 42)
       RegistrationConfiguration[_3D, GaussianProcessTransformationSpace[_3D]](
-        optimizer = LBFGSOptimizer(numIterations = 10, 5, 0.001),
+        optimizer = LBFGSOptimizer(numIterations = 20, 5, 0.001),
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0))
         metric = MeanSquaresMetric[_3D](sampler),
-        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolateNystrom()),
+        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolateNearestNeighbor),
         regularizer = L2Regularizer,
         regularizationWeight = 0.01)
     }
