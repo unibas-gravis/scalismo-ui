@@ -13,6 +13,8 @@ object PersistentSettings {
     final val PerspectiveName = "common.perspective"
     final val ImageWindowLevelWindow = "common.image.windowlevel.Window"
     final val ImageWindowLevelLevel = "common.image.windowlevel.Level"
+    final val SlicesVisible = "common.slices.visible"
+    final val SlicesOpacity = "common.slices.opacity"
   }
 
   val settingsFile = {

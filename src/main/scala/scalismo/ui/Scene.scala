@@ -1,6 +1,7 @@
 package scalismo.ui
 
 import scalismo.geometry.{ Point, _3D }
+import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.visualization._
 
 import scala.collection.immutable
@@ -112,26 +113,28 @@ object Scene {
 
     protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
 
-    private var _visible = false
+    private var _visible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
 
     def visible = _visible
 
     def visible_=(nv: Boolean) = {
       if (_visible != nv) {
         _visible = nv
+        PersistentSettings.set(PersistentSettings.Keys.SlicesVisible, nv)
         scene.publish(Scene.SlicingPosition.VisibilityChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
       }
     }
 
-    private var _opacity = 0.0
+    private var _opacity = Math.max(0.0, Math.min(1.0, PersistentSettings.get[Double](PersistentSettings.Keys.SlicesOpacity).getOrElse(0.0)))
 
     def opacity = _opacity
 
     def opacity_=(nv: Double) = {
       val sane = Math.max(0.0, Math.min(1.0, nv))
       if (_opacity != sane) {
-        _opacity = nv
+        _opacity = sane
+        PersistentSettings.set(PersistentSettings.Keys.SlicesOpacity, sane)
         scene.publish(Scene.SlicingPosition.OpacityChanged(this))
       }
     }
