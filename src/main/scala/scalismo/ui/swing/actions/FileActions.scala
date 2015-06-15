@@ -108,7 +108,7 @@ object LoadAction {
   val DefaultName = "Load..."
 }
 
-class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadAction.DefaultName) extends Action(name) {
+class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadAction.DefaultName, val multiSelect: Boolean = true) extends Action(name) {
   lazy val chooserTitle = {
     if (name != LoadAction.DefaultName) name
     else "Load " + metadata.description
@@ -117,14 +117,14 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
 
   lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
-    multiSelectionEnabled = false
+    multiSelectionEnabled = multiSelect
     peer.setAcceptAllFileFilterUsed(false)
     fileFilter = new FileNameExtensionFilterWrapper().create(metadata.longDescription, metadata.fileExtensions.toArray)
   }
 
   def apply() = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {
-      tryLoad(chooser.selectedFile)
+      chooser.selectedFiles foreach tryLoad
     }
   }
 
