@@ -2,6 +2,8 @@ package scalismo.ui
 
 import java.awt.Point
 
+import scalismo.ui.settings.PersistentSettings
+
 import scala.swing.event.Event
 
 object Viewport {
@@ -112,8 +114,8 @@ object TwoDViewport {
    * moving the level left or right changes the display brightness."
    */
   object ImageWindowLevel extends EdtPublisher {
-    private var _window: Double = 256
-    private var _level: Double = 128
+    private var _window: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelWindow).getOrElse(256.0)
+    private var _level: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
 
     def window: Double = _window
     def level: Double = _level
@@ -138,6 +140,8 @@ object TwoDViewport {
           _level = Math.max(0, sl + deltaY)
 
           if (_window != sw || _level != sl) {
+            PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelWindow, _window)
+            PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelLevel, _level)
             publishEdt(ImageWindowLevelChanged(_window, _level))
           }
 

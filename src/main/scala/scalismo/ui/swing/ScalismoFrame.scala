@@ -3,6 +3,7 @@ package scalismo.ui.swing
 import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
+import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.swing.menu.MainMenuBar
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.{ Scene, Workspace }
@@ -59,15 +60,43 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
 
   override def closeOperation() = {
+    saveWindowState()
     dispose()
+  }
+
+  def saveWindowState(): Unit = {
+    val dim = this.size
+    PersistentSettings.set(PersistentSettings.Keys.WindowMaximized, this.maximized)
+    if (!maximized) {
+      // these settings are only saved if not maximized. However, if the window *is* maximized, they should have been saved before, in the call to maximize()
+      PersistentSettings.set(PersistentSettings.Keys.WindowWidth, dim.width)
+      PersistentSettings.set(PersistentSettings.Keys.WindowHeight, dim.height)
+    }
+  }
+
+  override def maximize(): Unit = {
+    // we need to store the settings in the "unmaximized" state
+    val dim = this.size
+    PersistentSettings.set(PersistentSettings.Keys.WindowWidth, dim.width)
+    PersistentSettings.set(PersistentSettings.Keys.WindowHeight, dim.height)
+    super.maximize()
+  }
+
+  def restoreWindowState(): Unit = {
+    val width = PersistentSettings.get[Int](PersistentSettings.Keys.WindowWidth).getOrElse(1024)
+    val height = PersistentSettings.get[Int](PersistentSettings.Keys.WindowHeight).getOrElse(768)
+    size = new Dimension(width, height)
+    centerOnScreen()
+
+    val max = PersistentSettings.get[Boolean](PersistentSettings.Keys.WindowMaximized).getOrElse(false)
+    if (max) {
+      maximize()
+    }
   }
 
   def startup(args: Array[String]): Unit = {
     vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector.Start()
-
-    size = new Dimension(1024, 768)
-    // center on screen
-    centerOnScreen()
+    restoreWindowState()
   }
 
   // this is a hack...
