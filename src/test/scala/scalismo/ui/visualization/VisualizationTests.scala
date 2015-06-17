@@ -1,10 +1,6 @@
 package scalismo.ui.visualization
 
 import org.scalatest._
-import scalismo.ui.{ Scene, Viewport }
-
-import scala.collection.immutable
-import scala.util.{ Failure, Success }
 
 class VisualizationTests extends FunSpec with Matchers {
 
@@ -15,22 +11,6 @@ class VisualizationTests extends FunSpec with Matchers {
     val defaultValue: String = TestProp.DefaultValue
     def newInstance() = new TestProp
   }
-
-  class DummyViewport extends Viewport {
-    override def scene: Scene = throw new NotImplementedError
-  }
-
-  object TestVisualizableFactory extends SimpleVisualizationFactory[TestVisualizable] {
-    def put(kv: (String, immutable.Seq[Visualization[TestVisualizable]])) = visualizations += kv
-  }
-
-  class TestVisualizable extends VisualizableSceneTreeObject[TestVisualizable] {
-    override def parent = new Scene()
-    override def visualizationProvider: VisualizationProvider[TestVisualizable] = TestVisualizableFactory
-  }
-
-  class TestViewport1 extends DummyViewport
-  class TestViewport2 extends DummyViewport
 
   /* This method *is* time-sensitive. Make sure you give the garbage collector some time.
   * Something like (at least) 100 ms seems to be sensible.
@@ -107,52 +87,24 @@ class VisualizationTests extends FunSpec with Matchers {
       child.value = childValue
       grandchild1.value = grandChildValue
 
-      grandgrandchild.derived.length shouldBe 0
-      grandchild2.derived.length shouldBe 1
-      grandchild1.derived.length shouldBe 0
-      child.derived.length shouldBe 2
-      parent.derived.length shouldBe 1
+      grandgrandchild.derived(true).length shouldBe 0
+      grandchild2.derived(true).length shouldBe 1
+      grandchild1.derived(true).length shouldBe 0
+      child.derived(true).length shouldBe 2
+      parent.derived(true).length shouldBe 1
 
       grandchild1 = null
-      garbageCollectAnd(child.derived).length shouldBe 1
-      grandchild2.derived.length shouldBe 1
+      garbageCollectAnd(child.derived(true)).length shouldBe 1
+      grandchild2.derived(true).length shouldBe 1
 
       grandchild2 = null
       // this should also garbage-collect the grand-grandchild,
       // even if it could still be referenced somewhere else
-      garbageCollectAnd(child.derived).length shouldBe 0
+      garbageCollectAnd(child.derived(true)).length shouldBe 0
 
-      garbageCollectAnd(parent.derived).length shouldBe 1
+      garbageCollectAnd(parent.derived(true)).length shouldBe 1
       child = null
-      garbageCollectAnd(parent.derived).length shouldBe 0
-    }
-  }
-
-  describe("A Visualizations object") {
-
-    it("returns visualizations only for registered viewport classes") {
-      class TestVisualization extends Visualization[TestVisualizable] {
-
-        override def description: String = "testing"
-
-        override protected def createDerived() = new TestVisualization
-
-        override def instantiateRenderables(target: TestVisualizable) = Nil
-      }
-
-      val target = new TestVisualizable
-      val vis = new Visualizations
-      val vp1 = new TestViewport1
-      val vp2 = new TestViewport2
-      TestVisualizableFactory.put((vp1.getClass.getCanonicalName, immutable.Seq(new TestVisualization)))
-      vis.tryGet(target, vp1) shouldBe a[Success[_]]
-      vis.tryGet(target, vp2) shouldBe a[Failure[_]]
-
-      val check: TestVisualization = vis.getUnsafe(target, vp1)
-      check should not be null
-
-      val generic = target.asInstanceOf[Visualizable[_]]
-      vis.tryGet(generic, vp1.getClass.getCanonicalName) shouldBe a[Success[_]]
+      garbageCollectAnd(parent.derived(true)).length shouldBe 0
     }
   }
 }

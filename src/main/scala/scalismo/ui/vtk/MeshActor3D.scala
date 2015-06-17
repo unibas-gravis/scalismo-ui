@@ -6,7 +6,7 @@ import scalismo.ui.Mesh.MeshRenderable3D
 import scalismo.utils.MeshConversion
 import vtk.vtkPolyData
 
-class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
+class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ActorColor with ActorOpacity with ClickableActor {
   override lazy val color = source.color
   override lazy val opacity = source.opacity
 
@@ -17,7 +17,7 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   this.GetProperty().SetInterpolationToGouraud()
-  source.meshOrNone.map {
+  source.meshOrNone.foreach {
     m =>
       setGeometry(m, useTemplate = true)
       listenTo(m)
@@ -45,11 +45,11 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with Colorable
   }
 
   def clicked(point: Point[_3D]) = {
-    source.meshOrNone.map(m => m.addLandmarkAt(point))
+    source.meshOrNone.foreach(m => m.addLandmarkAt(point))
   }
 
   override def onDestroy() = this.synchronized {
-    source.meshOrNone.map(m => deafTo(m))
+    source.meshOrNone.foreach(m => deafTo(m))
     super.onDestroy()
     normals.Delete()
     // do NOT delete polymesh, it may be shared.

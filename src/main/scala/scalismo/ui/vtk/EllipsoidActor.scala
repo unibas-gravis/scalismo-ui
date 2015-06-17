@@ -5,7 +5,7 @@ import scalismo.ui.visualization.props.{ ColorProperty, OpacityProperty, Radiuse
 import scalismo.ui.visualization.{ EllipsoidLike, VisualizationProperty }
 import vtk._
 
-class EllipsoidActor(source: EllipsoidLike) extends PolyDataActor with ColorableActor with RotatableActor {
+class EllipsoidActor(source: EllipsoidLike) extends PolyDataActor with ActorColor with ActorOpacity with RotatableActor {
   private lazy val ellipsoid = new vtkParametricEllipsoid
   private lazy val functionSource = new vtkParametricFunctionSource
 
@@ -44,7 +44,7 @@ class EllipsoidActor(source: EllipsoidLike) extends PolyDataActor with Colorable
     transform.PostMultiply()
 
     // if a rotation matrix is set, apply it
-    rotationMatrix.map { m =>
+    rotationMatrix.foreach { m =>
       val matrix = new vtkMatrix4x4
       // vtk uses 4x4 "homogeneous coordinates", so zero out the last row and column...
       matrix.Zero()

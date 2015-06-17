@@ -9,37 +9,18 @@ import scalismo.io.ImageIO
 import scalismo.ui.Reloadable.Reloader
 import scalismo.ui.visualization._
 
-import scala.collection.immutable
 import scala.language.existentials
 import scala.reflect.ClassTag
-import scala.reflect.runtime.universe.{ Type, TypeTag, typeOf }
+import scala.reflect.runtime.universe.TypeTag
 import scala.swing.Reactor
 import scala.swing.event.Event
 import scala.util.{ Failure, Success, Try }
 
-object Image3DVisualizationFactory {
+object Image3D {
 
-  class Visualization3D[A] extends Visualization[Image3D[A]] {
-    override protected def createDerived() = new Visualization3D
+  case class Reloaded(source: Image3D[_]) extends Event
 
-    override protected def instantiateRenderables(source: Image3D[A]) = {
-      Seq(new Renderable3D(source))
-    }
-
-    override val description = "Slices"
-  }
-
-  class Visualization2D[A] extends Visualization[Image3D[A]] {
-    override protected def createDerived() = new Visualization2D
-
-    override protected def instantiateRenderables(source: Image3D[A]) = {
-      Seq(new Renderable2D(source))
-    }
-
-    override val description = "Slice"
-  }
-
-  private[Image3DVisualizationFactory] class BaseRenderable[A](source: Image3D[A]) extends Renderable with Reactor {
+  class BaseRenderable[A](source: Image3D[A]) extends Renderable with Reactor {
     private var _imageOrNone: Option[Image3D[_]] = Some(source)
 
     def imageOrNone = _imageOrNone
@@ -54,43 +35,22 @@ object Image3DVisualizationFactory {
 
   class Renderable2D[A](source: Image3D[A]) extends BaseRenderable(source)
 
-  private var _instances = new immutable.HashMap[Type, Image3DVisualizationFactory[_]]
+  def DefaultVisualizationStrategy[S] = new VisualizationStrategy[Image3D[S]] {
+    override def renderablesFor2D(targetObject: Image3D[S]): Seq[Renderable] = Seq(new Renderable2D(targetObject))
 
-  def getInstance[A: TypeTag](): Image3DVisualizationFactory[A] = {
-    val tpe = typeOf[A]
-    val instanceOption = _instances.get(tpe)
-    instanceOption.getOrElse {
-      val newInstance = new Image3DVisualizationFactory[A]
-      _instances += Tuple2(tpe, newInstance)
-      newInstance
-    }.asInstanceOf[Image3DVisualizationFactory[A]]
+    override def renderablesFor3D(targetObject: Image3D[S]): Seq[Renderable] = Seq(new Renderable3D(targetObject))
   }
-
-}
-
-class Image3DVisualizationFactory[A] private[ui] extends SimpleVisualizationFactory[Image3D[A]] {
-
-  import scalismo.ui.Image3DVisualizationFactory._
-
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D[A]))
-  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D[A]))
-}
-
-object Image3D {
-
-  case class Reloaded(source: Image3D[_]) extends Event
-
 }
 
 class Image3D[S: Scalar: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends ThreeDRepresentation[Image3D[S]] with Landmarkable with Saveable with Reloadable {
+
+  override lazy val visualizationStrategy: VisualizationStrategy[Image3D[S]] = Image3D.DefaultVisualizationStrategy
 
   private var _peer = reloader.load().get
 
   def peer: DiscreteScalarImage[_3D, S] = _peer
 
   protected[ui] override lazy val saveableMetadata = StaticImage3D
-
-  protected[ui] override lazy val visualizationProvider = Image3DVisualizationFactory.getInstance()
 
   protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = peer.map[Float](p => implicitly[Scalar[S]].toFloat(p))
 

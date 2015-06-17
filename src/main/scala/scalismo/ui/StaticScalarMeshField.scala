@@ -1,8 +1,6 @@
 package scalismo.ui
 
-import scalismo.common.{ Scalar }
-
-import scalismo.geometry._3D
+import scalismo.common.Scalar
 
 object StaticScalarMeshField {
   def createFromPeer[A: Scalar](peer: scalismo.mesh.ScalarMeshField[A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarMeshField = {

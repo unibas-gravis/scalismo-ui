@@ -6,7 +6,7 @@ import scalismo.ui.ScalarField.{ ScalarFieldRenderable3D }
 import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
 import scalismo.ui.VectorField.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
-import scalismo.ui.{ BoundingBox, Image3DVisualizationFactory, Scene }
+import scalismo.ui.{ Image3D, BoundingBox, Scene }
 import vtk.vtkActor
 
 import scala.util.Try
@@ -41,10 +41,10 @@ object RenderableActor {
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
         case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
-        case img3d: Image3DVisualizationFactory.Renderable3D[_] => img3d.imageOrNone.map {
+        case img3d: Image3D.Renderable3D[_] => img3d.imageOrNone.map {
           source => new ImageActor3D(source)
         }
-        case img2d: Image3DVisualizationFactory.Renderable2D[_] => img2d.imageOrNone.map {
+        case img2d: Image3D.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
         case s: EllipsoidLike => Some(new EllipsoidActor(s))

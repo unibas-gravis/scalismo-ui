@@ -1,8 +1,7 @@
 package scalismo.ui
 
 import scalismo.common.{ DiscreteScalarField, Scalar }
-
-import scalismo.geometry.{ Point, Dim, _3D }
+import scalismo.geometry.{ Point, _3D }
 
 object StaticScalarField {
   def createFromPeer[A: Scalar](peer: scalismo.common.DiscreteScalarField[_3D, A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarField = {
