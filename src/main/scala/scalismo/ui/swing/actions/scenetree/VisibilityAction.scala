@@ -1,23 +1,35 @@
 package scalismo.ui.swing.actions.scenetree
 
-import java.awt.event.{ ItemEvent, ItemListener }
-import javax.swing.JCheckBox
+import java.awt.Color
+import java.awt.event.{ MouseEvent, MouseAdapter, ItemEvent, ItemListener }
+import javax.swing.border.LineBorder
+import javax.swing.{ JLabel, JPanel, JCheckBox, JComponent }
 
-import scalismo.ui.{ SceneTreeObject, Viewport }
+import scalismo.ui.{ Scene, SceneTreeObject, Viewport }
 
-import scala.swing.{ CheckMenuItem, Menu }
 import scala.swing.event.ButtonClicked
+import scala.swing._
 
 class VisibilityAction extends SceneTreePopupAction("Visible in...") {
 
-  private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener {
-    setSelected(context.visible(viewport))
-
-    def itemStateChanged(event: ItemEvent) = {
-      context.visible(viewport) = isSelected
-    }
+  private class VCheckBox(context: SceneTreeObject, viewport: Viewport) extends JCheckBox(viewport.name) with ItemListener with Reactor {
+    setSelected(context.viewportVisibility(viewport))
 
     addItemListener(this)
+    listenTo(context.scene)
+
+    // events from the checkbox itself
+    def itemStateChanged(event: ItemEvent) = {
+      context.viewportVisibility(viewport) = isSelected
+    }
+
+    // events from the scene
+    reactions += {
+      case Scene.VisibilityChanged(_) =>
+        removeItemListener(this)
+        setSelected(context.viewportVisibility(viewport))
+        addItemListener(this)
+    }
   }
 
   def isContextSupported(context: Option[SceneTreeObject]) = {
@@ -35,15 +47,30 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
     context.scene.viewports.length == 1
   }
 
+  def createGlobalActionComponent(ctx: SceneTreeObject, name: String, change: Boolean => Boolean): JComponent = {
+    def action(): Action = {
+      new Action(name) {
+        override def apply(): Unit = {
+          ctx.scene.viewports foreach { vp =>
+            val ov = ctx.viewportVisibility(vp)
+            ctx.viewportVisibility.update(vp, change(ov))
+          }
+        }
+      }
+    }
+
+    new Button(action()).peer
+  }
+
   override def createMenuItem(context: Option[SceneTreeObject]) = {
     val obj = context.get
     val viewports = obj.scene.viewports
     if (hasSingleViewport(obj)) {
       val item = new CheckMenuItem(title) {
-        selected = obj.visible(viewports.head)
+        selected = obj.viewportVisibility(viewports.head)
         reactions += {
           case ButtonClicked(b) =>
-            context.get.visible(viewports.head) = selected
+            context.get.viewportVisibility(viewports.head) = selected
         }
       }
       Some(item)
@@ -53,6 +80,9 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
           v =>
             peer.add(new VCheckBox(obj, v))
         }
+        peer.add(createGlobalActionComponent(obj, "Invert", { b => !b }))
+        //        peer.add(createGlobalActionComponent(obj, "On", {b => true}))
+        //        peer.add(createGlobalActionComponent(obj, "Off", {b => false}))
       }
       Some(item)
     }
