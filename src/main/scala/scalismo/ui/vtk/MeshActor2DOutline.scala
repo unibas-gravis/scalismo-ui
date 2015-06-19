@@ -6,7 +6,7 @@ import scalismo.ui.Mesh.MeshRenderable2DOutline
 import scalismo.ui._
 import scalismo.utils.MeshConversion
 
-class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: VtkViewport) extends PolyDataActor with LineActor with ClickableActor {
+class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: VtkViewport) extends PolyDataActor with ClickableActor with ActorLineWidth with ActorColor with ActorOpacity {
   override lazy val color = source.color
   override lazy val opacity = source.opacity
   override lazy val lineThickness = source.lineThickness
@@ -18,7 +18,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   private var polyMesh: Option[vtkPolyData] = None
   private var meshOrNone: Option[Mesh] = None
 
-  source.meshOrNone.map {
+  source.meshOrNone.foreach {
     m =>
       listenTo(m)
       polyMesh = Some(Caches.MeshCache.getOrCreate(m.peer, MeshConversion.meshToVtkPolyData(m.peer, None)))
@@ -41,7 +41,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   mapper.SetInputConnection(cutEdges.GetOutputPort())
 
   def update(withGeometry: Boolean = false) = {
-    meshOrNone.map {
+    meshOrNone.foreach {
       mesh =>
         if (withGeometry) {
           polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVtkPolyData(mesh.peer, None)))
@@ -71,14 +71,14 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
   }
 
   override def clicked(point: Point[_3D]) = {
-    meshOrNone.map {
+    meshOrNone.foreach {
       m => m.addLandmarkAt(point)
     }
   }
 
   override def onDestroy() = this.synchronized {
     deafTo(scene)
-    meshOrNone.map {
+    meshOrNone.foreach {
       m => deafTo(m)
     }
     super.onDestroy()

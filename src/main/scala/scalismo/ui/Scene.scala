@@ -19,7 +19,7 @@ object Scene {
 
   case class VisibilityChanged private[Scene] (scene: Scene) extends Event
 
-  object SlicingPosition extends SimpleVisualizationFactory[SlicingPosition] {
+  object SlicingPosition {
 
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
 
@@ -69,39 +69,22 @@ object Scene {
       })
     }
 
-    visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
-    visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
-
-    class Visualization3D extends Visualization[SlicingPosition] {
-      override protected def createDerived() = new Visualization3D
-
-      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
-        new BoundingBoxRenderable3D(source),
-        new SlicingPlaneRenderable3D(source, Axis.X),
-        new SlicingPlaneRenderable3D(source, Axis.Y),
-        new SlicingPlaneRenderable3D(source, Axis.Z)
-      )
-
-      override val description = "bounding box and slices"
-
-    }
-
-    class Visualization2D extends Visualization[SlicingPosition] {
-      override protected def createDerived() = new Visualization2D
-
-      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
-        new SlicingPlaneRenderable2D(source)
-      )
-
-      override val description = "slice position"
-
-    }
-
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
 
     class SlicingPlaneRenderable3D(val source: SlicingPosition, val axis: Axis.Value) extends Renderable
 
     class SlicingPlaneRenderable2D(val source: SlicingPosition) extends Renderable
+
+    object VisualizationStrategy extends VisualizationStrategy[SlicingPosition] {
+      override def renderablesFor2D(targetObject: SlicingPosition): Seq[Renderable] = Seq(new SlicingPlaneRenderable2D(targetObject))
+      override def renderablesFor3D(source: SlicingPosition): Seq[Renderable] = {
+        Seq(new BoundingBoxRenderable3D(source),
+          new SlicingPlaneRenderable3D(source, Axis.X),
+          new SlicingPlaneRenderable3D(source, Axis.Y),
+          new SlicingPlaneRenderable3D(source, Axis.Z)
+        )
+      }
+    }
 
   }
 
@@ -109,7 +92,7 @@ object Scene {
 
     import scalismo.ui.Scene.SlicingPosition.Precision
 
-    protected[ui] override def visualizationProvider = SlicingPosition
+    override def visualizationStrategy: VisualizationStrategy[SlicingPosition] = SlicingPosition.VisualizationStrategy
 
     protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
 
@@ -287,7 +270,6 @@ class Scene extends SceneTreeObject {
     super.onViewportsChanged(viewports)
   }
 
-  protected[ui] lazy val visualizations: Visualizations = new Visualizations
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {

@@ -1,11 +1,13 @@
 package scalismo.ui
 
+import java.awt.Color
 import java.io.File
 
 import scalismo.geometry.{ Point, _3D }
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.Reloadable.{ FileReloader, ImmutableReloader, Reloader }
+import scalismo.ui.visualization.props.ColorProperty
 
 import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }

@@ -76,7 +76,17 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  val visible = new Visibility(this)
+  val viewportVisibility = new Visibility(this)
+
+  // convenience methods
+  def visible_=(newVisibility: Boolean) = {
+    scene.perspective.viewports.foreach(vp => viewportVisibility.update(vp, newVisibility))
+  }
+
+  // returns true if and only if the object is visible in *all* viewports
+  def visible: Boolean = {
+    scene.perspective.viewports.forall(vp => viewportVisibility(vp))
+  }
 }
 
 class Visibility(container: SceneTreeObject) {
@@ -84,7 +94,7 @@ class Visibility(container: SceneTreeObject) {
 
   def apply(viewport: Viewport): Boolean = map.getOrElse(viewport, true)
 
-  def update(viewport: Viewport, nv: Boolean): Unit = update(viewport, nv, isTop = true)
+  def update(viewport: Viewport, visible: Boolean): Unit = update(viewport, visible, isTop = true)
 
   private def update(viewport: Viewport, nv: Boolean, isTop: Boolean): Boolean = {
     val selfChanged = if (apply(viewport) != nv) {
@@ -92,7 +102,7 @@ class Visibility(container: SceneTreeObject) {
       true
     } else false
     val notify = container.children.foldLeft(selfChanged)({
-      case (b, c) => c.visible.update(viewport, nv, isTop = false) || b
+      case (b, c) => c.viewportVisibility.update(viewport, nv, isTop = false) || b
     })
     if (isTop && notify) {
       container.scene.publishVisibilityChanged()
@@ -103,7 +113,7 @@ class Visibility(container: SceneTreeObject) {
   //  initialize with parent visibility
   if (container ne container.parent) {
     for (v <- container.scene.viewports) {
-      if (!container.parent.visible(v)) {
+      if (!container.parent.viewportVisibility(v)) {
         map(v) = false
       }
     }

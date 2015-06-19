@@ -1,15 +1,13 @@
 package scalismo.ui.vtk
 
 import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
-import scalismo.ui.visualization.props.ColorProperty
 import scalismo.utils.MeshConversion
 
-class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends PolyDataActor with ColorableActor {
+class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends PolyDataActor with ActorOpacity {
 
-  override lazy val color = new ColorProperty(None)
   override lazy val opacity = renderable.opacity
 
-  val meshData = renderable.source.peer.asInstanceOf[scalismo.mesh.ScalarMeshField[Float]]
+  val meshData = renderable.source.peer
   val vtkpd = MeshConversion.scalarMeshFieldToVtkPolyData(meshData)
 
   mapper.SetInputData(vtkpd)

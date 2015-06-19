@@ -24,15 +24,13 @@ trait PropertyPanel extends CardPanel.CardableComponent {
     super.revalidate()
     if (preferredSize.width > size.width) {
       // this is a hack ...
-      workspace.map {
-        _.publishPleaseLayoutAgain()
-      }
+      workspace.foreach { _.publishPleaseLayoutAgain() }
     }
   }
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
-  private val appearance = new VisualizationPanel("Appearance", new ColorablePanel, new RadiusPanel, new LineThicknessPanel)
+  private val appearance = new CombinedPropertiesPanel("Appearance", new ColorPropertyPanel, new OpacityPropertyPanel, new LineThicknessPropertyPanel, new Radius1DPropertyPanel)
   val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel, new UncertaintyPanel)
 
   class TabsComponent extends Component with EdtPublisher {

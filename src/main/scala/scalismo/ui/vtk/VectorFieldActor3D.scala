@@ -1,13 +1,11 @@
 package scalismo.ui.vtk
 
 import scalismo.ui.VectorField.VectorFieldRenderable3D
-import scalismo.ui.visualization.props.ColorProperty
 import vtk._
 
-class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataActor with ColorableActor {
+class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataActor with ActorOpacity {
   private lazy val arrow = new vtkArrowSource
 
-  override lazy val color = new ColorProperty(None)
   override lazy val opacity = renderable.opacity
 
   val points = new vtkPoints
@@ -34,7 +32,7 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataAc
 
     if (norms.length > 0) {
       val max = norms.max
-      for (j <- 0 until norms.length) {
+      for (j <- norms.indices) {
         scalars.InsertNextValue(norms(j) / max)
       }
     }

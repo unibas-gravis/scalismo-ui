@@ -1,35 +1,27 @@
 package scalismo.ui
 
-import scalismo.geometry._3D
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
 
 import scala.collection.immutable.Seq
 
-object ScalarMeshField extends SimpleVisualizationFactory[ScalarMeshField] {
-
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D(None)))
-  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[ScalarMeshField]))
-
-  class Visualization3D(from: Option[Visualization3D]) extends Visualization[ScalarMeshField] with HasColorAndOpacity {
-    override val color: ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(None)
-    override val opacity: OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(None)
-
-    protected def createDerived() = new Visualization3D(Some(this))
-
-    protected def instantiateRenderables(source: ScalarMeshField) = {
-      Seq(new ScalarMeshFieldRenderable3D(source, color, opacity))
-    }
-
-    override val description: String = "Scalars"
-  }
+object ScalarMeshField {
 
   class ScalarMeshFieldRenderable3D(val source: ScalarMeshField, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
 
+  object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarMeshField] {
+    override def renderablesFor2D(targetObject: ScalarMeshField): scala.Seq[Renderable] = Seq()
+
+    override def renderablesFor3D(t: ScalarMeshField): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable3D(t, t.color, t.opacity))
+  }
 }
 
-trait ScalarMeshField extends ThreeDRepresentation[ScalarMeshField] {
-  def peer: scalismo.mesh.ScalarMeshField[Float]
+trait ScalarMeshField extends ThreeDRepresentation[ScalarMeshField] with HasColorAndOpacity {
 
-  protected[ui] override def visualizationProvider: VisualizationProvider[ScalarMeshField] = ScalarMeshField
+  override val color: ColorProperty = new ColorProperty(None)
+  override val opacity: OpacityProperty = new OpacityProperty(None)
+
+  override def visualizationStrategy: VisualizationStrategy[ScalarMeshField] = ScalarMeshField.DefaultVisualizationStrategy
+
+  def peer: scalismo.mesh.ScalarMeshField[Float]
 }

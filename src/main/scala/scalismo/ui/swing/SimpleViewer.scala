@@ -1,5 +1,6 @@
 package scalismo.ui.swing
 
+import java.awt.Color
 import java.io.File
 
 import scalismo.common.ScalarArray
@@ -57,7 +58,8 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
     if (false) {
       // example: add a point cloud
       val pointSeq = immutable.IndexedSeq(Point(0, 0, 0), Point(0, 100, 0), Point(100, 100, 0), Point(100, 0, 0), Point(0, 0, 100), Point(0, 100, 100), Point(100, 100, 100), Point(100, 0, 100))
-      StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
+      val pc = StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
+      pc.color.update(Color.RED)
     }
 
     if (false) {

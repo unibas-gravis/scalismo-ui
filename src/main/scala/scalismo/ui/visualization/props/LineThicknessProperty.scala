@@ -3,10 +3,14 @@ package scalismo.ui.visualization.props
 import scalismo.ui.visualization.VisualizationProperty
 
 class LineThicknessProperty(initial: Option[Int]) extends VisualizationProperty[Int, LineThicknessProperty] {
-  def newInstance() = new LineThicknessProperty(None)
+  override lazy val defaultValue = 1
 
-  lazy val defaultValue = 1
-  initial.map(c => value = c)
+  override def newInstance() = new LineThicknessProperty(None)
+
+  override protected def sanitizeValue(newValue: Int): Int = Math.max(1, newValue)
+
+  initial.foreach(c => value = c)
+
 }
 
 trait HasLineThickness {

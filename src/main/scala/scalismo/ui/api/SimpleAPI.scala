@@ -134,7 +134,7 @@ object SimpleAPI {
   class ScalismoUI private (val frame: ScalismoFrame) extends SimpleAPI {
     override val scene: Scene = frame.scene
 
-    def close() = frame.dispose()
+    def close() = frame.closeOperation()
 
   }
 
@@ -147,7 +147,6 @@ object SimpleAPI {
       val frame = EdtUtil.onEdtWithResult {
         val frame = new ScalismoFrame(new Scene())
         frame.startup(Array())
-        frame.pack()
         frame.visible = true
         frame
       }

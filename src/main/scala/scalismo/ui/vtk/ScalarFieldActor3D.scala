@@ -1,14 +1,13 @@
 package scalismo.ui.vtk
 
-import scalismo.geometry.{ _1D, Point, _3D }
+import scalismo.geometry.{ Point, _3D }
 import scalismo.mesh.{ ScalarMeshField, TriangleCell, TriangleMesh }
 import scalismo.ui.ScalarField.ScalarFieldRenderable3D
 import scalismo.ui.visualization.VisualizationProperty
-import scalismo.ui.visualization.props.{ HasOpacity }
 import scalismo.utils.MeshConversion
 import vtk.{ vtkGlyph3D, vtkSphereSource }
 
-class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataActor with HasOpacity with ClickableActor {
+class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataActor with ActorOpacity with ClickableActor {
   private lazy val sphere = new vtkSphereSource
   override lazy val opacity = renderable.opacity
   lazy val radius = renderable.radiuses
@@ -59,7 +58,7 @@ class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataAc
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
     val cloudPoints = renderable.source.peer.domain.points.toIndexedSeq
     // just in case
-    if (cloudPoints.size > 0) {
+    if (cloudPoints.nonEmpty) {
       val vector = point.toVector
       val vectorsWithIndex = cloudPoints.map(_.toVector - vector).zipWithIndex
       val minIndex = vectorsWithIndex.minBy(_._1.norm2)._2

@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.LineThicknessProperty
 
-trait LineActor extends ColorableActor {
+trait ActorLineWidth extends SingleRenderableActor {
   def lineThickness: LineThicknessProperty
 
   listenTo(lineThickness)
@@ -20,7 +20,7 @@ trait LineActor extends ColorableActor {
   }
 
   override def onDestroy() = this.synchronized {
-    deafTo(color, opacity)
+    deafTo(lineThickness)
     super.onDestroy()
   }
 }

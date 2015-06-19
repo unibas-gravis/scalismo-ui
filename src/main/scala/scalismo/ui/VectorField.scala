@@ -7,30 +7,23 @@ import scalismo.ui.visualization.props._
 
 import scala.collection.immutable.Seq
 
-object VectorField extends SimpleVisualizationFactory[VectorField] {
+object VectorField {
 
-  visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D(None)))
-  visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new NullVisualization[VectorField]))
+  class VectorFieldRenderable3D(val source: VectorField, override val opacity: OpacityProperty) extends Renderable with HasOpacity
 
-  class Visualization3D(from: Option[Visualization3D]) extends Visualization[VectorField] with HasColorAndOpacity {
-    override val color: ColorProperty = if (from.isDefined) from.get.color.derive() else new ColorProperty(None)
-    override val opacity: OpacityProperty = if (from.isDefined) from.get.opacity.derive() else new OpacityProperty(None)
+  object DefaultVisualizationStrategy extends VisualizationStrategy[VectorField] {
+    override def renderablesFor2D(targetObject: VectorField): scala.Seq[Renderable] = Seq()
 
-    protected def createDerived() = new Visualization3D(Some(this))
-
-    protected def instantiateRenderables(source: VectorField) = {
-      Seq(new VectorFieldRenderable3D(source, color, opacity))
-    }
-
-    override val description: String = "Vectors"
+    override def renderablesFor3D(t: VectorField): scala.Seq[Renderable] = Seq(new VectorFieldRenderable3D(t, t.opacity))
   }
-
-  class VectorFieldRenderable3D(val source: VectorField, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
 
 }
 
-trait VectorField extends ThreeDRepresentation[VectorField] {
-  def peer: DiscreteVectorField[_3D, _3D]
+trait VectorField extends ThreeDRepresentation[VectorField] with HasOpacity {
 
-  protected[ui] override def visualizationProvider: VisualizationProvider[VectorField] = VectorField
+  override val opacity: OpacityProperty = new OpacityProperty(None)
+
+  override def visualizationStrategy: VisualizationStrategy[VectorField] = VectorField.DefaultVisualizationStrategy
+
+  def peer: DiscreteVectorField[_3D, _3D]
 }

@@ -2,12 +2,12 @@ package scalismo.ui.vtk
 
 import _root_.vtk.{ vtkActor, vtkCamera, vtkRenderer }
 import scalismo.ui._
-import scalismo.ui.util.EdtUtil
+import scalismo.ui.util.{ ObjectId, EdtUtil }
 import scalismo.ui.visualization.Renderable
 
 import scala.collection.immutable.HashMap
 import scala.swing.event.Event
-import scala.util.{ Failure, Success }
+import scala.util.{ Try, Failure, Success }
 
 trait VtkContext extends EdtPublisher
 
@@ -49,14 +49,7 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
       case Some(viewport) =>
         scene.visualizables {
           f => f.isVisibleIn(viewport)
-        }.flatMap {
-          obj =>
-            scene.visualizations.tryGet(obj, viewport) match {
-              case Failure(f) =>
-                f.printStackTrace()
-                Nil
-              case Success(vis) => vis(obj)
-            }
+        }.flatMap { o => o.visualizationStrategy.applyUntyped(o, viewport)
         }
       case _ => Nil
     }
