@@ -4,7 +4,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "0.8.0-RC1"
+  val buildVersion = "0.8.0-RC2"
   val buildScalaVersion = "2.10.4"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
@@ -13,6 +13,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     shellPrompt := ShellPrompt.buildShellPrompt)
 
 }
@@ -56,12 +57,13 @@ object Creds {
 object Dependencies {
   import BuildSettings._
 
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.8.0-RC2"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.8.0-RC3"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
-  val scalatest = "org.scalatest" %% "scalatest" % "2.1.0" % "test"
-  val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
-  val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
-  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
+  val scalatest = "org.scalatest" %% "scalatest" % "2.2.+" % "test"
+//  these dependencies are transitively obtained
+//  val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
+//  val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
+  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.+"
   val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
 }
 
@@ -75,8 +77,6 @@ object STKBuild extends Build {
     scalismo,
     scalismoNative,
     scalatest,
-    scalaReflect,
-    scalaSwing,
     scalaAsync,
     scalaInterpreterPane)
 

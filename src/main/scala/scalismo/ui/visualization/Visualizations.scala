@@ -35,9 +35,7 @@ class Visualizations {
           case _ => tryGet(key.visualizationProvider)
         }
         existing match {
-          case Success(ok) => Try {
-            ok.derive()
-          }
+          case Success(ok) => Try.apply[Visualization[_]] { ok.derive() }
           case f @ Failure(e) => f
         }
       })
