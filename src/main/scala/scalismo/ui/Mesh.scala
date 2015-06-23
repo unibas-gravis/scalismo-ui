@@ -29,7 +29,7 @@ object Mesh {
     }
   }
 
-  class MeshRenderable2DOutline(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineThickness: LineThicknessProperty) extends Renderable with HasColorAndOpacity with HasLineThickness with Reactor {
+  class MeshRenderable2DOutline(source: Mesh, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineWidth: LineWidthProperty) extends Renderable with HasColorAndOpacity with HasLineWidth with Reactor {
     var meshOrNone: Option[Mesh] = Some(source)
     listenTo(source)
     reactions += {
@@ -41,7 +41,7 @@ object Mesh {
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[Mesh] {
     override def renderablesFor2D(t: Mesh): Seq[Renderable] = {
-      Seq(new MeshRenderable2DOutline(t, t.color, t.opacity, t.lineThickness))
+      Seq(new MeshRenderable2DOutline(t, t.color, t.opacity, t.lineWidth))
     }
     override def renderablesFor3D(t: Mesh): Seq[Renderable] = {
       Seq(new MeshRenderable3D(t, t.color, t.opacity))
@@ -50,11 +50,11 @@ object Mesh {
 
 }
 
-trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable with HasColorAndOpacity with HasLineThickness {
+trait Mesh extends ThreeDRepresentation[Mesh] with Landmarkable with Saveable with HasColorAndOpacity with HasLineWidth {
 
   override val color: ColorProperty = new ColorProperty(None)
   override val opacity: OpacityProperty = new OpacityProperty(None)
-  override val lineThickness: LineThicknessProperty = new LineThicknessProperty(None)
+  override val lineWidth: LineWidthProperty = new LineWidthProperty(None)
 
   def peer: TriangleMesh
 

@@ -2,10 +2,10 @@ package scalismo.ui.visualization.props
 
 import scalismo.ui.visualization.VisualizationProperty
 
-class LineThicknessProperty(initial: Option[Int]) extends VisualizationProperty[Int, LineThicknessProperty] {
+class LineWidthProperty(initial: Option[Int]) extends VisualizationProperty[Int, LineWidthProperty] {
   override lazy val defaultValue = 1
 
-  override def newInstance() = new LineThicknessProperty(None)
+  override def newInstance() = new LineWidthProperty(None)
 
   override protected def sanitizeValue(newValue: Int): Int = Math.max(1, newValue)
 
@@ -13,7 +13,7 @@ class LineThicknessProperty(initial: Option[Int]) extends VisualizationProperty[
 
 }
 
-trait HasLineThickness {
-  def lineThickness: LineThicknessProperty
+trait HasLineWidth {
+  def lineWidth: LineWidthProperty
 }
 
