@@ -65,7 +65,6 @@ class ThreeDViewport(override val scene: Scene, name: Option[String] = None) ext
 }
 
 class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option[String] = None) extends Viewport {
-  import TwoDViewport._
   name_=(name.getOrElse(Nameable.NoName))
 
   override lazy val initialCameraChange = axis match {
@@ -77,7 +76,7 @@ class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option
   private var dragStart: Option[Point] = None
 
   override def onLeftButtonDown(pt: Point) = {
-    if (!dragStart.isDefined) {
+    if (dragStart.isEmpty) {
       TwoDViewport.ImageWindowLevel.dragStart()
       dragStart = Some(pt)
     }

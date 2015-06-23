@@ -1,14 +1,12 @@
 package scalismo.ui.swing.actions.scenetree
 
-import java.awt.Color
-import java.awt.event.{ MouseEvent, MouseAdapter, ItemEvent, ItemListener }
-import javax.swing.border.LineBorder
-import javax.swing.{ JLabel, JPanel, JCheckBox, JComponent }
+import java.awt.event.{ ItemEvent, ItemListener }
+import javax.swing.{ JCheckBox, JComponent }
 
 import scalismo.ui.{ Scene, SceneTreeObject, Viewport }
 
-import scala.swing.event.ButtonClicked
 import scala.swing._
+import scala.swing.event.ButtonClicked
 
 class VisibilityAction extends SceneTreePopupAction("Visible in...") {
 
@@ -76,13 +74,10 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
       Some(item)
     } else {
       val item = new Menu(this.title) {
-        viewports foreach {
-          v =>
-            peer.add(new VCheckBox(obj, v))
+        viewports foreach { v =>
+          peer.add(new VCheckBox(obj, v))
         }
         peer.add(createGlobalActionComponent(obj, "Invert", { b => !b }))
-        //        peer.add(createGlobalActionComponent(obj, "On", {b => true}))
-        //        peer.add(createGlobalActionComponent(obj, "Off", {b => false}))
       }
       Some(item)
     }

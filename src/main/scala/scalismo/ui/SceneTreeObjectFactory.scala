@@ -6,7 +6,7 @@ import scala.util.{ Failure, Try }
 
 object SceneTreeObjectFactory {
   def combineFileExtensions(filters: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Array[String] = {
-    filters.map(_.ioMetadata.fileExtensions).flatten.toSeq.sorted.toArray
+    filters.flatMap(_.ioMetadata.fileExtensions).sorted.toArray
   }
 
   val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage3D)

@@ -3,8 +3,8 @@ package scalismo.ui
 import scala.collection.immutable
 
 trait FileIoMetadata {
-  val fileExtensions: immutable.Seq[String]
-  val description: String
+  def fileExtensions: immutable.Seq[String]
+  def description: String
 
   def longDescription: String = {
     description + fileExtensions.mkString(" (*.", ", *.", ")")

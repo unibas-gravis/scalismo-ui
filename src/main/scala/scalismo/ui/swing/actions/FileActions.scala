@@ -95,11 +95,11 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     }
   }
 
-  def onSuccess(file: File) {
+  def onSuccess(file: File): Unit = {
     Dialog.showMessage(parentComponent, "Successfully saved: " + file.getName, "File saved")
   }
 
-  def onFailure(file: File, exception: Throwable) {
+  def onFailure(file: File, exception: Throwable): Unit = {
     Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Save failed", Dialog.Message.Error)
   }
 }
@@ -136,10 +136,10 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
     }
   }
 
-  def onSuccess(file: File) {
+  def onSuccess(file: File): Unit = {
   }
 
-  def onFailure(file: File, exception: Throwable) {
+  def onFailure(file: File, exception: Throwable): Unit = {
     if (exception != CommonExceptions.UserCancelledActionException) {
       exception.printStackTrace()
       Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Load failed", Dialog.Message.Error)

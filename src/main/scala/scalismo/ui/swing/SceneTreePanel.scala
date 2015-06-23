@@ -15,6 +15,7 @@ import scalismo.ui.visualization.icons.IconFactory
 import scalismo.ui.visualization.{ VisualizableSceneTreeObject, VisualizationProperty }
 
 import scala.Array.canBuildFrom
+import scala.annotation.tailrec
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.swing.BorderPanel.Position.Center
 import scala.swing.{ BorderPanel, Component, Reactor, ScrollPane }
@@ -112,7 +113,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       workspace.selectedObject = getTreeObjectForEvent(event)
     }
 
-    override def keyTyped(event: KeyEvent) {
+    override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete
         val maybeRemoveable = getTreeObjectForEvent(event)
@@ -181,6 +182,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   lazy val topmost = {
     import java.awt.{ Component => AComponent }
+    @tailrec
     def top(c: AComponent): AComponent = {
       val p = c.getParent
       if (p == null || c.isInstanceOf[Frame]) c else top(p)
@@ -211,7 +213,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     case Nameable.NameChanged(s) => jtree.treeDidChange()
   }
 
-  def synchronizeTreeWithScene() {
+  def synchronizeTreeWithScene(): Unit = {
     val path = jtree.getSelectionPath
     synchronizeTreeNode(scene, root)
     if (path != null) {
@@ -221,7 +223,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     }
   }
 
-  protected def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
+  protected def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode): Unit = {
 
     def frontendChildren = frontend.children.map(_.asInstanceOf[TreeNode]).toList
 

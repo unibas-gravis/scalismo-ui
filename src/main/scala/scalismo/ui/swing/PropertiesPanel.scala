@@ -12,7 +12,7 @@ class PropertiesPanel(val workspace: Workspace) extends BorderPanel {
 
   setupUi()
 
-  def setupUi() {
+  def setupUi(): Unit = {
     val child = new BorderPanel {
       val split = new SplitPane(Orientation.Horizontal, scene, details) {
         resizeWeight = 0.5

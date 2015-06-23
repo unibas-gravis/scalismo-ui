@@ -16,5 +16,5 @@ abstract class ActionWithContext[C <: AnyRef](name: String) extends Action(name)
     apply(_context)
   }
 
-  def apply(context: Option[C])
+  def apply(context: Option[C]): Unit
 }

@@ -1,10 +1,10 @@
-package scalismo.usecases
+package usecases
 
 import scalismo.geometry._3D
 import scalismo.image.filter.DiscreteImageFilter
 import scalismo.image.{ DifferentiableScalarImage, DiscreteScalarImage }
 import scalismo.mesh.Mesh
-import scalismo.numerics.{ FixedPointsUniformMeshSampler3D, Integrator, LBFGSOptimizer }
+import scalismo.numerics.{ FixedPointsUniformMeshSampler3D, LBFGSOptimizer }
 import scalismo.registration._
 import scalismo.ui.swing.{ ScalismoApp, ScalismoFrame }
 import scalismo.ui.{ Mesh => UiMesh, _ }
@@ -37,7 +37,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
   reactions += {
     case Scene.TreeTopologyChanged(s) =>
       if (scene.shapeModels.nonEmpty) {
-        if (!orgModel.isDefined) {
+        if (orgModel.isEmpty) {
           orgModel = Some(scene.shapeModels(0))
           lastModel = Some(orgModel.get)
           modelLm = Some(orgModel.get.landmarks)
@@ -45,7 +45,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         }
       }
       if (scene.staticObjects.nonEmpty) {
-        if (!targetLm.isDefined) {
+        if (targetLm.isEmpty) {
           targetLm = Some(scene.staticObjects(0).landmarks)
           listenTo(targetLm.get)
         }

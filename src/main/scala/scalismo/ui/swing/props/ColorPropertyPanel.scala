@@ -23,7 +23,7 @@ class ColorPropertyPanel extends BorderPanel with PropertyPanel {
   class ColorDisplayer extends Component {
     val BorderWidth = 1
     override lazy val peer = new JPanel {
-      override def paintComponent(g: Graphics) {
+      override def paintComponent(g: Graphics): Unit = {
         val dim: Dimension = getSize
         val s = BorderWidth
         g.setColor(Constants.Visualization.PerceivedBackgroundColor)
@@ -105,7 +105,7 @@ class ColorPropertyPanel extends BorderPanel with PropertyPanel {
     }
   }
 
-  def updateColorDisplayer() {
+  def updateColorDisplayer(): Unit = {
     val c = target.get.color.value
     colorChooser.setColor(c)
     colorDisplayer.setColor(c, targetOpacityOption().map {

@@ -48,7 +48,7 @@ class SettingsFile(directory: File, name: String) {
     val newLines = oldLines.filter({
       case (l, p) =>
         if (l.startsWith(prefix)) {
-          if (position == None) {
+          if (position.isEmpty) {
             position = Some(p)
           }
           false

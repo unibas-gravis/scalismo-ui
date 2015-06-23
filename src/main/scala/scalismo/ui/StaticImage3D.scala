@@ -8,7 +8,7 @@ import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.io.ImageIO.ScalarType
 import scalismo.ui.Reloadable.{ FileReloader, ImmutableReloader, Reloader }
-import spire.math.{ ULong, UByte, UInt, UShort }
+import spire.math.{ UByte, UInt, ULong, UShort }
 
 import scala.collection.immutable
 import scala.reflect.ClassTag

@@ -1,5 +1,5 @@
 import sbt._
-import Keys._
+import sbt.Keys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
@@ -22,8 +22,8 @@ object BuildSettings {
 // git branch and build version
 object ShellPrompt {
   object devnull extends ProcessLogger {
-    def info(s: => String) {}
-    def error(s: => String) {}
+    def info(s: => String): Unit = {}
+    def error(s: => String): Unit = {}
     def buffer[T](f: => T): T = f
   }
   def currBranch = (
@@ -34,8 +34,7 @@ object ShellPrompt {
     (state: State) =>
       {
         val currProject = Project.extract(state).currentProject.id
-        "%s:%s:%s> ".format(
-          currProject, currBranch, BuildSettings.buildVersion)
+        s"$currProject:$currBranch:${BuildSettings.buildVersion}> "
       }
   }
 }
@@ -55,8 +54,6 @@ object Creds {
 }
 
 object Dependencies {
-  import BuildSettings._
-
   val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
   val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"

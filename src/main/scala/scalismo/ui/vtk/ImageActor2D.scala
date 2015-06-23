@@ -112,7 +112,7 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
       }
   }
 
-  override def onDestroy() {
+  override def onDestroy(): Unit = {
     deafTo(source.scene, source, TwoDViewport.ImageWindowLevel)
     super.onDestroy()
   }

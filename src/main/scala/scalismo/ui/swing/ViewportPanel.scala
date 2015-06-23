@@ -34,7 +34,7 @@ class ViewportPanel extends BorderPanel {
   }
 
   def hide() = {
-    viewport.map {
+    viewport.foreach {
       deafTo(_)
     }
     renderer.detach()
@@ -90,7 +90,7 @@ class TwoDViewportPanel extends ViewportPanel {
   }
 
   override def hide() = {
-    viewport map {
+    viewport foreach {
       vp => slider.deafTo(vp.scene)
     }
     super.hide()

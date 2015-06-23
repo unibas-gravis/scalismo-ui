@@ -13,7 +13,7 @@ class RenameNameableAction extends SceneTreePopupAction("Rename...") {
     if (isContextSupported(context)) {
       val nameable = context.get.asInstanceOf[Nameable]
       val newNameOpt = Dialog.showInput[String](title = "Rename", message = "Rename \"" + nameable.name + "\" to:", initial = nameable.name)
-      newNameOpt.map(s => nameable.name = s)
+      newNameOpt.foreach(s => nameable.name = s)
     }
   }
 }

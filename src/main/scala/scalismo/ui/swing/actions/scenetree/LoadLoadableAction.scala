@@ -2,8 +2,8 @@ package scalismo.ui.swing.actions.scenetree
 
 import java.io.File
 
-import scalismo.ui.{ Loadable, SceneTreeObject }
 import scalismo.ui.swing.actions.LoadAction
+import scalismo.ui.{ Loadable, SceneTreeObject }
 
 import scala.util.Try
 

@@ -37,11 +37,11 @@ class VtkPanel extends Component with EdtPublisher {
     viewportOption = source.viewportOption
     workspaceOption = source.workspaceOption
     vtkViewport.attach()
-    workspaceOption.map(listenTo(_))
+    workspaceOption.foreach(listenTo(_))
   }
 
   def detach() = {
-    workspaceOption.map(deafTo(_))
+    workspaceOption.foreach(deafTo(_))
     vtkViewport.detach()
     canvas.disableDeferredRendering()
     workspaceOption = None

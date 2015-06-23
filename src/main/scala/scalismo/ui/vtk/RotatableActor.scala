@@ -12,7 +12,7 @@ trait RotatableActor extends RenderableActor {
     case VisualizationProperty.ValueChanged(s) => if (s eq rotation) onRotationChanged(rotation)
   }
 
-  def onRotationChanged(rotation: RotationProperty)
+  def onRotationChanged(rotation: RotationProperty): Unit
 
   override def onDestroy(): Unit = {
     deafTo(rotation)
