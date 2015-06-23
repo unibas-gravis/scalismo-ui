@@ -14,6 +14,7 @@ object PersistentSettings {
     final val ImageWindowLevelWindow = "common.image.windowlevel.Window"
     final val ImageWindowLevelLevel = "common.image.windowlevel.Level"
     final val SlicesVisible = "common.slices.visible"
+    final val IntersectionsVisible = "common.slices.intersections.visible"
     final val SlicesOpacity = "common.slices.opacity"
   }
 

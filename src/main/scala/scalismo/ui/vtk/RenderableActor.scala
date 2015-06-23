@@ -47,7 +47,12 @@ object RenderableActor {
         case img2d: Image3D.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
-        case s: EllipsoidLike => Some(new EllipsoidActor(s))
+        case ell: EllipsoidLike => Some(EllipsoidActor.apply(vtkViewport, ell))
+        //        case s: EllipsoidLike => s.dim match {
+        //          case 3 => Some (new EllipsoidActor3D (s) )
+        //          case 2 => Some (new EllipsoidActor2D (s) )
+        //          case _ => None
+        //        }
         case _ => None
       }
   }

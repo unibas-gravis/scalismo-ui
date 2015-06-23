@@ -4,15 +4,15 @@ import javax.swing.border.TitledBorder
 
 import scalismo.ui.swing.util.EdtSlider
 import scalismo.ui.visualization.VisualizationProperty
-import scalismo.ui.visualization.props.HasLineThickness
+import scalismo.ui.visualization.props.HasLineWidth
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
 
-class LineThicknessPropertyPanel extends BorderPanel with PropertyPanel {
+class LineWidthPropertyPanel extends BorderPanel with PropertyPanel {
   override def description: String = "2D Outline Width"
 
-  private var target: Option[HasLineThickness] = None
+  private var target: Option[HasLineWidth] = None
 
   private val slider = new EdtSlider {
     min = 1
@@ -42,9 +42,9 @@ class LineThicknessPropertyPanel extends BorderPanel with PropertyPanel {
   }
 
   def updateUi() = {
-    if (target.isDefined) {
+    target.foreach { t =>
       deafToOwnEvents()
-      target.foreach(t => slider.value = t.lineThickness.value)
+      slider.value = t.lineWidth.value
       listenToOwnEvents()
     }
   }
@@ -52,9 +52,9 @@ class LineThicknessPropertyPanel extends BorderPanel with PropertyPanel {
   override def setObject(obj: Option[AnyRef]): Boolean = {
     cleanup()
     obj match {
-      case Some(s: HasLineThickness) =>
+      case Some(s: HasLineWidth) =>
         target = Some(s)
-        listenTo(s.lineThickness)
+        listenTo(s.lineWidth)
         updateUi()
         true
       case _ => false
@@ -62,12 +62,12 @@ class LineThicknessPropertyPanel extends BorderPanel with PropertyPanel {
   }
 
   def cleanup(): Unit = {
-    target.foreach(t => deafTo(t.lineThickness))
+    target.foreach(t => deafTo(t.lineWidth))
     target = None
   }
 
   reactions += {
     case VisualizationProperty.ValueChanged(_) => updateUi()
-    case ValueChanged(c) => target.foreach(_.lineThickness.update(slider.value))
+    case ValueChanged(c) => target.foreach(_.lineWidth.update(slider.value))
   }
 }

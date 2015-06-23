@@ -27,7 +27,9 @@ object Scene {
 
     case class PrecisionChanged(slicingPosition: SlicingPosition) extends Event
 
-    case class VisibilityChanged(slicingPosition: SlicingPosition) extends Event
+    case class SlicesVisibleChanged(slicingPosition: SlicingPosition) extends Event
+
+    case class IntersectionsVisibleChanged(slicingPosition: SlicingPosition) extends Event
 
     case class OpacityChanged(slicingPosition: SlicingPosition) extends Event
 
@@ -60,13 +62,13 @@ object Scene {
       }, {
         i => i.toFloat / 100f
       })
-      val MmThousandth = new Val("1/1000 mm", {
-        value => f"$value%1.3f"
-      }, {
-        f => Math.round(f * 1000)
-      }, {
-        i => i.toFloat / 1000f
-      })
+      //      val MmThousandth = new Val("1/1000 mm", {
+      //        value => f"$value%1.3f"
+      //      }, {
+      //        f => Math.round(f * 1000)
+      //      }, {
+      //        i => i.toFloat / 1000f
+      //      })
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
@@ -94,17 +96,30 @@ object Scene {
 
     override def visualizationStrategy: VisualizationStrategy[SlicingPosition] = SlicingPosition.VisualizationStrategy
 
-    protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
+    protected[ui] override def isVisibleIn(viewport: Viewport) = _slicesVisible || viewport.isInstanceOf[TwoDViewport]
 
-    private var _visible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
+    private var _slicesVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
 
-    def visible = _visible
+    def slicesVisible = _slicesVisible
 
-    def visible_=(nv: Boolean) = {
-      if (_visible != nv) {
-        _visible = nv
+    def slicesVisible_=(nv: Boolean) = {
+      if (_slicesVisible != nv) {
+        _slicesVisible = nv
         PersistentSettings.set(PersistentSettings.Keys.SlicesVisible, nv)
-        scene.publish(Scene.SlicingPosition.VisibilityChanged(this))
+        scene.publish(Scene.SlicingPosition.SlicesVisibleChanged(this))
+        scene.publish(Scene.VisibilityChanged(scene))
+      }
+    }
+
+    private var _intersectionsVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.IntersectionsVisible).getOrElse(false)
+
+    def intersectionsVisible = _intersectionsVisible
+
+    def intersectionsVisible_=(nv: Boolean) = {
+      if (_intersectionsVisible != nv) {
+        _intersectionsVisible = nv
+        PersistentSettings.set(PersistentSettings.Keys.IntersectionsVisible, nv)
+        scene.publish(Scene.SlicingPosition.IntersectionsVisibleChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
       }
     }

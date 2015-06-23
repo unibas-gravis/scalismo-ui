@@ -4,7 +4,7 @@ import java.awt.Color
 import java.io.File
 
 import breeze.linalg.DenseVector
-import scalismo.geometry.{ Landmark => CLandmark, Point, _3D }
+import scalismo.geometry.{ Landmark => CLandmark, Dim, Point, _3D }
 import scalismo.io.LandmarkIO
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
@@ -103,7 +103,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
 
 object VisualizableLandmark {
 
-  class EllipsoidRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radiuses: RadiusesProperty[_3D], override val rotation: RotationProperty) extends Renderable with EllipsoidLike {
+  class EllipsoidRenderable(source: VisualizableLandmark, override val color: ColorProperty, override val opacity: OpacityProperty, override val radiuses: RadiusesProperty[_3D], override val rotation: RotationProperty, override val lineWidth: LineWidthProperty) extends Renderable with EllipsoidLike {
     radiuses.value = source.uncertainty.stdDevs
     rotation.value = Some(source.uncertainty.rotationMatrix)
     setCenter(source)
@@ -122,33 +122,34 @@ object VisualizableLandmark {
   }
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[VisualizableLandmark] {
-    override def renderablesFor2D(targetObject: VisualizableLandmark): Seq[Renderable] = Seq()
-
+    override def renderablesFor2D(targetObject: VisualizableLandmark): Seq[Renderable] = renderablesFor3D(targetObject)
     override def renderablesFor3D(t: VisualizableLandmark): Seq[Renderable] = {
       val radiuses = new RadiusesProperty[_3D](None)
       val rotation = new RotationProperty(None)
-      Seq(new EllipsoidRenderable(t, t.color, t.opacity, radiuses, rotation))
+      Seq(new EllipsoidRenderable(t, t.color, t.opacity, radiuses, rotation, t.lineWidth))
     }
   }
 
 }
 
-abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark] with HasColorAndOpacity {
+abstract class VisualizableLandmark(container: VisualizableLandmarks) extends Landmark with VisualizableSceneTreeObject[VisualizableLandmark] with HasColorAndOpacity with HasLineWidth {
   override def parent = container
 
   override val color: ColorProperty = container.color.derive()
   override val opacity: OpacityProperty = container.opacity.derive()
+  override val lineWidth: LineWidthProperty = container.lineWidth.derive()
 
   override def visualizationStrategy: VisualizationStrategy[VisualizableLandmark] = VisualizableLandmark.DefaultVisualizationStrategy
 }
 
-abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with RemoveableChildren with HasColorAndOpacity {
+abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with RemoveableChildren with HasColorAndOpacity with HasLineWidth {
   name = "Landmarks"
   override lazy val isNameUserModifiable = false
   override lazy val parent = theObject
 
   override val color: ColorProperty = new ColorProperty(Some(Color.BLUE))
   override val opacity: OpacityProperty = new OpacityProperty(None)
+  override val lineWidth: LineWidthProperty = new LineWidthProperty(None)
 
   def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D])
 }

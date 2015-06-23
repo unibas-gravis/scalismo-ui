@@ -134,13 +134,13 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       p =>
         g.buttons += new ValueButton(p) {
           reactions += {
-            case ButtonClicked(_) => slicingPosition.map(sp => sp.precision = p)
+            case ButtonClicked(_) => slicingPosition.foreach(sp => sp.precision = p)
           }
         }
     }
     contents ++= g.buttons
 
-    def set(np: Scene.SlicingPosition.Precision.Value) {
+    def set(np: Scene.SlicingPosition.Precision.Value): Unit = {
       g.buttons.foreach {
         b =>
           if (b.asInstanceOf[ValueButton].value == np) {
@@ -154,7 +154,8 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
     val flow = new FlowPanel
 
-    val check = new CheckBox("Show bounding box/slices")
+    val slicesVisible = new CheckBox("Show bounding box/slices")
+    val intersectionsVisible = new CheckBox("2D: show intersecting slice positions")
 
     val opacity = new EdtSlider {
       val s = preferredSize
@@ -162,9 +163,13 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       preferredSize = s
     }
 
-    flow.contents ++= Seq(new Label("3D opacity"), opacity)
-    layout(check) = BorderPanel.Position.West
-    layout(flow) = BorderPanel.Position.East
+    flow.contents ++= Seq(new Label("3D: slice opacity"), opacity)
+
+    val north = new BorderPanel
+    north.layout(slicesVisible) = BorderPanel.Position.West
+    north.layout(flow) = BorderPanel.Position.East
+    layout(north) = BorderPanel.Position.North
+    layout(intersectionsVisible) = BorderPanel.Position.Center
   }
 
   layout(new BorderPanel {
@@ -188,49 +193,53 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   }
 
   def cleanup() = {
-    slicingPosition.map(sp => deafTo(sp.scene))
+    slicingPosition.foreach(sp => deafTo(sp.scene))
     slicingPosition = None
   }
 
   def updateUi(): Unit = {
-    deafToOwnEvents()
-    slicingPosition.map {
-      sp =>
-        precision.set(sp.precision)
-        dimensions.foreach {
-          d =>
-            d.update()
-        }
-        visibility.check.selected = sp.visible
-        visibility.opacity.value = (sp.opacity * 100).toInt
+    slicingPosition.foreach { sp =>
+      deafToOwnEvents()
+      precision.set(sp.precision)
+      dimensions.foreach {
+        d =>
+          d.update()
+      }
+      visibility.slicesVisible.selected = sp.slicesVisible
+      visibility.intersectionsVisible.selected = sp.intersectionsVisible
+      visibility.opacity.value = (sp.opacity * 100).toInt
+      Seq(visibility.intersectionsVisible, visibility.opacity) foreach {
+        _.enabled = sp.slicesVisible
+      }
+      revalidate()
+      listenToOwnEvents()
     }
-    revalidate()
-    listenToOwnEvents()
   }
 
   def deafToOwnEvents() = {
-    deafTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
+    deafTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
   }
 
   def listenToOwnEvents() = {
-    listenTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
+    listenTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
   }
 
   reactions += {
-    case Scene.SlicingPosition.VisibilityChanged(s) => updateUi()
+    case Scene.SlicingPosition.SlicesVisibleChanged(s) => updateUi()
     case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
     case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
     case Scene.SlicingPosition.PointChanged(sp, _, _) => updateUi()
     case ValueChanged(slider: EdtSlider) =>
       slider match {
-        case x.slider => slicingPosition.map(_.x = x.value)
-        case y.slider => slicingPosition.map(_.y = y.value)
-        case z.slider => slicingPosition.map(_.z = z.value)
-        case visibility.opacity => slicingPosition.map(_.opacity = visibility.opacity.value / 100.0)
+        case x.slider => slicingPosition.foreach(_.x = x.value)
+        case y.slider => slicingPosition.foreach(_.y = y.value)
+        case z.slider => slicingPosition.foreach(_.z = z.value)
+        case visibility.opacity => slicingPosition.foreach(_.opacity = visibility.opacity.value / 100.0)
       }
-    case ButtonClicked(b: CheckBox) if b eq visibility.check =>
-      slicingPosition.map {
-        _.visible = visibility.check.selected
+    case ButtonClicked(checkbox: CheckBox) =>
+      checkbox match {
+        case visibility.slicesVisible => slicingPosition.foreach(_.slicesVisible = checkbox.selected)
+        case visibility.intersectionsVisible => slicingPosition.foreach(_.intersectionsVisible = checkbox.selected)
       }
   }
 

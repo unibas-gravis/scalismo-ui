@@ -9,7 +9,7 @@ import scalismo.utils.MeshConversion
 class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: VtkViewport) extends PolyDataActor with ClickableActor with ActorLineWidth with ActorColor with ActorOpacity {
   override lazy val color = source.color
   override lazy val opacity = source.opacity
-  override lazy val lineThickness = source.lineThickness
+  override lazy val lineWidth = source.lineWidth
 
   val viewport = vtkViewport.viewport.asInstanceOf[TwoDViewport]
   val scene = viewport.scene
