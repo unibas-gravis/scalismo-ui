@@ -13,6 +13,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
+    crossScalaVersions := Seq("2.10.4", "2.11.4"),
     shellPrompt := ShellPrompt.buildShellPrompt)
 
 }
@@ -58,10 +59,10 @@ object Dependencies {
 
   val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
-  val scalatest = "org.scalatest" %% "scalatest" % "2.1.0" % "test"
+  val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
   val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
-  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.0-M4"
+  val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.+"
   val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
 }
 

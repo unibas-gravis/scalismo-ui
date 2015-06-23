@@ -4,13 +4,13 @@ import scalismo.ui._
 
 import scala.collection.mutable
 
-trait Visualizable[X <: Visualizable[X]] {
+trait Visualizable[X] {
   protected[ui] def isVisibleIn(viewport: Viewport): Boolean
 
   def visualizationStrategy: VisualizationStrategy[X]
 }
 
-trait VisualizableSceneTreeObject[X <: VisualizableSceneTreeObject[X]] extends SceneTreeObject with Visualizable[X] {
+trait VisualizableSceneTreeObject[X] extends SceneTreeObject with Visualizable[X] {
   protected[ui] override def isVisibleIn(viewport: Viewport): Boolean = viewportVisibility(viewport)
 
 }
