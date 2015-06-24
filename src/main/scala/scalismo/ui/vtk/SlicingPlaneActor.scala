@@ -150,7 +150,7 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
   override lazy val vtkActors: Seq[vtkActor] = Seq(this, intersectionsActor)
 
   override def onUpdate(ownPoints: vtkPoints): Unit = {
-    if (scene.slicingPosition.intersectionsVisible) {
+    if (scene.slicingPosition.slicesVisible && scene.slicingPosition.intersectionsVisible) {
       intersectionsActor.SetVisibility(1)
 
       // Setup the colors array
@@ -217,6 +217,7 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
 
   reactions += {
     case Scene.SlicingPosition.IntersectionsVisibleChanged(s) => update()
+    case Scene.SlicingPosition.SlicesVisibleChanged(s) => update()
   }
 
   override def onDestroy(): Unit = this.synchronized {

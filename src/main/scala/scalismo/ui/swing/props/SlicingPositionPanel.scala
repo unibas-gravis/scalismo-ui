@@ -163,7 +163,8 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       preferredSize = s
     }
 
-    flow.contents ++= Seq(new Label("3D: slice opacity"), opacity)
+    val opacityLabel = new Label("3D: slice opacity")
+    flow.contents ++= Seq(opacityLabel, opacity)
 
     val north = new BorderPanel
     north.layout(slicesVisible) = BorderPanel.Position.West
@@ -208,7 +209,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       visibility.slicesVisible.selected = sp.slicesVisible
       visibility.intersectionsVisible.selected = sp.intersectionsVisible
       visibility.opacity.value = (sp.opacity * 100).toInt
-      Seq(visibility.intersectionsVisible, visibility.opacity) foreach {
+      Seq(visibility.intersectionsVisible, visibility.opacityLabel, visibility.opacity) foreach {
         _.enabled = sp.slicesVisible
       }
       revalidate()
