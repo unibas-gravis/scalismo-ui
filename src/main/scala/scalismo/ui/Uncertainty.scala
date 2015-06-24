@@ -45,13 +45,13 @@ object Uncertainty extends EdtPublisher {
   }
 
   def fromNDimensionalNormalDistribution[D <: Dim: NDSpace](in: NDimensionalNormalDistribution[D]): Uncertainty[D] = {
-    val (axes, stdDevs) = in.principalComponents.toList.map {case (a,v) => (a, Math.sqrt(v).toFloat)}.unzip
+    val (axes, stdDevs) = in.principalComponents.toList.map { case (a, v) => (a, Math.sqrt(v).toFloat) }.unzip
 
     val m: SquareMatrix[D] = {
       val candidate = SquareMatrix(axes.flatMap(_.data).toArray)
       if (breeze.linalg.det(candidate.toBreezeMatrix) < 0) {
         // improper rotation matrix
-        SquareMatrix(candidate.data.map{f => -f})
+        SquareMatrix(candidate.data.map { f => -f })
       } else candidate
     }
 
@@ -110,7 +110,6 @@ object Uncertainty extends EdtPublisher {
       val vx = crossProductMatrix(v)
       I3 + vx + ((vx * vx) * ((1 - c) / (s * s)))
     }
-
 
     def crossProductMatrix(v: Vector[_3D]): SquareMatrix[_3D] = {
       SquareMatrix(
