@@ -18,7 +18,7 @@ class Workspace(val scene: Scene) extends EdtPublisher {
 
   def landmarkClickMode = _landmarkClickMode
 
-  def landmarkClickMode_=(b: Boolean) {
+  def landmarkClickMode_=(b: Boolean): Unit = {
     _landmarkClickMode = b
   }
 

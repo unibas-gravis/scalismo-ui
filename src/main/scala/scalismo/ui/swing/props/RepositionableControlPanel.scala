@@ -13,8 +13,8 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
 
   private var target: Option[Repositionable] = None
 
-  def cleanup() {
-    target.map {
+  def cleanup(): Unit = {
+    target.foreach {
       r =>
         deafTo(r)
     }
@@ -35,7 +35,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
   }
 
   reactions += {
-    case Repositionable.CurrentPositionChanged(t) if target != None && target.get == t => updateCoordinates()
+    case Repositionable.CurrentPositionChanged(t) if target.isDefined && target.get == t => updateCoordinates()
   }
 
   def updateUi() = {
@@ -52,7 +52,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
   }
 
   def updateCoordinates() = {
-    target.map { t =>
+    target.foreach { t =>
       val xyz = t.getCurrentPosition.data
       val assign = Axes.map(t => t._2).zip(xyz)
       assign.foreach { t =>
@@ -94,7 +94,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
 
     private def createButton(axis: Axis.Value, spec: (Amount.Value, String), decrease: Boolean): Button = {
       new Button(new Action(spec._2) {
-        override def apply() = target.map { t =>
+        override def apply(): Unit = target.foreach { t =>
           if (decrease) t.decreaseCurrentCoordinate(axis, spec._1)
           else t.increaseCurrentCoordinate(axis, spec._1)
         }

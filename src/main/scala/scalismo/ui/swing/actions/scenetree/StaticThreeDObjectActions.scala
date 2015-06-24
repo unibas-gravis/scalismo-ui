@@ -2,8 +2,8 @@ package scalismo.ui.swing.actions.scenetree
 
 import java.io.File
 
-import scalismo.ui.{ FileIoMetadata, SceneTreeObject, StaticImage3D, StaticMesh, StaticThreeDObject, StaticThreeDObjects }
 import scalismo.ui.swing.actions.LoadAction
+import scalismo.ui.{ FileIoMetadata, SceneTreeObject, StaticImage3D, StaticMesh, StaticThreeDObject, StaticThreeDObjects }
 
 import scala.util.{ Success, Try }
 

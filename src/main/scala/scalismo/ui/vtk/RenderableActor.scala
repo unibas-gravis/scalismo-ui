@@ -2,11 +2,11 @@ package scalismo.ui.vtk
 
 import scalismo.ui.Mesh.{ MeshRenderable2DOutline, MeshRenderable3D }
 import scalismo.ui.PointCloud.PointCloudRenderable3D
-import scalismo.ui.ScalarField.{ ScalarFieldRenderable3D }
+import scalismo.ui.ScalarField.ScalarFieldRenderable3D
 import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
 import scalismo.ui.VectorField.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
-import scalismo.ui.{ Image3D, BoundingBox, Scene }
+import scalismo.ui.{ BoundingBox, Image3D, Scene }
 import vtk.vtkActor
 
 import scala.util.Try
@@ -48,11 +48,7 @@ object RenderableActor {
           source => ImageActor2D(source)
         }
         case ell: EllipsoidLike => Some(EllipsoidActor.apply(vtkViewport, ell))
-        //        case s: EllipsoidLike => s.dim match {
-        //          case 3 => Some (new EllipsoidActor3D (s) )
-        //          case 2 => Some (new EllipsoidActor2D (s) )
-        //          case _ => None
-        //        }
+
         case _ => None
       }
   }

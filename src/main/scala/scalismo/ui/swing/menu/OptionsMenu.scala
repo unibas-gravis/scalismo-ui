@@ -3,8 +3,8 @@ package scalismo.ui.swing.menu
 import scalismo.ui._
 import scalismo.ui.swing.ScalismoFrame
 
-import scala.swing.{ Menu, RadioMenuItem }
 import scala.swing.event.ButtonClicked
+import scala.swing.{ Menu, RadioMenuItem }
 
 object OptionsMenu {
   val Name = "Options"

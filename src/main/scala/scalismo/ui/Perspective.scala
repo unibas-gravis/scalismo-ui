@@ -51,7 +51,7 @@ object Perspectives {
 }
 
 trait PerspectiveFactory {
-  val name: String
+  def name: String
 
   def apply()(implicit scene: Scene): Perspective
   def bootstrap(scene: Scene): Perspective

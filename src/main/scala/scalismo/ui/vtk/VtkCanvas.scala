@@ -54,9 +54,6 @@ class VtkCanvas(parent: VtkPanel) extends VtkJoglPanelComponent(parent) {
       override def run(): Unit = {
         RenderReal()
         skipped.synchronized {
-          //          if (skipped.count > 0) {
-          //            println(s"DEBUG: Skipped ${skipped.count} render requests")
-          //          }
           skipped.count = 0
           pending = None
         }
@@ -64,7 +61,7 @@ class VtkCanvas(parent: VtkPanel) extends VtkJoglPanelComponent(parent) {
     }
 
     def request() = skipped.synchronized {
-      if (!pending.isDefined) {
+      if (pending.isEmpty) {
         val task = new DeferredRenderTask
         pending = Some(task)
         super.schedule(task, DeferredRenderer.delayMs)

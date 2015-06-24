@@ -42,7 +42,7 @@ trait SceneTreeObject extends Nameable {
     }
   }
 
-  protected final def destroy() {
+  protected final def destroy(): Unit = {
     children.foreach(_.destroy())
     publish(SceneTreeObject.Destroyed(this))
   }
@@ -55,10 +55,7 @@ trait SceneTreeObject extends Nameable {
     if (maxDepth.isDefined && maxDepth.get > curDepth) {
       Nil
     } else {
-      val tail = children.map({
-        c =>
-          c.findAny[A](filter, maxDepth, minDepth, curDepth + 1)
-      }).flatten
+      val tail = children.flatMap { _.findAny[A](filter, maxDepth, minDepth, curDepth + 1) }
       val clazz = implicitly[ClassTag[A]].runtimeClass
       val head: Seq[A] = if (curDepth >= minDepth && clazz.isInstance(this)) {
         val candidate = this.asInstanceOf[A]

@@ -30,13 +30,13 @@ trait SimpleAPI {
    * @param landmarks an indexedSeq of landmarks to add
    * @param sceneObjectName The scene name associated to the object to which to add the landmarks
    */
-  def addLandmarksTo(landmarks: Iterable[Landmark[_3D]], sceneObjectName: String) {
-    val t = scene.find[ThreeDRepresentation[_] with Landmarkable](_.name == sceneObjectName).headOption.map { a =>
-      landmarks.foreach { l => a.addLandmarkAt(l.point, Some(l.id)) }
-    }
-
-    if (!t.isDefined) scene.find[ShapeModel](_.name == sceneObjectName).headOption.map { a =>
-      landmarks.foreach { l => a.instances(0).meshRepresentation.addLandmarkAt(l.point, Some(l.id))
+  def addLandmarksTo(landmarks: Iterable[Landmark[_3D]], sceneObjectName: String): Unit = {
+    val genericOpt = scene.find[ThreeDRepresentation[_] with Landmarkable](_.name == sceneObjectName).headOption
+    if (genericOpt.isDefined) {
+      genericOpt.foreach(a => landmarks.foreach { l => a.addLandmarkAt(l.point, Some(l.id)) })
+    } else {
+      scene.find[ShapeModel](_.name == sceneObjectName).headOption.foreach { a =>
+        landmarks.foreach { l => a.instances(0).meshRepresentation.addLandmarkAt(l.point, Some(l.id)) }
       }
     }
   }
@@ -83,7 +83,7 @@ trait SimpleAPI {
    * @param pc An Iterable containing the points to be added
    * @param name to associate to the point cloud
    */
-  def showPointCloud(pc: Iterable[Point[_3D]], name: String) {
+  def showPointCloud(pc: Iterable[Point[_3D]], name: String): Unit = {
     show[Iterable[Point[_3D]]](pc, name)
   }
 
@@ -93,7 +93,7 @@ trait SimpleAPI {
    * @param m The triangle mesh to be added
    * @param name to associate to the mesh
    */
-  def showMesh(m: TriangleMesh, name: String) {
+  def showMesh(m: TriangleMesh, name: String): Unit = {
     show[TriangleMesh](m, name)
   }
 
@@ -103,7 +103,7 @@ trait SimpleAPI {
    * @param sm The model to be added
    * @param name to associate to the model
    */
-  def showModel(sm: StatisticalMeshModel, name: String) {
+  def showModel(sm: StatisticalMeshModel, name: String): Unit = {
     show[StatisticalMeshModel](sm, name)
   }
 
@@ -120,7 +120,7 @@ trait SimpleAPI {
   }
 
   def setCoefficientsOf(modelName: String, coefficients: DenseVector[Float]) = {
-    scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
+    scene.find[ShapeModel](_.name == modelName).headOption.foreach(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
   }
 
   def showASMSample(sample: ASMSample, name: String): Unit = show[ASMSample](sample, name)

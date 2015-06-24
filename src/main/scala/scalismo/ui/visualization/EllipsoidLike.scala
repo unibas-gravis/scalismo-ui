@@ -1,8 +1,8 @@
 package scalismo.ui.visualization
 
-import scalismo.geometry.{ Dim, Point, _3D }
+import scalismo.geometry.{ Point, _3D }
 import scalismo.ui.EdtPublisher
-import scalismo.ui.visualization.props.{ HasLineWidth, HasColorAndOpacity, HasRadiuses, HasRotation }
+import scalismo.ui.visualization.props.{ HasColorAndOpacity, HasLineWidth, HasRadiuses, HasRotation }
 
 import scala.swing.event.Event
 

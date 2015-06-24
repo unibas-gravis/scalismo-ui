@@ -117,7 +117,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     case TabChanged(t, v) if t == tabs && tabs.enabled => updateContent(Some(v))
   }
 
-  def updateListAndContent() {
+  def updateListAndContent(): Unit = {
     // side effect: some events might still fire, but they
     // are ignored because the tabs are not enabled (see reactions above)
     tabs.enabled = false

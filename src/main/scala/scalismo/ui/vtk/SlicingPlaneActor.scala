@@ -11,9 +11,6 @@ class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Axis.Value)
 
   listenTo(scene)
 
-  // explicitly call this in subclasses
-  //update()
-
   reactions += {
     case Scene.SlicingPosition.BoundingBoxChanged(s) => update()
     case Scene.SlicingPosition.PointChanged(s, current, previous) => updateWithSlicingPositionChange(current, previous)
@@ -108,8 +105,6 @@ class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)
     case Scene.SlicingPosition.OpacityChanged(s) => update()
   }
 
-  update()
-
   override lazy val vtkActors: Seq[vtkActor] = Seq(this, planeActor)
 
   override def updateWithSlicingPositionChange(current: Point[_3D], previous: Option[Point[_3D]]): Unit = {
@@ -142,6 +137,8 @@ class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)
     super.onDestroy()
     planeMapper.Delete()
   }
+
+  update()
 }
 
 class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, vtkViewport.viewport.asInstanceOf[TwoDViewport].axis) {
@@ -213,15 +210,10 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
       line2.Delete()
       poly.Delete()
 
-      //otherActor.GetProperty().SetColor(Array(1,1,0))
-      //otherActor.GetProperty().SetOpacity(1.0)
     } else {
       intersectionsActor.SetVisibility(0)
     }
   }
-
-  listenTo(scene)
-  update()
 
   reactions += {
     case Scene.SlicingPosition.IntersectionsVisibleChanged(s) => update()
@@ -231,4 +223,7 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
     deafTo(scene)
     super.onDestroy()
   }
+
+  listenTo(scene)
+  update()
 }

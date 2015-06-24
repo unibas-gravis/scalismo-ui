@@ -4,7 +4,7 @@ import java.awt.Color
 import java.io.File
 
 import breeze.linalg.DenseVector
-import scalismo.geometry.{ Landmark => CLandmark, Dim, Point, _3D }
+import scalismo.geometry.{ Landmark => CLandmark, Point, _3D }
 import scalismo.io.LandmarkIO
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
@@ -89,7 +89,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
     val legacyFormat = file.getName.toLowerCase.endsWith("csv")
     val status = for {
       saved <- if (legacyFormat) LandmarkIO.readLandmarksCsv[_3D](file) else LandmarkIO.readLandmarksJson[_3D](file)
-      unused = saved.map {
+      dummy = saved.foreach {
         case CLandmark(name, point, _, uncertainty) =>
           val u = uncertainty.map(nd => Uncertainty.fromNDimensionalNormalDistribution(nd))
           this.create(point, Some(name), u.getOrElse(Uncertainty.defaultUncertainty3D()))
@@ -151,7 +151,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
   override val opacity: OpacityProperty = new OpacityProperty(None)
   override val lineWidth: LineWidthProperty = new LineWidthProperty(None)
 
-  def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D])
+  def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D]): Unit
 }
 
 class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
@@ -176,7 +176,7 @@ class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) exte
 
   override def getCurrentPosition = _point
 
-  override def setCurrentPosition(newPosition: Point[_3D]) {
+  override def setCurrentPosition(newPosition: Point[_3D]): Unit = {
     if (_point != newPosition) {
       _point = newPosition
       publishEdt(Landmarks.LandmarkChanged(this))
@@ -271,7 +271,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
 
   syncWithPeer()
 
-  def syncWithPeer() {
+  def syncWithPeer(): Unit = {
     children.length until peer.children.length foreach {
       i =>
         add(new MoveableLandmark(this, peer(i)))

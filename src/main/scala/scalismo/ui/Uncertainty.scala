@@ -8,7 +8,7 @@ import scala.swing.event.Event
 trait HasUncertainty[D <: Dim] extends EdtPublisher {
   def uncertainty: Uncertainty[D]
 
-  def uncertainty_=(newValue: Uncertainty[D])
+  def uncertainty_=(newValue: Uncertainty[D]): Unit
 }
 
 object HasUncertainty {
@@ -74,7 +74,7 @@ object Uncertainty extends EdtPublisher {
     private lazy val M90 = Math.toRadians(-90)
     private lazy val EqThreshold = 1e-6
 
-    def axesToMatrix[D <: Dim: NDSpace](axes: List[Vector[D]]): SquareMatrix[D] = SquareMatrix(axes.map(_.data).flatten.toArray).t
+    def axesToMatrix[D <: Dim: NDSpace](axes: List[Vector[D]]): SquareMatrix[D] = SquareMatrix(axes.flatMap(_.data).toArray).t
 
     def matrixToAxes[D <: Dim: NDSpace](matrix: SquareMatrix[D]): List[Vector[D]] = {
       val dim = implicitly[NDSpace[D]].dimensionality

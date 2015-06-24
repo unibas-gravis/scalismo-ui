@@ -6,13 +6,12 @@ import java.io.File
 import javax.swing._
 
 import scalismo.ui.settings.PersistentSettings
+import scalismo.ui.settings.PersistentSettings.Keys.LastUsedDirectories
 
 import scala.swing.{ BorderPanel, Component, Label }
 import scala.util.Failure
 
 class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
-
-  import PersistentSettings.Keys.LastUsedDirectories
 
   override lazy val peer = new EnhancedJFileChooser
 
@@ -109,7 +108,7 @@ class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
           peer.addMouseListener(new MouseAdapter {
             override def mouseClicked(e: MouseEvent) = {
               if (e.getClickCount >= 2 && e.getButton == MouseEvent.BUTTON1) {
-                affectedItem(e.getPoint).map(f => EnhancedJFileChooser.this.setCurrentDirectory(f.dir))
+                affectedItem(e.getPoint).foreach(f => EnhancedJFileChooser.this.setCurrentDirectory(f.dir))
               }
             }
           })

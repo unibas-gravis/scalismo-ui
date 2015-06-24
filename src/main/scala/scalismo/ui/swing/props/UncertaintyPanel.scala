@@ -63,7 +63,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
 
   val toDefault = new Button(new Action("Save as default") {
     override def apply(): Unit = {
-      stddev map (s => Uncertainty.defaultStdDevs3D = s)
+      stddev foreach (s => Uncertainty.defaultStdDevs3D = s)
     }
   })
 
@@ -99,12 +99,6 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
       applyRotation()
     }
   })
-
-  //  val rotationSet = new Button(new Action("Set") {
-  //    override def apply(): Unit = {
-  //      applyRotation()
-  //    }
-  //  })
 
   val rotationSlider = new EdtSlider {
     min = -180
@@ -167,7 +161,6 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
           contents ++= Seq(rotationValue, new Label("degrees"), rotationReset)
         }
         layout(west) = BorderPanel.Position.Center
-        //        layout(rotationReset) = BorderPanel.Position.Center
       }
       layout(matrix) = BorderPanel.Position.West
       layout(lines) = BorderPanel.Position.Center
@@ -185,7 +178,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
 
   def applyChanges(updatePreviousStdDev: Boolean): Unit = {
     if (stddev.isDefined && rotationMatrix.isDefined) {
-      target.asInstanceOf[Option[HasUncertainty[_3D]]] map { t =>
+      target.asInstanceOf[Option[HasUncertainty[_3D]]] foreach { t =>
         t.uncertainty = Uncertainty(rotationMatrix.get, stddev.get)
       }
       if (updatePreviousStdDev) {
@@ -195,8 +188,8 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
     }
   }
 
-  def cleanup() {
-    target.map(r => deafTo(r))
+  def cleanup(): Unit = {
+    target.foreach(r => deafTo(r))
     deafTo(Uncertainty)
     target = None
     stddev = None
@@ -262,7 +255,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
       case Some(m) =>
         val data = m.t.data
         require(data.length == cells.length)
-        for (i <- 0 until data.length) {
+        data.indices.foreach { i =>
           cells(i).text = f"${data(i)}%.02f"
         }
       case None => cells.foreach(_.text = "X")
@@ -289,7 +282,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
   }
 
   def updatePreviousStddev() = {
-    Seq(reset, previousLabel) map (_.enabled = previousStddev.isDefined)
+    Seq(reset, previousLabel) foreach (_.enabled = previousStddev.isDefined)
     previousStddev match {
       case Some(v) =>
         Seq(px, py, pz) zip v.data foreach { t =>
@@ -310,7 +303,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
     Seq(dx, dy, dz).foreach(_.enabled = true)
     fromDefault.enabled = set.enabled
     val s = defaultStddev.get.data.map(_.toString)
-    Seq(dx, dy, dz) zip s map (t => t._1.text = t._2)
+    Seq(dx, dy, dz) zip s foreach (t => t._1.text = t._2)
   }
 
   def onRotationInput(valid: Boolean): Unit = {
@@ -326,7 +319,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
       val newStdDev = Try {
         Vector(x.text.toFloat, y.text.toFloat, z.text.toFloat)
       }
-      newStdDev.toOption.map(s => stddev = Some(s))
+      newStdDev.toOption.foreach(s => stddev = Some(s))
     }
   }
 

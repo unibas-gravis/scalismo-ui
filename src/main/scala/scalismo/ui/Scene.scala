@@ -4,7 +4,6 @@ import scalismo.geometry.{ Point, _3D }
 import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.visualization._
 
-import scala.collection.immutable
 import scala.collection.immutable.List
 import scala.swing.event.Event
 import scala.util.Try
@@ -62,13 +61,6 @@ object Scene {
       }, {
         i => i.toFloat / 100f
       })
-      //      val MmThousandth = new Val("1/1000 mm", {
-      //        value => f"$value%1.3f"
-      //      }, {
-      //        f => Math.round(f * 1000)
-      //      }, {
-      //        i => i.toFloat / 1000f
-      //      })
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
@@ -145,7 +137,7 @@ object Scene {
 
     private def point_=(np: Point[_3D]) = {
       val previous = _point
-      if (!_point.isDefined || _point.get != np) {
+      if (_point.isEmpty || _point.get != np) {
         _point = Some(np)
       }
       scene.publishEdt(Scene.SlicingPosition.PointChanged(this, np, previous))

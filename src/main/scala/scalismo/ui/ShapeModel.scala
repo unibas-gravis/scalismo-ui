@@ -48,7 +48,7 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
       case Success(catalog) =>
         val entries = catalog.filter(e => e.modelType == StatismoModelType.Polygon_Mesh)
 
-        if (entries.length == 0) {
+        if (entries.isEmpty) {
           Failure(new IllegalArgumentException("File does not contain any usable model"))
         } else if (entries.length == 1) {
           Success(entries.head.modelPath)
@@ -100,7 +100,7 @@ object ShapeModel extends SceneTreeObjectFactory[ShapeModel] with FileIoMetadata
 
   def createFromPeer(peer: StatisticalMeshModel, numberOfInstances: Int, nameOpt: Option[String] = None)(implicit scene: Scene) = {
     val nm = new ShapeModel(peer)
-    nameOpt.map(n => nm.name = n)
+    nameOpt.foreach(n => nm.name = n)
     0 until numberOfInstances foreach {
       i => nm.instances.create()
     }

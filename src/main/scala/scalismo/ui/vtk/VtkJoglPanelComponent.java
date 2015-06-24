@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * prevent deadlocks on Windows.
  */
 
+@SuppressWarnings("ALL")
 public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
     protected vtkGenericOpenGLRenderWindow renderWindow;
     protected vtkRenderer renderer;

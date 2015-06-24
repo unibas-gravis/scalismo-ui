@@ -20,31 +20,31 @@ trait Show[-A] {
 
 object Show {
   implicit object ShowMesh extends Show[TriangleMesh] {
-    override def show(m: TriangleMesh, name: String)(implicit scene: Scene) {
+    override def show(m: TriangleMesh, name: String)(implicit scene: Scene): Unit = {
       StaticMesh.createFromPeer(m, None, Some(name))
     }
   }
 
   implicit object ShowStatisticalMeshModel extends Show[StatisticalMeshModel] {
-    override def show(sm: StatisticalMeshModel, name: String)(implicit scene: Scene) {
+    override def show(sm: StatisticalMeshModel, name: String)(implicit scene: Scene): Unit = {
       ShapeModel.createFromPeer(sm, 1, Some(name))
     }
   }
 
   implicit object ShowPointCloud extends Show[Iterable[Point[_3D]]] {
-    override def show(pc: Iterable[Point[_3D]], name: String)(implicit scene: Scene) {
+    override def show(pc: Iterable[Point[_3D]], name: String)(implicit scene: Scene): Unit = {
       StaticPointCloud.createFromPeer(pc.toIndexedSeq, None, Some(name))
     }
   }
 
   implicit object ShowVectorFieldCloud extends Show[DiscreteVectorField[_3D, _3D]] {
-    override def show(vf: DiscreteVectorField[_3D, _3D], name: String)(implicit scene: Scene) {
+    override def show(vf: DiscreteVectorField[_3D, _3D], name: String)(implicit scene: Scene): Unit = {
       StaticVectorField.createFromPeer(vf, None, Some(name))
     }
   }
 
   implicit def show2DImage[P: Scalar: ClassTag: TypeTag] = new Show[DiscreteScalarImage[_2D, P]] {
-    def show(image: DiscreteScalarImage[_2D, P], name: String)(implicit scene: Scene) {
+    def show(image: DiscreteScalarImage[_2D, P], name: String)(implicit scene: Scene): Unit = {
       val oneSliceImageDomain = DiscreteImageDomain[_3D](
         Point(image.domain.origin(0), image.domain.origin(1), 0),
         Vector(image.domain.spacing(0), image.domain.spacing(1), 0),
