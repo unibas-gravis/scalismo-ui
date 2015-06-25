@@ -1,12 +1,12 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.Mesh.{ MeshRenderable2DOutline, MeshRenderable3D }
-import scalismo.ui.PointCloud.PointCloudRenderable3D
-import scalismo.ui.ScalarField.ScalarFieldRenderable3D
-import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
-import scalismo.ui.VectorField.VectorFieldRenderable3D
+import scalismo.ui.MeshView.{ MeshRenderable2DOutline, MeshRenderable3D }
+import scalismo.ui.PointCloudView.PointCloudRenderable3D
+import scalismo.ui.ScalarFieldView.ScalarFieldRenderable3D
+import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable3D
+import scalismo.ui.VectorFieldView.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
-import scalismo.ui.{ BoundingBox, Image3D, Scene }
+import scalismo.ui.{ BoundingBox, Image3DView, Scene }
 import vtk.vtkActor
 
 import scala.util.Try
@@ -41,10 +41,10 @@ object RenderableActor {
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
         case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
-        case img3d: Image3D.Renderable3D[_] => img3d.imageOrNone.map {
+        case img3d: Image3DView.Renderable3D[_] => img3d.imageOrNone.map {
           source => new ImageActor3D(source)
         }
-        case img2d: Image3D.Renderable2D[_] => img2d.imageOrNone.map {
+        case img2d: Image3DView.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
         case ell: EllipsoidLike => Some(EllipsoidActor.apply(vtkViewport, ell))

@@ -1,7 +1,7 @@
 package scalismo.ui.vtk
 
 import scalismo.geometry.{ Point, _3D }
-import scalismo.ui.PointCloud.PointCloudRenderable3D
+import scalismo.ui.PointCloudView.PointCloudRenderable3D
 import scalismo.ui.visualization.VisualizationProperty
 import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 
@@ -13,7 +13,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
   listenTo(radius)
 
   val points = new vtkPoints {
-    renderable.source.peer.foreach { point =>
+    renderable.source.underlying.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
   }
@@ -56,7 +56,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
 
   override def clicked(point: Point[_3D]): Unit = {
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
-    val cloudPoints = renderable.source.peer
+    val cloudPoints = renderable.source.underlying
     // just in case
     if (cloudPoints.nonEmpty) {
       val vector = point.toVector

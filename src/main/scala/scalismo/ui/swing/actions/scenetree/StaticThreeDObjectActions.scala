@@ -3,7 +3,7 @@ package scalismo.ui.swing.actions.scenetree
 import java.io.File
 
 import scalismo.ui.swing.actions.LoadAction
-import scalismo.ui.{ FileIoMetadata, SceneTreeObject, StaticImage3D, StaticMesh, StaticThreeDObject, StaticThreeDObjects }
+import scalismo.ui.{ FileIoMetadata, SceneTreeObject, StaticImage3DView, StaticMeshView, StaticThreeDObject, StaticThreeDObjects }
 
 import scala.util.{ Success, Try }
 
@@ -26,18 +26,18 @@ private[actions] abstract class CreateStaticThreeDObjectFromSomethingAction(name
 }
 
 class CreateStaticThreeDObjectFromMeshAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Mesh file...") {
-  override val metadata = StaticMesh
+  override val metadata = StaticMeshView
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-    StaticMesh.tryCreate(file)(parent.scene).map(ok => Success(()))
+    StaticMeshView.tryCreate(file)(parent.scene).map(ok => Success(()))
   }
 }
 
 class CreateStaticThreeDObjectFromImageAction extends CreateStaticThreeDObjectFromSomethingAction("Create from Image file...") {
-  override val metadata = StaticImage3D
+  override val metadata = StaticImage3DView
 
   def load(file: File, parent: StaticThreeDObjects): Try[Unit] = {
-    StaticImage3D.tryCreate(file)(parent.scene).map(ok => Success(()))
+    StaticImage3DView.tryCreate(file)(parent.scene).map(ok => Success(()))
   }
 }
 
@@ -60,18 +60,18 @@ private[actions] abstract class AddRepresentationToStaticThreeDObjectAction(name
 }
 
 class AddMeshRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add Representation from Mesh file...") {
-  override val metadata = StaticMesh
+  override val metadata = StaticMeshView
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
-    StaticMesh.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
+    StaticMeshView.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
 }
 
 class AddImageRepresentationToStaticThreeDObjectAction extends AddRepresentationToStaticThreeDObjectAction("Add Representation from Image file...") {
-  override val metadata = StaticImage3D
+  override val metadata = StaticImage3DView
 
   def load(file: File, parent: StaticThreeDObject): Try[Unit] = {
-    StaticImage3D.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
+    StaticImage3DView.createFromFile(file, Some(parent), file.getName)(parent.scene).map(ok => Success(()))
   }
 }
 

@@ -15,14 +15,6 @@ class StaticThreeDObjects(implicit override val scene: Scene) extends Standalone
   name = "Static Objects"
   protected[ui] override lazy val isNameUserModifiable = false
   override lazy val parent = scene
-
-  def createFromMeshFile(file: File): Try[StaticThreeDObject] = StaticMesh.createFromFile(file, None, file.getName).map { mesh => mesh.parent }
-
-  def createFromMeshPeer(peer: TriangleMesh, name: Option[String] = None): StaticThreeDObject = StaticMesh.createFromPeer(peer, None, name).parent
-
-  def createFromImageFile(file: File): Try[StaticThreeDObject] = StaticImage3D.createFromFile(file, None, file.getName).map { img => img.parent }
-
-  def createFromImagePeer[S: Scalar: ClassTag: TypeTag](peer: DiscreteScalarImage[_3D, S], name: Option[String] = None): StaticThreeDObject = StaticImage3D.createFromPeer(peer, None, name).parent
 }
 
 class StaticThreeDObject(initialParent: Option[StandaloneSceneTreeObjectContainer[StaticThreeDObject]] = None, name: Option[String] = None)(implicit override val scene: Scene) extends ThreeDObject with Removeable {
