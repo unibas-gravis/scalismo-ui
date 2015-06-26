@@ -35,7 +35,7 @@ trait SimpleAPI {
     if (genericOpt.isDefined) {
       genericOpt.foreach(a => landmarks.foreach { l => a.addLandmarkAt(l.point, Some(l.id)) })
     } else {
-      scene.find[ShapeModel](_.name == sceneObjectName).headOption.foreach { a =>
+      scene.find[ShapeModelView](_.name == sceneObjectName).headOption.foreach { a =>
         landmarks.foreach { l => a.instances(0).meshRepresentation.addLandmarkAt(l.point, Some(l.id)) }
       }
     }
@@ -52,7 +52,7 @@ trait SimpleAPI {
 
     if (t.isDefined) t
     else
-      scene.find[ShapeModel](_.name == name).headOption.map(a => a.instances(0).landmarks)
+      scene.find[ShapeModelView](_.name == name).headOption.map(a => a.instances(0).landmarks)
         .map(d => d.map { case a => Landmark(a.name, a.point, None, Some(Uncertainty.toNDimensionalNormalDistribution(a.uncertainty))) })
   }
 
@@ -116,11 +116,11 @@ trait SimpleAPI {
   }
 
   def getCoefficientsOf(modelName: String): Option[IndexedSeq[Float]] = {
-    scene.find[ShapeModel](_.name == modelName).headOption.map(a => a.instances(0).coefficients)
+    scene.find[ShapeModelView](_.name == modelName).headOption.map(a => a.instances(0).coefficients)
   }
 
   def setCoefficientsOf(modelName: String, coefficients: DenseVector[Float]) = {
-    scene.find[ShapeModel](_.name == modelName).headOption.foreach(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
+    scene.find[ShapeModelView](_.name == modelName).headOption.foreach(a => a.instances(0).coefficients = coefficients.toArray.toIndexedSeq)
   }
 
   def showASMSample(sample: ASMSample, name: String): Unit = show[ASMSample](sample, name)

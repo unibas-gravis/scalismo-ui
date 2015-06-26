@@ -7,7 +7,7 @@ import scalismo.mesh.Mesh
 import scalismo.numerics.{ FixedPointsUniformMeshSampler3D, LBFGSOptimizer }
 import scalismo.registration._
 import scalismo.ui.swing.{ ScalismoApp, ScalismoFrame }
-import scalismo.ui.{ Mesh => UiMesh, _ }
+import scalismo.ui._
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.Action
@@ -30,8 +30,8 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
 
   private var targetLm: Option[VisualizableLandmarks] = None
   private var modelLm: Option[ReferenceLandmarks] = None
-  private var orgModel: Option[ShapeModel] = None
-  private var lastModel: Option[ShapeModel] = None
+  private var orgModel: Option[ShapeModelView] = None
+  private var lastModel: Option[ShapeModelView] = None
 
   listenTo(scene)
   reactions += {
@@ -66,16 +66,16 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         val refLms = lastModel.get.landmarks.toIndexedSeq
         val targetLms = targetLm.get.toIndexedSeq
         val trainingData = refLms.zip(targetLms).map {
-          case (refLm, tgtLm) => (lastModel.get.peer.referenceMesh.findClosestPoint(refLm.point)._2, tgtLm.point, Uncertainty.toNDimensionalNormalDistribution(tgtLm.uncertainty))
+          case (refLm, tgtLm) => (lastModel.get.underlying.referenceMesh.findClosestPoint(refLm.point)._2, tgtLm.point, Uncertainty.toNDimensionalNormalDistribution(tgtLm.uncertainty))
         }
         val newModel = if (trainingData.nonEmpty) {
-          val posteriorModel = orgModel.get.peer.posterior(trainingData)
-          val nm = ShapeModel.createFromPeer(posteriorModel, orgModel.get)
+          val posteriorModel = orgModel.get.underlying.posterior(trainingData)
+          val nm = ShapeModelView.createFromUnderlying(posteriorModel, orgModel.get)
           nm.landmarks.foreach { l => l.remove() }
           lastModel.get.landmarks.foreach { lm => nm.landmarks.create(lm.point, Some(lm.name), lm.uncertainty) }
           nm
         } else {
-          val nm = ShapeModel.createFromPeer(orgModel.get.peer, orgModel.get)
+          val nm = ShapeModelView.createFromUnderlying(orgModel.get.underlying, orgModel.get)
           nm.landmarks.foreach(_.remove())
           nm
         }
@@ -97,25 +97,25 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
     val coeffs: ArrayBuffer[Float] = new ArrayBuffer()
     coeffs ++= lastModel.get.instances(0).coefficients
 
-    def fittingConfig(statmodel: ShapeModel) = {
-      val sampler = FixedPointsUniformMeshSampler3D(statmodel.peer.referenceMesh, 10000, seed = 42)
+    def fittingConfig(statmodel: ShapeModelView) = {
+      val sampler = FixedPointsUniformMeshSampler3D(statmodel.underlying.referenceMesh, 10000, seed = 42)
       RegistrationConfiguration[_3D, GaussianProcessTransformationSpace[_3D]](
         optimizer = LBFGSOptimizer(numIterations = 20, 5, 0.001),
         //optimizer = GradientDescentOptimizer(GradientDescentConfiguration(numIterations = 40, stepLength = 1.0))
         metric = MeanSquaresMetric[_3D](sampler),
-        transformationSpace = GaussianProcessTransformationSpace(statmodel.peer.gp.interpolateNearestNeighbor),
+        transformationSpace = GaussianProcessTransformationSpace(statmodel.underlying.gp.interpolateNearestNeighbor),
         regularizer = L2Regularizer,
         regularizationWeight = 0.01)
     }
 
     val config = fittingConfig(lastModel.get)
-    val refDm = Mesh.meshToDistanceImage(lastModel.get.peer.referenceMesh)
+    val refDm = Mesh.meshToDistanceImage(lastModel.get.underlying.referenceMesh)
 
     val targetDm: DifferentiableScalarImage[_3D] = {
       scene.staticObjects(0).representations(0) match {
-        case m: UiMesh => Mesh.meshToDistanceImage(m.peer)
-        case imgUi: Image3D[_] =>
-          val img = imgUi.peer.asInstanceOf[DiscreteScalarImage[_3D, Short]]
+        case m: MeshView => Mesh.meshToDistanceImage(m.underlying)
+        case imgUi: Image3DView[_] =>
+          val img = imgUi.underlying.asInstanceOf[DiscreteScalarImage[_3D, Short]]
           val timg: DiscreteScalarImage[_3D, Short] = img.map(v => if (v > 10) 1 else 0)
           //          ImageIO.writeImage(timg, new File("/tmp/t.nii"))
           //            ImageIO.writeImage(DistanceTransform.euclideanDistanceTransform(timg), new File("/tmp/dm.nii"))

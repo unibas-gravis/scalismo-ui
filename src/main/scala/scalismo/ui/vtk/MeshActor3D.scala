@@ -1,8 +1,8 @@
 package scalismo.ui.vtk
 
 import scalismo.geometry.{ Point, _3D }
-import scalismo.ui.Mesh
-import scalismo.ui.Mesh.MeshRenderable3D
+import scalismo.ui.MeshView
+import scalismo.ui.MeshView.MeshRenderable3D
 import scalismo.utils.MeshConversion
 import vtk.vtkPolyData
 
@@ -24,13 +24,13 @@ class MeshActor3D(source: MeshRenderable3D) extends PolyDataActor with ActorColo
   }
 
   reactions += {
-    case Mesh.GeometryChanged(m) => setGeometry(m, useTemplate = true)
-    case Mesh.Reloaded(m) => setGeometry(m, useTemplate = false)
+    case MeshView.GeometryChanged(m) => setGeometry(m, useTemplate = true)
+    case MeshView.Reloaded(m) => setGeometry(m, useTemplate = false)
   }
 
-  def setGeometry(mesh: Mesh, useTemplate: Boolean) = this.synchronized {
+  def setGeometry(mesh: MeshView, useTemplate: Boolean) = this.synchronized {
     val template = if (useTemplate) polyMesh else None
-    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVtkPolyData(mesh.peer, template)))
+    polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.underlying, MeshConversion.meshToVtkPolyData(mesh.underlying, template)))
 
     normals.RemoveAllInputs()
     normals.SetInputData(polyMesh.get)

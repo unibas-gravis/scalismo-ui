@@ -2,7 +2,7 @@ package scalismo.ui.vtk
 
 import _root_.vtk.{ vtkCutter, vtkPlane, vtkPolyData }
 import scalismo.geometry.{ Point, _3D }
-import scalismo.ui.Mesh.MeshRenderable2DOutline
+import scalismo.ui.MeshView.MeshRenderable2DOutline
 import scalismo.ui._
 import scalismo.utils.MeshConversion
 
@@ -16,12 +16,12 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
 
   listenTo(scene)
   private var polyMesh: Option[vtkPolyData] = None
-  private var meshOrNone: Option[Mesh] = None
+  private var meshOrNone: Option[MeshView] = None
 
   source.meshOrNone.foreach {
     m =>
       listenTo(m)
-      polyMesh = Some(Caches.MeshCache.getOrCreate(m.peer, MeshConversion.meshToVtkPolyData(m.peer, None)))
+      polyMesh = Some(Caches.MeshCache.getOrCreate(m.underlying, MeshConversion.meshToVtkPolyData(m.underlying, None)))
       meshOrNone = Some(m)
   }
 
@@ -44,7 +44,7 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
     meshOrNone.foreach {
       mesh =>
         if (withGeometry) {
-          polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.peer, MeshConversion.meshToVtkPolyData(mesh.peer, None)))
+          polyMesh = Some(Caches.MeshCache.getOrCreate(mesh.underlying, MeshConversion.meshToVtkPolyData(mesh.underlying, None)))
           cutEdges.SetInputData(polyMesh.get)
         }
         cutEdges.SetValue(0, viewport.axis match {
@@ -63,8 +63,8 @@ class MeshActor2DOutline(source: MeshRenderable2DOutline)(implicit vtkViewport: 
 
   reactions += {
     case Scene.SlicingPosition.PointChanged(s, _, _) => update()
-    case Mesh.GeometryChanged(m) => update(withGeometry = true)
-    case Mesh.Reloaded(m) => update(withGeometry = true)
+    case MeshView.GeometryChanged(m) => update(withGeometry = true)
+    case MeshView.Reloaded(m) => update(withGeometry = true)
     case SceneTreeObject.Destroyed(m) =>
       deafTo(m)
       meshOrNone = None

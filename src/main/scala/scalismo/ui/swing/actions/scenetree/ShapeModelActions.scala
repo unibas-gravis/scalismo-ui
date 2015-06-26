@@ -9,12 +9,12 @@ import scala.util.{ Success, Try }
 
 class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks from file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlyLoadable
+    context.isDefined && context.get.isInstanceOf[ShapeModelView] && context.get.asInstanceOf[ShapeModelView].landmarks.isCurrentlyLoadable
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val load = context.get.asInstanceOf[ShapeModel].landmarks
+      val load = context.get.asInstanceOf[ShapeModelView].landmarks
       def doLoad(file: File): Try[Unit] = {
         load.loadFromFile(file)
       }
@@ -25,12 +25,12 @@ class LoadShapeModelLandmarksAction extends SceneTreePopupAction("Load landmarks
 
 class SaveShapeModelLandmarksAction extends SceneTreePopupAction("Save landmarks to file...") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].landmarks.isCurrentlySaveable
+    context.isDefined && context.get.isInstanceOf[ShapeModelView] && context.get.asInstanceOf[ShapeModelView].landmarks.isCurrentlySaveable
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val save = context.get.asInstanceOf[ShapeModel].landmarks
+      val save = context.get.asInstanceOf[ShapeModelView].landmarks
       def doSave(file: File): Try[Unit] = {
         save.saveToFile(file)
       }
@@ -48,21 +48,21 @@ class LoadShapeModelAction extends SceneTreePopupAction("Load Shape Model from f
     if (isContextSupported(context)) {
       val shapes = context.get.asInstanceOf[ShapeModels]
       def doLoad(file: File): Try[Unit] = {
-        ShapeModel.tryCreate(file)(shapes.scene).map(ok => Success(()))
+        ShapeModelView.tryCreate(file)(shapes.scene).map(ok => Success(()))
       }
-      new LoadAction(doLoad, ShapeModel).apply()
+      new LoadAction(doLoad, ShapeModelView).apply()
     }
   }
 }
 
 class CreateShapeModelInstanceAction extends SceneTreePopupAction("Create new Instance") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel]
+    context.isDefined && context.get.isInstanceOf[ShapeModelView]
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val model = context.get.asInstanceOf[ShapeModel]
+      val model = context.get.asInstanceOf[ShapeModelView]
       model.instances.create()
     }
   }
@@ -70,12 +70,12 @@ class CreateShapeModelInstanceAction extends SceneTreePopupAction("Create new In
 
 class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove all Instances") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel] && context.get.asInstanceOf[ShapeModel].instances.children.nonEmpty
+    context.isDefined && context.get.isInstanceOf[ShapeModelView] && context.get.asInstanceOf[ShapeModelView].instances.children.nonEmpty
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val model = context.get.asInstanceOf[ShapeModel]
+      val model = context.get.asInstanceOf[ShapeModelView]
       model.instances.removeAll()
     }
   }
@@ -83,13 +83,13 @@ class RemoveAllShapeModelInstancesAction extends SceneTreePopupAction("Remove al
 
 class AddReferenceAsStaticObjectAction extends SceneTreePopupAction("Add Reference Mesh as new Static Object") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
-    context.isDefined && context.get.isInstanceOf[ShapeModel]
+    context.isDefined && context.get.isInstanceOf[ShapeModelView]
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val model = context.get.asInstanceOf[ShapeModel]
-      StaticMesh.createFromPeer(model.peer.referenceMesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
+      val model = context.get.asInstanceOf[ShapeModelView]
+      MeshView.createFromUnderlying(model.underlying.referenceMesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
     }
   }
 }
@@ -97,15 +97,15 @@ class AddReferenceAsStaticObjectAction extends SceneTreePopupAction("Add Referen
 class CloneInstanceAsStaticObjectAction extends SceneTreePopupAction("Clone as new Static Object") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
     context match {
-      case Some(r: ShapeModelInstance.MeshRepresentation) => true
+      case Some(r: ShapeModelInstance.MeshViewRepresentation) => true
       case _ => false
     }
   }
 
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
-      val mesh = context.get.asInstanceOf[ShapeModelInstance.MeshRepresentation]
-      StaticMesh.createFromPeer(mesh.peer, None, Some(s"${mesh.parent.name}-copy"))(mesh.parent.scene)
+      val mesh = context.get.asInstanceOf[ShapeModelInstance.MeshViewRepresentation]
+      MeshView.createFromUnderlying(mesh.underlying, None, Some(s"${mesh.parent.name}-copy"))(mesh.parent.scene)
     }
   }
 }

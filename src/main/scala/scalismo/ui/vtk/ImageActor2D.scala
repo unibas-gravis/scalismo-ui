@@ -8,17 +8,17 @@ import scalismo.ui.vtk.VtkContext.RenderRequest
 import scalismo.utils.ImageConversion
 
 object ImageActor2D {
-  def apply(source: Image3D[_])(implicit vtkViewport: VtkViewport): ImageActor2D = {
+  def apply(source: Image3DView[_])(implicit vtkViewport: VtkViewport): ImageActor2D = {
     val axis = vtkViewport.viewport.asInstanceOf[TwoDViewport].axis
     new ImageActor2D(source, axis, true)
   }
 
-  def apply(source: Image3D[_], axis: Axis.Value) = new ImageActor2D(source, axis, false)
+  def apply(source: Image3DView[_], axis: Axis.Value) = new ImageActor2D(source, axis, false)
 
   final val OutOfBounds: Int = -1
 
-  class InstanceData(source: Image3D[_], axis: Axis.Value) {
-    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.peer, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
+  class InstanceData(source: Image3DView[_], axis: Axis.Value) {
+    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.underlying, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
     lazy val (min, max, exmax, eymax, ezmax) = {
       val b = points.GetBounds()
       val t = points.GetExtent()
@@ -49,7 +49,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, isStandalone: Boolean) extends PolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends PolyDataActor with ClickableActor {
 
   var data = new InstanceData(source, axis)
 
@@ -98,7 +98,7 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
   reactions += {
     case Scene.SlicingPosition.PointChanged(sp, _, _) =>
       update(sp.point)
-    case Image3D.Reloaded(img) =>
+    case Image3DView.Reloaded(img) =>
       data = new InstanceData(img, axis)
       reload()
     case TwoDViewport.ImageWindowLevelChanged(window, level) =>
