@@ -105,7 +105,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
     vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector.Start()
   }
 
-  // Make sure that you are calling super.startup() when overriding, or alternatively "manually" call startInternalGarbageCollector()!
+  // Make sure that you are calling super.startup() when overriding, or alternatively "manually" call startGarbageCollector()!
   def startup(args: Array[String]): Unit = {
     restoreWindowState()
     startGarbageCollector()
