@@ -31,7 +31,6 @@ class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataAc
   mapper.ScalarVisibilityOn()
   mapper.SetScalarRange(scalarMeshData.values.min, scalarMeshData.values.max)
 
-  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   reactions += {
