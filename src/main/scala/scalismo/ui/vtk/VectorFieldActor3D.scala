@@ -57,7 +57,6 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataAc
   mapper.SetInputConnection(glyph.GetOutputPort)
   mapper.ScalarVisibilityOn()
 
-  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   def setGeometry() = this.synchronized {

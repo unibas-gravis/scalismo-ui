@@ -29,7 +29,6 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
 
   mapper.SetInputConnection(glyph.GetOutputPort)
 
-  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   reactions += {

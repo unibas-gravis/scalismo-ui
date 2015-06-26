@@ -9,6 +9,8 @@ class PolyDataActor extends vtkActor with SingleRenderableActor {
   lazy val mapper = new vtkPolyDataMapper
   vtkActor.SetMapper(mapper)
 
+  this.GetProperty().SetInterpolationToGouraud()
+
   override def currentBoundingBox = {
     //FIXME: don't know why it sometimes fails
     empty = Try(mapper.GetInput().GetPoints().GetNumberOfPoints() == 0).getOrElse(false)

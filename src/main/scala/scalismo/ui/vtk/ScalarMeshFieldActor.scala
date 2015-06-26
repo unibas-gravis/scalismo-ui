@@ -14,7 +14,6 @@ class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends Poly
   mapper.ScalarVisibilityOn()
   mapper.SetScalarRange(meshData.values.min, meshData.values.max)
 
-  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   def setGeometry() = this.synchronized {
