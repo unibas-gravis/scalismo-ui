@@ -97,7 +97,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   // This is a def so that the interval can be easily overridden. The unit is in seconds.
   def garbageCollectorInterval: Int = 60
-  
+
   // This is *required*, otherwise you'll run out of memory sooner or later. The current rendering engine (VTK)
   // uses native objects which have their own life cycles and must be periodically garbage-collected.
   def startGarbageCollector(): Unit = {
