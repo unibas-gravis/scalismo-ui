@@ -22,9 +22,9 @@ class ShapeModels(implicit override val scene: Scene) extends StandaloneSceneTre
 
   def createFromFile(file: File, numberOfInstances: Int = 1): Try[ShapeModelView] = ShapeModelView.createFromFile(file, numberOfInstances)
 
-  def createFromUnderlying(peer: StatisticalMeshModel, numberOfInstances: Int = 1): ShapeModelView = ShapeModelView.createFromUnderlying(peer, numberOfInstances)
+  def createFromSource(source: StatisticalMeshModel, numberOfInstances: Int = 1): ShapeModelView = ShapeModelView.createFromSource(source, numberOfInstances)
 
-  def createFromUnderlying(peer: StatisticalMeshModel, template: ShapeModelView): ShapeModelView = ShapeModelView.createFromUnderlying(peer, template)
+  def createFromSource(source: StatisticalMeshModel, template: ShapeModelView): ShapeModelView = ShapeModelView.createFromSource(source, template)
 }
 
 object ShapeModelView extends SceneTreeObjectFactory[ShapeModelView] with FileIoMetadata {
@@ -91,15 +91,15 @@ object ShapeModelView extends SceneTreeObjectFactory[ShapeModelView] with FileIo
     }
   }
 
-  def createFromUnderlying(peer: StatisticalMeshModel, template: ShapeModelView)(implicit scene: Scene): ShapeModelView = {
-    val nm = new ShapeModelView(peer)
+  def createFromSource(source: StatisticalMeshModel, template: ShapeModelView)(implicit scene: Scene): ShapeModelView = {
+    val nm = new ShapeModelView(source)
     template.instances.foreach(nm.instances.create)
     template.landmarks.foreach(nm.landmarks.create)
     nm
   }
 
-  def createFromUnderlying(peer: StatisticalMeshModel, numberOfInstances: Int, nameOpt: Option[String] = None)(implicit scene: Scene): ShapeModelView = {
-    val nm = new ShapeModelView(peer)
+  def createFromSource(source: StatisticalMeshModel, numberOfInstances: Int, nameOpt: Option[String] = None)(implicit scene: Scene): ShapeModelView = {
+    val nm = new ShapeModelView(source)
     nameOpt.foreach(n => nm.name = n)
     0 until numberOfInstances foreach {
       i => nm.instances.create()
@@ -109,13 +109,13 @@ object ShapeModelView extends SceneTreeObjectFactory[ShapeModelView] with FileIo
 
 }
 
-class ShapeModelView protected[ui] (override val underlying: StatisticalMeshModel)(implicit override val scene: Scene) extends UIView[StatisticalMeshModel] with SceneTreeObject with Saveable with Removeable {
+class ShapeModelView protected[ui] (override val source: StatisticalMeshModel)(implicit override val scene: Scene) extends UIView[StatisticalMeshModel] with SceneTreeObject with Saveable with Removeable {
   override lazy val parent: ShapeModels = scene.shapeModels
 
   override lazy val saveableMetadata = ShapeModelView
 
   override def saveToFile(file: File): Try[Unit] = {
-    StatismoIO.writeStatismoMeshModel(underlying, file)
+    StatismoIO.writeStatismoMeshModel(source, file)
   }
 
   val instances = new ShapeModelInstances(this)
@@ -126,7 +126,7 @@ class ShapeModelView protected[ui] (override val underlying: StatisticalMeshMode
 
   def calculateMesh(coefficients: IndexedSeq[Float]) = {
     val vector = DenseVector[Float](coefficients.toArray)
-    underlying.instance(vector)
+    source.instance(vector)
   }
 
   parent.add(this)
@@ -165,9 +165,9 @@ object ShapeModelInstance {
     protected[ui] override lazy val isCurrentlyRemoveable = false
     private var mesh: TriangleMesh = parent.shapeModel.calculateMesh(parent.coefficients)
 
-    override def underlying = mesh
+    override def source = mesh
 
-    private[ShapeModelInstance] def underlying_=(newMesh: TriangleMesh) = {
+    private[ShapeModelInstance] def source_=(newMesh: TriangleMesh) = {
       mesh = newMesh
       publishEdt(MeshView.GeometryChanged(this))
     }
@@ -182,7 +182,7 @@ object ShapeModelInstance {
 class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
   lazy val shapeModel = container.shapeModel
   override lazy val parent = shapeModel
-  private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.underlying.gp.rank)(0.0f)
+  private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.source.gp.rank)(0.0f)
 
   val meshRepresentation = new MeshViewRepresentation(this)
 
@@ -194,7 +194,7 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject wi
 
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
-      meshRepresentation.underlying = shapeModel.calculateMesh(newCoeffs)
+      meshRepresentation.source = shapeModel.calculateMesh(newCoeffs)
       publishEdt(ShapeModelInstance.CoefficientsChanged(this))
     }
   }

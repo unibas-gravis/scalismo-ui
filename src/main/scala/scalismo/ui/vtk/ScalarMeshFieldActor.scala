@@ -7,7 +7,7 @@ class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends Poly
 
   override lazy val opacity = renderable.opacity
 
-  val meshData = renderable.source.underlying
+  val meshData = renderable.source.source
   val vtkpd = MeshConversion.scalarMeshFieldToVtkPolyData(meshData)
 
   mapper.SetInputData(vtkpd)

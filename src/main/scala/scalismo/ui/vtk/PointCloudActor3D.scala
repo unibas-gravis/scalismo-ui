@@ -13,7 +13,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
   listenTo(radius)
 
   val points = new vtkPoints {
-    renderable.source.underlying.foreach { point =>
+    renderable.source.source.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
   }
@@ -55,7 +55,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
 
   override def clicked(point: Point[_3D]): Unit = {
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
-    val cloudPoints = renderable.source.underlying
+    val cloudPoints = renderable.source.source
     // just in case
     if (cloudPoints.nonEmpty) {
       val vector = point.toVector

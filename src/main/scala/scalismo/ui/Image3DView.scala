@@ -44,8 +44,8 @@ object Image3DView {
     override def renderablesFor3D(targetObject: Image3DView[S]): Seq[Renderable] = Seq(new Renderable3D(targetObject))
   }
 
-  def createFromUnderlying[S: Scalar: ClassTag: TypeTag](peer: DiscreteScalarImage[_3D, S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3DView[S] = {
-    new StaticImage3DView(new ImmutableReloader[DiscreteScalarImage[_3D, S]](peer), parent, name)
+  def createFromSource[S: Scalar: ClassTag: TypeTag](source: DiscreteScalarImage[_3D, S], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticImage3DView[S] = {
+    new StaticImage3DView(new ImmutableReloader[DiscreteScalarImage[_3D, S]](source), parent, name)
   }
 
   def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticImage3DView[_]] = {
@@ -60,11 +60,11 @@ abstract class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[Disc
 
   private var _peer = reloader.load().get
 
-  override def underlying: DiscreteScalarImage[_3D, S] = _peer
+  override def source: DiscreteScalarImage[_3D, S] = _peer
 
   protected[ui] override lazy val saveableMetadata = StaticImage3DView
 
-  protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = underlying.map[Float](p => implicitly[Scalar[S]].toFloat(p))
+  protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = source.map[Float](p => implicitly[Scalar[S]].toFloat(p))
 
   override def saveToFile(f: File): Try[Unit] = {
     val extension = {
@@ -73,8 +73,8 @@ abstract class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[Disc
       if (dot > 0) Success(f.getName.substring(dot + 1)) else Failure(new IllegalArgumentException("No file extension given"))
     }
     extension flatMap {
-      case "vtk" => ImageIO.writeVTK[_3D, S](underlying, f)
-      case "nii" | "nia" => ImageIO.writeNifti(underlying, f)
+      case "vtk" => ImageIO.writeVTK[_3D, S](source, f)
+      case "nii" | "nia" => ImageIO.writeNifti(source, f)
       case _ => Failure(new IllegalArgumentException("Unsupported file extension: " + extension.get))
     }
   }

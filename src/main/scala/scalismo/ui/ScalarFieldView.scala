@@ -17,9 +17,9 @@ object ScalarFieldView {
     override def renderablesFor3D(t: ScalarFieldView): scala.Seq[Renderable] = Seq(new ScalarFieldRenderable3D(t, t.radiuses, t.opacity))
   }
 
-  def createFromUnderlying[A: Scalar](peer: scalismo.common.DiscreteScalarField[_3D, A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarFieldView = {
+  def createFromSource[A: Scalar](source: scalismo.common.DiscreteScalarField[_3D, A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarFieldView = {
     val scalar = implicitly[Scalar[A]]
-    val floatField = peer.map(s => scalar.toFloat(s))
+    val floatField = source.map(s => scalar.toFloat(s))
     new StaticScalarFieldView(floatField, parent, name)
   }
 
@@ -34,7 +34,7 @@ trait ScalarFieldView extends UIView[DiscreteScalarField[_3D, Float]] with Three
 
 }
 
-class StaticScalarFieldView private[ui] (override val underlying: DiscreteScalarField[_3D, Float],
+class StaticScalarFieldView private[ui] (override val source: DiscreteScalarField[_3D, Float],
     initialParent: Option[StaticThreeDObject] = None,
     name: Option[String] = None)(implicit override val scene: Scene) extends ScalarFieldView {
 
