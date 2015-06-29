@@ -18,7 +18,7 @@ object ImageActor2D {
   final val OutOfBounds: Int = -1
 
   class InstanceData(source: Image3DView[_], axis: Axis.Value) {
-    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.underlying, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
+    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.source, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
     lazy val (min, max, exmax, eymax, ezmax) = {
       val b = points.GetBounds()
       val t = points.GetExtent()

@@ -17,9 +17,9 @@ object ScalarMeshFieldView {
     override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable3D(t, t.color, t.opacity))
   }
 
-  def createFromUnderlying[A: Scalar](peer: scalismo.mesh.ScalarMeshField[A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarMeshFieldView = {
+  def createFromSource[A: Scalar](source: scalismo.mesh.ScalarMeshField[A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarMeshFieldView = {
     val scalar = implicitly[Scalar[A]]
-    val floatField = peer.map(s => scalar.toFloat(s))
+    val floatField = source.map(s => scalar.toFloat(s))
     new StaticScalarMeshFieldView(floatField, parent, name)
   }
 }
@@ -32,7 +32,7 @@ trait ScalarMeshFieldView extends UIView[ScalarMeshField[Float]] with ThreeDRepr
   override def visualizationStrategy: VisualizationStrategy[ScalarMeshFieldView] = ScalarMeshFieldView.DefaultVisualizationStrategy
 }
 
-class StaticScalarMeshFieldView private[ui] (override val underlying: scalismo.mesh.ScalarMeshField[Float],
+class StaticScalarMeshFieldView private[ui] (override val source: scalismo.mesh.ScalarMeshField[Float],
     initialParent: Option[StaticThreeDObject] = None,
     name: Option[String] = None)(implicit override val scene: Scene) extends ScalarMeshFieldView {
 

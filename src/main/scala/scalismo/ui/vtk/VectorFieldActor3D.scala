@@ -19,10 +19,10 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataAc
 
   {
     // for the colors to be correctly displayed, we need to normalize the vector norms as scalars onto [0,1]
-    val norms = Array.ofDim[Double](renderable.source.underlying.domain.points.length)
+    val norms = Array.ofDim[Double](renderable.source.source.domain.points.length)
 
     var i = 0
-    renderable.source.underlying.pointsWithValues.foreach {
+    renderable.source.source.pointsWithValues.foreach {
       case (point, vector) =>
         points.InsertNextPoint(point(0), point(1), point(2))
         vectors.InsertNextTuple3(vector(0), vector(1), vector(2))

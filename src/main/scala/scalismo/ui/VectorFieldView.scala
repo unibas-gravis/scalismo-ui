@@ -17,8 +17,8 @@ object VectorFieldView {
     override def renderablesFor3D(t: VectorFieldView): scala.Seq[Renderable] = Seq(new VectorFieldRenderable3D(t, t.opacity))
   }
 
-  def createFromUnderlying(peer: DiscreteVectorField[_3D, _3D], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticVectorFieldView = {
-    new StaticVectorFieldView(peer, parent, name)
+  def createFromSource(source: DiscreteVectorField[_3D, _3D], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticVectorFieldView = {
+    new StaticVectorFieldView(source, parent, name)
   }
 
 }
@@ -31,7 +31,7 @@ trait VectorFieldView extends UIView[DiscreteVectorField[_3D, _3D]] with ThreeDR
 
 }
 
-class StaticVectorFieldView private[ui] (override val underlying: DiscreteVectorField[_3D, _3D], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends VectorFieldView {
+class StaticVectorFieldView private[ui] (override val source: DiscreteVectorField[_3D, _3D], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends VectorFieldView {
 
   name_=(name.getOrElse(Nameable.NoName))
 

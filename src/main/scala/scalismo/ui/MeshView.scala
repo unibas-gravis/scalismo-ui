@@ -32,8 +32,8 @@ object MeshView {
     }
   }
 
-  def createFromUnderlying(peer: TriangleMesh, parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMeshView = {
-    new StaticMeshView(new ImmutableReloader[TriangleMesh](peer), parent, name)
+  def createFromSource(source: TriangleMesh, parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticMeshView = {
+    new StaticMeshView(new ImmutableReloader[TriangleMesh](source), parent, name)
   }
 
   def createFromFile(file: File, parent: Option[StaticThreeDObject], name: String)(implicit scene: Scene): Try[StaticMeshView] = StaticMeshView.createFromFile(file, parent, name)
@@ -46,7 +46,7 @@ trait MeshView extends UIView[TriangleMesh] with ThreeDRepresentation[MeshView] 
   override val lineWidth: LineWidthProperty = new LineWidthProperty(None)
 
   override def saveToFile(file: File): Try[Unit] = {
-    MeshIO.writeMesh(underlying, file)
+    MeshIO.writeMesh(source, file)
   }
 
   protected[ui] override lazy val saveableMetadata = StaticMeshView
@@ -54,7 +54,7 @@ trait MeshView extends UIView[TriangleMesh] with ThreeDRepresentation[MeshView] 
   override def visualizationStrategy: VisualizationStrategy[MeshView] = MeshView.DefaultVisualizationStrategy
 
   def createLandmarkUncertainty(point: Point[_3D]): Uncertainty[_3D] = {
-    val normal = underlying.normalAtPoint(point)
+    val normal = source.normalAtPoint(point)
     val rotationMatrix = Uncertainty.Util.rotationMatrixFor(Uncertainty.Util.X3, normal)
     Uncertainty(rotationMatrix, Uncertainty.defaultStdDevs3D)
   }
@@ -81,7 +81,7 @@ object StaticMeshView extends SceneTreeObjectFactory[StaticMeshView] with FileIo
 
 class StaticMeshView private[ui] (peerLoader: Reloader[TriangleMesh], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends MeshView with Reloadable {
 
-  override def underlying = _peer
+  override def source = _peer
 
   private var _peer = peerLoader.load().get
 

@@ -89,7 +89,7 @@ class AddReferenceAsStaticObjectAction extends SceneTreePopupAction("Add Referen
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val model = context.get.asInstanceOf[ShapeModelView]
-      MeshView.createFromUnderlying(model.underlying.referenceMesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
+      MeshView.createFromSource(model.source.referenceMesh, None, Some(s"${model.name}-reference"))(model.parent.scene)
     }
   }
 }
@@ -105,7 +105,7 @@ class CloneInstanceAsStaticObjectAction extends SceneTreePopupAction("Clone as n
   override def apply(context: Option[SceneTreeObject]) = {
     if (isContextSupported(context)) {
       val mesh = context.get.asInstanceOf[ShapeModelInstance.MeshViewRepresentation]
-      MeshView.createFromUnderlying(mesh.underlying, None, Some(s"${mesh.parent.name}-copy"))(mesh.parent.scene)
+      MeshView.createFromSource(mesh.source, None, Some(s"${mesh.parent.name}-copy"))(mesh.parent.scene)
     }
   }
 }

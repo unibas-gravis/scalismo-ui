@@ -16,8 +16,8 @@ object PointCloudView {
 
     override def renderablesFor3D(t: PointCloudView): scala.Seq[Renderable] = Seq(new PointCloudRenderable3D(t, t.color, t.opacity, t.radiuses))
   }
-  def createFromUnderlying(peer: immutable.IndexedSeq[Point[_3D]], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticPointCloudView = {
-    new StaticPointCloudView(peer, parent, name)
+  def createFromSource(source: immutable.IndexedSeq[Point[_3D]], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticPointCloudView = {
+    new StaticPointCloudView(source, parent, name)
   }
 }
 
@@ -31,7 +31,7 @@ trait PointCloudView extends UIView[immutable.IndexedSeq[Point[_3D]]] with Three
 
 }
 
-class StaticPointCloudView private[ui] (override val underlying: immutable.IndexedSeq[Point[_3D]], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends PointCloudView {
+class StaticPointCloudView private[ui] (override val source: immutable.IndexedSeq[Point[_3D]], initialParent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit override val scene: Scene) extends PointCloudView {
 
   name_=(name.getOrElse(Nameable.NoName))
 

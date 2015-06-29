@@ -15,7 +15,7 @@ class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataAc
 
   // We do a trick here. We can create a triangle mesh without cells, and use that to define a scalarMeshField.
   // This can then be converted to a vtk polydata, which we use as the input for the glyph
-  val scalarField = renderable.source.underlying
+  val scalarField = renderable.source.source
   val pointSet = TriangleMesh(scalarField.domain.points.toIndexedSeq, IndexedSeq[TriangleCell]())
   val scalarMeshData = ScalarMeshField(pointSet, scalarField.data)
   val vtkpd = MeshConversion.scalarMeshFieldToVtkPolyData(scalarMeshData)
@@ -55,7 +55,7 @@ class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataAc
 
   override def clicked(point: Point[_3D]): Unit = {
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
-    val cloudPoints = renderable.source.underlying.domain.points.toIndexedSeq
+    val cloudPoints = renderable.source.source.domain.points.toIndexedSeq
     if (cloudPoints.nonEmpty) {
       val vector = point.toVector
       val vectorsWithIndex = cloudPoints.map(_.toVector - vector).zipWithIndex

@@ -23,7 +23,7 @@ trait MeshActor extends ActorColor with ActorOpacity {
   override lazy val opacity: OpacityProperty = renderable.opacity
 
   private def underlyingToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
-    Caches.MeshCache.getOrCreate(renderable.source.underlying, MeshConversion.meshToVtkPolyData(renderable.source.underlying, template))
+    Caches.MeshCache.getOrCreate(renderable.source.source, MeshConversion.meshToVtkPolyData(renderable.source.source, template))
   }
 
   protected var polydata: vtkPolyData = underlyingToPolyData(None)

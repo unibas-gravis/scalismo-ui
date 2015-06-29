@@ -6,5 +6,5 @@ package scalismo.ui
  * @tparam U the underlying object's type
  */
 trait UIView[U] {
-  def underlying: U
+  def source: U
 }
