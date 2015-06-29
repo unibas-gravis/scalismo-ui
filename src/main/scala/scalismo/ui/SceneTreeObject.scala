@@ -18,8 +18,8 @@ object SceneTreeObject {
 }
 
 trait SceneTreeObject extends Nameable {
-  //you MUST override this. The exception that is thrown if you don't is intentional.
-  def parent: SceneTreeObject = throw new NotImplementedError
+
+  def parent: SceneTreeObject
 
   protected[ui] def children: Seq[SceneTreeObject] = Nil
 

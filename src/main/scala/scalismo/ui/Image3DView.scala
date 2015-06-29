@@ -54,7 +54,7 @@ object Image3DView {
 
 }
 
-class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends UIView[DiscreteScalarImage[_3D, S]] with ThreeDRepresentation[Image3DView[S]] with Landmarkable with Saveable with Reloadable {
+abstract class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[DiscreteScalarImage[_3D, S]]) extends UIView[DiscreteScalarImage[_3D, S]] with ThreeDRepresentation[Image3DView[S]] with Landmarkable with Saveable with Reloadable {
 
   override lazy val visualizationStrategy: VisualizationStrategy[Image3DView[S]] = Image3DView.DefaultVisualizationStrategy
 
@@ -80,7 +80,7 @@ class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[DiscreteScala
   }
 
   override def addLandmarkAt(point: Point[_3D], nameOpt: Option[String]) = {
-    parent.asInstanceOf[ThreeDObject].landmarks.addAt(point, nameOpt, Uncertainty.defaultUncertainty3D())
+    parent.landmarks.addAt(point, nameOpt, Uncertainty.defaultUncertainty3D())
   }
 
   override def reload() = {
