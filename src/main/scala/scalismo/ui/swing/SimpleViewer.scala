@@ -23,9 +23,9 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
   override def startup(args: Array[String]): Unit = {
     val openItem = new MenuItem({
       def doLoad(file: File): Try[Unit] = {
-        ShapeModel.tryCreate(file)(scene).map(ok => Success(()))
+        ShapeModelView.tryCreate(file)(scene).map(ok => Success(()))
       }
-      new LoadAction(doLoad, ShapeModel, "Open Statistical Shape Model...")
+      new LoadAction(doLoad, ShapeModelView, "Open Statistical Shape Model...")
     })
     this.menuBar.fileMenu.contents.insert(0, openItem)
 
@@ -58,7 +58,7 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
     if (false) {
       // example: add a point cloud
       val pointSeq = immutable.IndexedSeq(Point(0, 0, 0), Point(0, 100, 0), Point(100, 100, 0), Point(100, 0, 0), Point(0, 0, 100), Point(0, 100, 100), Point(100, 100, 100), Point(100, 0, 100))
-      val pc = StaticPointCloud.createFromPeer(pointSeq, None, Some("Point Cloud"))
+      val pc = PointCloudView.createFromUnderlying(pointSeq, None, Some("Point Cloud"))
       pc.color.update(Color.RED)
     }
 
@@ -66,13 +66,13 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
       // example: add a vector field
       val m = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
       val vf = m.gp.mean
-      StaticVectorField.createFromPeer(vf, None, Some("Vector field"))
+      VectorFieldView.createFromUnderlying(vf, None, Some("Vector field"))
     }
 
     if (false) {
       val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
       val df = new ScalarMeshField[Float](m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
-      StaticScalarField.createFromPeer(df, None, Some("Mesh"))
+      ScalarFieldView.createFromUnderlying(df, None, Some("Mesh"))
     }
   }
 }

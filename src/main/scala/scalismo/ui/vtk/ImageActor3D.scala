@@ -1,9 +1,9 @@
 package scalismo.ui.vtk
 
 import scalismo.ui.vtk.VtkContext.RenderRequest
-import scalismo.ui.{ Axis, Image3D }
+import scalismo.ui.{ Axis, Image3DView }
 
-class ImageActor3D(source: Image3D[_])(implicit viewport: VtkViewport) extends RenderableActor {
+class ImageActor3D(source: Image3DView[_])(implicit viewport: VtkViewport) extends RenderableActor {
   val x = ImageActor2D(source, Axis.X)
   val y = ImageActor2D(source, Axis.Y)
   val z = ImageActor2D(source, Axis.Z)

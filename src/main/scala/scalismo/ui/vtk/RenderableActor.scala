@@ -1,12 +1,12 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.Mesh.{ MeshRenderable2DOutline, MeshRenderable3D }
-import scalismo.ui.PointCloud.PointCloudRenderable3D
-import scalismo.ui.ScalarField.ScalarFieldRenderable3D
-import scalismo.ui.ScalarMeshField.ScalarMeshFieldRenderable3D
-import scalismo.ui.VectorField.VectorFieldRenderable3D
+import scalismo.ui.MeshView.MeshRenderable
+import scalismo.ui.PointCloudView.PointCloudRenderable3D
+import scalismo.ui.ScalarFieldView.ScalarFieldRenderable3D
+import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable3D
+import scalismo.ui.VectorFieldView.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
-import scalismo.ui.{ BoundingBox, Image3D, Scene }
+import scalismo.ui.{ BoundingBox, Image3DView, Scene }
 import vtk.vtkActor
 
 import scala.util.Try
@@ -22,7 +22,7 @@ object RenderableActor {
       renderable match {
         case r: VtkRenderable => Some(r.getVtkActor)
         case _ =>
-          println("RenderableActor: Dunno what to do with " + renderable.getClass)
+          System.err.println("RenderableActor: Don't know what to do with " + renderable.getClass)
           None
       }
     }
@@ -35,19 +35,20 @@ object RenderableActor {
         case bb3d: Scene.SlicingPosition.BoundingBoxRenderable3D => Some(new BoundingBoxActor3D(bb3d))
         case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
         case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
-        case m3d: MeshRenderable3D => Some(new MeshActor3D(m3d))
+
+        case ell: EllipsoidLike => Some(EllipsoidActor(vtkViewport, ell))
+        case mesh: MeshRenderable => Some(MeshActor(vtkViewport, mesh))
+
         case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
         case sf3d: ScalarFieldRenderable3D => Some(new ScalarFieldActor3D(sf3d))
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
-        case m2d: MeshRenderable2DOutline => Some(new MeshActor2DOutline(m2d))
-        case img3d: Image3D.Renderable3D[_] => img3d.imageOrNone.map {
+        case img3d: Image3DView.Renderable3D[_] => img3d.imageOrNone.map {
           source => new ImageActor3D(source)
         }
-        case img2d: Image3D.Renderable2D[_] => img2d.imageOrNone.map {
+        case img2d: Image3DView.Renderable2D[_] => img2d.imageOrNone.map {
           source => ImageActor2D(source)
         }
-        case ell: EllipsoidLike => Some(EllipsoidActor.apply(vtkViewport, ell))
 
         case _ => None
       }

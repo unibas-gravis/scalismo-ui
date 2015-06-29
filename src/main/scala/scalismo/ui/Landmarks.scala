@@ -154,7 +154,7 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
   def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D]): Unit
 }
 
-class ReferenceLandmarks(val shapeModel: ShapeModel) extends Landmarks[ReferenceLandmark] {
+class ReferenceLandmarks(val shapeModel: ShapeModelView) extends Landmarks[ReferenceLandmark] {
   lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   def create(template: ReferenceLandmark): Unit = {
@@ -219,7 +219,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   override def uncertainty_=(newValue: Uncertainty[_3D]): Unit = source.uncertainty = newValue
 
   reactions += {
-    case Mesh.GeometryChanged(m) => setCenter()
+    case MeshView.GeometryChanged(m) => setCenter()
     case Nameable.NameChanged(n) if n eq source => publishEdt(Nameable.NameChanged(this))
 
     case Repositionable.CurrentPositionChanged(s) if s eq source => setCenter()
@@ -233,9 +233,9 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   private var _point = calculateCenter()
 
   def calculateCenter(): Point[_3D] = {
-    val (_, ptId) = container.instance.shapeModel.peer.referenceMesh.findClosestPoint(source.point)
+    val (_, ptId) = container.instance.shapeModel.underlying.referenceMesh.findClosestPoint(source.point)
     val coeffs = DenseVector(container.instance.coefficients.toArray)
-    val mesh = container.instance.shapeModel.peer.instance(coeffs)
+    val mesh = container.instance.shapeModel.underlying.instance(coeffs)
     mesh.point(ptId)
   }
 
@@ -258,8 +258,8 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
   }
 
   override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
-    val index = instance.meshRepresentation.peer.findClosestPoint(peer)._2
-    val refPoint = instance.shapeModel.peer.referenceMesh.point(index)
+    val index = instance.meshRepresentation.underlying.findClosestPoint(peer)._2
+    val refPoint = instance.shapeModel.underlying.referenceMesh.point(index)
     instance.shapeModel.landmarks.create(refPoint, name, uncertainty)
   }
 

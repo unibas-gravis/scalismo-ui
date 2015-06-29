@@ -19,7 +19,6 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends PolyDataActo
 
   mapper.SetInputConnection(planeCutter.GetOutputPort())
 
-  this.GetProperty().SetInterpolationToGouraud()
   this.GetProperty().SetLighting(false)
   this.SetBackfaceProperty(this.GetProperty())
 
