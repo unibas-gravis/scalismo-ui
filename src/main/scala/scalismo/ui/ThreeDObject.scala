@@ -1,6 +1,6 @@
 package scalismo.ui
 
-trait ThreeDObject extends SceneTreeObject {
+trait ThreeDObject extends SceneTreeObject with Removeable {
   lazy val representations: ThreeDRepresentations = new ThreeDRepresentations(this)
 
   def landmarks: VisualizableLandmarks
