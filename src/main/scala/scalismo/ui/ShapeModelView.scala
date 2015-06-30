@@ -179,7 +179,7 @@ object ShapeModelInstance {
 
 }
 
-class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with Removeable {
+class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
   lazy val shapeModel = container.shapeModel
   override lazy val parent = shapeModel
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.source.gp.rank)(0.0f)

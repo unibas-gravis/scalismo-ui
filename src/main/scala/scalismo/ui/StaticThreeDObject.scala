@@ -17,7 +17,7 @@ class StaticThreeDObjects(implicit override val scene: Scene) extends Standalone
   override lazy val parent = scene
 }
 
-class StaticThreeDObject(initialParent: Option[StandaloneSceneTreeObjectContainer[StaticThreeDObject]] = None, name: Option[String] = None)(implicit override val scene: Scene) extends ThreeDObject with Removeable {
+class StaticThreeDObject(initialParent: Option[StandaloneSceneTreeObjectContainer[StaticThreeDObject]] = None, name: Option[String] = None)(implicit override val scene: Scene) extends ThreeDObject {
   override lazy val parent: StandaloneSceneTreeObjectContainer[StaticThreeDObject] = initialParent.getOrElse(scene.staticObjects)
   override lazy val landmarks: StaticLandmarks = new StaticLandmarks(this)
   name_=(name.getOrElse(Nameable.NoName))
