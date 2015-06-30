@@ -33,8 +33,8 @@ object ImageActor2D {
     // https://github.com/Slicer/Slicer/blob/121d28f3d03c418e13826a83df1ea1ffc586f0b7/Libs/MRML/DisplayableManager/vtkSliceViewInteractorStyle.cxx#L355-L370
     val windowLevel = new vtkImageMapToWindowLevelColors()
     windowLevel.SetInputData(points)
-    windowLevel.SetWindow(TwoDViewport.ImageWindowLevel.window)
-    windowLevel.SetLevel(TwoDViewport.ImageWindowLevel.level)
+    windowLevel.SetWindow(source.scene.imageWindowLevel.window)
+    windowLevel.SetLevel(source.scene.imageWindowLevel.level)
     windowLevel.Update()
     windowLevel.SetOutputFormatToLuminance()
 
@@ -92,7 +92,7 @@ class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Val
     publishEdt(new RenderRequest(this))
   }
 
-  listenTo(source.scene, source, TwoDViewport.ImageWindowLevel)
+  listenTo(source.scene, source)
   reload()
 
   reactions += {
@@ -101,7 +101,7 @@ class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Val
     case Image3DView.Reloaded(img) =>
       data = new InstanceData(img, axis)
       reload()
-    case TwoDViewport.ImageWindowLevelChanged(window, level) =>
+    case Scene.ImageWindowLevel.ImageWindowLevelChanged(_, window, level) =>
       if (data.windowLevel.GetWindow() != window || data.windowLevel.GetLevel() != level) {
         data.windowLevel.SetWindow(window)
         data.windowLevel.SetLevel(level)
@@ -113,7 +113,7 @@ class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Val
   }
 
   override def onDestroy(): Unit = {
-    deafTo(source.scene, source, TwoDViewport.ImageWindowLevel)
+    deafTo(source.scene, source)
     super.onDestroy()
   }
 
