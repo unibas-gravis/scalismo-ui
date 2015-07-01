@@ -66,6 +66,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   def saveWindowState(): Unit = {
+    scene.imageWindowLevel.save()
     val dim = this.size
     PersistentSettings.set(PersistentSettings.Keys.WindowMaximized, this.maximized)
     if (!maximized) {

@@ -1,6 +1,8 @@
 package scalismo.ui
 
 import scalismo.geometry.{ Point, _3D }
+import scalismo.ui.Scene.ImageWindowLevel
+import scalismo.ui.Scene.ImageWindowLevel.ImageWindowLevelChanged
 import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.visualization._
 
@@ -208,6 +210,74 @@ object Scene {
     }
   }
 
+  object ImageWindowLevel {
+    case class ImageWindowLevelChanged(source: ImageWindowLevel, window: Double, level: Double) extends Event
+  }
+  /**
+   * A global singleton containing window/level settings for all 2D volume slices.
+   * Documentation about what window/level means can be found here:
+   * http://blogs.mathworks.com/steve/2006/02/17/all-about-pixel-colors-window-level/
+   * In one sentence: "Making the window wider or narrower decreases or increases the display contrast;
+   * moving the level left or right changes the display brightness."
+   */
+  class ImageWindowLevel(val scene: Scene) {
+    private var _window: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelWindow).getOrElse(256.0)
+    private var _level: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
+
+    def window: Double = _window
+    def level: Double = _level
+
+    def window_=(newWindow: Double): Unit = {
+      if (_window != newWindow) {
+        _window = newWindow
+        publish()
+      }
+    }
+
+    def level_=(newLevel: Double): Unit = {
+      if (_level != newLevel) {
+        _level = newLevel
+        publish()
+      }
+    }
+
+    private var dragStartWindow: Option[Double] = None
+    private var dragStartLevel: Option[Double] = None
+
+    private[ui] def dragStart() = {
+      dragStartWindow = Some(_window)
+      dragStartLevel = Some(_level)
+    }
+
+    private[ui] def dragEnd() = {
+      dragStartWindow = None
+      dragStartLevel = None
+    }
+
+    private[ui] def dragUpdate(deltaX: Double, deltaY: Double) = {
+      (dragStartWindow, dragStartLevel) match {
+        case (Some(sw), Some(sl)) =>
+          _window = Math.max(0, sw + deltaX)
+          _level = Math.max(0, sl + deltaY)
+
+          if (_window != sw || _level != sl) {
+            publish()
+          }
+
+        case _ => /* do nothing */
+      }
+    }
+
+    private def publish(): Unit = {
+      scene.publishEdt(ImageWindowLevelChanged(this, _window, _level))
+    }
+
+    private[ui] def save(): Unit = {
+      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelWindow, _window)
+      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelLevel, _level)
+    }
+  }
+
 }
 
 class Scene extends SceneTreeObject {
@@ -278,6 +348,8 @@ class Scene extends SceneTreeObject {
   }
 
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
+
+  lazy val imageWindowLevel: Scene.ImageWindowLevel = new ImageWindowLevel(this)
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {
     o => true
