@@ -40,21 +40,21 @@ class ViewportPanel extends BorderPanel {
     renderer.detach()
   }
 
+  def resetCamera(): Unit = renderer.resetCamera()
+
+  def screenshot(file: File): Try[Unit] = renderer.screenshot(file)
+
   val title = new TitledBorder(null, "", TitledBorder.LEADING, 0, null, null)
   border = title
 
   layout(renderer) = Center
 
   reactions += {
-    case Nameable.NameChanged(v) =>
-      viewport match {
-        case None =>
-        case Some(vp) =>
-          if (v eq vp) {
-            title.setTitle(vp.name)
-            revalidate()
-          }
-      }
+    case Viewport.ResetCameraRequest(vp) if viewport.exists(_ eq vp) => resetCamera()
+    case Viewport.ScreenshotRequest(vp, f) if viewport.exists(_ eq vp) => screenshot(f)
+    case Nameable.NameChanged(v) if viewport.exists(_ eq v) =>
+      title.setTitle(v.name)
+      revalidate()
   }
 
   val toolbar = new Toolbar {
@@ -64,17 +64,11 @@ class ViewportPanel extends BorderPanel {
   }
 
   toolbar.add(new Action("SS") {
-    def doSave(file: File): Try[Unit] = renderer.screenshot(file)
-
-    override def apply() = {
-      new SaveAction(doSave, PngFileIoMetadata).apply()
-    }
+    override def apply(): Unit = new SaveAction(screenshot, PngFileIoMetadata).apply()
   }).tooltip = "Screenshot"
 
   toolbar.add(new Action("RC") {
-    override def apply() = {
-      renderer.resetCamera()
-    }
+    override def apply(): Unit = resetCamera()
   }).tooltip = "Reset Camera"
 }
 

@@ -1,6 +1,7 @@
 package scalismo.ui
 
 import java.awt.Point
+import java.io.File
 
 import scala.swing.event.Event
 
@@ -10,20 +11,23 @@ object Viewport {
 
   case class BoundingBoxChanged(source: Viewport) extends Event
 
+  case class ResetCameraRequest(source: Viewport) extends Event
+
+  case class ScreenshotRequest(source: Viewport, outputFile: File) extends Event
+
   case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
 
   val NoInitialCameraChange = InitialCameraChange(None, None, None)
-
-  val ThreeDViewportClassName = "scalismo.ui.ThreeDViewport"
-  val TwoDViewportClassName = "scalismo.ui.TwoDViewport"
 }
 
 trait Viewport extends Nameable {
   def scene: Scene
 
-  def destroy(): Unit = {
-    publishEdt(Viewport.Destroyed(this))
-  }
+  def destroy(): Unit = publishEdt(Viewport.Destroyed(this))
+
+  def resetCamera(): Unit = publishEdt(Viewport.ResetCameraRequest(this))
+
+  def screenshot(outputFile: File): Unit = publishEdt(Viewport.ScreenshotRequest(this, outputFile))
 
   // Note: the on*() methods below return a boolean indicating whether
   // the event should be handled by the rendering layer (i.e., VTK).
