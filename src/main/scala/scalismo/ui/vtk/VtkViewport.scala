@@ -128,7 +128,6 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
         viewportOption match {
           case Some(viewport) =>
             updateBoundingBox()
-            println(s"$viewport: changed=$changed firstTime=$firstTime ${viewport.currentBoundingBox}")
 
             // the if statement below should be a safe way of determining whether there are any "real" actors.
             // "helper" actors (like the BoundingBox itself) are not taken into account
