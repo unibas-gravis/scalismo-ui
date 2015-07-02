@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.ui.{ BoundingBox, Scene }
 import vtk.{ vtkOutlineFilter, vtkPoints, vtkPolyData }
 
-class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends PolyDataActor {
+class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends SinglePolyDataActor {
   val scene = source.source.scene
 
   this.GetProperty().SetColor(1, 1, 1)

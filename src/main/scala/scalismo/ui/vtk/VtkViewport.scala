@@ -128,6 +128,8 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
         viewportOption match {
           case Some(viewport) =>
             updateBoundingBox()
+            println(s"$viewport: changed=$changed firstTime=$firstTime ${viewport.currentBoundingBox}")
+
             // the if statement below should be a safe way of determining whether there are any "real" actors.
             // "helper" actors (like the BoundingBox itself) are not taken into account
             // while calculating the boundingbox.
@@ -151,8 +153,12 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
               } else {
                 publishEdt(VtkContext.RenderRequest(this))
               }
-            } else if (changed && !firstTime) {
-              publishEdt(VtkContext.RenderRequest(this))
+            } else {
+              // no bounding box (i.e., empty viewport)
+              if (changed && !firstTime) {
+                firstTime = true
+                publishEdt(VtkContext.RenderRequest(this))
+              }
             }
           case _ =>
         }

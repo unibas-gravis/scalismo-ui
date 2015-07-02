@@ -66,7 +66,9 @@ object RenderableActor {
 trait RenderableActor extends VtkContext {
   def vtkActors: Seq[vtkActor]
 
-  def currentBoundingBox: BoundingBox
+  def currentBoundingBox: BoundingBox = {
+    vtkActors.map { a => VtkUtils.bounds2BoundingBox(a.GetBounds()) }.fold(BoundingBox.None)((bb1, bb2) => bb1.union(bb2))
+  }
 
   def onDestroy(): Unit = {
     vtkActors.foreach {

@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.geometry.{ _3D, Point }
 import scalismo.ui.MeshView.MeshRenderable
 import scalismo.ui.visualization.props.{ ColorProperty, LineWidthProperty, OpacityProperty }
-import scalismo.ui.{ MeshView, TwoDViewport }
+import scalismo.ui.{ BoundingBox, MeshView, TwoDViewport }
 import scalismo.utils.MeshConversion
 import vtk._
 
@@ -69,9 +69,10 @@ class MeshActor2D(viewport: TwoDViewport, override val renderable: MeshRenderabl
     planeCutter.Modified()
   }
 
+  override protected def sourceBoundingBox: BoundingBox = VtkUtils.bounds2BoundingBox(polydata.GetBounds())
 }
 
-class MeshActor3D(override val renderable: MeshRenderable) extends PolyDataActor with ClickableActor with MeshActor {
+class MeshActor3D(override val renderable: MeshRenderable) extends SinglePolyDataActor with ClickableActor with MeshActor {
 
   // not declaring this as lazy causes all sorts of weird vtk errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)

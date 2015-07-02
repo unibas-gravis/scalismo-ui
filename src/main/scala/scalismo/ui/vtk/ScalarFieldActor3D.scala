@@ -7,7 +7,7 @@ import scalismo.ui.visualization.VisualizationProperty
 import scalismo.utils.MeshConversion
 import vtk.{ vtkGlyph3D, vtkSphereSource }
 
-class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends PolyDataActor with ActorOpacity with ClickableActor {
+class ScalarFieldActor3D(renderable: ScalarFieldRenderable3D) extends SinglePolyDataActor with ActorOpacity with ClickableActor {
   private lazy val sphere = new vtkSphereSource
   override lazy val opacity = renderable.opacity
   lazy val radius = renderable.radiuses

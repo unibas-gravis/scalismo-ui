@@ -49,7 +49,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends PolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
 
   var data = new InstanceData(source, axis)
 
