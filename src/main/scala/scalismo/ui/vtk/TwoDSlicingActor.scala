@@ -1,9 +1,9 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.{ Axis, Scene, TwoDViewport }
+import scalismo.ui.{ BoundingBox, Axis, Scene, TwoDViewport }
 import vtk.{ vtkCutter, vtkPlane }
 
-abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends PolyDataActor {
+abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDataActor {
 
   protected val plane = new vtkPlane()
   plane.SetOrigin(0, 0, 0)
@@ -43,4 +43,9 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends PolyDataActo
     deafTo(viewport.scene)
     super.onDestroy()
   }
+
+  // make sure to return the bounding box of the object you're slicing through.
+  protected def sourceBoundingBox: BoundingBox
+
+  final override def currentBoundingBox: BoundingBox = sourceBoundingBox
 }

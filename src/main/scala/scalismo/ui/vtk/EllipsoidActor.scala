@@ -1,7 +1,7 @@
 package scalismo.ui.vtk
 
 import scalismo.geometry.{ SquareMatrix, _3D }
-import scalismo.ui.TwoDViewport
+import scalismo.ui.{ BoundingBox, TwoDViewport }
 import scalismo.ui.visualization.props._
 import scalismo.ui.visualization.{ EllipsoidLike, VisualizationProperty }
 import vtk._
@@ -94,12 +94,18 @@ class EllipsoidActor2D(viewport: TwoDViewport, override val source: EllipsoidLik
 
   override protected def onSlicePositionChanged(): Unit = rerender(false)
 
-  override def onInstantiated(): Unit = {
+  override protected def onInstantiated(): Unit = {
     planeCutter.SetInputConnection(transformFilter.GetOutputPort())
   }
+
+  override protected def sourceBoundingBox: BoundingBox = {
+    transformFilter.Update()
+    VtkUtils.bounds2BoundingBox(transformFilter.GetOutput().GetBounds())
+  }
+
 }
 
-class EllipsoidActor3D(override val source: EllipsoidLike) extends PolyDataActor with EllipsoidActor {
+class EllipsoidActor3D(override val source: EllipsoidLike) extends SinglePolyDataActor with EllipsoidActor {
   override protected def onInstantiated(): Unit = {
     mapper.SetInputConnection(transformFilter.GetOutputPort())
   }

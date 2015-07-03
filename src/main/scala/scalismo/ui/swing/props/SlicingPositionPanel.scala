@@ -4,9 +4,9 @@ import javax.swing.border.TitledBorder
 
 import scalismo.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
 import scalismo.ui._
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.{ EdtSlider, FancySlider }
 
-import scala.swing.GridBagPanel.Anchor
+import scala.swing.GridBagPanel.{ Anchor, Fill }
 import scala.swing._
 import scala.swing.event.{ ButtonClicked, ValueChanged }
 
@@ -15,15 +15,15 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
   private var slicingPosition: Option[Scene.SlicingPosition] = None
 
-  private[SlicingPositionPanel] class Dimension(axis: Axis.Value) {
-    val nameLabel = new Label(axis.toString + ":")
-    val current = new Label(format(0))
-    val minimum = new Label(format(0))
-    val maximum = new Label(format(0))
-    val slider = new EdtSlider {
+  private[SlicingPositionPanel] class AxisControl(axis: Axis.Value) {
+    val nameLabel = new Label(axis.toString)
+    val slider = new FancySlider {
+
       min = 0
       max = 0
       value = 0
+
+      override def formattedValue(sliderValue: Int): String = slicingPosition.map(s => s.precision.format(s.precision.fromInt(sliderValue))).getOrElse("?")
     }
 
     val minus = new Button(new Action("-") {
@@ -54,14 +54,6 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       } else 0
     }
 
-    def format(value: Float): String = {
-      if (slicingPosition.isDefined) {
-        slicingPosition.get.precision.format(value)
-      } else {
-        "???"
-      }
-    }
-
     def update() = {
       val sp = slicingPosition.get
       val (min, max, value) = axis match {
@@ -69,21 +61,18 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
         case Axis.Y => (sp.boundingBox.yMin, sp.boundingBox.yMax, sp.y)
         case Axis.Z => (sp.boundingBox.zMin, sp.boundingBox.zMax, sp.z)
       }
-      minimum.text = format(min)
-      maximum.text = format(max)
       slider.min = sp.precision.toIntValue(min)
       slider.max = sp.precision.toIntValue(max)
       slider.value = sp.precision.toIntValue(value)
-      current.text = format(value)
     }
 
   }
 
-  val x = new Dimension(Axis.X)
-  val y = new Dimension(Axis.Y)
-  val z = new Dimension(Axis.Z)
+  val x = new AxisControl(Axis.X)
+  val y = new AxisControl(Axis.Y)
+  val z = new AxisControl(Axis.Z)
 
-  private def dimensions = Seq(x, y, z)
+  private def axisControls = Seq(x, y, z)
 
   val position = new GridBagPanel {
     border = new TitledBorder(null, "Position", TitledBorder.LEADING, 0, null, null)
@@ -91,35 +80,21 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     def add(comp: Component, position: (Int, Int)): Unit = {
       val const = pair2Constraints(position)
       const.ipadx = 10
-      if (position._2 == 0) {
-        const.anchor = Anchor.Center
+      const.ipady = 10
+      if (position._1 == 1) {
+        const.fill = Fill.Both
+        const.weightx = 1.0
       } else {
-        const.anchor = if (position._1 == 0) {
-          Anchor.West
-        } else if (position._1 == 3) {
-          Anchor.Center
-        } else Anchor.East
+        const.anchor = Anchor.West
       }
-      super.add(new BorderPanel {
-        layout(comp) = BorderPanel.Position.Center
-      }, const)
+      super.add(comp, const)
     }
 
-    add(new Label("Dim."), (0, 0))
-    add(new Label("Current"), (1, 0))
-    add(new Label("Min."), (2, 0))
-    add(new Label("Control"), (3, 0))
-    add(new Label("Max."), (4, 0))
-
-    def add(dim: Dimension, row: Int): Unit = {
-      add(dim.nameLabel, (0, row))
-      add(dim.current, (1, row))
-      add(dim.minimum, (2, row))
-      add(dim.control, (3, row))
-      add(dim.maximum, (4, row))
+    def add(axis: AxisControl, row: Int): Unit = {
+      add(axis.nameLabel, (0, row))
+      add(axis.control, (1, row))
     }
   }
-
   position.add(x, 1)
   position.add(y, 2)
   position.add(z, 3)
@@ -202,10 +177,7 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     slicingPosition.foreach { sp =>
       deafToOwnEvents()
       precision.set(sp.precision)
-      dimensions.foreach {
-        d =>
-          d.update()
-      }
+      axisControls.foreach(_.update())
       visibility.slicesVisible.selected = sp.slicesVisible
       visibility.intersectionsVisible.selected = sp.intersectionsVisible
       visibility.opacity.value = (sp.opacity * 100).toInt

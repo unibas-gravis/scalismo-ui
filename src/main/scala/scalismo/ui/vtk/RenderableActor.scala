@@ -36,19 +36,17 @@ object RenderableActor {
         case sp3d: Scene.SlicingPosition.SlicingPlaneRenderable3D => Some(new SlicingPlaneActor3D(sp3d))
         case sp2d: Scene.SlicingPosition.SlicingPlaneRenderable2D => Some(new SlicingPlaneActor2D(sp2d))
 
+        case img3d: Image3DView.Renderable3D[_] => img3d.imageOrNone.map { source => new ImageActor3D(source) }
+        case img2d: Image3DView.Renderable2D[_] => img2d.imageOrNone.map { source => ImageActor2D(source) }
+
         case ell: EllipsoidLike => Some(EllipsoidActor(vtkViewport, ell))
         case mesh: MeshRenderable => Some(MeshActor(vtkViewport, mesh))
-
-        case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
         case sf: ScalarFieldRenderable => Some(ScalarFieldActor(vtkViewport, sf))
+
+        // these are not entirely finished yet (2D implementations missing)
+        case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
-        case img3d: Image3DView.Renderable3D[_] => img3d.imageOrNone.map {
-          source => new ImageActor3D(source)
-        }
-        case img2d: Image3DView.Renderable2D[_] => img2d.imageOrNone.map {
-          source => ImageActor2D(source)
-        }
 
         case _ => None
       }
@@ -66,7 +64,9 @@ object RenderableActor {
 trait RenderableActor extends VtkContext {
   def vtkActors: Seq[vtkActor]
 
-  def currentBoundingBox: BoundingBox
+  def currentBoundingBox: BoundingBox = {
+    vtkActors.map { a => VtkUtils.bounds2BoundingBox(a.GetBounds()) }.fold(BoundingBox.None)((bb1, bb2) => bb1.union(bb2))
+  }
 
   def onDestroy(): Unit = {
     vtkActors.foreach {

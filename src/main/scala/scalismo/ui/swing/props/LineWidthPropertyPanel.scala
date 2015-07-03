@@ -2,7 +2,7 @@ package scalismo.ui.swing.props
 
 import javax.swing.border.TitledBorder
 
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.FancySlider
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.HasLineWidth
 
@@ -14,7 +14,7 @@ class LineWidthPropertyPanel extends BorderPanel with PropertyPanel {
 
   private var target: Option[HasLineWidth] = None
 
-  private val slider = new EdtSlider {
+  private val slider = new FancySlider {
     min = 1
     max = 8 // anything above 8 seems to be capped by VTK anyway
     value = min

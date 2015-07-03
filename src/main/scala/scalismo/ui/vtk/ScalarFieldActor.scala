@@ -1,14 +1,12 @@
 package scalismo.ui.vtk
 
-import scalismo.geometry.{Point, _3D}
-import scalismo.mesh.{ScalarMeshField, TriangleCell, TriangleMesh}
-import scalismo.ui.MeshView.MeshRenderable
+import scalismo.geometry.{ Point, _3D }
+import scalismo.mesh.{ ScalarMeshField, TriangleCell, TriangleMesh }
 import scalismo.ui.ScalarFieldView.ScalarFieldRenderable
-import scalismo.ui.visualization.props.LineWidthProperty
-import scalismo.ui.{ThreeDViewport, TwoDViewport}
 import scalismo.ui.visualization.VisualizationProperty
+import scalismo.ui.{ BoundingBox, ThreeDViewport, TwoDViewport }
 import scalismo.utils.MeshConversion
-import vtk.{vtkPolyData, vtkViewport, vtkGlyph3D, vtkSphereSource}
+import vtk.{ vtkGlyph3D, vtkSphereSource }
 
 object ScalarFieldActor {
   def apply(vtkViewport: VtkViewport, source: ScalarFieldRenderable): RenderableActor = {
@@ -18,7 +16,6 @@ object ScalarFieldActor {
     }
   }
 }
-
 
 trait ScalarFieldActor extends PolyDataActor with ActorOpacity with ClickableActor {
 
@@ -43,7 +40,7 @@ trait ScalarFieldActor extends PolyDataActor with ActorOpacity with ClickableAct
     SetScaleModeToDataScalingOff()
   }
 
-  glyph.Update();
+  glyph.Update()
   val scalarFieldPolydata = glyph.GetOutput()
 
   mapper.SetColorModeToMapScalars()
@@ -87,10 +84,9 @@ trait ScalarFieldActor extends PolyDataActor with ActorOpacity with ClickableAct
     }
   }
 
-
 }
 
-class ScalarFieldActor3D(viewPort: ThreeDViewport, val renderable: ScalarFieldRenderable) extends ScalarFieldActor {
+class ScalarFieldActor3D(viewPort: ThreeDViewport, val renderable: ScalarFieldRenderable) extends SinglePolyDataActor with ScalarFieldActor {
   mapper.SetInputData(scalarFieldPolydata)
 }
 
@@ -100,5 +96,6 @@ class ScalarFieldActor2D(viewPort: TwoDViewport, val renderable: ScalarFieldRend
 
   override protected def onSlicePositionChanged(): Unit = rerender()
 
+  override protected def sourceBoundingBox: BoundingBox = VtkUtils.bounds2BoundingBox(scalarFieldPolydata.GetBounds())
 }
 
