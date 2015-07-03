@@ -3,8 +3,8 @@ package scalismo.ui.swing
 import java.awt.Color
 import java.io.File
 
-import scalismo.common.ScalarArray
-import scalismo.geometry.Point
+import scalismo.common.{DiscreteScalarField, ScalarField, ScalarArray}
+import scalismo.geometry.{_3D, Point}
 import scalismo.io.{ MeshIO, StatismoIO }
 import scalismo.mesh.ScalarMeshField
 import scalismo.ui._
@@ -69,9 +69,9 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
       VectorFieldView.createFromSource(vf, None, Some("Vector field"))
     }
 
-    if (false) {
+    if (true) {
       val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
-      val df = new ScalarMeshField[Float](m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
+      val df = new DiscreteScalarField[_3D, Float](m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
       ScalarFieldView.createFromSource(df, None, Some("Mesh"))
     }
   }

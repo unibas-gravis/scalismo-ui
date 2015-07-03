@@ -2,7 +2,7 @@ package scalismo.ui.vtk
 
 import scalismo.ui.MeshView.MeshRenderable
 import scalismo.ui.PointCloudView.PointCloudRenderable3D
-import scalismo.ui.ScalarFieldView.ScalarFieldRenderable3D
+import scalismo.ui.ScalarFieldView.ScalarFieldRenderable
 import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable3D
 import scalismo.ui.VectorFieldView.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
@@ -40,7 +40,7 @@ object RenderableActor {
         case mesh: MeshRenderable => Some(MeshActor(vtkViewport, mesh))
 
         case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
-        case sf3d: ScalarFieldRenderable3D => Some(new ScalarFieldActor3D(sf3d))
+        case sf: ScalarFieldRenderable => Some(ScalarFieldActor(vtkViewport, sf))
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
         case img3d: Image3DView.Renderable3D[_] => img3d.imageOrNone.map {

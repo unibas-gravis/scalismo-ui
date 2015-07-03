@@ -9,12 +9,12 @@ import scala.collection.immutable.Seq
 
 object ScalarFieldView {
 
-  class ScalarFieldRenderable3D(val source: ScalarFieldView, override val radiuses: RadiusesProperty[_1D], override val opacity: OpacityProperty) extends Renderable with HasOpacity with HasRadiuses[_1D]
+  class ScalarFieldRenderable(val source: ScalarFieldView, override val radiuses: RadiusesProperty[_1D], override val opacity: OpacityProperty) extends Renderable with HasOpacity with HasRadiuses[_1D]
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarFieldView] {
-    override def renderablesFor2D(targetObject: ScalarFieldView): scala.Seq[Renderable] = Seq()
+    override def renderablesFor2D(t: ScalarFieldView): scala.Seq[Renderable] = Seq(new ScalarFieldRenderable(t, t.radiuses, t.opacity))
 
-    override def renderablesFor3D(t: ScalarFieldView): scala.Seq[Renderable] = Seq(new ScalarFieldRenderable3D(t, t.radiuses, t.opacity))
+    override def renderablesFor3D(t: ScalarFieldView): scala.Seq[Renderable] = Seq(new ScalarFieldRenderable(t, t.radiuses, t.opacity))
   }
 
   def createFromSource[A: Scalar](source: scalismo.common.DiscreteScalarField[_3D, A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarFieldView = {
