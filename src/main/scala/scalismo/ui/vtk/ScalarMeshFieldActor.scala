@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable3D
 import scalismo.utils.MeshConversion
 
-class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends PolyDataActor with ActorOpacity {
+class ScalarMeshFieldActor(renderable: ScalarMeshFieldRenderable3D) extends SinglePolyDataActor with ActorOpacity {
 
   override lazy val opacity = renderable.opacity
 

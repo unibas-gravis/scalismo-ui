@@ -4,7 +4,7 @@ import scalismo.geometry.{ Point, Vector, _3D }
 import scalismo.ui.{ Axis, BoundingBox, Scene, TwoDViewport }
 import vtk._
 
-class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Axis.Value)(implicit vtkViewport: VtkViewport) extends PolyDataActor {
+abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Axis.Value)(implicit vtkViewport: VtkViewport) extends PolyDataActor {
   val scene = source.scene
 
   override lazy val currentBoundingBox = BoundingBox.None

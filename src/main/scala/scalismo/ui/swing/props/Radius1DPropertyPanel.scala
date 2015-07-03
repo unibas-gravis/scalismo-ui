@@ -3,7 +3,7 @@ package scalismo.ui.swing.props
 import javax.swing.border.TitledBorder
 
 import scalismo.geometry.{ Vector, _1D }
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.FancySlider
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.HasRadiuses
 
@@ -15,7 +15,7 @@ class Radius1DPropertyPanel extends BorderPanel with PropertyPanel {
 
   private var target: Option[HasRadiuses[_1D]] = None
 
-  private val radiusSlider = new EdtSlider {
+  private val radiusSlider = new FancySlider {
     min = 1
     max = 500
     value = 500

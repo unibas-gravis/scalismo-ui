@@ -2,7 +2,7 @@ package scalismo.ui.swing.props
 
 import javax.swing.border.TitledBorder
 
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.FancySlider
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.HasOpacity
 
@@ -14,7 +14,7 @@ class OpacityPropertyPanel extends BorderPanel with PropertyPanel {
 
   private var target: Option[HasOpacity] = None
 
-  private val opacitySlider = new EdtSlider {
+  private val opacitySlider = new FancySlider {
     min = 0
     max = 100
     value = 100

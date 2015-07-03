@@ -5,7 +5,7 @@ import scalismo.ui.PointCloudView.PointCloudRenderable3D
 import scalismo.ui.visualization.VisualizationProperty
 import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 
-class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActor with ActorColor with ActorOpacity with ClickableActor {
+class PointCloudActor3D(renderable: PointCloudRenderable3D) extends SinglePolyDataActor with ActorColor with ActorOpacity with ClickableActor {
   private lazy val sphere = new vtkSphereSource
   override lazy val color = renderable.color
   override lazy val opacity = renderable.opacity

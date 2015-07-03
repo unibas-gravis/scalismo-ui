@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.ui.VectorFieldView.VectorFieldRenderable3D
 import vtk._
 
-class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends PolyDataActor with ActorOpacity {
+class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends SinglePolyDataActor with ActorOpacity {
   private lazy val arrow = new vtkArrowSource
 
   override lazy val opacity = renderable.opacity
