@@ -123,6 +123,7 @@ object VisualizableLandmark {
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[VisualizableLandmark] {
     override def renderablesFor2D(targetObject: VisualizableLandmark): Seq[Renderable] = renderablesFor3D(targetObject)
+
     override def renderablesFor3D(t: VisualizableLandmark): Seq[Renderable] = {
       val radiuses = new RadiusesProperty[_3D](None)
       val rotation = new RotationProperty(None)
@@ -140,6 +141,7 @@ abstract class VisualizableLandmark(container: VisualizableLandmarks) extends La
   override val lineWidth: LineWidthProperty = container.lineWidth.derive()
 
   override def visualizationStrategy: VisualizationStrategy[VisualizableLandmark] = VisualizableLandmark.DefaultVisualizationStrategy
+
 }
 
 abstract class VisualizableLandmarks(theObject: ThreeDObject) extends StandaloneSceneTreeObjectContainer[VisualizableLandmark] with Landmarks[VisualizableLandmark] with RemoveableChildren with HasColorAndOpacity with HasLineWidth {
@@ -154,8 +156,8 @@ abstract class VisualizableLandmarks(theObject: ThreeDObject) extends Standalone
   def addAt(position: Point[_3D], nameOption: Option[String], uncertainty: Uncertainty[_3D]): Unit
 }
 
-class ReferenceLandmarks(val shapeModel: ShapeModelView) extends Landmarks[ReferenceLandmark] {
-  lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
+class ReferenceLandmarks(val shapeModel: ShapeModelView) extends Landmarks[ReferenceLandmark] with HasNameGenerator {
+  override lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   def create(template: ReferenceLandmark): Unit = {
     create(template.point, Some(template.name), template.uncertainty)
@@ -186,8 +188,8 @@ class StaticLandmark(initialCenter: Point[_3D], container: StaticLandmarks) exte
 
 }
 
-class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) {
-  lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
+class StaticLandmarks(theObject: ThreeDObject) extends VisualizableLandmarks(theObject) with HasNameGenerator {
+  override lazy val nameGenerator: NameGenerator = NameGenerator.defaultGenerator
 
   override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = create(peer, name, uncertainty)
 
@@ -250,8 +252,10 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   override def getCurrentPosition = point
 }
 
-class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) {
+class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLandmarks(instance) with HasNameGenerator {
   val peer = instance.shapeModel.landmarks
+
+  override def nameGenerator: NameGenerator = peer.nameGenerator
 
   override def addAt(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]) = {
     create(peer, name, uncertainty)
