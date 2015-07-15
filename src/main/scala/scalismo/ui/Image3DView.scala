@@ -122,13 +122,11 @@ object StaticImage3DView extends SceneTreeObjectFactory[StaticImage3DView[_]] wi
       case Success(ScalarType.Byte) => loadAs[Byte]
       case Success(ScalarType.Short) => loadAs[Short]
       case Success(ScalarType.Int) => loadAs[Int]
-      case Success(ScalarType.Long) => loadAs[Long]
       case Success(ScalarType.Float) => loadAs[Float]
       case Success(ScalarType.Double) => loadAs[Double]
       case Success(ScalarType.UByte) => loadAs[UByte]
       case Success(ScalarType.UShort) => loadAs[UShort]
       case Success(ScalarType.UInt) => loadAs[UInt]
-      case Success(ScalarType.ULong) => loadAs[ULong]
       case Failure(e) => Failure(e)
       case _ => Failure(new IllegalStateException("won't happen")) // this is just here to please the compiler
     }
