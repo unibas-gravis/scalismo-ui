@@ -137,7 +137,7 @@ object Scene {
       _point.getOrElse(Point((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
     }
 
-    private def point_=(np: Point[_3D]) = {
+    def point_=(np: Point[_3D]) = {
       val previous = _point
       if (_point.isEmpty || _point.get != np) {
         _point = Some(np)

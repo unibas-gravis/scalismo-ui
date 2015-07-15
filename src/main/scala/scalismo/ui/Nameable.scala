@@ -40,6 +40,10 @@ trait NameGenerator {
   def reset(): Unit
 }
 
+trait HasNameGenerator {
+  def nameGenerator: NameGenerator
+}
+
 object AlphaNumericNameGenerator {
   val Prefixes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 }
