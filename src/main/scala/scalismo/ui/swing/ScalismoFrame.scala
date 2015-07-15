@@ -46,6 +46,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   lazy val console = new Console()(this)
 
+  lazy val status = new StatusPanel
+
   lazy val workspace = new Workspace(scene)
   lazy val workspacePanel: TunableWorkspacePanel = new TunableWorkspacePanel(workspace)
 
@@ -53,6 +55,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   lazy val mainPanel: Component = new BorderPanel {
     layout(workspacePanel) = BorderPanel.Position.Center
+    layout(status) = BorderPanel.Position.South
   }
 
   contents = mainPanel
