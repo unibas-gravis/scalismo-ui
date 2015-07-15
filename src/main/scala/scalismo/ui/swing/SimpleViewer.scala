@@ -73,6 +73,8 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
       val df = new DiscreteScalarField[_3D, Float](m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
       ScalarFieldView.createFromSource(df, None, Some("ScalarField"))
     }
+
+    Status.set("Welcome to the Scalismo Viewer. Click the status bar to open the status message log.")
   }
 }
 
