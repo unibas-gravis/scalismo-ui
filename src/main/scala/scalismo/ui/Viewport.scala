@@ -13,6 +13,8 @@ object Viewport {
 
   case class ResetCameraRequest(source: Viewport) extends Event
 
+  case class ScrollRequest(source: Viewport, delta: Int) extends Event
+
   case class ScreenshotRequest(source: Viewport, outputFile: File) extends Event
 
   case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
@@ -59,11 +61,15 @@ trait Viewport extends Nameable {
     }
   }
 
+  def scroll(delta: Int): Unit = publishEdt(Viewport.ScrollRequest(this, delta))
+
   def initialCameraChange = Viewport.NoInitialCameraChange
 }
 
 class ThreeDViewport(override val scene: Scene, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
+
+  override def scroll(delta: Int): Unit = {} // no need to publish anything, it's not handled anyway
 }
 
 class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option[String] = None) extends Viewport {

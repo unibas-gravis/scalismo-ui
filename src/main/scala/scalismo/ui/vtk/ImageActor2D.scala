@@ -1,7 +1,7 @@
 package scalismo.ui.vtk
 
 import _root_.vtk._
-import scalismo.geometry.{Point, _3D}
+import scalismo.geometry.{ Point, _3D }
 import scalismo.ui._
 import scalismo.ui.vtk.ImageActor2D.InstanceData
 import scalismo.ui.vtk.VtkContext.RenderRequest
@@ -50,7 +50,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D](source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
 
   var data = new InstanceData(source, axis)
 
