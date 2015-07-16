@@ -7,6 +7,7 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDa
 
   protected val plane = new vtkPlane()
   plane.SetOrigin(0, 0, 0)
+
   viewport.axis match {
     case Axis.X => plane.SetNormal(1, 0, 0)
     case Axis.Y => plane.SetNormal(0, 1, 0)
@@ -14,6 +15,7 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDa
   }
 
   protected val planeCutter = new vtkCutter()
+
   planeCutter.SetCutFunction(plane)
   planeCutter.SetValue(0, 0)
 
@@ -23,6 +25,8 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDa
   this.SetBackfaceProperty(this.GetProperty())
 
   listenTo(viewport.scene)
+
+  slicePositionChanged(viewport.scene.slicingPosition)
 
   reactions += {
     case Scene.SlicingPosition.PointChanged(s, _, _) => slicePositionChanged(s)
