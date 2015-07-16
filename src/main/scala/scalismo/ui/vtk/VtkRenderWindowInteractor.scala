@@ -133,10 +133,28 @@ class VtkRenderWindowInteractor(parent: VtkPanel) extends vtkGenericRenderWindow
   override def MouseMoveEvent(): Unit = {
     (workspaceOption, viewportOption) match {
       case (Some(workspace), Some(viewport)) =>
+        if (!parent.canvas.uiComponent.hasFocus) {
+          parent.canvas.uiComponent.requestFocusInWindow()
+        }
         if (viewport.onMouseMove(currentPt)) {
           super.MouseMoveEvent()
         }
       case _ =>
     }
+  }
+
+  override def KeyPressEvent(): Unit = {
+    // react when "Shift" is pressed: center slices at current mouse position
+    // TODO: this is not entirely finished yet. It does not work in 2D when no image is loaded, and
+    // the slicing position intersections aren't always properly redrawn. Still, it's good enough for initial testing.
+    val Invalid = 65535
+    if (GetShiftKey() == 1 && GetKeyCode() == Invalid.toChar) {
+      if (cellPicker.Pick(currentPt.x, height - currentPt.y - 1, 0.0, renderer) == 1) {
+        cellPicker.PickFromListOff()
+        val point = Point[_3D](cellPicker.GetPickPosition().map(_.toFloat))
+        viewportOption.foreach(_.scene.slicingPosition.point = point)
+      }
+    }
+    super.KeyPressEvent()
   }
 }

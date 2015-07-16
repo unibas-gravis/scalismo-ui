@@ -1,6 +1,7 @@
 package scalismo.ui.vtk
 
 import java.awt.BorderLayout
+import java.awt.event.{ MouseWheelEvent, MouseWheelListener }
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -23,6 +24,14 @@ class VtkPanel extends Component with EdtPublisher {
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
     panel.add(canvas.getComponent, BorderLayout.CENTER)
+    canvas.getComponent.addMouseWheelListener(new MouseWheelListener {
+      override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
+        e.getWheelRotation match {
+          case x: Int if x != 0 => viewportOption.foreach(_.scroll(x))
+          case _ =>
+        }
+      }
+    })
     panel
   }
 

@@ -1,5 +1,6 @@
 package scalismo.ui.swing
 
+import java.awt.Color
 import java.io.File
 import javax.swing._
 import javax.swing.border.TitledBorder
@@ -29,8 +30,19 @@ class ViewportPanel extends BorderPanel {
     this.viewport = Some(viewport)
     this.workspace = Some(workspace)
     listenTo(viewport)
-    title.setTitle(viewport.name)
+    setTitle(viewport.name)
     renderer.attach(this)
+  }
+
+  private def setTitle(name: String): Unit = {
+    title.setTitle(name)
+    val color: Color = name match {
+      case "X" => Color.RED.darker()
+      case "Y" => Color.GREEN.darker()
+      case "Z" => Color.BLUE.darker()
+      case _ => Color.BLACK
+    }
+    title.setTitleColor(color)
   }
 
   def hide() = {
@@ -53,7 +65,7 @@ class ViewportPanel extends BorderPanel {
     case Viewport.ResetCameraRequest(vp) if viewport.exists(_ eq vp) => resetCamera()
     case Viewport.ScreenshotRequest(vp, f) if viewport.exists(_ eq vp) => screenshot(f)
     case Nameable.NameChanged(v) if viewport.exists(_ eq v) =>
-      title.setTitle(v.name)
+      setTitle(v.name)
       revalidate()
   }
 
@@ -78,6 +90,17 @@ class ThreeDViewportPanel extends ViewportPanel {
 
 class TwoDViewportPanel extends ViewportPanel {
   override def show(workspace: Workspace, viewport: Viewport): Unit = {
+    import BorderFactory._
+    viewport match {
+      case vp2d: TwoDViewport =>
+        val color = vp2d.axis match {
+          case Axis.X => Color.RED
+          case Axis.Y => Color.GREEN
+          case Axis.Z => Color.BLUE
+        }
+        renderer.border = createLineBorder(color, 3)
+      case _ => // won't happen
+    }
     super.show(workspace, viewport)
     slider.update(viewport.scene.slicingPosition)
     slider.listenTo(viewport.scene)
@@ -158,4 +181,12 @@ class TwoDViewportPanel extends ViewportPanel {
 
   layout(control) = BorderPanel.Position.East
   layout(toolbar) = BorderPanel.Position.North
+
+  reactions += {
+    case Viewport.ScrollRequest(vp, delta) if viewport.exists(_ eq vp) =>
+      val newValue = Math.min(slider.max, Math.max(slider.min, slider.value - delta))
+      if (slider.value != newValue) {
+        slider.value = newValue
+      }
+  }
 }
