@@ -1,7 +1,7 @@
 package scalismo.ui.vtk
 
 import _root_.vtk._
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry.{Point, _3D}
 import scalismo.ui._
 import scalismo.ui.vtk.ImageActor2D.InstanceData
 import scalismo.ui.vtk.VtkContext.RenderRequest
@@ -16,6 +16,7 @@ object ImageActor2D {
   def apply(source: Image3DView[_], axis: Axis.Value) = new ImageActor2D(source, axis, false)
 
   final val OutOfBounds: Int = -1
+  final val NotInitialized: Int = -2
 
   class InstanceData(source: Image3DView[_], axis: Axis.Value) {
     val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.source, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
@@ -49,7 +50,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D](source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
 
   var data = new InstanceData(source, axis)
 
@@ -72,24 +73,30 @@ class ImageActor2D private[ImageActor2D] (source: Image3DView[_], axis: Axis.Val
   def reload() = {
     mapper.RemoveAllInputs()
     mapper.SetInputData(data.slice.GetOutput())
+    currentIndex = ImageActor2D.NotInitialized
     update(source.scene.slicingPosition.point)
   }
 
+  private var currentIndex = ImageActor2D.NotInitialized
+
   def update(point: Point[_3D]) = {
     val i = point3DToExtent(point, axis)
-    if (i == ImageActor2D.OutOfBounds) {
-      SetVisibility(0)
-    } else {
-      SetVisibility(1)
-      axis match {
-        case Axis.X => data.slice.SetExtent(i, i, 0, data.eymax, 0, data.ezmax)
-        case Axis.Y => data.slice.SetExtent(0, data.exmax, i, i, 0, data.ezmax)
-        case Axis.Z => data.slice.SetExtent(0, data.exmax, 0, data.eymax, i, i)
+    if (i != currentIndex) {
+      currentIndex = i
+      if (i == ImageActor2D.OutOfBounds) {
+        SetVisibility(0)
+      } else {
+        SetVisibility(1)
+        axis match {
+          case Axis.X => data.slice.SetExtent(i, i, 0, data.eymax, 0, data.ezmax)
+          case Axis.Y => data.slice.SetExtent(0, data.exmax, i, i, 0, data.ezmax)
+          case Axis.Z => data.slice.SetExtent(0, data.exmax, 0, data.eymax, i, i)
+        }
+        data.slice.Update()
+        mapper.Update()
       }
-      data.slice.Update()
-      mapper.Update()
+      publishEdt(new RenderRequest(this))
     }
-    publishEdt(new RenderRequest(this))
   }
 
   listenTo(source.scene, source)

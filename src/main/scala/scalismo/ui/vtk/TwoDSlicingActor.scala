@@ -33,12 +33,16 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDa
   }
 
   private def slicePositionChanged(slicingPosition: Scene.SlicingPosition): Unit = {
-    planeCutter.SetValue(0, viewport.axis match {
+    val newValue = (viewport.axis match {
       case Axis.X => slicingPosition.x
       case Axis.Y => slicingPosition.y
       case Axis.Z => slicingPosition.z
-    })
-    onSlicePositionChanged()
+    }).toDouble
+
+    if (planeCutter.GetValue(0) != newValue) {
+      planeCutter.SetValue(0, newValue)
+      onSlicePositionChanged()
+    }
   }
 
   protected def onSlicePositionChanged(): Unit
