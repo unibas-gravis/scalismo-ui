@@ -74,7 +74,7 @@ abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Ax
     poly.Delete()
     points.Delete()
 
-    val needEvent = camMove.map { m =>
+    camMove.foreach { m =>
       val diff = axis match {
         case Axis.X => m(0)
         case Axis.Y => m(1)
@@ -82,11 +82,10 @@ abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Ax
       }
       if (diff != 0) {
         publishEdt(VtkContext.MoveCameraRequest(this, axis, diff))
-        false
-      } else true
-    }.getOrElse(true)
+      }
+    }
 
-    if (needEvent) publishEdt(VtkContext.RenderRequest(this))
+    publishEdt(VtkContext.RenderRequest(this))
   }
 
   override def onDestroy() = this.synchronized {
