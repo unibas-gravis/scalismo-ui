@@ -5,7 +5,7 @@ import java.io.File
 import javax.swing.filechooser.FileNameExtensionFilter
 
 import scalismo.ui.swing.util.{ EnhancedFileChooser, FileNameExtensionFilterWrapper }
-import scalismo.ui.{ CommonExceptions, FileIoMetadata, SceneTreeObject, SceneTreeObjectFactory }
+import scalismo.ui._
 
 import scala.swing.{ Action, Component, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }
@@ -96,7 +96,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onSuccess(file: File): Unit = {
-    Dialog.showMessage(parentComponent, "Successfully saved: " + file.getName, "File saved")
+    Status.set(s"File saved: ${file.getName}")
   }
 
   def onFailure(file: File, exception: Throwable): Unit = {
@@ -137,6 +137,7 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onSuccess(file: File): Unit = {
+    Status.set(s"File loaded: ${file.getName}")
   }
 
   def onFailure(file: File, exception: Throwable): Unit = {

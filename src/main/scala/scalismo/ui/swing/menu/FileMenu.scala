@@ -1,7 +1,7 @@
 package scalismo.ui.swing.menu
 
 import scalismo.ui.swing.ScalismoFrame
-import scalismo.ui.swing.actions.QuitAction
+import scalismo.ui.swing.actions.ExitAction
 
 import scala.swing.{ Menu, MenuItem }
 
@@ -10,11 +10,11 @@ object FileMenu {
 }
 
 class FileMenu(implicit app: ScalismoFrame) extends Menu(FileMenu.Name) {
-  contents += new QuitMenuItem(this)
+  contents += new ExitMenuItem(this)
 }
 
-object QuitMenuItem {
-  val Name = "Quit"
+object ExitMenuItem {
+  val Name = "Exit"
 }
 
-class QuitMenuItem(parent: FileMenu)(implicit app: ScalismoFrame) extends MenuItem(new QuitAction(QuitMenuItem.Name, app))
+class ExitMenuItem(parent: FileMenu)(implicit app: ScalismoFrame) extends MenuItem(new ExitAction(ExitMenuItem.Name, app))
