@@ -144,7 +144,7 @@ class StatusPanel extends BorderPanel with StatusImplementation {
 
   override def set(message: StatusMessage): Unit = EdtUtil.onEdt {
     showMessageInLabel(message, statusLabel.peer, timestamp = false)
-    logModel.addElement(message)
+    if (message.log) logModel.addElement(message)
   }
 
   override def clear(): Unit = {
