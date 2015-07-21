@@ -17,8 +17,8 @@ class Radius1DPropertyPanel extends BorderPanel with PropertyPanel {
 
   private val radiusSlider = new FancySlider {
     min = 1
-    max = 500
-    value = 500
+    max = 50
+    value = 1
   }
 
   {

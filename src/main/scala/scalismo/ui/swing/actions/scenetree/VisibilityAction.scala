@@ -74,10 +74,10 @@ class VisibilityAction extends SceneTreePopupAction("Visible in...") {
       Some(item)
     } else {
       val item = new Menu(this.title) {
+        peer.add(createGlobalActionComponent(obj, "Invert", { b => !b }))
         viewports foreach { v =>
           peer.add(new VCheckBox(obj, v))
         }
-        peer.add(createGlobalActionComponent(obj, "Invert", { b => !b }))
       }
       Some(item)
     }
