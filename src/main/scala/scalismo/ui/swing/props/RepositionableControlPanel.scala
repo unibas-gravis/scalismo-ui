@@ -53,7 +53,7 @@ class RepositionableControlPanel extends BorderPanel with PropertyPanel {
 
   def updateCoordinates() = {
     target.foreach { t =>
-      val xyz = t.getCurrentPosition.data
+      val xyz = t.getCurrentPosition.toArray
       val assign = Axes.map(t => t._2).zip(xyz)
       assign.foreach { t =>
         t._1.text = t._2.toString

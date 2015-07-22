@@ -15,7 +15,7 @@ class RadiusesProperty[D <: Dim: NDSpace](initial: Option[Vector[D]]) extends Vi
 
   override protected def sanitizeValue(newValue: Vector[D]): Vector[D] = {
     if (isInsane(newValue)) {
-      val array = newValue.data.clone()
+      val array = newValue.toArray.clone()
       (0 until dimensionality).foreach { i =>
         array(i) = Math.max(0, array(i))
       }

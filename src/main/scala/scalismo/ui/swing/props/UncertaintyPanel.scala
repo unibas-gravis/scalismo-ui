@@ -222,7 +222,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
       case Some(d: HasUncertainty[_3D]) =>
         val u = d.uncertainty
         // I have *no* clue why a direct assignment leads to a weird "type mismatch" error here. Ah, whatever.
-        previousStddev = Some(Vector(u.stdDevs.data))
+        previousStddev = Some(Vector(u.stdDevs.toArray))
         stddev = previousStddev
         originalRotationMatrix = Some(SquareMatrix(u.rotationMatrix.data))
         previousRotationMatrix = originalRotationMatrix
@@ -265,7 +265,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
   def updateStddev() = {
     stddev match {
       case Some(v) =>
-        Seq(x, y, z) zip v.data foreach { t =>
+        Seq(x, y, z) zip v.toArray foreach { t =>
           t._1.enabled = true
           t._1.text = t._2.toString
         }
@@ -285,7 +285,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
     Seq(reset, previousLabel) foreach (_.enabled = previousStddev.isDefined)
     previousStddev match {
       case Some(v) =>
-        Seq(px, py, pz) zip v.data foreach { t =>
+        Seq(px, py, pz) zip v.toArray foreach { t =>
           t._1.enabled = true
           t._1.text = t._2.toString
         }
@@ -302,7 +302,7 @@ class UncertaintyPanel extends BorderPanel with PropertyPanel {
 
     Seq(dx, dy, dz).foreach(_.enabled = true)
     fromDefault.enabled = set.enabled
-    val s = defaultStddev.get.data.map(_.toString)
+    val s = defaultStddev.get.toArray.map(_.toString)
     Seq(dx, dy, dz) zip s foreach (t => t._1.text = t._2)
   }
 

@@ -7,6 +7,7 @@ import scalismo.common.{ DiscreteScalarField, ScalarArray }
 import scalismo.geometry.{ Point, _3D }
 import scalismo.io.{ MeshIO, StatismoIO }
 import scalismo.ui._
+import scalismo.ui.api.SimpleAPI
 import scalismo.ui.swing.actions.LoadAction
 
 import scala.async.Async.async
@@ -15,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.swing.MenuItem
 import scala.util.{ Success, Try }
 
-class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) {
+class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) with SimpleAPI {
 
   implicit val theScene = scene
 

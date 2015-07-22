@@ -1,8 +1,8 @@
 package scalismo.ui.swing.actions.scenetree
 
-import scalismo.ui.{StatusMessage, Status, Reloadable, SceneTreeObject}
+import scalismo.ui.{ StatusMessage, Status, Reloadable, SceneTreeObject }
 
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 class ReloadReloadableAction extends SceneTreePopupAction("Reload") {
   def isContextSupported(context: Option[SceneTreeObject]) = {
