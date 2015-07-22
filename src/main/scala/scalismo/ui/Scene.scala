@@ -208,6 +208,8 @@ object Scene {
           bb.union(vp.currentBoundingBox)
       })
     }
+
+    def recenter() = point = boundingBox.center
   }
 
   object ImageWindowLevel {

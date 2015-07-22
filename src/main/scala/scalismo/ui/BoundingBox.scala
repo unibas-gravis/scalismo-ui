@@ -29,6 +29,8 @@ case class BoundingBox private (xMin: Float, xMax: Float, yMin: Float, yMax: Flo
     }
   }
 
+  def center: Point[_3D] = if (isDummy) Point(0, 0, 0) else Point((xMin + xMax) / 2, (yMin + yMax) / 2, (zMin + zMax) / 2)
+
   override def toString: String = {
     s"BoundingBox ($xMin -> $xMax)($yMin -> $yMax)($zMin -> $zMax) (dummy: $isDummy)"
   }
