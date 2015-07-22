@@ -103,7 +103,7 @@ object Uncertainty extends EdtPublisher {
       val a = fromVector * (1 / fromVector.norm)
       val b = toVector * (1 / toVector.norm)
 
-      val v = Vector.crossproduct(a, b)
+      val v = a.crossproduct(b)
       val s = v.norm
       val c = a.dot(b)
 
