@@ -8,7 +8,7 @@ import javax.imageio.ImageIO
 import javax.swing.JPanel
 
 import scalismo.ui.swing.ViewportPanel
-import scalismo.ui.{ EdtPublisher, Viewport, Workspace }
+import scalismo.ui.{ Axis, EdtPublisher, Viewport, Workspace }
 
 import scala.swing.Component
 import scala.util.Try
@@ -60,6 +60,8 @@ class VtkPanel extends Component with EdtPublisher {
   def resetCamera() = {
     vtkViewport.resetCamera()
   }
+
+  def setCameraToAxis(axis: Axis.Value): Unit = vtkViewport.setCameraToAxis(axis)
 
   def screenshot(file: File): Try[Unit] = Try {
     val source = canvas.uiComponent

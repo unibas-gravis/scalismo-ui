@@ -62,7 +62,7 @@ class StatusPanel extends BorderPanel with StatusImplementation {
 
   StatusImplementation.instance = Some(this)
 
-  private val statusLabel = new Label() {
+  private val statusLabel = new Label(" ") {
 
     import BorderFactory._
 

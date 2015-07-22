@@ -96,7 +96,9 @@ abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Ax
 
 class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)(implicit vtkViewport: VtkViewport) extends SlicingPlaneActor(plane.source, plane.axis) {
 
-  val planeActor = new vtkActor
+  val planeActor = new vtkActor {
+    PickableOff()
+  }
   val planeMapper = new vtkPolyDataMapper
   planeActor.SetMapper(planeMapper)
 

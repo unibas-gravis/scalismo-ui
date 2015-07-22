@@ -17,9 +17,6 @@ object Viewport {
 
   case class ScreenshotRequest(source: Viewport, outputFile: File) extends Event
 
-  case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
-
-  val NoInitialCameraChange = InitialCameraChange(None, None, None)
 }
 
 trait Viewport extends Nameable {
@@ -62,24 +59,17 @@ trait Viewport extends Nameable {
   }
 
   def scroll(delta: Int): Unit = publishEdt(Viewport.ScrollRequest(this, delta))
-
-  def initialCameraChange = Viewport.NoInitialCameraChange
 }
 
 class ThreeDViewport(override val scene: Scene, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
 
   override def scroll(delta: Int): Unit = {} // no need to publish anything, it's not handled anyway
+
 }
 
 class TwoDViewport(override val scene: Scene, val axis: Axis.Value, name: Option[String] = None) extends Viewport {
   name_=(name.getOrElse(Nameable.NoName))
-
-  override lazy val initialCameraChange = axis match {
-    case Axis.Z => Viewport.NoInitialCameraChange
-    case Axis.Y => Viewport.InitialCameraChange(Some(90), None, None)
-    case Axis.X => Viewport.InitialCameraChange(None, None, Some(90))
-  }
 
   private var dragStart: Option[Point] = None
 

@@ -7,7 +7,7 @@ import javax.swing.border.TitledBorder
 
 import scalismo.ui._
 import scalismo.ui.swing.actions.SaveAction
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.{ AxisColor, EdtSlider }
 import scalismo.ui.vtk.VtkPanel
 
 import scala.swing.BorderPanel.Position.Center
@@ -36,12 +36,7 @@ class ViewportPanel extends BorderPanel {
 
   private def setTitle(name: String): Unit = {
     title.setTitle(name)
-    val color: Color = name match {
-      case "X" => Color.RED.darker()
-      case "Y" => Color.GREEN.darker()
-      case "Z" => Color.BLUE.darker()
-      case _ => Color.BLACK
-    }
+    val color: Color = Try(AxisColor.forAxis(Axis.withName(name), darker = true)).getOrElse(Color.BLACK)
     title.setTitleColor(color)
   }
 
@@ -86,6 +81,15 @@ class ViewportPanel extends BorderPanel {
 
 class ThreeDViewportPanel extends ViewportPanel {
   layout(toolbar) = BorderPanel.Position.North
+
+  Axis.values.foreach { axis =>
+    val b = toolbar.add(new Action(axis.toString) {
+      override def apply(): Unit = renderer.setCameraToAxis(axis)
+    })
+    b.foreground = AxisColor.forAxis(axis, darker = true)
+    b.tooltip = s"Set camera to $axis view"
+  }
+
 }
 
 class TwoDViewportPanel extends ViewportPanel {
@@ -93,11 +97,7 @@ class TwoDViewportPanel extends ViewportPanel {
     import BorderFactory._
     viewport match {
       case vp2d: TwoDViewport =>
-        val color = vp2d.axis match {
-          case Axis.X => Color.RED
-          case Axis.Y => Color.GREEN
-          case Axis.Z => Color.BLUE
-        }
+        val color = AxisColor.forAxis(vp2d.axis)
         renderer.border = createLineBorder(color, 3)
       case _ => // won't happen
     }

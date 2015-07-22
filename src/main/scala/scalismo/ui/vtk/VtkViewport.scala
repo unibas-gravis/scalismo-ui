@@ -33,6 +33,18 @@ object VtkViewport {
       state
     }
   }
+
+  case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
+  val NoInitialCameraChange = InitialCameraChange(None, None, None)
+
+  def initialCameraChangeForAxis(axis: Option[Axis.Value]): InitialCameraChange = {
+    axis match {
+      case Some(Axis.Y) => InitialCameraChange(Some(90), None, None)
+      case Some(Axis.X) => InitialCameraChange(None, None, Some(90))
+      case Some(Axis.Z) => NoInitialCameraChange
+      case _ => NoInitialCameraChange
+    }
+  }
 }
 
 class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkContext {
@@ -136,19 +148,13 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
               if (firstTime) {
                 firstTime = false
 
-                val camMod = viewport.initialCameraChange
-                val cam = renderer.GetActiveCamera()
+                val axisOption = viewport match {
+                  case vp2d: TwoDViewport => Some(vp2d.axis)
+                  case _ => None
+                }
 
-                val init = VtkViewport.initCameraState(cam)
-                cam.SetPosition(init.position)
-                cam.SetFocalPoint(init.focalPoint)
-                cam.SetViewUp(init.viewUp)
+                setCameraToAxis(axisOption)
 
-                camMod.yaw.foreach(v => cam.Azimuth(v))
-                camMod.pitch.foreach(v => cam.Elevation(v))
-                camMod.roll.foreach(v => cam.Roll(v))
-                cam.OrthogonalizeViewUp()
-                resetCamera(force = true)
               } else {
                 publishEdt(VtkContext.RenderRequest(this))
               }
@@ -215,6 +221,23 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
   def resetCamera(force: Boolean = false) = EdtUtil.onEdt {
     renderer.ResetCamera()
     publishEdt(VtkContext.RenderRequest(this, force))
+  }
+
+  def setCameraToAxis(axis: Axis.Value): Unit = setCameraToAxis(Some(axis))
+
+  private def setCameraToAxis(axis: Option[Axis.Value]): Unit = EdtUtil.onEdt {
+    val cam = renderer.GetActiveCamera()
+    val init = VtkViewport.initCameraState(cam)
+    cam.SetPosition(init.position)
+    cam.SetFocalPoint(init.focalPoint)
+    cam.SetViewUp(init.viewUp)
+
+    val camMod = VtkViewport.initialCameraChangeForAxis(axis)
+    camMod.yaw.foreach(v => cam.Azimuth(v))
+    camMod.pitch.foreach(v => cam.Elevation(v))
+    camMod.roll.foreach(v => cam.Roll(v))
+    cam.OrthogonalizeViewUp()
+    resetCamera(force = true)
   }
 
   def viewport: Viewport = parent.viewportOption.get

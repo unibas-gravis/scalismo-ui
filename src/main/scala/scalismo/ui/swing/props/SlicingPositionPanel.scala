@@ -1,10 +1,11 @@
 package scalismo.ui.swing.props
 
+import java.awt.Font
 import javax.swing.border.TitledBorder
 
 import scalismo.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
 import scalismo.ui._
-import scalismo.ui.swing.util.{ EdtSlider, FancySlider }
+import scalismo.ui.swing.util.{ AxisColor, EdtSlider, FancySlider }
 
 import scala.swing.GridBagPanel.{ Anchor, Fill }
 import scala.swing._
@@ -16,7 +17,10 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   private var slicingPosition: Option[Scene.SlicingPosition] = None
 
   private[SlicingPositionPanel] class AxisControl(axis: Axis.Value) {
-    val nameLabel = new Label(axis.toString)
+    val nameLabel = new Label(axis.toString) {
+      foreground = AxisColor.forAxis(axis, darker = true)
+      font = font.deriveFont(font.getStyle | Font.BOLD)
+    }
     val slider = new FancySlider {
 
       min = 0
