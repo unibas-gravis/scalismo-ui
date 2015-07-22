@@ -209,7 +209,7 @@ object Scene {
       })
     }
 
-    def recenter() = point = boundingBox.center
+    def recenter(): Unit = { point = boundingBox.center }
   }
 
   object ImageWindowLevel {
