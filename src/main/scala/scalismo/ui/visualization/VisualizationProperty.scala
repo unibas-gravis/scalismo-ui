@@ -20,7 +20,7 @@ object VisualizationProperty extends EdtPublisher {
 trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivable[C] with EdtPublisher {
   private var _value: Option[V] = None
 
-  protected[ui] final def value: V = {
+  final def value: V = {
     _value.getOrElse(defaultValue)
   }
 
@@ -38,7 +38,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivab
     }
   }
 
-  protected[ui] final def value_=(newValue: V): Unit = {
+  final def value_=(newValue: V): Unit = {
     setSaneValue(sanitizeValue(newValue))
   }
 
