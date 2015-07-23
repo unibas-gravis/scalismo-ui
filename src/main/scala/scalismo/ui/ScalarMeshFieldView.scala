@@ -2,6 +2,7 @@ package scalismo.ui
 
 import scalismo.common.Scalar
 import scalismo.mesh.ScalarMeshField
+import scalismo.ui.MeshView.MeshRenderable
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
 
@@ -9,12 +10,13 @@ import scala.collection.immutable.Seq
 
 object ScalarMeshFieldView {
 
-  class ScalarMeshFieldRenderable3D(val source: ScalarMeshFieldView, override val opacity: OpacityProperty) extends Renderable with HasOpacity
+  class ScalarMeshFieldRenderable(override val source: ScalarMeshFieldView, override val scalarRange: ScalarRangeProperty, opacity: OpacityProperty, lineWidth: LineWidthProperty) extends MeshRenderable[ScalarMeshFieldView](source, opacity, lineWidth) with HasScalarRange
+
+  //class ScalarMeshFieldRenderable3D(val source: ScalarMeshFieldView, override val opacity: OpacityProperty, override val scalarRange: ScalarRangeProperty) extends Renderable with HasOpacity with HasScalarRange
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarMeshFieldView] {
-    override def renderablesFor2D(targetObject: ScalarMeshFieldView): scala.Seq[Renderable] = Seq()
-
-    override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable3D(t, t.opacity))
+    override def renderablesFor2D(targetObject: ScalarMeshFieldView): scala.Seq[Renderable] = renderablesFor3D(targetObject)
+    override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable(t, t.scalarRange, t.opacity, t.lineWidth))
   }
 
   def createFromSource[A: Scalar](source: scalismo.mesh.ScalarMeshField[A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarMeshFieldView = {
@@ -24,9 +26,14 @@ object ScalarMeshFieldView {
   }
 }
 
-trait ScalarMeshFieldView extends UIView[ScalarMeshField[Float]] with ThreeDRepresentation[ScalarMeshFieldView] with HasOpacity {
+trait ScalarMeshFieldView extends UIView[ScalarMeshField[Float]] with ThreeDRepresentation[ScalarMeshFieldView] with HasOpacity with HasLineWidth with HasScalarRange {
 
   override val opacity: OpacityProperty = new OpacityProperty(None)
+  override val lineWidth: LineWidthProperty = new LineWidthProperty(None)
+  override val scalarRange: ScalarRangeProperty = new ScalarRangeProperty({
+    val (min, max) = (source.values.min, source.values.max)
+    Some(ScalarRange(min, max, min, max))
+  })
 
   override def visualizationStrategy: VisualizationStrategy[ScalarMeshFieldView] = ScalarMeshFieldView.DefaultVisualizationStrategy
 }

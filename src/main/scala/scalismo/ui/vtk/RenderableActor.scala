@@ -1,9 +1,9 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.MeshView.MeshRenderable
+import scalismo.ui.MeshView.TriangleMeshRenderable
 import scalismo.ui.PointCloudView.PointCloudRenderable3D
 import scalismo.ui.ScalarFieldView.ScalarFieldRenderable
-import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable3D
+import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable
 import scalismo.ui.VectorFieldView.VectorFieldRenderable3D
 import scalismo.ui.visualization.{ EllipsoidLike, Renderable }
 import scalismo.ui.{ BoundingBox, Image3DView, Scene }
@@ -40,11 +40,11 @@ object RenderableActor {
         case img2d: Image3DView.Renderable2D[_] => img2d.imageOrNone.map { source => ImageActor2D(source) }
 
         case ell: EllipsoidLike => Some(EllipsoidActor(vtkViewport, ell))
-        case mesh: MeshRenderable => Some(MeshActor(vtkViewport, mesh))
+        case mesh: TriangleMeshRenderable => Some(MeshActor(vtkViewport, mesh))
+        case smesh: ScalarMeshFieldRenderable => Some(MeshActor(vtkViewport, smesh))
         case sf: ScalarFieldRenderable => Some(ScalarFieldActor(vtkViewport, sf))
 
-        // these are not entirely finished yet (2D implementations missing)
-        case smf3d: ScalarMeshFieldRenderable3D => Some(new ScalarMeshFieldActor(smf3d))
+        // these are not completely finished yet (2D implementations are missing)
         case pc3d: PointCloudRenderable3D => Some(new PointCloudActor3D(pc3d))
         case vf3d: VectorFieldRenderable3D => Some(new VectorFieldActor3D(vf3d))
 
