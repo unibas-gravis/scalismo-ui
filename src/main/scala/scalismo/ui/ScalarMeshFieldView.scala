@@ -9,12 +9,12 @@ import scala.collection.immutable.Seq
 
 object ScalarMeshFieldView {
 
-  class ScalarMeshFieldRenderable3D(val source: ScalarMeshFieldView, override val color: ColorProperty, override val opacity: OpacityProperty) extends Renderable with HasColorAndOpacity
+  class ScalarMeshFieldRenderable3D(val source: ScalarMeshFieldView, override val opacity: OpacityProperty) extends Renderable with HasOpacity
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarMeshFieldView] {
     override def renderablesFor2D(targetObject: ScalarMeshFieldView): scala.Seq[Renderable] = Seq()
 
-    override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable3D(t, t.color, t.opacity))
+    override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable3D(t, t.opacity))
   }
 
   def createFromSource[A: Scalar](source: scalismo.mesh.ScalarMeshField[A], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticScalarMeshFieldView = {
@@ -24,9 +24,8 @@ object ScalarMeshFieldView {
   }
 }
 
-trait ScalarMeshFieldView extends UIView[ScalarMeshField[Float]] with ThreeDRepresentation[ScalarMeshFieldView] with HasColorAndOpacity {
+trait ScalarMeshFieldView extends UIView[ScalarMeshField[Float]] with ThreeDRepresentation[ScalarMeshFieldView] with HasOpacity {
 
-  override val color: ColorProperty = new ColorProperty(None)
   override val opacity: OpacityProperty = new OpacityProperty(None)
 
   override def visualizationStrategy: VisualizationStrategy[ScalarMeshFieldView] = ScalarMeshFieldView.DefaultVisualizationStrategy
