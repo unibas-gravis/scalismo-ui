@@ -78,7 +78,7 @@ class ColorPropertyPanel extends BorderPanel with PropertyPanel {
   {
     val northedPanel = new BorderPanel {
       val colorPanel = new BorderPanel {
-        border = new TitledBorder(null, "Color", TitledBorder.LEADING, 0, null, null)
+        border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
         layout(colorChooser) = BorderPanel.Position.Center
         layout(colorDisplayer) = BorderPanel.Position.North
       }

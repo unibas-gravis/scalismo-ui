@@ -21,14 +21,15 @@ object MeshView {
 
   case class Reloaded(source: MeshView) extends Event
 
-  class MeshRenderable(val source: MeshView, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineWidth: LineWidthProperty) extends Renderable with HasColorAndOpacity with HasLineWidth
+  class MeshRenderable[T](val source: T, override val opacity: OpacityProperty, override val lineWidth: LineWidthProperty) extends Renderable with HasOpacity with HasLineWidth
+
+  //class MeshRenderable(val source: MeshView, override val color: ColorProperty, override val opacity: OpacityProperty, override val lineWidth: LineWidthProperty) extends Renderable with HasColorAndOpacity with HasLineWidth
+  class TriangleMeshRenderable(override val source: MeshView, override val color: ColorProperty, opacity: OpacityProperty, lineWidth: LineWidthProperty) extends MeshRenderable[MeshView](source, opacity, lineWidth) with HasColor
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[MeshView] {
-    override def renderablesFor2D(t: MeshView): Seq[Renderable] = {
-      Seq(new MeshRenderable(t, t.color, t.opacity, t.lineWidth))
-    }
+    override def renderablesFor2D(t: MeshView): Seq[Renderable] = renderablesFor3D(t)
     override def renderablesFor3D(t: MeshView): Seq[Renderable] = {
-      Seq(new MeshRenderable(t, t.color, t.opacity, t.lineWidth))
+      Seq(new TriangleMeshRenderable(t, t.color, t.opacity, t.lineWidth))
     }
   }
 

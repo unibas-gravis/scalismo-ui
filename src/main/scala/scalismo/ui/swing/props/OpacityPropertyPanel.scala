@@ -23,7 +23,7 @@ class OpacityPropertyPanel extends BorderPanel with PropertyPanel {
   {
     val northedPanel = new BorderPanel {
       val opacityPanel = new BorderPanel {
-        border = new TitledBorder(null, "Opacity", TitledBorder.LEADING, 0, null, null)
+        border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
         layout(opacitySlider) = BorderPanel.Position.Center
       }
       layout(opacityPanel) = BorderPanel.Position.Center

@@ -17,11 +17,12 @@ object ScalarFieldActor {
   }
 }
 
-trait ScalarFieldActor extends PolyDataActor with ActorOpacity with ClickableActor {
+trait ScalarFieldActor extends SinglePolyDataActor with ClickableActor with ActorOpacity with ActorScalarRange {
 
   def renderable: ScalarFieldRenderable
 
-  lazy val opacity = renderable.opacity
+  override lazy val opacity = renderable.opacity
+  override lazy val scalarRange = renderable.scalarRange
 
   private lazy val scalarField = renderable.source.source
   private lazy val sphere = new vtkSphereSource
@@ -45,7 +46,6 @@ trait ScalarFieldActor extends PolyDataActor with ActorOpacity with ClickableAct
 
   mapper.SetColorModeToMapScalars()
   mapper.ScalarVisibilityOn()
-  mapper.SetScalarRange(scalarField.values.min, scalarField.values.max)
 
   setGeometry()
 
