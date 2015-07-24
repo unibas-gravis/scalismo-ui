@@ -62,7 +62,7 @@ trait MeshActor[T <: Publisher] extends SinglePolyDataActor with ActorOpacity {
 object MeshActor2D {
   def apply[T](viewport: TwoDViewport, source: MeshRenderable[T]): RenderableActor = source match {
     case r: TriangleMeshRenderable => new TriangleMeshActor2D(viewport, r)
-    case r: ScalarMeshFieldRenderable => new ScalarFieldMeshActor2D(viewport, r)
+    case r: ScalarMeshFieldRenderable => new ScalarMeshFieldActor2D(viewport, r)
     case _ => throw new IllegalArgumentException("don't know how to handle " + source.getClass)
   }
 }
@@ -83,7 +83,7 @@ abstract class MeshActor2D[T <: Publisher](viewport: TwoDViewport, override val 
 object MeshActor3D {
   def apply[T](source: MeshRenderable[T]): RenderableActor = source match {
     case r: TriangleMeshRenderable => new TriangleMeshActor3D(r)
-    case r: ScalarMeshFieldRenderable => new ScalarFieldMeshActor3D(r)
+    case r: ScalarMeshFieldRenderable => new ScalarMeshFieldActor3D(r)
     case _ => throw new IllegalArgumentException("don't know how to handle " + source.getClass)
   }
 }
@@ -125,7 +125,7 @@ trait TriangleMeshActor extends MeshActor[MeshView] with ActorColor with Clickab
 class TriangleMeshActor3D(override val renderable: TriangleMeshRenderable) extends MeshActor3D[MeshView](renderable) with TriangleMeshActor
 class TriangleMeshActor2D(viewport: TwoDViewport, override val renderable: TriangleMeshRenderable) extends MeshActor2D[MeshView](viewport, renderable) with TriangleMeshActor
 
-trait ScalarFieldMeshActor extends MeshActor[ScalarMeshFieldView] with ActorScalarRange {
+trait ScalarMeshFieldActor extends MeshActor[ScalarMeshFieldView] with ActorScalarRange {
   override def renderable: ScalarMeshFieldRenderable
 
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
@@ -136,6 +136,6 @@ trait ScalarFieldMeshActor extends MeshActor[ScalarMeshFieldView] with ActorScal
 
 }
 
-class ScalarFieldMeshActor3D(override val renderable: ScalarMeshFieldRenderable) extends MeshActor3D[ScalarMeshFieldView](renderable) with ScalarFieldMeshActor
+class ScalarMeshFieldActor3D(override val renderable: ScalarMeshFieldRenderable) extends MeshActor3D[ScalarMeshFieldView](renderable) with ScalarMeshFieldActor
 
-class ScalarFieldMeshActor2D(viewport: TwoDViewport, override val renderable: ScalarMeshFieldRenderable) extends MeshActor2D[ScalarMeshFieldView](viewport, renderable) with ScalarFieldMeshActor
+class ScalarMeshFieldActor2D(viewport: TwoDViewport, override val renderable: ScalarMeshFieldRenderable) extends MeshActor2D[ScalarMeshFieldView](viewport, renderable) with ScalarMeshFieldActor
