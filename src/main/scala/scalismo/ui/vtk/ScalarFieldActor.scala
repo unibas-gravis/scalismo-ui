@@ -1,12 +1,13 @@
 package scalismo.ui.vtk
 
+import scalismo.common.DiscreteScalarField
 import scalismo.geometry.{ Point, _3D }
 import scalismo.mesh.{ ScalarMeshField, TriangleCell, TriangleMesh }
 import scalismo.ui.ScalarFieldView.ScalarFieldRenderable
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.{ BoundingBox, ThreeDViewport, TwoDViewport }
 import scalismo.utils.MeshConversion
-import vtk.{ vtkGlyph3D, vtkSphereSource }
+import vtk.{vtkPolyData, vtkGlyph3D, vtkSphereSource}
 
 object ScalarFieldActor {
   def apply(vtkViewport: VtkViewport, source: ScalarFieldRenderable): RenderableActor = {
@@ -24,20 +25,23 @@ trait ScalarFieldActor extends SinglePolyDataActor with ClickableActor with Acto
   override lazy val opacity = renderable.opacity
   override lazy val scalarRange = renderable.scalarRange
 
-  private lazy val scalarField = renderable.source.source
+  //private lazy val scalarField = renderable.source.source
   private lazy val sphere = new vtkSphereSource
 
   private val radius = renderable.radiuses
   listenTo(radius)
 
+  private def scalarFieldToPolyData(scalarField: DiscreteScalarField[_3D, Float]): vtkPolyData = {
+    val pointSet = TriangleMesh(scalarField.domain.points.toIndexedSeq, IndexedSeq[TriangleCell]())
+    val scalarMeshData = ScalarMeshField(pointSet, scalarField.data)
+    MeshConversion.scalarMeshFieldToVtkPolyData(scalarMeshData)
+  }
+
   // We do a trick here. We can create a triangle mesh without cells, and use that to define a scalarMeshField.
   // This can then be converted to a vtk polydata, which we use as the input for the glyph
-  private val pointSet = TriangleMesh(scalarField.domain.points.toIndexedSeq, IndexedSeq[TriangleCell]())
-  private val scalarMeshData = ScalarMeshField(pointSet, scalarField.data)
-  private val vtkpd = MeshConversion.scalarMeshFieldToVtkPolyData(scalarMeshData)
   private val glyph = new vtkGlyph3D {
     SetSourceConnection(sphere.GetOutputPort)
-    SetInputData(vtkpd)
+    SetInputData(Caches.ScalarFieldCache.getOrCreate(renderable.source.source, scalarFieldToPolyData(renderable.source.source)))
     SetScaleModeToDataScalingOff()
   }
 
