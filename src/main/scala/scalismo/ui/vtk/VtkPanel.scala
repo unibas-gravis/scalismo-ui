@@ -1,6 +1,6 @@
 package scalismo.ui.vtk
 
-import java.awt.BorderLayout
+import java.awt.{Cursor, BorderLayout}
 import java.awt.event.{ MouseWheelEvent, MouseWheelListener }
 import java.awt.image.BufferedImage
 import java.io.File
@@ -40,6 +40,7 @@ class VtkPanel extends Component with EdtPublisher {
       canvas.render(immediately)
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
+    case Workspace.LandmarkClickModeChanged(_,_) => updateCursor()
   }
 
   def attach(source: ViewportPanel) = {
@@ -47,6 +48,7 @@ class VtkPanel extends Component with EdtPublisher {
     workspaceOption = source.workspaceOption
     vtkViewport.attach()
     workspaceOption.foreach(listenTo(_))
+    updateCursor()
   }
 
   def detach() = {
@@ -55,6 +57,13 @@ class VtkPanel extends Component with EdtPublisher {
     canvas.disableDeferredRendering()
     workspaceOption = None
     viewportOption = None
+    updateCursor()
+  }
+
+  private def updateCursor(): Unit = {
+    val crosshair = workspaceOption.exists{_.landmarkClickMode}
+    val cursor = if (crosshair) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
+    canvas.getComponent.setCursor(cursor)
   }
 
   def resetCamera() = {
