@@ -7,7 +7,7 @@ import scalismo.ui.ScalarFieldView.ScalarFieldRenderable
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.{ BoundingBox, ThreeDViewport, TwoDViewport }
 import scalismo.utils.MeshConversion
-import vtk.{vtkPolyData, vtkGlyph3D, vtkSphereSource}
+import vtk.{ vtkPolyData, vtkGlyph3D, vtkSphereSource }
 
 object ScalarFieldActor {
   def apply(vtkViewport: VtkViewport, source: ScalarFieldRenderable): RenderableActor = {

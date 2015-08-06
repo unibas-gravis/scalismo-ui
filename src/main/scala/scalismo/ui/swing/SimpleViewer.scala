@@ -6,6 +6,7 @@ import java.io.File
 import scalismo.common.{ DiscreteScalarField, ScalarArray }
 import scalismo.geometry.{ Point, _3D }
 import scalismo.io.{ MeshIO, StatismoIO }
+import scalismo.mesh.ScalarMeshField
 import scalismo.ui._
 import scalismo.ui.api.SimpleAPI
 import scalismo.ui.swing.actions.LoadAction
@@ -73,6 +74,12 @@ class SimpleViewer(scene: Scene) extends ScalismoFrame(scene) with SimpleAPI {
       val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
       val df = new DiscreteScalarField[_3D, Float](m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
       ScalarFieldView.createFromSource(df, None, Some("ScalarField"))
+    }
+
+    if (false) {
+      val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
+      val mf = new ScalarMeshField(m, ScalarArray(m.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
+      ScalarMeshFieldView.createFromSource(mf, None, Some("ScalarMeshField"))
     }
 
     Status.set("Welcome to the Scalismo Viewer. Click the status bar to open the status message log.")
