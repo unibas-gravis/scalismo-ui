@@ -163,13 +163,27 @@ object ShapeModelInstance {
     name = "Mesh"
     protected[ui] override lazy val isNameUserModifiable = false
     protected[ui] override lazy val isCurrentlyRemoveable = false
-    private var mesh: TriangleMesh = parent.shapeModel.calculateMesh(parent.coefficients)
+    private var mesh: TriangleMesh = recalculateMesh()
 
     override def source = mesh
 
-    private[ShapeModelInstance] def source_=(newMesh: TriangleMesh) = {
-      mesh = newMesh
-      publishEdt(MeshView.GeometryChanged(this))
+    listenTo(parent)
+
+    reactions += {
+      case ShapeModelInstance.CoefficientsChanged(_) =>
+        mesh = recalculateMesh()
+        publishEdt(MeshView.GeometryChanged(this))
+      case RigidlyTransformable.RigidTransformationChanged(_) =>
+        mesh = recalculateMesh()
+        publishEdt(MeshView.GeometryChanged(this))
+    }
+
+    private def recalculateMesh(): TriangleMesh = {
+      val m = parent.shapeModel.calculateMesh(parent.coefficients)
+      parent.rigidTransformation match {
+        case None => m
+        case Some(t) => m.transform(t)
+      }
     }
 
     override def addLandmarkAt(point: Point[_3D], nameOpt: Option[String]) = {
@@ -179,7 +193,7 @@ object ShapeModelInstance {
 
 }
 
-class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
+class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject with RigidlyTransformable {
   lazy val shapeModel = container.shapeModel
   override lazy val parent = shapeModel
   private var _coefficients: IndexedSeq[Float] = IndexedSeq.fill(shapeModel.source.gp.rank)(0.0f)
@@ -194,7 +208,6 @@ class ShapeModelInstance(container: ShapeModelInstances) extends ThreeDObject {
 
     if (_coefficients != newCoeffs) {
       _coefficients = newCoeffs
-      meshRepresentation.source = shapeModel.calculateMesh(newCoeffs)
       publishEdt(ShapeModelInstance.CoefficientsChanged(this))
     }
   }
