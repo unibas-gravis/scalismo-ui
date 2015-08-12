@@ -1,6 +1,6 @@
 package scalismo.ui
 
-import scalismo.geometry.{ _3D, Point }
+import scalismo.geometry.{ Point, _3D }
 
 object BoundingBox {
 
@@ -24,7 +24,8 @@ case class BoundingBox private (xMin: Float, xMax: Float, yMin: Float, yMax: Flo
   }
 
   def contains(point: Point[_3D]): Boolean = {
-    if (this.isDummy) false else {
+    if (this.isDummy) false
+    else {
       xMin <= point(0) && xMax >= point(0) && yMin <= point(1) && yMax >= point(1) && zMin <= point(2) && zMax >= point(2)
     }
   }

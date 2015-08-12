@@ -1,9 +1,9 @@
 package scalismo.ui.vtk
 
 import scalismo.geometry.{ SquareMatrix, _3D }
-import scalismo.ui.{ BoundingBox, TwoDViewport }
 import scalismo.ui.visualization.props._
 import scalismo.ui.visualization.{ EllipsoidLike, VisualizationProperty }
+import scalismo.ui.{ BoundingBox, TwoDViewport }
 import vtk._
 
 object EllipsoidActor {

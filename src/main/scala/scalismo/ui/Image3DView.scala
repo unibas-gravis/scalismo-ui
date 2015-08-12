@@ -7,9 +7,9 @@ import scalismo.geometry.{ Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.io.ImageIO.ScalarType
-import scalismo.ui.Reloadable.{ ImmutableReloader, FileReloader, Reloader }
+import scalismo.ui.Reloadable.{ FileReloader, ImmutableReloader, Reloader }
 import scalismo.ui.visualization._
-import spire.math.{ ULong, UInt, UShort, UByte }
+import spire.math.{ UByte, UInt, UShort }
 
 import scala.collection.immutable
 import scala.language.existentials

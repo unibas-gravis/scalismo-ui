@@ -1,6 +1,6 @@
 package scalismo.ui.vtk
 
-import scalismo.ui.{ BoundingBox, Axis, Scene, TwoDViewport }
+import scalismo.ui.{ Axis, BoundingBox, Scene, TwoDViewport }
 import vtk.{ vtkCutter, vtkPlane }
 
 abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDataActor {

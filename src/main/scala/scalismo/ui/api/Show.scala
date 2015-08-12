@@ -19,6 +19,7 @@ trait Show[-A] {
 }
 
 object Show {
+
   implicit object ShowMesh extends Show[TriangleMesh] {
     override def show(m: TriangleMesh, name: String)(implicit scene: Scene): Unit = {
       MeshView.createFromSource(m, None, Some(name))

@@ -40,7 +40,9 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
       case None =>
         System.err.println("PerspectivesPanel: Don't know how to display perspective of class " + workspace.scene.perspective.getClass.getName)
       case Some(panel) =>
-        cards.get().foreach { _.hide() }
+        cards.get().foreach {
+          _.hide()
+        }
         cards.set(panel)
         panel.show(workspace)
     }

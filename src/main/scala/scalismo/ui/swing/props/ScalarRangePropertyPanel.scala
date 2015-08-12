@@ -4,7 +4,7 @@ import javax.swing.border.TitledBorder
 
 import scalismo.ui.swing.util.FancySlider
 import scalismo.ui.visualization.VisualizationProperty
-import scalismo.ui.visualization.props.{ HasScalarRange, HasOpacity }
+import scalismo.ui.visualization.props.HasScalarRange
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged

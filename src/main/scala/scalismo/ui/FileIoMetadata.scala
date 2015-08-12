@@ -4,6 +4,7 @@ import scala.collection.immutable
 
 trait FileIoMetadata {
   def fileExtensions: immutable.Seq[String]
+
   def description: String
 
   def longDescription: String = {

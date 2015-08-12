@@ -73,6 +73,7 @@ object Scene {
 
     object VisualizationStrategy extends VisualizationStrategy[SlicingPosition] {
       override def renderablesFor2D(targetObject: SlicingPosition): Seq[Renderable] = Seq(new SlicingPlaneRenderable2D(targetObject))
+
       override def renderablesFor3D(source: SlicingPosition): Seq[Renderable] = {
         Seq(new BoundingBoxRenderable3D(source),
           new SlicingPlaneRenderable3D(source, Axis.X),
@@ -209,12 +210,17 @@ object Scene {
       })
     }
 
-    def recenter(): Unit = { point = boundingBox.center }
+    def recenter(): Unit = {
+      point = boundingBox.center
+    }
   }
 
   object ImageWindowLevel {
+
     case class ImageWindowLevelChanged(source: ImageWindowLevel, window: Double, level: Double) extends Event
+
   }
+
   /**
    * A global singleton containing window/level settings for all 2D volume slices.
    * Documentation about what window/level means can be found here:
@@ -227,6 +233,7 @@ object Scene {
     private var _level: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
 
     def window: Double = _window
+
     def level: Double = _level
 
     def window_=(newWindow: Double): Unit = {

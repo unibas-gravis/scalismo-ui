@@ -24,7 +24,9 @@ trait PropertyPanel extends CardPanel.CardableComponent {
     super.revalidate()
     if (preferredSize.width > size.width) {
       // this is a hack ...
-      workspace.foreach { _.publishPleaseLayoutAgain() }
+      workspace.foreach {
+        _.publishPleaseLayoutAgain()
+      }
     }
   }
 }

@@ -15,7 +15,9 @@ class ResetNamesAction extends SceneTreePopupAction("Re-initialize landmark name
       case Some(lms: Landmarks[_] with HasNameGenerator) =>
         val ng = lms.nameGenerator
         ng.reset()
-        lms.children.foreach { _.name = ng.nextName }
+        lms.children.foreach {
+          _.name = ng.nextName
+        }
       case _ =>
     }
   }

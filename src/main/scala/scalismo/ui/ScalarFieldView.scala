@@ -1,6 +1,6 @@
 package scalismo.ui
 
-import scalismo.common.{ Scalar, DiscreteScalarField }
+import scalismo.common.{ DiscreteScalarField, Scalar }
 import scalismo.geometry.{ Point, _1D, _3D }
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
@@ -13,6 +13,7 @@ object ScalarFieldView {
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarFieldView] {
     override def renderablesFor2D(t: ScalarFieldView): scala.Seq[Renderable] = renderablesFor3D(t)
+
     override def renderablesFor3D(t: ScalarFieldView): scala.Seq[Renderable] = Seq(new ScalarFieldRenderable(t, t.radiuses, t.opacity, t.scalarRange))
   }
 

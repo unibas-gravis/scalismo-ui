@@ -16,6 +16,7 @@ object ScalarMeshFieldView {
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[ScalarMeshFieldView] {
     override def renderablesFor2D(targetObject: ScalarMeshFieldView): scala.Seq[Renderable] = renderablesFor3D(targetObject)
+
     override def renderablesFor3D(t: ScalarMeshFieldView): scala.Seq[Renderable] = Seq(new ScalarMeshFieldRenderable(t, t.scalarRange, t.opacity, t.lineWidth))
   }
 

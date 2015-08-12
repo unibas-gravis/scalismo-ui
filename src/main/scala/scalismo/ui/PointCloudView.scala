@@ -16,6 +16,7 @@ object PointCloudView {
 
     override def renderablesFor3D(t: PointCloudView): scala.Seq[Renderable] = Seq(new PointCloudRenderable3D(t, t.color, t.opacity, t.radiuses))
   }
+
   def createFromSource(source: immutable.IndexedSeq[Point[_3D]], parent: Option[StaticThreeDObject] = None, name: Option[String] = None)(implicit scene: Scene): StaticPointCloudView = {
     new StaticPointCloudView(source, parent, name)
   }

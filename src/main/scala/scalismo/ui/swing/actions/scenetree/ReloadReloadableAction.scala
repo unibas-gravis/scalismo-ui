@@ -1,6 +1,6 @@
 package scalismo.ui.swing.actions.scenetree
 
-import scalismo.ui.{ StatusMessage, Status, Reloadable, SceneTreeObject }
+import scalismo.ui.{ Reloadable, SceneTreeObject, Status, StatusMessage }
 
 import scala.util.{ Failure, Success }
 

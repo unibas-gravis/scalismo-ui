@@ -38,7 +38,9 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
     val copy = _children.map({
       c => c
     })
-    copy.foreach { remove }
+    copy.foreach {
+      remove
+    }
   }, wait = true)
 
   protected def remove(child: Child, silent: Boolean): Boolean = EdtUtil.onEdtWithResult {

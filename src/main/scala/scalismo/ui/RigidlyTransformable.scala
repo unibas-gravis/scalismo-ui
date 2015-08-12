@@ -6,7 +6,9 @@ import scalismo.registration.RigidTransformation
 import scala.swing.event.Event
 
 object RigidlyTransformable {
+
   case class RigidTransformationChanged(source: RigidlyTransformable) extends Event
+
 }
 
 trait RigidlyTransformable extends EdtPublisher {
@@ -14,7 +16,7 @@ trait RigidlyTransformable extends EdtPublisher {
 
   def rigidTransformation: Option[RigidTransformation[_3D]] = _transformation
 
-  def rigidTransformation_=(newValue:Option[RigidTransformation[_3D]]) = {
+  def rigidTransformation_=(newValue: Option[RigidTransformation[_3D]]) = {
     _transformation = newValue
     publishEdt(RigidlyTransformable.RigidTransformationChanged(this))
   }

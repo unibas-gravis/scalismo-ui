@@ -12,6 +12,7 @@ object Workspace {
   case class PleaseLayoutAgain protected[Workspace] (workspace: Workspace) extends Event
 
   case class LandmarkClickModeChanged protected[Workspace] (workspace: Workspace, clickMode: Boolean) extends Event
+
 }
 
 class Workspace(val scene: Scene) extends EdtPublisher {

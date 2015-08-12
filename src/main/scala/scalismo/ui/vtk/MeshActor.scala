@@ -1,10 +1,10 @@
 package scalismo.ui.vtk
 
-import scalismo.geometry.{ _3D, Point }
+import scalismo.geometry.{ Point, _3D }
 import scalismo.ui.MeshView.{ MeshRenderable, TriangleMeshRenderable }
 import scalismo.ui.ScalarMeshFieldView.ScalarMeshFieldRenderable
-import scalismo.ui.visualization.props.{ ScalarRangeProperty, ColorProperty, LineWidthProperty, OpacityProperty }
-import scalismo.ui.{ ScalarMeshFieldView, BoundingBox, MeshView, TwoDViewport }
+import scalismo.ui.visualization.props.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
+import scalismo.ui.{ BoundingBox, MeshView, ScalarMeshFieldView, TwoDViewport }
 import scalismo.utils.MeshConversion
 import vtk._
 
@@ -123,6 +123,7 @@ trait TriangleMeshActor extends MeshActor[MeshView] with ActorColor with Clickab
 }
 
 class TriangleMeshActor3D(override val renderable: TriangleMeshRenderable) extends MeshActor3D[MeshView](renderable) with TriangleMeshActor
+
 class TriangleMeshActor2D(viewport: TwoDViewport, override val renderable: TriangleMeshRenderable) extends MeshActor2D[MeshView](viewport, renderable) with TriangleMeshActor
 
 trait ScalarMeshFieldActor extends MeshActor[ScalarMeshFieldView] with ActorScalarRange {

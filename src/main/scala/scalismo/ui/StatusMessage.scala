@@ -37,5 +37,6 @@ private[ui] object StatusImplementation {
 
 private[ui] trait StatusImplementation {
   def set(message: StatusMessage): Unit
+
   def clear(): Unit
 }

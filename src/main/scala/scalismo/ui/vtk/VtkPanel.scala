@@ -1,8 +1,8 @@
 package scalismo.ui.vtk
 
-import java.awt.{ Cursor, BorderLayout }
 import java.awt.event.{ MouseWheelEvent, MouseWheelListener }
 import java.awt.image.BufferedImage
+import java.awt.{ BorderLayout, Cursor }
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JPanel
@@ -61,7 +61,9 @@ class VtkPanel extends Component with EdtPublisher {
   }
 
   private def updateCursor(): Unit = {
-    val crosshair = workspaceOption.exists { _.landmarkClickMode }
+    val crosshair = workspaceOption.exists {
+      _.landmarkClickMode
+    }
     val cursor = if (crosshair) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
     canvas.getComponent.setCursor(cursor)
   }

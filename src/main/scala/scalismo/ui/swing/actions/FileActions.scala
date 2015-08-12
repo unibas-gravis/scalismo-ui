@@ -4,8 +4,8 @@ import java.awt.{ Component => AComponent }
 import java.io.File
 import javax.swing.filechooser.FileNameExtensionFilter
 
-import scalismo.ui.swing.util.{ EnhancedFileChooser, FileNameExtensionFilterWrapper }
 import scalismo.ui._
+import scalismo.ui.swing.util.{ EnhancedFileChooser, FileNameExtensionFilterWrapper }
 
 import scala.swing.{ Action, Component, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }

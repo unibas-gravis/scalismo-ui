@@ -5,13 +5,12 @@ import java.io.File
 import scalismo.geometry.{ Point, _3D }
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
-import scalismo.ui.Reloadable.{ Reloader, ImmutableReloader, FileReloader }
+import scalismo.ui.Reloadable.{ FileReloader, ImmutableReloader, Reloader }
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
 
 import scala.collection.immutable
 import scala.collection.immutable.Seq
-import scala.swing.Reactor
 import scala.swing.event.Event
 import scala.util.{ Failure, Success, Try }
 
@@ -28,6 +27,7 @@ object MeshView {
 
   object DefaultVisualizationStrategy extends VisualizationStrategy[MeshView] {
     override def renderablesFor2D(t: MeshView): Seq[Renderable] = renderablesFor3D(t)
+
     override def renderablesFor3D(t: MeshView): Seq[Renderable] = {
       Seq(new TriangleMeshRenderable(t, t.color, t.opacity, t.lineWidth))
     }

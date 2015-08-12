@@ -3,11 +3,11 @@ package scalismo.ui.swing.props
 import javax.swing.border.TitledBorder
 
 import scalismo.mesh.TriangleMesh
-import scalismo.ui.{ ScalarMeshFieldView, MeshView }
 import scalismo.ui.visualization.props.HasScalarRange
+import scalismo.ui.{ MeshView, ScalarMeshFieldView }
 
 import scala.reflect.ClassTag
-import scala.swing.{ Alignment, Label, BorderPanel, GridPanel }
+import scala.swing.{ Alignment, BorderPanel, GridPanel, Label }
 
 class InformationPanel extends BorderPanel with PropertyPanel {
   override def description: String = "Information"
@@ -67,6 +67,7 @@ trait InformationProvider {
 }
 
 abstract class TypedInformationProvider[T <: AnyRef: ClassTag] extends InformationProvider {
+
   import scala.language.implicitConversions
 
   private val clazz = implicitly[ClassTag[T]].runtimeClass
@@ -81,6 +82,7 @@ abstract class TypedInformationProvider[T <: AnyRef: ClassTag] extends Informati
   }
 
   def about(t: T): Map[String, String]
+
   implicit def numberToString[V <: AnyVal](v: V): String = v.toString
 
 }
@@ -104,6 +106,7 @@ object MeshFieldInformationProvider extends TypedInformationProvider[ScalarMeshF
 object ScalarRangeInformationProvider extends TypedInformationProvider[HasScalarRange] {
 
   override def title: String = "Scalar Values"
+
   override def about(t: HasScalarRange): Map[String, String] = {
     Map("Minimum" -> t.scalarRange.value.absoluteMinimum, "Maximum" -> t.scalarRange.value.absoluteMaximum)
   }

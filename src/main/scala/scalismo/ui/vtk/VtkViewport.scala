@@ -35,6 +35,7 @@ object VtkViewport {
   }
 
   case class InitialCameraChange(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
+
   val NoInitialCameraChange = InitialCameraChange(None, None, None)
 
   def initialCameraChangeForAxis(axis: Option[Axis.Value]): InitialCameraChange = {

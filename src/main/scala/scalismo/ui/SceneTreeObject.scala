@@ -55,7 +55,9 @@ trait SceneTreeObject extends Nameable {
     if (maxDepth.isDefined && maxDepth.get > curDepth) {
       Nil
     } else {
-      val tail = children.flatMap { _.findAny[A](filter, maxDepth, minDepth, curDepth + 1) }
+      val tail = children.flatMap {
+        _.findAny[A](filter, maxDepth, minDepth, curDepth + 1)
+      }
       val clazz = implicitly[ClassTag[A]].runtimeClass
       val head: Seq[A] = if (curDepth >= minDepth && clazz.isInstance(this)) {
         val candidate = this.asInstanceOf[A]

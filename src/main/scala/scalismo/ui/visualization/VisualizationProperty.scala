@@ -25,6 +25,7 @@ trait VisualizationProperty[V, C <: VisualizationProperty[V, C]] extends Derivab
   }
 
   final def apply(): V = value
+
   final def update(nv: V) = value = nv
 
   // hook to allow implementations to sanitize input (i.e., restrict to bounds)

@@ -6,10 +6,10 @@ import java.awt.{ Color, Font, GraphicsEnvironment, Transparency }
 import java.text.SimpleDateFormat
 import javax.swing._
 
-import scalismo.ui.{ StatusImplementation, StatusMessage }
 import scalismo.ui.StatusMessage._
 import scalismo.ui.swing.util.{ UntypedJList, UntypedListCellRenderer, UntypedListModel }
 import scalismo.ui.util.EdtUtil
+import scalismo.ui.{ StatusImplementation, StatusMessage }
 
 import scala.swing.{ Action, _ }
 import scala.util.Try
