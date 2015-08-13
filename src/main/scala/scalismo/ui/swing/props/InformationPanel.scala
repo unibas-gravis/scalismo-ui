@@ -17,8 +17,8 @@ import scala.swing._
 class InformationPanel extends BorderPanel with PropertyPanel {
   override def description: String = "Information"
 
-  val providers: List[InformationProvider] = List(MeshInformationProvider, MeshFieldInformationProvider, ScalarRangeInformationProvider, Image3DInformationProvider)
-
+  val providers: List[InformationProvider] = List(MeshInformationProvider, MeshFieldInformationProvider, ScalarRangeInformationProvider)
+  
   var target: Option[AnyRef] = None
 
   override def setObject(obj: Option[AnyRef]): Boolean = {
@@ -160,38 +160,4 @@ object ScalarRangeInformationProvider extends TypedInformationProvider[HasScalar
   override def about(t: HasScalarRange): List[(String, String)] = {
     List("Minimum" -> t.scalarRange.value.absoluteMinimum, "Maximum" -> t.scalarRange.value.absoluteMaximum)
   }
-}
-
-// FIXME: this is NOT finished yet. It shows incomplete/wrong information.
-object Image3DInformationProvider extends TypedInformationProvider[Image3DView[_]] {
-  override def about(view: Image3DView[_]): List[(String, String)] = {
-    val pt = view.pixelType
-
-    def treatAs[T: Scalar: ClassTag: TypeTag]: List[(String, String)] = {
-      val img = view.source.asInstanceOf[DiscreteScalarImage[_3D, T]]
-
-      //      def minMax(): (T,T) = {
-      def minMax(): (String, String) = {
-        ("???", "???")
-      }
-
-      val (min, max) = minMax()
-
-      val domain = img.domain
-      val bb = domain.boundingBox
-      List(
-        "Pixel Type" -> pt.toString,
-        "Origin" -> bb.origin,
-        "Limit" -> bb.oppositeCorner,
-        "Extent" -> bb.extent,
-        "Spacing" -> domain.spacing,
-        "Discrete size" -> domain.size,
-        "Scalar range" -> s"($min, $max)"
-      )
-    }
-    // FIXME: this is (knowingly) wrong.
-    treatAs[Float]
-  }
-
-  override def title: String = "Image"
 }
