@@ -236,9 +236,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
 
   def calculateCenter(): Point[_3D] = {
     val (_, ptId) = container.instance.shapeModel.source.referenceMesh.findClosestPoint(source.point)
-    val coeffs = DenseVector(container.instance.coefficients.toArray)
-    val mesh = container.instance.shapeModel.source.instance(coeffs)
-    mesh.point(ptId)
+    container.instance.meshRepresentation.source.point(ptId)
   }
 
   def setCenter(): Unit = {
