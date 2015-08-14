@@ -5,9 +5,11 @@ import javax.swing.border.TitledBorder
 import scalismo.common.Scalar
 import scalismo.geometry.{ Index, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
+import scalismo.io.ImageIO.ScalarType
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.visualization.props.HasScalarRange
 import scalismo.ui.{ Image3DView, MeshView, ScalarMeshFieldView }
+import spire.math.{ UInt, UShort, UByte }
 
 import scala.reflect.ClassTag
 import scala.reflect.runtime.universe.TypeTag
@@ -17,8 +19,8 @@ import scala.swing._
 class InformationPanel extends BorderPanel with PropertyPanel {
   override def description: String = "Information"
 
-  val providers: List[InformationProvider] = List(MeshInformationProvider, MeshFieldInformationProvider, ScalarRangeInformationProvider)
-  
+  val providers: List[InformationProvider] = List(MeshInformationProvider, MeshFieldInformationProvider, ScalarRangeInformationProvider, Image3DInformationProvider)
+
   var target: Option[AnyRef] = None
 
   override def setObject(obj: Option[AnyRef]): Boolean = {
@@ -160,4 +162,64 @@ object ScalarRangeInformationProvider extends TypedInformationProvider[HasScalar
   override def about(t: HasScalarRange): List[(String, String)] = {
     List("Minimum" -> t.scalarRange.value.absoluteMinimum, "Maximum" -> t.scalarRange.value.absoluteMaximum)
   }
+}
+
+object Image3DInformationProvider extends TypedInformationProvider[Image3DView[_]] {
+  implicit val o1 = Ordering.fromLessThan[UByte]((a, b) => a < b)
+  implicit val o2 = Ordering.fromLessThan[UShort]((a, b) => a < b)
+  implicit val o3 = Ordering.fromLessThan[UInt]((a, b) => a < b)
+
+  override def about(view: Image3DView[_]): List[(String, String)] = {
+    val pt = view.pixelType
+
+    def treatAs[T: Scalar: ClassTag: TypeTag: Ordering]: List[(String, String)] = {
+      val img = view.source.asInstanceOf[DiscreteScalarImage[_3D, T]]
+
+      val o = implicitly[Ordering[T]]
+
+      def scalarMinMax(): (String, String) = {
+        var min: Option[T] = None
+        var max: Option[T] = None
+        img.values.foreach { value =>
+          min match {
+            case None => min = Some(value)
+            case Some(m) => if (o.gt(m, value)) min = Some(value)
+          }
+          max match {
+            case None => max = Some(value)
+            case Some(m) => if (o.lt(m, value)) max = Some(value)
+          }
+        }
+
+        (min.map(_.toString).getOrElse("???"), max.map(_.toString).getOrElse("???"))
+      }
+
+      val (scalarMin, scalarMax) = scalarMinMax()
+
+      val domain = img.domain
+      val bb = domain.boundingBox
+      List(
+        "Pixel Type" -> pt.toString,
+        "Origin" -> bb.origin,
+        "Limit" -> bb.oppositeCorner,
+        "Extent" -> bb.extent,
+        "Spacing" -> domain.spacing,
+        "Discrete size" -> domain.size,
+        "Scalar range" -> s"($scalarMin, $scalarMax)"
+      )
+    }
+
+    pt match {
+      case ScalarType.Byte => treatAs[Byte]
+      case ScalarType.Short => treatAs[Short]
+      case ScalarType.Int => treatAs[Int]
+      case ScalarType.Float => treatAs[Float]
+      case ScalarType.Double => treatAs[Double]
+      case ScalarType.UByte => treatAs[UByte]
+      case ScalarType.UShort => treatAs[UShort]
+      case ScalarType.UInt => treatAs[UInt]
+    }
+  }
+
+  override def title: String = "Image"
 }
