@@ -66,6 +66,10 @@ abstract class Image3DView[S: Scalar: ClassTag: TypeTag](reloader: Reloader[Disc
 
   protected[ui] def asFloatImage: DiscreteScalarImage[_3D, Float] = source.map[Float](p => implicitly[Scalar[S]].toFloat(p))
 
+  def pixelType: ScalarType.Value = {
+    ImageIO.ScalarType.fromType[S]
+  }
+
   override def saveToFile(f: File): Try[Unit] = {
     val extension = {
       val dot = f.getName.lastIndexOf('.')
