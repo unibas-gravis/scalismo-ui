@@ -77,12 +77,18 @@ class ScalarRangePropertyPanel extends BorderPanel with PropertyPanel {
         min = t.scalarRange.value.absoluteMinimum
         max = t.scalarRange.value.absoluteMaximum
         step = (max - min) / 100.0f
+
+        // this is an (ugly) workaround to make sure max values are properly displayed
+        def reinitSlider(s: FancySlider) = {
+          s.max = 99
+          s.max = 100
+        }
+        reinitSlider(minimumSlider)
+        reinitSlider(maximumSlider)
+
         minimumSlider.value = toSliderValue(t.scalarRange.value.cappedMinimum)
         maximumSlider.value = toSliderValue(t.scalarRange.value.cappedMaximum)
-        minimumSlider.revalidate()
-        minimumSlider.repaint()
-        maximumSlider.revalidate()
-        maximumSlider.repaint()
+
       }
       listenToOwnEvents()
     }
