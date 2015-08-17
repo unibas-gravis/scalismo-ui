@@ -17,6 +17,8 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
   private var shiftPressed = false
   private var controlPressed = false
 
+  private var highlightedClickable: Option[TwoDClickable] = None
+
   // we need the interceptor because the default vtk implementation does not hand on key release events.
   // All methods here return false (thus all events are fully handled, none are actually intercepted).
   class Interceptor extends vtkEventInterceptor {
@@ -39,7 +41,10 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
 
     override def mouseClicked(e: MouseEvent): Boolean = false
 
-    override def mouseExited(e: MouseEvent): Boolean = false
+    override def mouseExited(e: MouseEvent): Boolean = {
+      clearHighlight()
+      false
+    }
 
     override def keyTyped(e: KeyEvent): Boolean = false
 
@@ -118,9 +123,17 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
           if (Math.abs(currentPoint.x - lastPoint.x) < threshold && Math.abs(currentPoint.y - lastPoint.y) < threshold) {
             findPointAndPropAtMousePosition() match {
               case PointAndProp(Some(point), Some(prop)) => prop match {
+                case image: ImageActor2D => findClosestTwoDClickableWithinThreshold(point) match {
+                  case Some(result) => result.clickable.clicked(result.closestPoint)
+                  case None => image.clicked(point)
+                }
                 case clickable: ClickableActor => clickable.clicked(point)
                 case _ =>
               }
+              case PointAndProp(Some(point), None) =>
+                findClosestTwoDClickableWithinThreshold(point).foreach { result =>
+                  result.clickable.clicked(result.closestPoint)
+                }
               case _ =>
             }
           }
@@ -140,15 +153,61 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
   override def MouseMoveEvent(): Unit = {
     (workspaceOption, viewportOption) match {
       case (Some(workspace), Some(viewport)) =>
+        if (viewport.isInstanceOf[TwoDViewport]) {
+          // highlighting is not required in 3D viewports.
+          handleHighlighting(workspace)
+        }
         handleModifierButtons()
         if (viewport.onMouseMove(currentPoint)) {
           super.MouseMoveEvent()
         }
-      case _ =>
+      case _ => clearHighlight()
     }
   }
 
   private case class PointAndProp(point: Option[Point[_3D]], prop: Option[vtkProp3D])
+
+  private case class ClickableWithPointAndDistance(clickable: TwoDClickable, closestPoint: Point[_3D], distance: Double)
+
+  private def findClosestTwoDClickableWithinThreshold(targetPoint: Point[_3D]): Option[ClickableWithPointAndDistance] = {
+    (workspaceOption, viewportOption) match {
+      case (Some(w), Some(t: TwoDViewport)) => findClosestTwoDClickableWithin(targetPoint, w.scene.options.twoDLandmarking.snapRadius)
+      case _ => None
+    }
+  }
+
+  private def findClosestTwoDClickableWithin(targetPoint: Point[_3D], radius: Double): Option[ClickableWithPointAndDistance] = {
+    val result = findClosestTwoDClickable(targetPoint)
+    result match {
+      case Some(data) if data.distance <= radius => result
+      case _ => None
+    }
+  }
+
+  private def findClosestTwoDClickable(targetPoint: Point[_3D]): Option[ClickableWithPointAndDistance] = {
+    val actors = renderer.GetActors()
+    val count = actors.GetNumberOfItems()
+
+    var result: Option[ClickableWithPointAndDistance] = None
+
+    if (count > 0) {
+      actors.InitTraversal()
+      (0 until count) foreach { dummy =>
+        val actor = actors.GetNextActor()
+        actor match {
+          case clickable: TwoDClickable =>
+            clickable.findClosestPoint(targetPoint).foreach { closest =>
+              val distance = (targetPoint - closest).norm
+              if (result.isEmpty || result.get.distance > distance) {
+                result = Some(ClickableWithPointAndDistance(clickable, closest, distance))
+              }
+            }
+          case _ => // do nothing
+        }
+      }
+    }
+    result
+  }
 
   private def findPointAndPropAtMousePosition(): PointAndProp = {
     if (cellPicker.Pick(currentPoint.x, height - currentPoint.y - 1, 0.0, renderer) == 1) {
@@ -209,6 +268,40 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
           case _ =>
         }
       }
+    }
+  }
+
+  def clearHighlight(): Unit = {
+    if (highlightedClickable.isDefined) {
+      highlightedClickable.get.setHighlight(false)
+      highlightedClickable = None
+    }
+  }
+  private def handleHighlighting(workspace: Workspace): Unit = {
+
+    if (workspace.landmarkClickMode && workspace.scene.options.twoDLandmarking.highlightClosest && workspace.scene.options.twoDLandmarking.snapRadius > 0) {
+      val newHighlighted: Option[TwoDClickable] = findPointAndPropAtMousePosition() match {
+        case PointAndProp(Some(point), _) => findClosestTwoDClickableWithinThreshold(point).map(_.clickable)
+        case _ => None
+      }
+
+      (highlightedClickable, newHighlighted) match {
+        case (None, None) =>
+        case (None, Some(n)) =>
+          n.setHighlight(true)
+          highlightedClickable = Some(n)
+        case (Some(o), None) =>
+          o.setHighlight(false)
+          highlightedClickable = None
+        case (Some(o), Some(n)) =>
+          if (o ne n) {
+            o.setHighlight(false)
+            n.setHighlight(true)
+            highlightedClickable = Some(n)
+          }
+      }
+    } else {
+      clearHighlight()
     }
   }
 }
