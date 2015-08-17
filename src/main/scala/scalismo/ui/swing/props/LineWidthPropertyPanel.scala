@@ -16,7 +16,7 @@ class LineWidthPropertyPanel extends BorderPanel with PropertyPanel {
 
   private val slider = new FancySlider {
     min = 1
-    max = 8 // anything above 8 seems to be capped by VTK anyway
+    max = 7 // anything above 8 seems to be capped by VTK anyway, and we need 1 unit "extra" for highlighting
     value = min
   }
 

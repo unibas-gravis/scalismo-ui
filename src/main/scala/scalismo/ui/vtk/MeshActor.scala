@@ -124,7 +124,48 @@ trait TriangleMeshActor extends MeshActor[MeshView] with ActorColor with Clickab
 
 class TriangleMeshActor3D(override val renderable: TriangleMeshRenderable) extends MeshActor3D[MeshView](renderable) with TriangleMeshActor
 
-class TriangleMeshActor2D(viewport: TwoDViewport, override val renderable: TriangleMeshRenderable) extends MeshActor2D[MeshView](viewport, renderable) with TriangleMeshActor
+class TriangleMeshActor2D(viewport: TwoDViewport, override val renderable: TriangleMeshRenderable) extends MeshActor2D[MeshView](viewport, renderable) with TriangleMeshActor with TwoDClickable {
+
+  private class Locator extends vtkPointLocator {
+    var isValid = false
+  }
+
+  private val locator = new Locator()
+
+  private def initPointLocator(): Unit = {
+    // for some reason I don't understand, this needs to (only) be initialized
+    // once, then continues to work even if the underlying output changes.
+    val poly = planeCutter.GetOutput()
+    if (poly.GetNumberOfPoints() > 0) {
+      locator.isValid = true
+      locator.SetDataSet(poly)
+      locator.BuildLocator()
+    } else {
+      locator.isValid = false
+    }
+  }
+
+  override def findClosestPoint(clicked: Point[_3D]): Option[Point[_3D]] = {
+    if (!locator.isValid) initPointLocator()
+    if (locator.isValid) {
+      val closest = locator.FindClosestPoint(clicked.toArray.map(_.toDouble))
+      if (closest < 0) None
+      else {
+        val coords = planeCutter.GetOutput().GetPoint(closest)
+        Some(Point[_3D](coords.map(_.toFloat)))
+      }
+    } else None
+  }
+
+  override def setHighlight(toggled: Boolean): Unit = {
+    val border = if (toggled) 1 else 0
+    val newWidth = lineWidth.value.toFloat + border
+    if (vtkActor.GetProperty().GetLineWidth() != newWidth) {
+      vtkActor.GetProperty().SetLineWidth(newWidth)
+      publishEdt(VtkContext.RenderRequest(this))
+    }
+  }
+}
 
 trait ScalarMeshFieldActor extends MeshActor[ScalarMeshFieldView] with ActorScalarRange {
   override def renderable: ScalarMeshFieldRenderable

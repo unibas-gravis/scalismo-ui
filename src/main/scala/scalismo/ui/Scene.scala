@@ -1,7 +1,6 @@
 package scalismo.ui
 
 import scalismo.geometry.{ Point, _3D }
-import scalismo.ui.Scene.ImageWindowLevel
 import scalismo.ui.Scene.ImageWindowLevel.ImageWindowLevelChanged
 import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.visualization._
@@ -287,6 +286,30 @@ object Scene {
     }
   }
 
+  class TwoDLandmarkingOptions {
+    private var _highlightClosest = PersistentSettings.get[Boolean](PersistentSettings.Keys.TwoDClickHighlight).getOrElse(true)
+
+    def highlightClosest: Boolean = _highlightClosest
+
+    def highlightClosest_=(newValue: Boolean) = {
+      _highlightClosest = newValue
+      PersistentSettings.set[Boolean](PersistentSettings.Keys.TwoDClickHighlight, _highlightClosest)
+    }
+
+    private var _snapRadius: Float = PersistentSettings.get[Float](PersistentSettings.Keys.TwoDClickSnapThreshold).getOrElse(5.0f)
+
+    def snapRadius: Float = _snapRadius
+
+    def snapRadius_=(newValue: Float) = {
+      _snapRadius = newValue
+      PersistentSettings.set[Float](PersistentSettings.Keys.TwoDClickSnapThreshold, _snapRadius)
+    }
+  }
+
+  class Options {
+    val twoDLandmarking = new TwoDLandmarkingOptions
+  }
+
 }
 
 class Scene extends SceneTreeObject {
@@ -358,7 +381,9 @@ class Scene extends SceneTreeObject {
 
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
 
-  lazy val imageWindowLevel: Scene.ImageWindowLevel = new ImageWindowLevel(this)
+  lazy val imageWindowLevel: Scene.ImageWindowLevel = new Scene.ImageWindowLevel(this)
+
+  lazy val options: Scene.Options = new Scene.Options
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {
     o => true
