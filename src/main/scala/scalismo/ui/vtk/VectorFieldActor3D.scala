@@ -66,13 +66,4 @@ class VectorFieldActor3D(renderable: VectorFieldRenderable3D) extends SinglePoly
     mapper.Modified()
     publishEdt(VtkContext.RenderRequest(this))
   }
-
-  override def onDestroy() = this.synchronized {
-    super.onDestroy()
-    glyph.Delete()
-    polydata.Delete()
-    vectors.Delete()
-    points.Delete()
-    arrow.Delete()
-  }
 }

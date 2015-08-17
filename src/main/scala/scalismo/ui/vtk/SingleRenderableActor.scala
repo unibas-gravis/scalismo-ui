@@ -7,8 +7,4 @@ trait SingleRenderableActor extends RenderableActor {
 
   final override lazy val vtkActors = Seq(vtkActor)
 
-  override def onDestroy() = {
-    super.onDestroy()
-  }
-
 }

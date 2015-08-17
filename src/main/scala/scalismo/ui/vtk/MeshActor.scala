@@ -42,7 +42,7 @@ trait MeshActor[T <: Publisher] extends SinglePolyDataActor with ActorOpacity {
 
   protected def onInstantiated(): Unit = {}
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(renderable.source)
     super.onDestroy()
   }

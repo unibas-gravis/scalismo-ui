@@ -47,7 +47,7 @@ abstract class TwoDSlicingActor(val viewport: TwoDViewport) extends SinglePolyDa
 
   protected def onSlicePositionChanged(): Unit
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(viewport.scene)
     super.onDestroy()
   }

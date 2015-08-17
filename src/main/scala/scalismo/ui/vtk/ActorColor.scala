@@ -20,7 +20,7 @@ trait ActorColor extends SingleRenderableActor {
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(color)
     super.onDestroy()
   }

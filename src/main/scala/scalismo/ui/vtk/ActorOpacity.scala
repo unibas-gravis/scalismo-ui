@@ -19,7 +19,7 @@ trait ActorOpacity extends SingleRenderableActor {
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(opacity)
     super.onDestroy()
   }

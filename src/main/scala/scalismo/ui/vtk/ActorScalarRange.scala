@@ -20,7 +20,7 @@ trait ActorScalarRange extends SinglePolyDataActor {
 
   setScalarRange()
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(scalarRange)
     super.onDestroy()
   }

@@ -19,7 +19,7 @@ trait ActorLineWidth extends SingleRenderableActor {
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(lineWidth)
     super.onDestroy()
   }
