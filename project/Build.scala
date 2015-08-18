@@ -5,7 +5,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
   val buildVersion = "develop-SNAPSHOT"
-  val buildScalaVersion = "2.10.4"
+  val buildScalaVersion = "2.10.5"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -13,7 +13,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := Seq("2.10.4", "2.11.4"),
+    crossScalaVersions := Seq("2.10.5", "2.11.7"),
     shellPrompt := ShellPrompt.buildShellPrompt)
 
 }
