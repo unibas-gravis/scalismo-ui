@@ -12,9 +12,4 @@ abstract class PolyDataActor extends vtkActor with RenderableActor {
 
 class SinglePolyDataActor extends PolyDataActor with SingleRenderableActor {
   override lazy val vtkActor = this
-
-  override def onDestroy() = {
-    super.onDestroy()
-    mapper.Delete()
-  }
 }

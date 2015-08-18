@@ -69,11 +69,5 @@ trait RenderableActor extends VtkContext {
   }
 
   def onDestroy(): Unit = {
-    vtkActors.foreach {
-      a =>
-        Try {
-          a.Delete()
-        }
-    }
   }
 }

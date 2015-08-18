@@ -222,7 +222,6 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
       coord.SetValue(currentPoint.x, height - currentPoint.y - 1, 0.0)
       coord.SetCoordinateSystemToDisplay()
       val array = coord.GetComputedWorldValue(renderer).map(_.toFloat)
-      coord.Delete()
 
       // these coordinates are necessarily inaccurate, because no object was hit, so
       // it's unclear where in space the point is located (in terms of "depth", i.e., how far away).

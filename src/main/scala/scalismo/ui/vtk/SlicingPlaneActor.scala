@@ -69,10 +69,6 @@ abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Ax
     outline.SetInputData(poly)
     mapper.SetInputConnection(outline.GetOutputPort())
     mapper.Modified()
-    outline.Delete()
-
-    poly.Delete()
-    points.Delete()
 
     camMove.foreach { m =>
       val diff = axis match {
@@ -88,7 +84,7 @@ abstract class SlicingPlaneActor(val source: Scene.SlicingPosition, val axis: Ax
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(scene)
     super.onDestroy()
   }
@@ -126,17 +122,9 @@ class SlicingPlaneActor3D(plane: Scene.SlicingPosition.SlicingPlaneRenderable3D)
     poly.SetPolys(quads)
     planeMapper.SetInputData(poly)
     planeMapper.Modified()
-    quads.Delete()
-    quad.Delete()
-    poly.Delete()
 
     planeActor.GetProperty().SetColor(this.GetProperty().GetColor())
     planeActor.GetProperty().SetOpacity(scene.slicingPosition.opacity)
-  }
-
-  override def onDestroy() = this.synchronized {
-    super.onDestroy()
-    planeMapper.Delete()
   }
 
   update()
@@ -206,10 +194,6 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
 
       intersectionsMapper.SetInputData(poly)
       intersectionsMapper.Modified()
-      lines.Delete()
-      line1.Delete()
-      line2.Delete()
-      poly.Delete()
 
     } else {
       intersectionsActor.SetVisibility(0)
@@ -221,7 +205,7 @@ class SlicingPlaneActor2D(plane: Scene.SlicingPosition.SlicingPlaneRenderable2D)
     case Scene.SlicingPosition.SlicesVisibleChanged(s) => update()
   }
 
-  override def onDestroy(): Unit = this.synchronized {
+  override def onDestroy(): Unit = {
     deafTo(scene)
     super.onDestroy()
   }

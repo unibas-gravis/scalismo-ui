@@ -66,11 +66,9 @@ trait ScalarFieldActor extends SinglePolyDataActor with ClickableActor with Acto
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(radius)
     super.onDestroy()
-    glyph.Delete()
-    sphere.Delete()
   }
 
   def rerender(): Unit = {

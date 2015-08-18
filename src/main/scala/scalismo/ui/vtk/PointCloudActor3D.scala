@@ -44,13 +44,9 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends SinglePolyDa
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(radius)
     super.onDestroy()
-    glyph.Delete()
-    polydata.Delete()
-    points.Delete()
-    sphere.Delete()
   }
 
   override def clicked(point: Point[_3D]): Unit = {

@@ -58,7 +58,6 @@ trait EllipsoidActor extends ActorColor with ActorOpacity with RotatableActor {
           matrix.SetElement(r, c, m(r, c))
         }
         transform.SetMatrix(matrix)
-        matrix.Delete()
       }
       transform.Translate(source.center(0), source.center(1), source.center(2))
 
@@ -72,7 +71,7 @@ trait EllipsoidActor extends ActorColor with ActorOpacity with RotatableActor {
 
   listenTo(source, source.radiuses)
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(source, source.radiuses)
     super.onDestroy()
   }
