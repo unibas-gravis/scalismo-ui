@@ -2,21 +2,14 @@ package scalismo.ui.vtk
 
 import vtk.{ vtkActor, vtkPolyDataMapper }
 
-import scala.util.Try
-
-class PolyDataActor extends vtkActor with SingleRenderableActor {
-  override lazy val vtkActor = this
+abstract class PolyDataActor extends vtkActor with RenderableActor {
   lazy val mapper = new vtkPolyDataMapper
-  vtkActor.SetMapper(mapper)
+  SetMapper(mapper)
 
-  override def currentBoundingBox = {
-    //FIXME: don't know why it sometimes fails
-    empty = Try(mapper.GetInput().GetPoints().GetNumberOfPoints() == 0).getOrElse(false)
-    super.currentBoundingBox
-  }
+  this.GetProperty().SetInterpolationToGouraud()
 
-  override def onDestroy() = {
-    super.onDestroy()
-    mapper.Delete()
-  }
+}
+
+class SinglePolyDataActor extends PolyDataActor with SingleRenderableActor {
+  override lazy val vtkActor = this
 }

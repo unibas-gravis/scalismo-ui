@@ -1,11 +1,11 @@
 package scalismo.ui.vtk
 
 import scalismo.geometry.{ Point, _3D }
-import scalismo.ui.PointCloud.PointCloudRenderable3D
+import scalismo.ui.PointCloudView.PointCloudRenderable3D
 import scalismo.ui.visualization.VisualizationProperty
 import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 
-class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActor with ColorableActor with ClickableActor {
+class PointCloudActor3D(renderable: PointCloudRenderable3D) extends SinglePolyDataActor with ActorColor with ActorOpacity with ClickableActor {
   private lazy val sphere = new vtkSphereSource
   override lazy val color = renderable.color
   override lazy val opacity = renderable.opacity
@@ -13,7 +13,7 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
   listenTo(radius)
 
   val points = new vtkPoints {
-    renderable.source.peer.foreach { point =>
+    renderable.source.source.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
   }
@@ -29,7 +29,6 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
 
   mapper.SetInputConnection(glyph.GetOutputPort)
 
-  this.GetProperty().SetInterpolationToGouraud()
   setGeometry()
 
   reactions += {
@@ -45,20 +44,16 @@ class PointCloudActor3D(renderable: PointCloudRenderable3D) extends PolyDataActo
     publishEdt(VtkContext.RenderRequest(this))
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(radius)
     super.onDestroy()
-    glyph.Delete()
-    polydata.Delete()
-    points.Delete()
-    sphere.Delete()
   }
 
   override def clicked(point: Point[_3D]): Unit = {
     // the click is on the surface of a sphere, but actually "means" the center of the sphere.
-    val cloudPoints = renderable.source.peer
+    val cloudPoints = renderable.source.source
     // just in case
-    if (cloudPoints.size > 0) {
+    if (cloudPoints.nonEmpty) {
       val vector = point.toVector
       val vectorsWithIndex = cloudPoints.map(_.toVector - vector).zipWithIndex
       val minIndex = vectorsWithIndex.minBy(_._1.norm2)._2

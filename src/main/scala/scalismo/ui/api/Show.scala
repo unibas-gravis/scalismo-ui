@@ -19,39 +19,40 @@ trait Show[-A] {
 }
 
 object Show {
+
   implicit object ShowMesh extends Show[TriangleMesh] {
-    override def show(m: TriangleMesh, name: String)(implicit scene: Scene) {
-      StaticMesh.createFromPeer(m, None, Some(name))
+    override def show(m: TriangleMesh, name: String)(implicit scene: Scene): Unit = {
+      MeshView.createFromSource(m, None, Some(name))
     }
   }
 
   implicit object ShowStatisticalMeshModel extends Show[StatisticalMeshModel] {
-    override def show(sm: StatisticalMeshModel, name: String)(implicit scene: Scene) {
-      ShapeModel.createFromPeer(sm, 1, Some(name))
+    override def show(sm: StatisticalMeshModel, name: String)(implicit scene: Scene): Unit = {
+      ShapeModelView.createFromSource(sm, 1, Some(name))
     }
   }
 
   implicit object ShowPointCloud extends Show[Iterable[Point[_3D]]] {
-    override def show(pc: Iterable[Point[_3D]], name: String)(implicit scene: Scene) {
-      StaticPointCloud.createFromPeer(pc.toIndexedSeq, None, Some(name))
+    override def show(pc: Iterable[Point[_3D]], name: String)(implicit scene: Scene): Unit = {
+      PointCloudView.createFromSource(pc.toIndexedSeq, None, Some(name))
     }
   }
 
   implicit object ShowVectorFieldCloud extends Show[DiscreteVectorField[_3D, _3D]] {
-    override def show(vf: DiscreteVectorField[_3D, _3D], name: String)(implicit scene: Scene) {
-      StaticVectorField.createFromPeer(vf, None, Some(name))
+    override def show(vf: DiscreteVectorField[_3D, _3D], name: String)(implicit scene: Scene): Unit = {
+      VectorFieldView.createFromSource(vf, None, Some(name))
     }
   }
 
   implicit def show2DImage[P: Scalar: ClassTag: TypeTag] = new Show[DiscreteScalarImage[_2D, P]] {
-    def show(image: DiscreteScalarImage[_2D, P], name: String)(implicit scene: Scene) {
+    def show(image: DiscreteScalarImage[_2D, P], name: String)(implicit scene: Scene): Unit = {
       val oneSliceImageDomain = DiscreteImageDomain[_3D](
         Point(image.domain.origin(0), image.domain.origin(1), 0),
         Vector(image.domain.spacing(0), image.domain.spacing(1), 0),
         Index(image.domain.size(0), image.domain.size(1), 1))
 
       val oneSliceImage = DiscreteScalarImage(oneSliceImageDomain, ScalarArray(image.values.toArray))
-      StaticImage3D.createFromPeer(oneSliceImage, None, Some(name))
+      Image3DView.createFromSource(oneSliceImage, None, Some(name))
     }
   }
 
@@ -59,9 +60,9 @@ object Show {
 
     override def show(scalarField: scalismo.common.DiscreteScalarField[_3D, P], name: String)(implicit scene: Scene): Unit = {
       scalarField match {
-        case img: DiscreteScalarImage[_3D, P] => StaticImage3D.createFromPeer(img, None, Some(name))
-        case meshField: scalismo.mesh.ScalarMeshField[P] => StaticScalarMeshField.createFromPeer(meshField, None, Some(name))
-        case _ => StaticScalarField.createFromPeer(scalarField, None, Some(name))
+        case img: DiscreteScalarImage[_3D, P] => Image3DView.createFromSource(img, None, Some(name))
+        case meshField: scalismo.mesh.ScalarMeshField[P] => ScalarMeshFieldView.createFromSource(meshField, None, Some(name))
+        case _ => ScalarFieldView.createFromSource(scalarField, None, Some(name))
 
       }
     }
@@ -72,7 +73,7 @@ object Show {
     override def show(asmSample: ASMSample, name: String)(implicit scene: Scene): Unit = {
 
       val profilePointsAndVals = asmSample.featureField.pointsWithValues.toIndexedSeq
-      val allPointsWithValues = profilePointsAndVals.map {
+      val profileCloud = profilePointsAndVals.flatMap {
         case (p, vec) =>
           val profPoints = asmSample.featureExtractor.featurePoints(asmSample.mesh, asmSample.mesh.findClosestPoint(p)._2, p)
           profPoints.map { pts =>
@@ -82,10 +83,9 @@ object Show {
           }.getOrElse(IndexedSeq())
       }
 
-      val profileCloud = allPointsWithValues.flatten
       if (profileCloud.nonEmpty) {
         val field = new DiscreteScalarField[_3D, Float](UnstructuredPointsDomain(profileCloud.map(_._1)), ScalarArray[Float](profileCloud.map(_._2).toArray))
-        StaticScalarField.createFromPeer(field, None, Some(name))
+        ScalarFieldView.createFromSource(field, None, Some(name))
       }
     }
   }

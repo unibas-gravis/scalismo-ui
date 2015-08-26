@@ -6,10 +6,10 @@ import scala.util.{ Failure, Try }
 
 object SceneTreeObjectFactory {
   def combineFileExtensions(filters: Seq[SceneTreeObjectFactory[SceneTreeObject]]): Array[String] = {
-    filters.map(_.ioMetadata.fileExtensions).flatten.toSeq.sorted.toArray
+    filters.flatMap(_.ioMetadata.fileExtensions).sorted.toArray
   }
 
-  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModel, StaticMesh, StaticImage3D)
+  val DefaultFactories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = Seq(ShapeModelView, StaticMeshView, StaticImage3DView)
 
   def load(filename: String, factories: Seq[SceneTreeObjectFactory[SceneTreeObject]] = DefaultFactories)(implicit scene: Scene): Try[SceneTreeObject] = {
     val candidates = factories.filter(_.canPotentiallyHandleFile(filename))

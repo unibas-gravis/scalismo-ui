@@ -35,7 +35,7 @@ trait ScalismoLookAndFeel extends SimpleSwingApplication {
     super.main(args)
   }
 
-  override def startup(args: Array[String]) {
+  override def startup(args: Array[String]): Unit = {
     super.startup(args)
     SwingUtilities.updateComponentTreeUI(top.peer)
   }

@@ -1,11 +1,11 @@
 import sbt._
-import Keys._
+import sbt.Keys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "0.4.0"
-  val buildScalaVersion = "2.10.4"
+  val buildVersion = "0.5.0"
+  val buildScalaVersion = "2.10.5"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -13,7 +13,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := Seq("2.10.4", "2.11.4"),
+    crossScalaVersions := Seq("2.10.5", "2.11.7"),
     shellPrompt := ShellPrompt.buildShellPrompt)
 
 }
@@ -22,8 +22,8 @@ object BuildSettings {
 // git branch and build version
 object ShellPrompt {
   object devnull extends ProcessLogger {
-    def info(s: => String) {}
-    def error(s: => String) {}
+    def info(s: => String): Unit = {}
+    def error(s: => String): Unit = {}
     def buffer[T](f: => T): T = f
   }
   def currBranch = (
@@ -34,8 +34,7 @@ object ShellPrompt {
     (state: State) =>
       {
         val currProject = Project.extract(state).currentProject.id
-        "%s:%s:%s> ".format(
-          currProject, currBranch, BuildSettings.buildVersion)
+        s"$currProject:$currBranch:${BuildSettings.buildVersion}> "
       }
   }
 }
@@ -55,14 +54,12 @@ object Creds {
 }
 
 object Dependencies {
-  import BuildSettings._
-
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.8.0"
-  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
-  val scalatest = "org.scalatest" %% "scalatest" % "2.2.+" % "test"
-//  these dependencies are transitively obtained
-//  val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
-//  val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.9.+"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "3.0.+"
+  val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
+  // the following two dependencies are transitively obtained through other dependencies
+  //val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
+  //val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.+"
   val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
 }
@@ -77,6 +74,9 @@ object STKBuild extends Build {
     scalismo,
     scalismoNative,
     scalatest,
+    // the following two dependencies are transitively obtained through other dependencies.
+    //scalaReflect,
+    //scalaSwing,
     scalaAsync,
     scalaInterpreterPane)
 

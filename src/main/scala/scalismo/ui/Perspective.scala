@@ -51,9 +51,10 @@ object Perspectives {
 }
 
 trait PerspectiveFactory {
-  val name: String
+  def name: String
 
   def apply()(implicit scene: Scene): Perspective
+
   def bootstrap(scene: Scene): Perspective
 }
 
@@ -61,6 +62,7 @@ object SingleViewportPerspective extends PerspectiveFactory {
   override lazy val name = "Single 3D Window"
 
   override def apply()(implicit scene: Scene): Perspective = new SingleViewportPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new SingleViewportPerspective(None)(scene)
 }
 
@@ -78,6 +80,7 @@ object TwoViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Two 3D Windows"
 
   override def apply()(implicit scene: Scene): Perspective = new TwoViewportsPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new TwoViewportsPerspective(None)(scene)
 }
 
@@ -96,6 +99,7 @@ object FourViewportsPerspective extends PerspectiveFactory {
   override lazy val name = "Four 3D Windows"
 
   override def apply()(implicit scene: Scene): Perspective = new FourViewportsPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new FourViewportsPerspective(None)(scene)
 }
 
@@ -116,6 +120,7 @@ object OrthogonalSlicesPerspective extends PerspectiveFactory {
   override lazy val name = "Orthogonal Slices"
 
   override def apply()(implicit scene: Scene): Perspective = new OrthogonalSlicesPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new OrthogonalSlicesPerspective(None)(scene)
 }
 
@@ -137,6 +142,7 @@ object XOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "X Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new XOnlyPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new XOnlyPerspective(None)(scene)
 }
 
@@ -154,6 +160,7 @@ object YOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Y Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new YOnlyPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new YOnlyPerspective(None)(scene)
 }
 
@@ -171,6 +178,7 @@ object ZOnlyPerspective extends PerspectiveFactory {
   override lazy val name = "Z Slice"
 
   override def apply()(implicit scene: Scene): Perspective = new ZOnlyPerspective(Some(scene.perspective))
+
   override def bootstrap(scene: Scene): Perspective = new ZOnlyPerspective(None)(scene)
 }
 

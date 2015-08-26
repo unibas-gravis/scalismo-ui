@@ -1,12 +1,13 @@
 package scalismo.ui.swing.props
 
+import java.awt.Font
 import javax.swing.border.TitledBorder
 
 import scalismo.ui.Scene.SlicingPosition.Precision.valueToPrecisionVal
 import scalismo.ui._
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.{ AxisColor, EdtSlider, FancySlider }
 
-import scala.swing.GridBagPanel.Anchor
+import scala.swing.GridBagPanel.{ Anchor, Fill }
 import scala.swing._
 import scala.swing.event.{ ButtonClicked, ValueChanged }
 
@@ -15,15 +16,18 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
 
   private var slicingPosition: Option[Scene.SlicingPosition] = None
 
-  private[SlicingPositionPanel] class Dimension(axis: Axis.Value) {
-    val nameLabel = new Label(axis.toString + ":")
-    val current = new Label(format(0))
-    val minimum = new Label(format(0))
-    val maximum = new Label(format(0))
-    val slider = new EdtSlider {
+  private[SlicingPositionPanel] class AxisControl(axis: Axis.Value) {
+    val nameLabel = new Label(axis.toString) {
+      foreground = AxisColor.forAxis(axis, darker = true)
+      font = font.deriveFont(font.getStyle | Font.BOLD)
+    }
+    val slider = new FancySlider {
+
       min = 0
       max = 0
       value = 0
+
+      override def formattedValue(sliderValue: Int): String = slicingPosition.map(s => s.precision.format(s.precision.fromInt(sliderValue))).getOrElse("?")
     }
 
     val minus = new Button(new Action("-") {
@@ -54,14 +58,6 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       } else 0
     }
 
-    def format(value: Float): String = {
-      if (slicingPosition.isDefined) {
-        slicingPosition.get.precision.format(value)
-      } else {
-        "???"
-      }
-    }
-
     def update() = {
       val sp = slicingPosition.get
       val (min, max, value) = axis match {
@@ -69,21 +65,18 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
         case Axis.Y => (sp.boundingBox.yMin, sp.boundingBox.yMax, sp.y)
         case Axis.Z => (sp.boundingBox.zMin, sp.boundingBox.zMax, sp.z)
       }
-      minimum.text = format(min)
-      maximum.text = format(max)
       slider.min = sp.precision.toIntValue(min)
       slider.max = sp.precision.toIntValue(max)
       slider.value = sp.precision.toIntValue(value)
-      current.text = format(value)
     }
 
   }
 
-  val x = new Dimension(Axis.X)
-  val y = new Dimension(Axis.Y)
-  val z = new Dimension(Axis.Z)
+  val x = new AxisControl(Axis.X)
+  val y = new AxisControl(Axis.Y)
+  val z = new AxisControl(Axis.Z)
 
-  private def dimensions = Seq(x, y, z)
+  private def axisControls = Seq(x, y, z)
 
   val position = new GridBagPanel {
     border = new TitledBorder(null, "Position", TitledBorder.LEADING, 0, null, null)
@@ -91,35 +84,21 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     def add(comp: Component, position: (Int, Int)): Unit = {
       val const = pair2Constraints(position)
       const.ipadx = 10
-      if (position._2 == 0) {
-        const.anchor = Anchor.Center
+      const.ipady = 10
+      if (position._1 == 1) {
+        const.fill = Fill.Both
+        const.weightx = 1.0
       } else {
-        const.anchor = if (position._1 == 0) {
-          Anchor.West
-        } else if (position._1 == 3) {
-          Anchor.Center
-        } else Anchor.East
+        const.anchor = Anchor.West
       }
-      super.add(new BorderPanel {
-        layout(comp) = BorderPanel.Position.Center
-      }, const)
+      super.add(comp, const)
     }
 
-    add(new Label("Dim."), (0, 0))
-    add(new Label("Current"), (1, 0))
-    add(new Label("Min."), (2, 0))
-    add(new Label("Control"), (3, 0))
-    add(new Label("Max."), (4, 0))
-
-    def add(dim: Dimension, row: Int): Unit = {
-      add(dim.nameLabel, (0, row))
-      add(dim.current, (1, row))
-      add(dim.minimum, (2, row))
-      add(dim.control, (3, row))
-      add(dim.maximum, (4, row))
+    def add(axis: AxisControl, row: Int): Unit = {
+      add(axis.nameLabel, (0, row))
+      add(axis.control, (1, row))
     }
   }
-
   position.add(x, 1)
   position.add(y, 2)
   position.add(z, 3)
@@ -134,13 +113,13 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       p =>
         g.buttons += new ValueButton(p) {
           reactions += {
-            case ButtonClicked(_) => slicingPosition.map(sp => sp.precision = p)
+            case ButtonClicked(_) => slicingPosition.foreach(sp => sp.precision = p)
           }
         }
     }
     contents ++= g.buttons
 
-    def set(np: Scene.SlicingPosition.Precision.Value) {
+    def set(np: Scene.SlicingPosition.Precision.Value): Unit = {
       g.buttons.foreach {
         b =>
           if (b.asInstanceOf[ValueButton].value == np) {
@@ -154,7 +133,8 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
     val flow = new FlowPanel
 
-    val check = new CheckBox("Show bounding box/slices")
+    val slicesVisible = new CheckBox("Show bounding box/slices")
+    val intersectionsVisible = new CheckBox("2D: show intersecting slice positions")
 
     val opacity = new EdtSlider {
       val s = preferredSize
@@ -162,9 +142,14 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
       preferredSize = s
     }
 
-    flow.contents ++= Seq(new Label("3D opacity"), opacity)
-    layout(check) = BorderPanel.Position.West
-    layout(flow) = BorderPanel.Position.East
+    val opacityLabel = new Label("3D: slice opacity")
+    flow.contents ++= Seq(opacityLabel, opacity)
+
+    val north = new BorderPanel
+    north.layout(slicesVisible) = BorderPanel.Position.West
+    north.layout(flow) = BorderPanel.Position.East
+    layout(north) = BorderPanel.Position.North
+    layout(intersectionsVisible) = BorderPanel.Position.Center
   }
 
   layout(new BorderPanel {
@@ -188,49 +173,50 @@ class SlicingPositionPanel extends BorderPanel with PropertyPanel {
   }
 
   def cleanup() = {
-    slicingPosition.map(sp => deafTo(sp.scene))
+    slicingPosition.foreach(sp => deafTo(sp.scene))
     slicingPosition = None
   }
 
   def updateUi(): Unit = {
-    deafToOwnEvents()
-    slicingPosition.map {
-      sp =>
-        precision.set(sp.precision)
-        dimensions.foreach {
-          d =>
-            d.update()
-        }
-        visibility.check.selected = sp.visible
-        visibility.opacity.value = (sp.opacity * 100).toInt
+    slicingPosition.foreach { sp =>
+      deafToOwnEvents()
+      precision.set(sp.precision)
+      axisControls.foreach(_.update())
+      visibility.slicesVisible.selected = sp.slicesVisible
+      visibility.intersectionsVisible.selected = sp.intersectionsVisible
+      visibility.opacity.value = (sp.opacity * 100).toInt
+      Seq(visibility.intersectionsVisible, visibility.opacityLabel, visibility.opacity) foreach {
+        _.enabled = sp.slicesVisible
+      }
+      revalidate()
+      listenToOwnEvents()
     }
-    revalidate()
-    listenToOwnEvents()
   }
 
   def deafToOwnEvents() = {
-    deafTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
+    deafTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
   }
 
   def listenToOwnEvents() = {
-    listenTo(x.slider, y.slider, z.slider, visibility.check, visibility.opacity)
+    listenTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
   }
 
   reactions += {
-    case Scene.SlicingPosition.VisibilityChanged(s) => updateUi()
+    case Scene.SlicingPosition.SlicesVisibleChanged(s) => updateUi()
     case Scene.SlicingPosition.BoundingBoxChanged(sp) => updateUi()
     case Scene.SlicingPosition.PrecisionChanged(sp) => updateUi()
     case Scene.SlicingPosition.PointChanged(sp, _, _) => updateUi()
     case ValueChanged(slider: EdtSlider) =>
       slider match {
-        case x.slider => slicingPosition.map(_.x = x.value)
-        case y.slider => slicingPosition.map(_.y = y.value)
-        case z.slider => slicingPosition.map(_.z = z.value)
-        case visibility.opacity => slicingPosition.map(_.opacity = visibility.opacity.value / 100.0)
+        case x.slider => slicingPosition.foreach(_.x = x.value)
+        case y.slider => slicingPosition.foreach(_.y = y.value)
+        case z.slider => slicingPosition.foreach(_.z = z.value)
+        case visibility.opacity => slicingPosition.foreach(_.opacity = visibility.opacity.value / 100.0)
       }
-    case ButtonClicked(b: CheckBox) if b eq visibility.check =>
-      slicingPosition.map {
-        _.visible = visibility.check.selected
+    case ButtonClicked(checkbox: CheckBox) =>
+      checkbox match {
+        case visibility.slicesVisible => slicingPosition.foreach(_.slicesVisible = checkbox.selected)
+        case visibility.intersectionsVisible => slicingPosition.foreach(_.intersectionsVisible = checkbox.selected)
       }
   }
 

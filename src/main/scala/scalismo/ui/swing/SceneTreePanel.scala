@@ -4,9 +4,10 @@ import java.awt
 import java.awt.Frame
 import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
 import java.util.EventObject
+import javax.swing._
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
+import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
-import javax.swing.{ Icon, JPopupMenu, JTree }
 
 import scalismo.ui._
 import scalismo.ui.swing.SceneTreePanel.TreeNode
@@ -15,6 +16,7 @@ import scalismo.ui.visualization.icons.IconFactory
 import scalismo.ui.visualization.{ VisualizableSceneTreeObject, VisualizationProperty }
 
 import scala.Array.canBuildFrom
+import scala.annotation.tailrec
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.swing.BorderPanel.Position.Center
 import scala.swing.{ BorderPanel, Component, Reactor, ScrollPane }
@@ -37,7 +39,10 @@ object SceneTreePanel {
     new AddMeshRepresentationToStaticThreeDObjectAction,
     new AddImageRepresentationToStaticThreeDObjectAction,
     new VisibilityAction,
-    new RenameNameableAction)
+    new RenameNameableAction,
+    new ResetNamesAction,
+    new GotoLandmarkAction
+  )
 
   private[SceneTreePanel] class TreeNode(backend: SceneTreeObject) extends DefaultMutableTreeNode(backend) {
     override def getUserObject: SceneTreeObject = {
@@ -73,13 +78,40 @@ object SceneTreePanel {
       }
     }
 
+    private var recursing = false
+
     override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): awt.Component = {
       val sceneTreeObject = value.asInstanceOf[TreeNode].getUserObject
 
       Icons.getForNode(sceneTreeObject).apply()
 
-      super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus)
+      val component = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus)
+
+      /* Next,we try to set the width of the component to extend (almost) to the right edge of the containing tree.
+       * This has two advantages: first, it should get rid of the annoying ellipses when renaming a node (e.g. "A" -> "ABC"
+       * would result in the tree showing "..." instead). Second, it allows to right-click anywhere in the row to get the popup menu.
+       */
+
+      if (component == this) {
+        // the tree.getPathBounds() method used below results in another call to this method, which will create a stack overflow if we don't handle it.
+        if (!recursing) {
+          recursing = true
+          val Margin = 3
+          val bounds = tree.getPathBounds(tree.getPathForRow(row))
+          val treeWidth = tree.getWidth
+          if (bounds != null && treeWidth - Margin > bounds.x) {
+            val pref = component.getPreferredSize
+            pref.width = treeWidth - Margin - bounds.x
+            setPreferredSize(pref)
+          }
+          recursing = false
+        }
+      }
+      component
     }
+
+    // just for visual debugging, if needed
+    //setBorder(BorderFactory.createLineBorder(Color.BLACK))
   }
 
 }
@@ -112,7 +144,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       workspace.selectedObject = getTreeObjectForEvent(event)
     }
 
-    override def keyTyped(event: KeyEvent) {
+    override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete
         val maybeRemoveable = getTreeObjectForEvent(event)
@@ -177,10 +209,12 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     addKeyListener(listener)
     addMouseListener(mouseListener)
     setExpandsSelectedPaths(true)
+    setLargeModel(true)
   }
 
   lazy val topmost = {
     import java.awt.{ Component => AComponent }
+    @tailrec
     def top(c: AComponent): AComponent = {
       val p = c.getParent
       if (p == null || c.isInstanceOf[Frame]) c else top(p)
@@ -198,7 +232,7 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
       // whenever a visualization property changes
       listenTo(VisualizationProperty)
       reactions += {
-        case VisualizationProperty.ValueChanged(_) => jtree.repaint()
+        case VisualizationProperty.ValueChanged(_) => repaintTree()
       }
     }
     val scroll = new ScrollPane(ctree)
@@ -208,10 +242,10 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
 
   reactions += {
     case Scene.TreeTopologyChanged(s) => synchronizeTreeWithScene()
-    case Nameable.NameChanged(s) => jtree.treeDidChange()
+    case Nameable.NameChanged(s) => repaintTree()
   }
 
-  def synchronizeTreeWithScene() {
+  def synchronizeTreeWithScene(): Unit = {
     val path = jtree.getSelectionPath
     synchronizeTreeNode(scene, root)
     if (path != null) {
@@ -219,9 +253,19 @@ class SceneTreePanel(val workspace: Workspace) extends BorderPanel with Reactor 
     } else {
       jtree.setSelectionRow(0)
     }
+    repaintTree()
   }
 
-  protected def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode) {
+  def repaintTree(): Unit = {
+    // try to force the tree to invalidate cached node sizes
+    jtree.getUI match {
+      case ui: BasicTreeUI => ui.setLeftChildIndent(ui.getLeftChildIndent)
+      case _ => //don't know how to handle
+    }
+    jtree.treeDidChange()
+  }
+
+  protected def synchronizeTreeNode(backend: SceneTreeObject, frontend: TreeNode): Unit = {
 
     def frontendChildren = frontend.children.map(_.asInstanceOf[TreeNode]).toList
 

@@ -15,6 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * prevent deadlocks on Windows.
  */
 
+@SuppressWarnings("ALL")
 public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
     protected vtkGenericOpenGLRenderWindow renderWindow;
     protected vtkRenderer renderer;
@@ -34,7 +35,8 @@ public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
         inRenderCall = false;
         renderWindow = new vtkGenericOpenGLRenderWindow();
         renderer = new vtkRenderer();
-        interactor = new VtkRenderWindowInteractor(panel);
+        eventForwarder = new vtkInteractorForwarder(this);
+        interactor = new VtkRenderWindowInteractor(panel, eventForwarder);
         lock = new ReentrantLock();
 
         // Init interactor
@@ -48,7 +50,6 @@ public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
         interactor.SetInteractorStyle(style);
 
         // Setup event forwarder
-        eventForwarder = new vtkInteractorForwarder(this);
         interactor.AddObserver("CreateTimerEvent", eventForwarder, "StartTimer");
         interactor.AddObserver("DestroyTimerEvent", eventForwarder, "DestroyTimer");
 

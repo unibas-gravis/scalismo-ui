@@ -3,7 +3,7 @@ package scalismo.ui.vtk
 import scalismo.ui.{ BoundingBox, Scene }
 import vtk.{ vtkOutlineFilter, vtkPoints, vtkPolyData }
 
-class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends PolyDataActor {
+class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) extends SinglePolyDataActor {
   val scene = source.source.scene
 
   this.GetProperty().SetColor(1, 1, 1)
@@ -28,16 +28,12 @@ class BoundingBoxActor3D(source: Scene.SlicingPosition.BoundingBoxRenderable3D) 
     mapper.SetInputConnection(outline.GetOutputPort())
     mapper.Modified()
 
-    outline.Delete()
-    poly.Delete()
-    points.Delete()
-
     if (withEvent) {
       publishEdt(VtkContext.RenderRequest(this))
     }
   }
 
-  override def onDestroy() = this.synchronized {
+  override def onDestroy() {
     deafTo(scene)
     super.onDestroy()
   }

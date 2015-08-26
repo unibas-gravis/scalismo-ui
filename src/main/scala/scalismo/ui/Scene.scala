@@ -1,10 +1,10 @@
 package scalismo.ui
 
 import scalismo.geometry.{ Point, _3D }
+import scalismo.ui.Scene.ImageWindowLevel.ImageWindowLevelChanged
 import scalismo.ui.settings.PersistentSettings
 import scalismo.ui.visualization._
 
-import scala.collection.immutable
 import scala.collection.immutable.List
 import scala.swing.event.Event
 import scala.util.Try
@@ -19,7 +19,7 @@ object Scene {
 
   case class VisibilityChanged private[Scene] (scene: Scene) extends Event
 
-  object SlicingPosition extends SimpleVisualizationFactory[SlicingPosition] {
+  object SlicingPosition {
 
     case class BoundingBoxChanged(slicingPosition: SlicingPosition) extends Event
 
@@ -27,7 +27,9 @@ object Scene {
 
     case class PrecisionChanged(slicingPosition: SlicingPosition) extends Event
 
-    case class VisibilityChanged(slicingPosition: SlicingPosition) extends Event
+    case class SlicesVisibleChanged(slicingPosition: SlicingPosition) extends Event
+
+    case class IntersectionsVisibleChanged(slicingPosition: SlicingPosition) extends Event
 
     case class OpacityChanged(slicingPosition: SlicingPosition) extends Event
 
@@ -60,41 +62,6 @@ object Scene {
       }, {
         i => i.toFloat / 100f
       })
-      val MmThousandth = new Val("1/1000 mm", {
-        value => f"$value%1.3f"
-      }, {
-        f => Math.round(f * 1000)
-      }, {
-        i => i.toFloat / 1000f
-      })
-    }
-
-    visualizations += Tuple2(Viewport.ThreeDViewportClassName, Seq(new Visualization3D))
-    visualizations += Tuple2(Viewport.TwoDViewportClassName, Seq(new Visualization2D))
-
-    class Visualization3D extends Visualization[SlicingPosition] {
-      override protected def createDerived() = new Visualization3D
-
-      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
-        new BoundingBoxRenderable3D(source),
-        new SlicingPlaneRenderable3D(source, Axis.X),
-        new SlicingPlaneRenderable3D(source, Axis.Y),
-        new SlicingPlaneRenderable3D(source, Axis.Z)
-      )
-
-      override val description = "bounding box and slices"
-
-    }
-
-    class Visualization2D extends Visualization[SlicingPosition] {
-      override protected def createDerived() = new Visualization2D
-
-      override protected def instantiateRenderables(source: SlicingPosition) = immutable.Seq(
-        new SlicingPlaneRenderable2D(source)
-      )
-
-      override val description = "slice position"
-
     }
 
     class BoundingBoxRenderable3D(val source: SlicingPosition) extends Renderable
@@ -103,25 +70,50 @@ object Scene {
 
     class SlicingPlaneRenderable2D(val source: SlicingPosition) extends Renderable
 
+    object VisualizationStrategy extends VisualizationStrategy[SlicingPosition] {
+      override def renderablesFor2D(targetObject: SlicingPosition): Seq[Renderable] = Seq(new SlicingPlaneRenderable2D(targetObject))
+
+      override def renderablesFor3D(source: SlicingPosition): Seq[Renderable] = {
+        Seq(new BoundingBoxRenderable3D(source),
+          new SlicingPlaneRenderable3D(source, Axis.X),
+          new SlicingPlaneRenderable3D(source, Axis.Y),
+          new SlicingPlaneRenderable3D(source, Axis.Z)
+        )
+      }
+    }
+
   }
 
   class SlicingPosition(val scene: Scene) extends Visualizable[SlicingPosition] {
 
     import scalismo.ui.Scene.SlicingPosition.Precision
 
-    protected[ui] override def visualizationProvider = SlicingPosition
+    override def visualizationStrategy: VisualizationStrategy[SlicingPosition] = SlicingPosition.VisualizationStrategy
 
-    protected[ui] override def isVisibleIn(viewport: Viewport) = _visible || viewport.isInstanceOf[TwoDViewport]
+    protected[ui] override def isVisibleIn(viewport: Viewport) = _slicesVisible || viewport.isInstanceOf[TwoDViewport]
 
-    private var _visible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
+    private var _slicesVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
 
-    def visible = _visible
+    def slicesVisible = _slicesVisible
 
-    def visible_=(nv: Boolean) = {
-      if (_visible != nv) {
-        _visible = nv
+    def slicesVisible_=(nv: Boolean) = {
+      if (_slicesVisible != nv) {
+        _slicesVisible = nv
         PersistentSettings.set(PersistentSettings.Keys.SlicesVisible, nv)
-        scene.publish(Scene.SlicingPosition.VisibilityChanged(this))
+        scene.publish(Scene.SlicingPosition.SlicesVisibleChanged(this))
+        scene.publish(Scene.VisibilityChanged(scene))
+      }
+    }
+
+    private var _intersectionsVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.IntersectionsVisible).getOrElse(false)
+
+    def intersectionsVisible = _intersectionsVisible
+
+    def intersectionsVisible_=(nv: Boolean) = {
+      if (_intersectionsVisible != nv) {
+        _intersectionsVisible = nv
+        PersistentSettings.set(PersistentSettings.Keys.IntersectionsVisible, nv)
+        scene.publish(Scene.SlicingPosition.IntersectionsVisibleChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
       }
     }
@@ -145,9 +137,9 @@ object Scene {
       _point.getOrElse(Point((boundingBox.xMin + boundingBox.xMax) / 2, (boundingBox.yMin + boundingBox.yMax) / 2, (boundingBox.zMin + boundingBox.zMax) / 2))
     }
 
-    private def point_=(np: Point[_3D]) = {
+    def point_=(np: Point[_3D]) = {
       val previous = _point
-      if (!_point.isDefined || _point.get != np) {
+      if (_point.isEmpty || _point.get != np) {
         _point = Some(np)
       }
       scene.publishEdt(Scene.SlicingPosition.PointChanged(this, np, previous))
@@ -216,6 +208,106 @@ object Scene {
           bb.union(vp.currentBoundingBox)
       })
     }
+
+    def recenter(): Unit = {
+      point = boundingBox.center
+    }
+  }
+
+  object ImageWindowLevel {
+
+    case class ImageWindowLevelChanged(source: ImageWindowLevel, window: Double, level: Double) extends Event
+
+  }
+
+  /**
+   * A global singleton containing window/level settings for all 2D volume slices.
+   * Documentation about what window/level means can be found here:
+   * http://blogs.mathworks.com/steve/2006/02/17/all-about-pixel-colors-window-level/
+   * In one sentence: "Making the window wider or narrower decreases or increases the display contrast;
+   * moving the level left or right changes the display brightness."
+   */
+  class ImageWindowLevel(val scene: Scene) {
+    private var _window: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelWindow).getOrElse(256.0)
+    private var _level: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
+
+    def window: Double = _window
+
+    def level: Double = _level
+
+    def window_=(newWindow: Double): Unit = {
+      if (_window != newWindow) {
+        _window = newWindow
+        publish()
+      }
+    }
+
+    def level_=(newLevel: Double): Unit = {
+      if (_level != newLevel) {
+        _level = newLevel
+        publish()
+      }
+    }
+
+    private var dragStartWindow: Option[Double] = None
+    private var dragStartLevel: Option[Double] = None
+
+    private[ui] def dragStart() = {
+      dragStartWindow = Some(_window)
+      dragStartLevel = Some(_level)
+    }
+
+    private[ui] def dragEnd() = {
+      dragStartWindow = None
+      dragStartLevel = None
+    }
+
+    private[ui] def dragUpdate(deltaX: Double, deltaY: Double) = {
+      (dragStartWindow, dragStartLevel) match {
+        case (Some(sw), Some(sl)) =>
+          _window = Math.max(0, sw + deltaX)
+          _level = Math.max(0, sl + deltaY)
+
+          if (_window != sw || _level != sl) {
+            publish()
+          }
+
+        case _ => /* do nothing */
+      }
+    }
+
+    private def publish(): Unit = {
+      scene.publishEdt(ImageWindowLevelChanged(this, _window, _level))
+    }
+
+    private[ui] def save(): Unit = {
+      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelWindow, _window)
+      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelLevel, _level)
+    }
+  }
+
+  class TwoDLandmarkingOptions {
+    private var _highlightClosest = PersistentSettings.get[Boolean](PersistentSettings.Keys.TwoDClickHighlight).getOrElse(true)
+
+    def highlightClosest: Boolean = _highlightClosest
+
+    def highlightClosest_=(newValue: Boolean) = {
+      _highlightClosest = newValue
+      PersistentSettings.set[Boolean](PersistentSettings.Keys.TwoDClickHighlight, _highlightClosest)
+    }
+
+    private var _snapRadius: Float = PersistentSettings.get[Float](PersistentSettings.Keys.TwoDClickSnapThreshold).getOrElse(5.0f)
+
+    def snapRadius: Float = _snapRadius
+
+    def snapRadius_=(newValue: Float) = {
+      _snapRadius = newValue
+      PersistentSettings.set[Float](PersistentSettings.Keys.TwoDClickSnapThreshold, _snapRadius)
+    }
+  }
+
+  class Options {
+    val twoDLandmarking = new TwoDLandmarkingOptions
   }
 
 }
@@ -287,8 +379,11 @@ class Scene extends SceneTreeObject {
     super.onViewportsChanged(viewports)
   }
 
-  protected[ui] lazy val visualizations: Visualizations = new Visualizations
   lazy val slicingPosition: Scene.SlicingPosition = new Scene.SlicingPosition(this)
+
+  lazy val imageWindowLevel: Scene.ImageWindowLevel = new Scene.ImageWindowLevel(this)
+
+  lazy val options: Scene.Options = new Scene.Options
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {
     o => true

@@ -39,9 +39,7 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
       c => c
     })
     copy.foreach {
-      c =>
-        //println(s"removing $c")
-        remove(c)
+      remove
     }
   }, wait = true)
 
@@ -69,7 +67,6 @@ trait MutableObjectContainer[Child <: AnyRef] extends Reactor {
 }
 
 trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectContainer[Child] {
-  //  override def children = super.children // required to prevent type conflict
 
   protected def publisher: SceneTreeObject
 
@@ -90,7 +87,6 @@ trait SceneTreeObjectContainer[Child <: SceneTreeObject] extends MutableObjectCo
 trait StandaloneSceneTreeObjectContainer[Child <: SceneTreeObject] extends SceneTreeObject with SceneTreeObjectContainer[Child] {
   protected[ui] override def children = super.children
 
-  // required to prevent type conflict
   protected override lazy val publisher = this
 }
 

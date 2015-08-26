@@ -18,7 +18,7 @@ object SettingsDirectory {
   }
 
   def get(allowInexistent: Boolean = true): Try[File] = {
-    if (!root.isDefined) {
+    if (root.isEmpty) {
       Failure(new IllegalStateException("Unable to determine settings directory"))
     } else {
       val dir = root.get

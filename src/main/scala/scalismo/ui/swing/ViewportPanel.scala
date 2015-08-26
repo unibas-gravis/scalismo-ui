@@ -1,12 +1,13 @@
 package scalismo.ui.swing
 
+import java.awt.Color
 import java.io.File
 import javax.swing._
 import javax.swing.border.TitledBorder
 
 import scalismo.ui._
 import scalismo.ui.swing.actions.SaveAction
-import scalismo.ui.swing.util.EdtSlider
+import scalismo.ui.swing.util.{ AxisColor, EdtSlider }
 import scalismo.ui.vtk.VtkPanel
 
 import scala.swing.BorderPanel.Position.Center
@@ -29,16 +30,26 @@ class ViewportPanel extends BorderPanel {
     this.viewport = Some(viewport)
     this.workspace = Some(workspace)
     listenTo(viewport)
-    title.setTitle(viewport.name)
+    setTitle(viewport.name)
     renderer.attach(this)
   }
 
+  private def setTitle(name: String): Unit = {
+    title.setTitle(name)
+    val color: Color = Try(AxisColor.forAxis(Axis.withName(name), darker = true)).getOrElse(Color.BLACK)
+    title.setTitleColor(color)
+  }
+
   def hide() = {
-    viewport.map {
+    viewport.foreach {
       deafTo(_)
     }
     renderer.detach()
   }
+
+  def resetCamera(): Unit = renderer.resetCamera()
+
+  def screenshot(file: File): Try[Unit] = renderer.screenshot(file)
 
   val title = new TitledBorder(null, "", TitledBorder.LEADING, 0, null, null)
   border = title
@@ -46,15 +57,11 @@ class ViewportPanel extends BorderPanel {
   layout(renderer) = Center
 
   reactions += {
-    case Nameable.NameChanged(v) =>
-      viewport match {
-        case None =>
-        case Some(vp) =>
-          if (v eq vp) {
-            title.setTitle(vp.name)
-            revalidate()
-          }
-      }
+    case Viewport.ResetCameraRequest(vp) if viewport.exists(_ eq vp) => resetCamera()
+    case Viewport.ScreenshotRequest(vp, f) if viewport.exists(_ eq vp) => screenshot(f)
+    case Nameable.NameChanged(v) if viewport.exists(_ eq v) =>
+      setTitle(v.name)
+      revalidate()
   }
 
   val toolbar = new Toolbar {
@@ -64,33 +71,43 @@ class ViewportPanel extends BorderPanel {
   }
 
   toolbar.add(new Action("SS") {
-    def doSave(file: File): Try[Unit] = renderer.screenshot(file)
-
-    override def apply() = {
-      new SaveAction(doSave, PngFileIoMetadata).apply()
-    }
+    override def apply(): Unit = new SaveAction(screenshot, PngFileIoMetadata).apply()
   }).tooltip = "Screenshot"
 
   toolbar.add(new Action("RC") {
-    override def apply() = {
-      renderer.resetCamera()
-    }
+    override def apply(): Unit = resetCamera()
   }).tooltip = "Reset Camera"
 }
 
 class ThreeDViewportPanel extends ViewportPanel {
   layout(toolbar) = BorderPanel.Position.North
+
+  Axis.values.foreach { axis =>
+    val b = toolbar.add(new Action(axis.toString) {
+      override def apply(): Unit = renderer.setCameraToAxis(axis)
+    })
+    b.foreground = AxisColor.forAxis(axis, darker = true)
+    b.tooltip = s"Set camera to $axis view"
+  }
+
 }
 
 class TwoDViewportPanel extends ViewportPanel {
   override def show(workspace: Workspace, viewport: Viewport): Unit = {
+    import BorderFactory._
+    viewport match {
+      case vp2d: TwoDViewport =>
+        val color = AxisColor.forAxis(vp2d.axis)
+        renderer.border = createLineBorder(color, 3)
+      case _ => // won't happen
+    }
     super.show(workspace, viewport)
     slider.update(viewport.scene.slicingPosition)
     slider.listenTo(viewport.scene)
   }
 
   override def hide() = {
-    viewport map {
+    viewport foreach {
       vp => slider.deafTo(vp.scene)
     }
     super.hide()
@@ -164,4 +181,12 @@ class TwoDViewportPanel extends ViewportPanel {
 
   layout(control) = BorderPanel.Position.East
   layout(toolbar) = BorderPanel.Position.North
+
+  reactions += {
+    case Viewport.ScrollRequest(vp, delta) if viewport.exists(_ eq vp) =>
+      val newValue = Math.min(slider.max, Math.max(slider.min, slider.value - delta))
+      if (slider.value != newValue) {
+        slider.value = newValue
+      }
+  }
 }

@@ -15,4 +15,16 @@ public class UntypedJList {
     public UntypedJList(final Object[] contents) {
         peer = new JList(contents);
     }
+
+    @SuppressWarnings("unchecked")
+    public UntypedJList(final UntypedListModel model) {
+        peer = new JList();
+        peer.setModel(model.peer);
+    }
+
+    @SuppressWarnings("unchecked")
+    public void setCellRenderer(final UntypedListCellRenderer renderer) {
+        peer.setCellRenderer(renderer);
+    }
 }
+

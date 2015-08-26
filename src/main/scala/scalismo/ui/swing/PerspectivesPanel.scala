@@ -31,15 +31,6 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
   }
 
   private val cards = new TrackingCardPanel
-  //  private val center = new Panel {
-  //    override lazy val peer = new JPanel {
-  //      setLayout(new BorderLayout())
-  //      //setBorder(BorderFactory.createLineBorder(Color.RED, 4))
-  //    }
-  ////    peer.setLayout(new OverlayLayout(peer))
-  ////    peer.add(ViewportRenderingPanelPool.jpanel)
-  //    peer.add(cards.peer, BorderLayout.CENTER)
-  //  }
   layout(cards) = BorderPanel.Position.Center
   updateUi()
 
@@ -49,7 +40,7 @@ class PerspectivesPanel(val workspace: Workspace) extends BorderPanel {
       case None =>
         System.err.println("PerspectivesPanel: Don't know how to display perspective of class " + workspace.scene.perspective.getClass.getName)
       case Some(panel) =>
-        cards.get().map {
+        cards.get().foreach {
           _.hide()
         }
         cards.set(panel)
@@ -83,7 +74,7 @@ trait PerspectivePanel extends CardPanel.CardableComponent {
     viewportPanels.foreach(_.hide())
   }
 
-  val viewportPanels: immutable.Seq[ViewportPanel]
+  def viewportPanels: immutable.Seq[ViewportPanel]
 }
 
 class SingleTwoDViewportPanel extends BorderPanel with PerspectivePanel {

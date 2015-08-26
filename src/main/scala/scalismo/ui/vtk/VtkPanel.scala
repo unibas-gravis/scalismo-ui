@@ -1,13 +1,14 @@
 package scalismo.ui.vtk
 
-import java.awt.BorderLayout
+import java.awt.event.{ MouseWheelEvent, MouseWheelListener }
 import java.awt.image.BufferedImage
+import java.awt.{ BorderLayout, Cursor }
 import java.io.File
 import javax.imageio.ImageIO
 import javax.swing.JPanel
 
 import scalismo.ui.swing.ViewportPanel
-import scalismo.ui.{ EdtPublisher, Viewport, Workspace }
+import scalismo.ui.{ Axis, EdtPublisher, Viewport, Workspace }
 
 import scala.swing.Component
 import scala.util.Try
@@ -23,6 +24,14 @@ class VtkPanel extends Component with EdtPublisher {
   override lazy val peer = {
     val panel = new JPanel(new BorderLayout())
     panel.add(canvas.getComponent, BorderLayout.CENTER)
+    canvas.getComponent.addMouseWheelListener(new MouseWheelListener {
+      override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
+        e.getWheelRotation match {
+          case x: Int if x != 0 => viewportOption.foreach(_.scroll(x))
+          case _ =>
+        }
+      }
+    })
     panel
   }
 
@@ -31,26 +40,39 @@ class VtkPanel extends Component with EdtPublisher {
       canvas.render(immediately)
     case VtkContext.ResetCameraRequest(s) =>
       resetCamera()
+    case Workspace.LandmarkClickModeChanged(_, _) => updateCursor()
   }
 
   def attach(source: ViewportPanel) = {
     viewportOption = source.viewportOption
     workspaceOption = source.workspaceOption
     vtkViewport.attach()
-    workspaceOption.map(listenTo(_))
+    workspaceOption.foreach(listenTo(_))
+    updateCursor()
   }
 
   def detach() = {
-    workspaceOption.map(deafTo(_))
+    workspaceOption.foreach(deafTo(_))
     vtkViewport.detach()
     canvas.disableDeferredRendering()
     workspaceOption = None
     viewportOption = None
+    updateCursor()
+  }
+
+  private def updateCursor(): Unit = {
+    val crosshair = workspaceOption.exists {
+      _.landmarkClickMode
+    }
+    val cursor = if (crosshair) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
+    canvas.getComponent.setCursor(cursor)
   }
 
   def resetCamera() = {
     vtkViewport.resetCamera()
   }
+
+  def setCameraToAxis(axis: Axis.Value): Unit = vtkViewport.setCameraToAxis(axis)
 
   def screenshot(file: File): Try[Unit] = Try {
     val source = canvas.uiComponent

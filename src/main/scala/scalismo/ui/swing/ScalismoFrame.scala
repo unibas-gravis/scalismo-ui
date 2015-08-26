@@ -1,6 +1,7 @@
 package scalismo.ui.swing
 
 import java.awt.Dimension
+import java.util.concurrent.TimeUnit
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.settings.PersistentSettings
@@ -45,6 +46,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   lazy val console = new Console()(this)
 
+  lazy val status = new StatusPanel
+
   lazy val workspace = new Workspace(scene)
   lazy val workspacePanel: TunableWorkspacePanel = new TunableWorkspacePanel(workspace)
 
@@ -52,6 +55,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   lazy val mainPanel: Component = new BorderPanel {
     layout(workspacePanel) = BorderPanel.Position.Center
+    layout(status) = BorderPanel.Position.South
   }
 
   contents = mainPanel
@@ -65,6 +69,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
   }
 
   def saveWindowState(): Unit = {
+    scene.imageWindowLevel.save()
     val dim = this.size
     PersistentSettings.set(PersistentSettings.Keys.WindowMaximized, this.maximized)
     if (!maximized) {
@@ -94,9 +99,20 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
     }
   }
 
-  def startup(args: Array[String]): Unit = {
+  // This is a def so that the interval can be easily overridden. The unit is in seconds.
+  def garbageCollectorInterval: Int = 60
+
+  // This is *required*, otherwise you'll run out of memory sooner or later. The current rendering engine (VTK)
+  // uses native objects which have their own life cycles and must be periodically garbage-collected.
+  def startGarbageCollector(): Unit = {
+    vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector.SetScheduleTime(garbageCollectorInterval, TimeUnit.SECONDS)
     vtkObjectBase.JAVA_OBJECT_MANAGER.getAutoGarbageCollector.Start()
+  }
+
+  // Make sure that you are calling super.startup() when overriding, or alternatively "manually" call startGarbageCollector()!
+  def startup(args: Array[String]): Unit = {
     restoreWindowState()
+    startGarbageCollector()
   }
 
   // this is a hack...

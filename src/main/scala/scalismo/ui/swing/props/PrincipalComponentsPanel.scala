@@ -73,7 +73,7 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
 
     setEntryCount(3)
 
-    def setEntryCount(count: Int) {
+    def setEntryCount(count: Int): Unit = {
       var changed = false;
       {
         count until entries.length
@@ -139,15 +139,14 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
   def updateDisplayedCoefficients() = {
     if (model.isDefined) {
       val coeffs = model.get.coefficients
-      0 until coeffs.size map {
-        i =>
-          deafTo(table.entries(i).slider)
+      coeffs.indices foreach { i =>
+        deafTo(table.entries(i).slider)
 
-          val v = coeffs(i)
-          table.entries(i).slider.value = (v * granularity).toInt
-          table.entries(i).value.text = labelFormat(v)
+        val v = coeffs(i)
+        table.entries(i).slider.value = (v * granularity).toInt
+        table.entries(i).value.text = labelFormat(v)
 
-          listenTo(table.entries(i).slider)
+        listenTo(table.entries(i).slider)
       }
     }
   }

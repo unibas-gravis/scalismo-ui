@@ -8,7 +8,7 @@ import scala.swing.event.Event
 trait HasUncertainty[D <: Dim] extends EdtPublisher {
   def uncertainty: Uncertainty[D]
 
-  def uncertainty_=(newValue: Uncertainty[D])
+  def uncertainty_=(newValue: Uncertainty[D]): Unit
 }
 
 object HasUncertainty {
@@ -39,7 +39,7 @@ object Uncertainty extends EdtPublisher {
 
   def toNDimensionalNormalDistribution[D <: Dim: NDSpace](in: Uncertainty[D]): NDimensionalNormalDistribution[D] = {
     val dim = implicitly[NDSpace[D]].dimensionality
-    val variances: Seq[Float] = in.stdDevs.data.map(f => f * f)
+    val variances: Seq[Float] = in.stdDevs.toArray.map(f => f * f)
     val mean: Vector[D] = Vector(Array.fill(dim)(0.0f))
     NDimensionalNormalDistribution(mean, in.axes.zip(variances))
   }
@@ -48,7 +48,7 @@ object Uncertainty extends EdtPublisher {
     val (axes, stdDevs) = in.principalComponents.toList.map { case (a, v) => (a, Math.sqrt(v).toFloat) }.unzip
 
     val m: SquareMatrix[D] = {
-      val candidate = SquareMatrix(axes.flatMap(_.data).toArray)
+      val candidate = SquareMatrix(axes.flatMap(_.toArray).toArray)
       if (breeze.linalg.det(candidate.toBreezeMatrix) < 0) {
         // improper rotation matrix
         SquareMatrix(candidate.data.map { f => -f })
@@ -77,7 +77,7 @@ object Uncertainty extends EdtPublisher {
     lazy val I3 = SquareMatrix.eye[_3D]
     lazy val X3 = Vector(1, 0, 0)
 
-    def axesToMatrix[D <: Dim: NDSpace](axes: List[Vector[D]]): SquareMatrix[D] = SquareMatrix(axes.map(_.data).flatten.toArray).t
+    def axesToMatrix[D <: Dim: NDSpace](axes: List[Vector[D]]): SquareMatrix[D] = SquareMatrix(axes.flatMap(_.toArray).toArray).t
 
     def matrixToAxes[D <: Dim: NDSpace](matrix: SquareMatrix[D]): List[Vector[D]] = {
       val dim = implicitly[NDSpace[D]].dimensionality
@@ -103,7 +103,7 @@ object Uncertainty extends EdtPublisher {
       val a = fromVector * (1 / fromVector.norm)
       val b = toVector * (1 / toVector.norm)
 
-      val v = Vector.crossproduct(a, b)
+      val v = a.crossproduct(b)
       val s = v.norm
       val c = a.dot(b)
 

@@ -8,17 +8,18 @@ import scalismo.ui.vtk.VtkContext.RenderRequest
 import scalismo.utils.ImageConversion
 
 object ImageActor2D {
-  def apply(source: Image3D[_])(implicit vtkViewport: VtkViewport): ImageActor2D = {
+  def apply(source: Image3DView[_])(implicit vtkViewport: VtkViewport): ImageActor2D = {
     val axis = vtkViewport.viewport.asInstanceOf[TwoDViewport].axis
     new ImageActor2D(source, axis, true)
   }
 
-  def apply(source: Image3D[_], axis: Axis.Value) = new ImageActor2D(source, axis, false)
+  def apply(source: Image3DView[_], axis: Axis.Value) = new ImageActor2D(source, axis, false)
 
   final val OutOfBounds: Int = -1
+  final val NotInitialized: Int = -2
 
-  class InstanceData(source: Image3D[_], axis: Axis.Value) {
-    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.peer, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
+  class InstanceData(source: Image3DView[_], axis: Axis.Value) {
+    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(source.source, ImageConversion.imageToVtkStructuredPoints(source.asFloatImage))
     lazy val (min, max, exmax, eymax, ezmax) = {
       val b = points.GetBounds()
       val t = points.GetExtent()
@@ -33,8 +34,8 @@ object ImageActor2D {
     // https://github.com/Slicer/Slicer/blob/121d28f3d03c418e13826a83df1ea1ffc586f0b7/Libs/MRML/DisplayableManager/vtkSliceViewInteractorStyle.cxx#L355-L370
     val windowLevel = new vtkImageMapToWindowLevelColors()
     windowLevel.SetInputData(points)
-    windowLevel.SetWindow(TwoDViewport.ImageWindowLevel.window)
-    windowLevel.SetLevel(TwoDViewport.ImageWindowLevel.level)
+    windowLevel.SetWindow(source.scene.imageWindowLevel.window)
+    windowLevel.SetLevel(source.scene.imageWindowLevel.level)
     windowLevel.Update()
     windowLevel.SetOutputFormatToLuminance()
 
@@ -49,7 +50,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, isStandalone: Boolean) extends PolyDataActor with ClickableActor {
+class ImageActor2D private[ImageActor2D] (val source: Image3DView[_], axis: Axis.Value, isStandalone: Boolean) extends SinglePolyDataActor with ClickableActor {
 
   var data = new InstanceData(source, axis)
 
@@ -72,36 +73,42 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
   def reload() = {
     mapper.RemoveAllInputs()
     mapper.SetInputData(data.slice.GetOutput())
+    currentIndex = ImageActor2D.NotInitialized
     update(source.scene.slicingPosition.point)
   }
 
+  private var currentIndex = ImageActor2D.NotInitialized
+
   def update(point: Point[_3D]) = {
     val i = point3DToExtent(point, axis)
-    if (i == ImageActor2D.OutOfBounds) {
-      SetVisibility(0)
-    } else {
-      SetVisibility(1)
-      axis match {
-        case Axis.X => data.slice.SetExtent(i, i, 0, data.eymax, 0, data.ezmax)
-        case Axis.Y => data.slice.SetExtent(0, data.exmax, i, i, 0, data.ezmax)
-        case Axis.Z => data.slice.SetExtent(0, data.exmax, 0, data.eymax, i, i)
+    if (i != currentIndex) {
+      currentIndex = i
+      if (i == ImageActor2D.OutOfBounds) {
+        SetVisibility(0)
+      } else {
+        SetVisibility(1)
+        axis match {
+          case Axis.X => data.slice.SetExtent(i, i, 0, data.eymax, 0, data.ezmax)
+          case Axis.Y => data.slice.SetExtent(0, data.exmax, i, i, 0, data.ezmax)
+          case Axis.Z => data.slice.SetExtent(0, data.exmax, 0, data.eymax, i, i)
+        }
+        data.slice.Update()
+        mapper.Update()
       }
-      data.slice.Update()
-      mapper.Update()
+      publishEdt(new RenderRequest(this))
     }
-    publishEdt(new RenderRequest(this))
   }
 
-  listenTo(source.scene, source, TwoDViewport.ImageWindowLevel)
+  listenTo(source.scene, source)
   reload()
 
   reactions += {
     case Scene.SlicingPosition.PointChanged(sp, _, _) =>
       update(sp.point)
-    case Image3D.Reloaded(img) =>
+    case Image3DView.Reloaded(img) =>
       data = new InstanceData(img, axis)
       reload()
-    case TwoDViewport.ImageWindowLevelChanged(window, level) =>
+    case Scene.ImageWindowLevel.ImageWindowLevelChanged(_, window, level) =>
       if (data.windowLevel.GetWindow() != window || data.windowLevel.GetLevel() != level) {
         data.windowLevel.SetWindow(window)
         data.windowLevel.SetLevel(level)
@@ -112,8 +119,8 @@ class ImageActor2D private[ImageActor2D] (source: Image3D[_], axis: Axis.Value, 
       }
   }
 
-  override def onDestroy() {
-    deafTo(source.scene, source, TwoDViewport.ImageWindowLevel)
+  override def onDestroy(): Unit = {
+    deafTo(source.scene, source)
     super.onDestroy()
   }
 

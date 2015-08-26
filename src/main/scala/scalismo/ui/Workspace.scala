@@ -1,5 +1,7 @@
 package scalismo.ui
 
+import scalismo.ui.Workspace.LandmarkClickModeChanged
+
 import scala.swing.event.Event
 
 object Workspace {
@@ -8,6 +10,8 @@ object Workspace {
 
   // this is a hack
   case class PleaseLayoutAgain protected[Workspace] (workspace: Workspace) extends Event
+
+  case class LandmarkClickModeChanged protected[Workspace] (workspace: Workspace, clickMode: Boolean) extends Event
 
 }
 
@@ -18,8 +22,9 @@ class Workspace(val scene: Scene) extends EdtPublisher {
 
   def landmarkClickMode = _landmarkClickMode
 
-  def landmarkClickMode_=(b: Boolean) {
+  def landmarkClickMode_=(b: Boolean): Unit = {
     _landmarkClickMode = b
+    publishEdt(LandmarkClickModeChanged(this, b))
   }
 
   private var _selectedObject: Option[SceneTreeObject] = None

@@ -7,13 +7,11 @@ import javax.swing.ImageIcon
 import scalismo.ui._
 import scalismo.ui.resources.icons.IconResources
 import scalismo.ui.visualization.VisualizableSceneTreeObject
-import scalismo.ui.visualization.props.HasColorAndOpacity
-
-import scala.util.Success
+import scalismo.ui.visualization.props.{ HasColor, HasOpacity }
 
 object IconFactory {
-  final val MinOpacity = 0.3
-  final val MaxOpacity = 1.0
+  final val MinOpacity = 0.3f
+  final val MaxOpacity = 1.0f
 
   final val AlmostWhite = new Color(254, 254, 254)
 
@@ -23,49 +21,43 @@ object IconFactory {
     }
   }
 
-  // this returns (an option to) a reference to the "best" HasColorAndOpacity object for the selected node. However, those
-  // props are also mutable, so they should not be used for caching.
-  private def colorAndOpacityPropsFor(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[HasColorAndOpacity] = {
-    // get a (sorted) list of all (viewport, visualization) tuples where a visualization with color and opacity is defined for this object.
-    val suitables = scene.viewports.map(viewport =>
-      scene.visualizations.tryGet(node, viewport) match {
-        case Success(colorAndOpacity: HasColorAndOpacity) => Some((viewport, colorAndOpacity))
-        case _ => None
-      }
-    ).collect { case Some(tuple) => tuple }
+  private def colorFor(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[HasColor] = {
+    node match {
+      case ok: HasColor => Some(ok)
+      case _ => None
+    }
+  }
 
-    if (suitables.isEmpty) None
-    else {
-      // take the first suitable visualization that is visible, or fallback to the overall first one.
-      val best = suitables.find {
-        case (viewport, vis) =>
-          node.isVisibleIn(viewport)
-      }
-      best.map(_._2).orElse(Some(suitables.head._2))
+  private def opacityFor(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[HasOpacity] = {
+    node match {
+      case ok: HasOpacity => Some(ok)
+      case _ => None
     }
   }
 
   def colorOf(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[Color] = {
-    colorAndOpacityPropsFor(node).map { props =>
+    (colorFor(node), opacityFor(node)) match {
+      case (Some(color), opacityOpt) =>
 
-      def sanitizedOpacity(opacity: Double): Double = {
-        Math.max(MinOpacity, Math.min(MaxOpacity, opacity))
-      }
+        def sanitizedOpacity(opacity: Float): Float = {
+          Math.max(MinOpacity, Math.min(MaxOpacity, opacity))
+        }
 
-      def sanitizedColor(color: Color): Color = {
-        if (color == Color.WHITE) AlmostWhite else color
-      }
+        def sanitizedColor(color: Color): Color = {
+          if (color == Color.WHITE) AlmostWhite else color
+        }
 
-      val c = sanitizedColor(props.color.value)
-      val o = (sanitizedOpacity(props.opacity.value) * 255).toInt
-      new Color(c.getRed, c.getGreen, c.getBlue, o)
+        val c = sanitizedColor(color.color.value)
+        val o = (sanitizedOpacity(opacityOpt.map(_.opacity.value).getOrElse(1.0f)) * 255).toInt
+        Some(new Color(c.getRed, c.getGreen, c.getBlue, o))
+      case _ => None
     }
   }
 
   def iconFor(node: VisualizableSceneTreeObject[_])(implicit scene: Scene): Option[ImageIcon] = {
     node match {
-      case mesh: Mesh => imageFor(colorOf(node), IconResources.Mesh, whiteIsTransparent = true).map(new ImageIcon(_))
-      case pc: PointCloud => imageFor(colorOf(node), IconResources.PointCloud, whiteIsTransparent = true).map(new ImageIcon(_))
+      case mesh: MeshView => imageFor(colorOf(node), IconResources.Mesh, whiteIsTransparent = true).map(new ImageIcon(_))
+      case pc: PointCloudView => imageFor(colorOf(node), IconResources.PointCloud, whiteIsTransparent = true).map(new ImageIcon(_))
       case lm: Landmark => imageFor(colorOf(node), IconResources.Landmark, whiteIsTransparent = false).map(new ImageIcon(_))
       case _ => None
     }

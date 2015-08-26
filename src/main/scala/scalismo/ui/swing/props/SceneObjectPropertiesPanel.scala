@@ -24,7 +24,7 @@ trait PropertyPanel extends CardPanel.CardableComponent {
     super.revalidate()
     if (preferredSize.width > size.width) {
       // this is a hack ...
-      workspace.map {
+      workspace.foreach {
         _.publishPleaseLayoutAgain()
       }
     }
@@ -32,8 +32,8 @@ trait PropertyPanel extends CardPanel.CardableComponent {
 }
 
 object SceneObjectPropertiesPanel extends EdtPublisher {
-  private val appearance = new VisualizationPanel("Appearance", new ColorablePanel, new RadiusPanel, new LineThicknessPanel)
-  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel, new UncertaintyPanel)
+  private val appearance = new CombinedPropertiesPanel("Appearance", new ColorPropertyPanel, new ScalarRangePropertyPanel, new OpacityPropertyPanel, new LineWidthPropertyPanel, new Radius1DPropertyPanel)
+  val DefaultViewProviders: Seq[PropertyPanel] = Seq(new SlicingPositionPanel, new ImageWindowLevelPanel, new SceneOptionsPanel, new PrincipalComponentsPanel, appearance, new RepositionableControlPanel, new UncertaintyPanel, new InformationPanel)
 
   class TabsComponent extends Component with EdtPublisher {
     outer =>
@@ -119,7 +119,7 @@ class SceneObjectPropertiesPanel(val workspace: Workspace) extends BorderPanel w
     case TabChanged(t, v) if t == tabs && tabs.enabled => updateContent(Some(v))
   }
 
-  def updateListAndContent() {
+  def updateListAndContent(): Unit = {
     // side effect: some events might still fire, but they
     // are ignored because the tabs are not enabled (see reactions above)
     tabs.enabled = false

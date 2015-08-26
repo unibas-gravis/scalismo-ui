@@ -2,8 +2,8 @@ package scalismo.ui.swing.actions.scenetree
 
 import java.io.File
 
-import scalismo.ui.{ Saveable, SceneTreeObject }
 import scalismo.ui.swing.actions.SaveAction
+import scalismo.ui.{ Saveable, SceneTreeObject }
 
 import scala.util.Try
 

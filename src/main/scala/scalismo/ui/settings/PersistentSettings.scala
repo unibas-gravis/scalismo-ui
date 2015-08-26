@@ -14,7 +14,10 @@ object PersistentSettings {
     final val ImageWindowLevelWindow = "common.image.windowlevel.Window"
     final val ImageWindowLevelLevel = "common.image.windowlevel.Level"
     final val SlicesVisible = "common.slices.visible"
+    final val IntersectionsVisible = "common.slices.intersections.visible"
     final val SlicesOpacity = "common.slices.opacity"
+    final val TwoDClickSnapThreshold = "common.2dclick.snapthreshold"
+    final val TwoDClickHighlight = "common.2dclick.highlight"
   }
 
   val settingsFile = {
