@@ -4,7 +4,7 @@ import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "0.5.0-RC1"
+  val buildVersion = "0.5.0"
   val buildScalaVersion = "2.10.5"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
@@ -54,8 +54,8 @@ object Creds {
 }
 
 object Dependencies {
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.9.0-RC2"
-  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "2.1.+"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.9.+"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "3.0.+"
   val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
   // the following two dependencies are transitively obtained through other dependencies
   //val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
