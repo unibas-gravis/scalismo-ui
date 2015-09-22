@@ -1,7 +1,7 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Index, Point, Vector, _2D, _3D }
+import scalismo.geometry._
 import scalismo.image.{ DiscreteImageDomain, DiscreteScalarImage }
 import scalismo.mesh.TriangleMesh
 import scalismo.statisticalmodel.StatisticalMeshModel
@@ -49,7 +49,7 @@ object Show {
       val oneSliceImageDomain = DiscreteImageDomain[_3D](
         Point(image.domain.origin(0), image.domain.origin(1), 0),
         Vector(image.domain.spacing(0), image.domain.spacing(1), 0),
-        Index(image.domain.size(0), image.domain.size(1), 1))
+        IntVector(image.domain.size(0), image.domain.size(1), 1))
 
       val oneSliceImage = DiscreteScalarImage(oneSliceImageDomain, ScalarArray(image.values.toArray))
       Image3DView.createFromSource(oneSliceImage, None, Some(name))

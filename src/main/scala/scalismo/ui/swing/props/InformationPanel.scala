@@ -3,7 +3,7 @@ package scalismo.ui.swing.props
 import javax.swing.border.TitledBorder
 
 import scalismo.common.Scalar
-import scalismo.geometry.{ Index, Point, Vector, _3D }
+import scalismo.geometry.{IntVector, Point, Vector, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO.ScalarType
 import scalismo.mesh.TriangleMesh
@@ -135,7 +135,7 @@ abstract class TypedInformationProvider[T <: AnyRef: ClassTag] extends Informati
 
   implicit def point3DToString(v: Point[_3D]): String = s"(${r(v(0))}, ${r(v(1))}, ${r(v(2))})"
 
-  implicit def index3DToString(v: Index[_3D]): String = s"(${v(0)}, ${v(1)}, ${v(2)})"
+  implicit def index3DToString(v: IntVector[_3D]): String = s"(${v(0)}, ${v(1)}, ${v(2)})"
 
 }
 
