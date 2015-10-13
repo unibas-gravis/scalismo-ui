@@ -258,7 +258,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
           case PointAndProp(Some(point), Some(prop)) => prop match {
             case imgActor: ImageActor2D =>
               val image = imgActor.source.source
-              val pointId = image.domain.findClosestPoint(point)._2
+              val pointId = image.domain.findClosestPoint(point).id
               val intensity = image(pointId).toString.toFloat
 
               Status.set(StatusMessage(f"(${point(0)}%2.2f,${point(1)}%2.2f,${point(2)}%2.2f) = $intensity%2.2f", log = false))
