@@ -3,8 +3,7 @@ package scalismo.ui
 import java.awt.Color
 import java.io.File
 
-import breeze.linalg.DenseVector
-import scalismo.geometry.{ Landmark => CLandmark, Point, _3D }
+import scalismo.geometry.{Landmark => CLandmark, Point, _3D}
 import scalismo.io.LandmarkIO
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._
@@ -235,7 +234,7 @@ class MoveableLandmark(container: MoveableLandmarks, source: ReferenceLandmark) 
   private var _point = calculateCenter()
 
   def calculateCenter(): Point[_3D] = {
-    val (_, ptId) = container.instance.shapeModel.source.referenceMesh.findClosestPoint(source.point)
+    val ptId = container.instance.shapeModel.source.referenceMesh.findClosestPoint(source.point).id
     container.instance.meshRepresentation.source.point(ptId)
   }
 
@@ -260,7 +259,7 @@ class MoveableLandmarks(val instance: ShapeModelInstance) extends VisualizableLa
   }
 
   override def create(peer: Point[_3D], name: Option[String], uncertainty: Uncertainty[_3D]): Unit = {
-    val index = instance.meshRepresentation.source.findClosestPoint(peer)._2
+    val index = instance.meshRepresentation.source.findClosestPoint(peer).id
     val refPoint = instance.shapeModel.source.referenceMesh.point(index)
     instance.shapeModel.landmarks.create(refPoint, name, uncertainty)
   }
