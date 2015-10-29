@@ -3,7 +3,7 @@ package scalismo.ui.swing.props
 import javax.swing.border.TitledBorder
 
 import scalismo.common.Scalar
-import scalismo.geometry.{IntVector, Point, Vector, _3D}
+import scalismo.geometry.{ IntVector, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO.ScalarType
 import scalismo.mesh.TriangleMesh

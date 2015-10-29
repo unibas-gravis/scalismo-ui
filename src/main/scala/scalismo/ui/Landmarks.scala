@@ -3,7 +3,7 @@ package scalismo.ui
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{Landmark => CLandmark, Point, _3D}
+import scalismo.geometry.{ Landmark => CLandmark, Point, _3D }
 import scalismo.io.LandmarkIO
 import scalismo.ui.visualization._
 import scalismo.ui.visualization.props._

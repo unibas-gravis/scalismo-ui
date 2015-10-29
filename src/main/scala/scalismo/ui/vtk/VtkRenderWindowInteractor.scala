@@ -58,6 +58,13 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
     override def keyReleased(e: KeyEvent): Boolean = {
       shiftPressed = (e.getModifiers & 1) == 1
       controlPressed = (e.getModifiers & 2) == 2
+
+      // workaround: On some (few) Macs, landmark clicking does not work for reasons currently unknown.
+      // therefore, we also allow to use the X key to simulate a click.
+      if (e.getKeyCode == KeyEvent.VK_X) {
+        handleClick()
+      }
+
       handleModifierButtons()
       false
     }
@@ -111,6 +118,26 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
     super.SetSize(width, height)
   }
 
+  def handleClick(): Unit = {
+    if (workspaceOption.forall(_.landmarkClickMode)) {
+      findPointAndPropAtMousePosition() match {
+        case PointAndProp(Some(point), Some(prop)) => prop match {
+          case image: ImageActor2D => findClosestTwoDClickableWithinThreshold(point) match {
+            case Some(result) => result.clickable.clicked(result.closestPoint)
+            case None => image.clicked(point)
+          }
+          case clickable: ClickableActor => clickable.clicked(point)
+          case _ =>
+        }
+        case PointAndProp(Some(point), None) =>
+          findClosestTwoDClickableWithinThreshold(point).foreach { result =>
+            result.clickable.clicked(result.closestPoint)
+          }
+        case _ =>
+      }
+    }
+  }
+
   override def LeftButtonReleaseEvent() = {
     (workspaceOption, viewportOption) match {
       case (Some(workspace), Some(viewport)) =>
@@ -121,21 +148,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
         if (workspace.landmarkClickMode) {
           val threshold = 3 //(pixels)
           if (Math.abs(currentPoint.x - lastPoint.x) < threshold && Math.abs(currentPoint.y - lastPoint.y) < threshold) {
-            findPointAndPropAtMousePosition() match {
-              case PointAndProp(Some(point), Some(prop)) => prop match {
-                case image: ImageActor2D => findClosestTwoDClickableWithinThreshold(point) match {
-                  case Some(result) => result.clickable.clicked(result.closestPoint)
-                  case None => image.clicked(point)
-                }
-                case clickable: ClickableActor => clickable.clicked(point)
-                case _ =>
-              }
-              case PointAndProp(Some(point), None) =>
-                findClosestTwoDClickableWithinThreshold(point).foreach { result =>
-                  result.clickable.clicked(result.closestPoint)
-                }
-              case _ =>
-            }
+            handleClick()
           }
         }
       case _ =>
