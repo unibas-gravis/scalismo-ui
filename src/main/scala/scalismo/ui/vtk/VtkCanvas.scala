@@ -1,13 +1,35 @@
 package scalismo.ui.vtk
 
+import java.awt.Color
 import java.util.{ Timer, TimerTask }
 
+import scalismo.ui.Scene
 import scalismo.ui.util.EdtUtil
+
+import scala.swing.Reactor
+import scala.util.Try
 
 class VtkCanvas(parent: VtkPanel) extends VtkJoglPanelComponent(parent) {
 
   private var deferredRenderingAllowed = false
   private val deferredRenderer = new DeferredRenderer
+
+  private class ColorUpdater(scene: Scene) extends Reactor {
+    listenTo(scene)
+    reactions += {
+      case Scene.DisplayOptions.BackgroundColorChanged(s, nc) if s eq scene =>
+        updateBackground(nc)
+        RenderReal()
+    }
+
+    def updateBackground(color: Color): Unit = {
+      val c = color.getColorComponents(null)
+      if (renderer != null) renderer.SetBackground(c(0), c(1), c(2))
+    }
+  }
+
+  // unfortunately, we can't initialize this thing directly, but have to do it lazily -- we use the RenderReal method for that.
+  private var colorUpdater: Option[ColorUpdater] = None
 
   def disableDeferredRendering() = {
     deferredRenderingAllowed = false
@@ -30,6 +52,14 @@ class VtkCanvas(parent: VtkPanel) extends VtkJoglPanelComponent(parent) {
 
   private def RenderReal() = {
     EdtUtil.onEdt {
+      // handle color updater
+      if (colorUpdater.isEmpty) Try {
+        parent.viewportOption.foreach { vp =>
+          val cu = new ColorUpdater(vp.scene)
+          cu.updateBackground(vp.scene.options.display.backgroundColor)
+          colorUpdater = Some(cu)
+        }
+      }
       super.Render()
     }
   }
