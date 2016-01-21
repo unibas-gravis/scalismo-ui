@@ -80,7 +80,7 @@ trait Landmarks[L <: Landmark] extends MutableObjectContainer[L] with EdtPublish
       val u = Uncertainty.toNDimensionalNormalDistribution(lm.uncertainty)
       CLandmark(lm.name, lm.point, uncertainty = Some(u))
     }.toList
-    LandmarkIO.writeLandmarksJson(file, seq)
+    LandmarkIO.writeLandmarksJson(seq, file)
   }
 
   override def loadFromFile(file: File): Try[Unit] = {
