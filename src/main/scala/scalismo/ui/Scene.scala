@@ -1,5 +1,7 @@
 package scalismo.ui
 
+import java.awt.Color
+
 import scalismo.geometry.{ Point, _3D }
 import scalismo.ui.Scene.ImageWindowLevel.ImageWindowLevelChanged
 import scalismo.ui.settings.PersistentSettings
@@ -306,8 +308,26 @@ object Scene {
     }
   }
 
-  class Options {
-    val twoDLandmarking = new TwoDLandmarkingOptions
+  object DisplayOptions {
+    case class BackgroundColorChanged(scene: Scene, newBackgroundColor: Color) extends Event
+  }
+
+  class DisplayOptions(scene: Scene) {
+    private var _backgroundColor: Color = Color.BLACK
+
+    def backgroundColor: Color = _backgroundColor
+
+    def backgroundColor_=(newBackgroundColor: Color): Unit = {
+      if (newBackgroundColor != _backgroundColor) {
+        _backgroundColor = newBackgroundColor
+        scene.publishEdt(DisplayOptions.BackgroundColorChanged(scene, newBackgroundColor))
+      }
+    }
+  }
+
+  class Options(scene: Scene) {
+    val twoDLandmarking: TwoDLandmarkingOptions = new TwoDLandmarkingOptions()
+    val display: DisplayOptions = new DisplayOptions(scene)
   }
 
 }
@@ -383,7 +403,7 @@ class Scene extends SceneTreeObject {
 
   lazy val imageWindowLevel: Scene.ImageWindowLevel = new Scene.ImageWindowLevel(this)
 
-  lazy val options: Scene.Options = new Scene.Options
+  lazy val options: Scene.Options = new Scene.Options(this)
 
   protected[ui] override def visualizables(filter: Visualizable[_] => Boolean = {
     o => true
