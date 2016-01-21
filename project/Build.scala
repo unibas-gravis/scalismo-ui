@@ -1,6 +1,7 @@
 import sbt._
 import sbt.Keys._
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
+import sbtbuildinfo.Plugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
@@ -14,7 +15,10 @@ object BuildSettings {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     crossScalaVersions := Seq("2.10.5", "2.11.7"),
-    shellPrompt := ShellPrompt.buildShellPrompt)
+    shellPrompt := ShellPrompt.buildShellPrompt) ++ buildInfoSettings ++ Seq(
+    sourceGenerators in Compile <+= buildInfo,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion),
+    buildInfoPackage := "scalismo.ui")
 
 }
 
@@ -80,7 +84,7 @@ object STKBuild extends Build {
     scalaAsync,
     scalaInterpreterPane)
 
-  lazy val cdap2 = Project(
+  lazy val scalismo_ui = Project(
     "scalismo-ui",
     file("."),
     settings = buildSettings ++ Seq(
