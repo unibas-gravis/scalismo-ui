@@ -66,7 +66,7 @@ class Varian(scene: Scene) extends ScalismoFrame(scene) {
         val refLms = lastModel.get.landmarks.toIndexedSeq
         val targetLms = targetLm.get.toIndexedSeq
         val trainingData = refLms.zip(targetLms).map {
-          case (refLm, tgtLm) => (lastModel.get.source.referenceMesh.findClosestPoint(refLm.point)._2, tgtLm.point, Uncertainty.toNDimensionalNormalDistribution(tgtLm.uncertainty))
+          case (refLm, tgtLm) => (lastModel.get.source.referenceMesh.findClosestPoint(refLm.point).id, tgtLm.point, Uncertainty.toNDimensionalNormalDistribution(tgtLm.uncertainty))
         }
         val newModel = if (trainingData.nonEmpty) {
           val posteriorModel = orgModel.get.source.posterior(trainingData)
