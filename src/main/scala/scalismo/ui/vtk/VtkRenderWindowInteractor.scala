@@ -10,7 +10,6 @@ import scalismo.ui._
 
 class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorForwarder) extends vtkGenericRenderWindowInteractor with EdtPublisher {
 
-  private var height = 0
   private var currentPoint = new APoint
   private var lastPoint = new APoint
 
@@ -59,8 +58,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
       shiftPressed = (e.getModifiers & 1) == 1
       controlPressed = (e.getModifiers & 2) == 2
 
-      // workaround: On some (few) Macs, landmark clicking does not work for reasons currently unknown.
-      // therefore, we also allow to use the X key to simulate a click.
+      // alternative: allow to use the X key to simulate a click.
       if (e.getKeyCode == KeyEvent.VK_X) {
         handleClick()
       }
@@ -71,7 +69,56 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
 
   }
 
+  /* This class is required to provide correct behavior on MacBooks with high resolution (Retina) displays.
+     Essentially, an AWT "pixel" corresponds to 4 (2x2) physical pixels on these machines, and this has to be
+     accounted for when converting from screen (AWT) pixels to VTK coordinates. So far, we have only ever observed
+     this ratio of 2, but the code is generic enough to work with any ratio. Fast implementations (avoiding
+     floating point multiplications and conversions) are provided for ratios of 1 (no scaling, most common) and 2.
+   */
+  private class VtkCoordinateAdapter {
+    private var vtkHeight = 0
+    private var xFactor: Double = 1.0
+    private var yFactor: Double = 1.0
+    // these are common cases, which have faster implementations
+    private var noScale: Boolean = true
+    private var doubleScale: Boolean = false
+
+    def SetSize(width: Int, height: Int): Unit = {
+      val dim = parent.canvas.uiComponent.getSize()
+      xFactor = width.toDouble / dim.width
+      yFactor = height.toDouble / dim.height
+
+      // can we use any of the fast implementations?
+      // (the safety margins are there in case the reported component size is
+      // minimally (few pixels) smaller or larger.
+      noScale = Math.abs(xFactor - 1.0) < .05 && Math.abs(yFactor - 1.0) < .05
+      doubleScale = Math.abs(xFactor - 2.0) < .1 && Math.abs(yFactor - 2.0) < .1
+      this.vtkHeight = height
+    }
+
+    def currentX(): Int = {
+      if (noScale) {
+        currentPoint.x
+      } else if (doubleScale) {
+        currentPoint.x * 2
+      } else {
+        (currentPoint.x * xFactor).toInt
+      }
+    }
+
+    def currentY(): Int = {
+      if (noScale) {
+        vtkHeight - currentPoint.y - 1
+      } else if (doubleScale) {
+        vtkHeight - (currentPoint.y * 2) - 1
+      } else {
+        (vtkHeight - (currentPoint.y * yFactor) - 1).toInt
+      }
+    }
+  }
+
   lazy val interceptor = new Interceptor
+  private lazy val vtkAdapter = new VtkCoordinateAdapter()
 
   override def ConfigureEvent(): Unit = {
     if (eventForwarder.getEventInterceptor == null) {
@@ -114,7 +161,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
   }
 
   override def SetSize(width: Int, height: Int) = {
-    this.height = height
+    vtkAdapter.SetSize(width, height)
     super.SetSize(width, height)
   }
 
@@ -223,7 +270,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
   }
 
   private def findPointAndPropAtMousePosition(): PointAndProp = {
-    if (cellPicker.Pick(currentPoint.x, height - currentPoint.y - 1, 0.0, renderer) == 1) {
+    if (cellPicker.Pick(vtkAdapter.currentX(), vtkAdapter.currentY(), 0.0, renderer) == 1) {
       // simple case
       val prop = cellPicker.GetProp3D()
       val array = cellPicker.GetPickPosition()
@@ -232,7 +279,7 @@ class VtkRenderWindowInteractor(parent: VtkPanel, eventForwarder: vtkInteractorF
     } else {
       // complicated case
       val coord = new vtkCoordinate
-      coord.SetValue(currentPoint.x, height - currentPoint.y - 1, 0.0)
+      coord.SetValue(vtkAdapter.currentX(), vtkAdapter.currentY(), 0.0)
       coord.SetCoordinateSystemToDisplay()
       val array = coord.GetComputedWorldValue(renderer).map(_.toFloat)
 

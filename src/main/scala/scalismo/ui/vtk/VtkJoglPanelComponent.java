@@ -42,7 +42,6 @@ public class VtkJoglPanelComponent implements vtkComponent<GLJPanel> {
         // Init interactor
         interactor.SetRenderWindow(renderWindow);
         interactor.TimerEventResetsTimerOff();
-        interactor.SetSize(200, 200);
         interactor.ConfigureEvent();
 
         // Update style
