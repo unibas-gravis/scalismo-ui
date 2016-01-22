@@ -3,6 +3,7 @@ package scalismo.ui.swing
 import javax.swing.{ SwingUtilities, ToolTipManager, UIManager }
 
 import scalismo.ui.UiFramework
+import scalismo.ui.swing.util.ScalableUI
 import scalismo.ui.util.EdtUtil
 
 import scala.swing.SimpleSwingApplication
@@ -12,6 +13,8 @@ object ScalismoLookAndFeel {
     EdtUtil.onEdt({
       UiFramework.instance = new SwingUiFramework
       UIManager.setLookAndFeel(lookAndFeelClassName)
+
+      ScalableUI.updateLookAndFeelDefaults()
       val laf = UIManager.getLookAndFeel
       if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
         val defaults = laf.getDefaults

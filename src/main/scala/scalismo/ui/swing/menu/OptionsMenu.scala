@@ -2,9 +2,10 @@ package scalismo.ui.swing.menu
 
 import scalismo.ui._
 import scalismo.ui.swing.ScalismoFrame
+import scalismo.ui.swing.actions.ShowDisplayScalingDialogAction
 
-import scala.swing.event.ButtonClicked
-import scala.swing.{ Menu, RadioMenuItem }
+import scala.swing.event.{ ButtonClicked, Key }
+import scala.swing.{ Menu, MenuItem, RadioMenuItem }
 
 object OptionsMenu {
   val Name = "Options"
@@ -12,10 +13,15 @@ object OptionsMenu {
 
 class OptionsMenu(implicit app: ScalismoFrame) extends Menu(OptionsMenu.Name) {
   contents += new PerspectiveMenu
+  contents += new ShowDisplayScalingDialogItem()
 }
 
 object PerspectiveMenu {
   val Name = "Perspective"
+}
+
+class ShowDisplayScalingDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowDisplayScalingDialogAction) {
+  mnemonic = Key.D
 }
 
 class PerspectiveMenu(implicit app: ScalismoFrame) extends Menu(PerspectiveMenu.Name) {

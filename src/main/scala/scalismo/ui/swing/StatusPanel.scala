@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat
 import javax.swing._
 
 import scalismo.ui.StatusMessage._
-import scalismo.ui.swing.util.{ UntypedJList, UntypedListCellRenderer, UntypedListModel }
+import scalismo.ui.swing.util.{ ScalableUI, UntypedJList, UntypedListCellRenderer, UntypedListModel }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.{ StatusImplementation, StatusMessage }
 
@@ -68,7 +68,9 @@ class StatusPanel extends BorderPanel with StatusImplementation {
 
     horizontalAlignment = Alignment.Leading
 
-    border = createCompoundBorder(createEmptyBorder(0, 3, 3, 3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(2, 2, 2, 2)))
+    val _3 = ScalableUI.scale(3)
+    val _2 = ScalableUI.scale(2)
+    border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
 
     peer.addMouseListener(new MouseAdapter {
       override def mouseClicked(e: MouseEvent): Unit = toggleShowLogAction.apply()

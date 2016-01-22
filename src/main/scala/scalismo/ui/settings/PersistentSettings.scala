@@ -6,6 +6,7 @@ import scala.util.{ Failure, Success, Try }
 object PersistentSettings {
 
   object Keys {
+    final val HighDpiScale = "common.highdpi.scale"
     final val WindowHeight = "common.windowHeight"
     final val WindowWidth = "common.windowWidth"
     final val WindowMaximized = "common.windowMaximized"

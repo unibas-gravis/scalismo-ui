@@ -63,6 +63,15 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
 
   peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
 
+  /* This is the component that is returned as the parent component when creating a dialog.
+ * Normally, this should not be null. However, it seems like there is a bug on Linux where
+ * dialogs sometimes show up empty if this value is NOT null, so for now we return null
+*/
+  def componentForDialogs: Component = {
+    contents.headOption.orNull
+    //null
+  }
+
   override def closeOperation() = {
     saveWindowState()
     dispose()

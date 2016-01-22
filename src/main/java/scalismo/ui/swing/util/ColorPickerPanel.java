@@ -85,7 +85,7 @@ public class ColorPickerPanel extends JPanel {
 	 *  to render the graphic.  This image is created once at a fixed
 	 *  size and is never replaced.)
 	 */
-	public static final int MAX_SIZE = 325;
+	public static final int MAX_SIZE = ScalableUI.scale(325, ScalableUI.scaleFactor());
 	
 	/** This controls how the colors are displayed. */
 //	private int mode = ColorPicker.BRI;

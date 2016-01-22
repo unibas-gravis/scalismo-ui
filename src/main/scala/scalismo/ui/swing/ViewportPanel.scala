@@ -7,7 +7,7 @@ import javax.swing.border.TitledBorder
 
 import scalismo.ui._
 import scalismo.ui.swing.actions.SaveAction
-import scalismo.ui.swing.util.{ AxisColor, EdtSlider }
+import scalismo.ui.swing.util.{ AxisColor, EdtSlider, ScalableUI }
 import scalismo.ui.vtk.VtkPanel
 
 import scala.swing.BorderPanel.Position.Center
@@ -98,7 +98,7 @@ class TwoDViewportPanel extends ViewportPanel {
     viewport match {
       case vp2d: TwoDViewport =>
         val color = AxisColor.forAxis(vp2d.axis)
-        renderer.border = createLineBorder(color, 3)
+        renderer.border = createLineBorder(color, ScalableUI.scale(3))
       case _ => // won't happen
     }
     super.show(workspace, viewport)

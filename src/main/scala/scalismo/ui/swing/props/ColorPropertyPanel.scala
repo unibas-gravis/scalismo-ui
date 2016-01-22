@@ -5,7 +5,8 @@ import javax.swing.JPanel
 import javax.swing.border.{ LineBorder, TitledBorder }
 import javax.swing.event.{ ChangeEvent, ChangeListener }
 
-import scalismo.ui.swing.util.ColorPickerPanel
+import scalismo.ui.swing.util.{ ColorPickerPanel, ScalableUI }
+
 import scalismo.ui.visualization.VisualizationProperty
 import scalismo.ui.visualization.props.{ HasColor, HasOpacity, OpacityProperty }
 import scalismo.ui.{ Constants, EdtPublisher }
@@ -21,7 +22,7 @@ class ColorPropertyPanel extends BorderPanel with PropertyPanel {
   case class ColorChosen(color: Color) extends Event
 
   class ColorDisplayer extends Component {
-    val BorderWidth = 1
+    val BorderWidth = ScalableUI.scale(1)
     override lazy val peer = new JPanel {
       override def paintComponent(g: Graphics): Unit = {
         val dim: Dimension = getSize
@@ -44,7 +45,7 @@ class ColorPropertyPanel extends BorderPanel with PropertyPanel {
     }
 
     peer.setOpaque(false)
-    peer.setPreferredSize(new Dimension(20, 20))
+    peer.setPreferredSize(ScalableUI.scaleDimension(new Dimension(20, 20)))
     peer.setBorder(new LineBorder(Color.BLACK, BorderWidth, false))
   }
 
