@@ -1,6 +1,6 @@
 package scalismo.ui.vtk
 
-import _root_.vtk.{ vtkActor, vtkCamera, vtkRenderer }
+import _root_.vtk._
 import scalismo.ui._
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.visualization.Renderable
@@ -210,13 +210,33 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
   }
 
   def moveCamera(axis: Axis.Value, amount: Double) = EdtUtil.onEdt {
-    val pos = renderer.GetActiveCamera().GetPosition()
+    val cam = renderer.GetActiveCamera()
+    val pos = cam.GetPosition()
+    val foc = cam.GetFocalPoint()
     axis match {
-      case Axis.X => pos(0) += amount
-      case Axis.Y => pos(1) += amount
-      case Axis.Z => pos(2) += amount
+      case Axis.X =>
+        pos(0) += amount; foc(0) += amount
+      case Axis.Y =>
+        pos(1) += amount; foc(1) += amount
+      case Axis.Z => pos(2) += amount; foc(2) += amount
     }
-    renderer.GetActiveCamera().SetPosition(pos)
+    cam.SetPosition(pos)
+    cam.SetFocalPoint(foc)
+
+    /* This is a horrible hack, but it seems to be the only way to prevent "intermittent black image slices".
+    * Essentially, what seems to always help in that case is to slightly zoom in or out. The code below
+    * simulates that (without actually zooming). Unfortunately, I did not manage to find out exactly which
+    * part of the code that this invokes is actually "responsible" for fixing the problem,
+    * so for now, we have to use this hacky approach.
+    */
+    parent.canvas.interactor.GetInteractorStyle() match {
+      case style: vtkInteractorStyleTrackballCamera =>
+        style.OnRightButtonDown()
+        style.OnMouseMove()
+        style.OnRightButtonUp()
+      case _ => // can't handle
+    }
+
   }
 
   def resetCamera(force: Boolean = false) = EdtUtil.onEdt {
