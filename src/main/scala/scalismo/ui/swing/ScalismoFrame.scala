@@ -4,7 +4,7 @@ import java.awt.Dimension
 import java.util.concurrent.TimeUnit
 import javax.swing.{ SwingUtilities, WindowConstants }
 
-import scalismo.ui.settings.PersistentSettings
+import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.swing.menu.MainMenuBar
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.{ Scene, Workspace }
@@ -71,29 +71,29 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with Reactor {
   def saveWindowState(): Unit = {
     scene.imageWindowLevel.save()
     val dim = this.size
-    PersistentSettings.set(PersistentSettings.Keys.WindowMaximized, this.maximized)
+    GlobalSettings.set(GlobalSettings.Keys.WindowMaximized, this.maximized)
     if (!maximized) {
       // these settings are only saved if not maximized. However, if the window *is* maximized, they should have been saved before, in the call to maximize()
-      PersistentSettings.set(PersistentSettings.Keys.WindowWidth, dim.width)
-      PersistentSettings.set(PersistentSettings.Keys.WindowHeight, dim.height)
+      GlobalSettings.set(GlobalSettings.Keys.WindowWidth, dim.width)
+      GlobalSettings.set(GlobalSettings.Keys.WindowHeight, dim.height)
     }
   }
 
   override def maximize(): Unit = {
     // we need to store the settings in the "unmaximized" state
     val dim = this.size
-    PersistentSettings.set(PersistentSettings.Keys.WindowWidth, dim.width)
-    PersistentSettings.set(PersistentSettings.Keys.WindowHeight, dim.height)
+    GlobalSettings.set(GlobalSettings.Keys.WindowWidth, dim.width)
+    GlobalSettings.set(GlobalSettings.Keys.WindowHeight, dim.height)
     super.maximize()
   }
 
   def restoreWindowState(): Unit = {
-    val width = PersistentSettings.get[Int](PersistentSettings.Keys.WindowWidth).getOrElse(1024)
-    val height = PersistentSettings.get[Int](PersistentSettings.Keys.WindowHeight).getOrElse(768)
+    val width = GlobalSettings.get[Int](GlobalSettings.Keys.WindowWidth).getOrElse(1024)
+    val height = GlobalSettings.get[Int](GlobalSettings.Keys.WindowHeight).getOrElse(768)
     size = new Dimension(width, height)
     centerOnScreen()
 
-    val max = PersistentSettings.get[Boolean](PersistentSettings.Keys.WindowMaximized).getOrElse(false)
+    val max = GlobalSettings.get[Boolean](GlobalSettings.Keys.WindowMaximized).getOrElse(false)
     if (max) {
       maximize()
     }

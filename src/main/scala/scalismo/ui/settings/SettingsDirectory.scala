@@ -4,26 +4,25 @@ import java.io.File
 
 import scala.util.{ Failure, Success, Try }
 
+/**
+ * Directory containing persistent settings, located in the user's home directory.
+ */
 object SettingsDirectory {
   private val Name = ".scalismo"
 
-  // this only indicates if the root directory can be created at all, not necessarily if it exists.
+  // This only indicates if the root directory can be created at all, not necessarily if it exists.
+  // This is safe to be a val, because it's solely based on user.home and Name, both of which don't change.
   private lazy val root: Option[File] = {
-    val home = System.getProperty("user.home")
-    if (home != null) {
-      Some(new File(home + File.separator + SettingsDirectory.Name))
-    } else {
-      None
+    Option(System.getProperty("user.home")).map { home =>
+      new File(home + File.separator + SettingsDirectory.Name)
     }
   }
 
-  def get(allowInexistent: Boolean = true): Try[File] = {
+  def get(): Try[File] = {
     if (root.isEmpty) {
       Failure(new IllegalStateException("Unable to determine settings directory"))
     } else {
-      val dir = root.get
-      if (allowInexistent) Success(dir)
-      else getOrCreate(dir)
+      getOrCreate(root.get)
     }
   }
 
