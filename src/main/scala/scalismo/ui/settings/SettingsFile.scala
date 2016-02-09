@@ -67,11 +67,11 @@ class SettingsFile(directory: File, name: String) {
 
 object SettingsFile {
   /**
-    * Just a fancy name for serialization and deserialization
-    * methods of a given type, preferrably to a human-readable form.
-    *
-    * @tparam A the type that can be (de)serialized
-    */
+   * Just a fancy name for serialization and deserialization
+   * methods of a given type, preferrably to a human-readable form.
+   *
+   * @tparam A the type that can be (de)serialized
+   */
   trait Codec[A] {
     def toString(target: A): String = target.toString
 
