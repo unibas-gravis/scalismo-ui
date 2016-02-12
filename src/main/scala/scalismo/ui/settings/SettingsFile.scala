@@ -2,19 +2,18 @@ package scalismo.ui.settings
 
 import java.io.{ File, PrintWriter }
 
-import scala.collection.immutable
 import scala.io.Codec
 
-object SettingsFile {
-
-}
-
-class ScalismoSettingsFile extends SettingsFile(SettingsDirectory.get().get, "global.ini")
-
+/**
+ * An ini-like file containing key/value setting pairs.
+ * The methods here may throw runtime exceptions.
+ *
+ * @see [[GlobalSettings]]
+ */
 class SettingsFile(directory: File, name: String) {
   private val file = new File(directory.getAbsolutePath + File.separator + name)
 
-  private def readFile(): Seq[String] = {
+  private def readFile(): List[String] = {
     if (file.isFile) {
       val s = scala.io.Source.fromFile(file)(codec = Codec.UTF8)
       val r = s.getLines().toList
@@ -23,7 +22,7 @@ class SettingsFile(directory: File, name: String) {
     } else Nil
   }
 
-  private def writeFile(values: Seq[String]) = {
+  private def writeFile(values: List[String]) = {
     if (!file.exists) {
       if (!file.getParentFile.exists) {
         file.getParentFile.mkdirs()
@@ -34,14 +33,14 @@ class SettingsFile(directory: File, name: String) {
     writer.close()
   }
 
-  def getValues(key: String): Seq[String] = {
+  def getValues(key: String): List[String] = {
     val lines = readFile()
     val prefix = s"$key="
     val prefixLength = prefix.length
     lines.filter(_.startsWith(prefix)).map(l => l.substring(prefixLength))
   }
 
-  def setValues(key: String, vals: immutable.Seq[String]): Unit = {
+  def setValues(key: String, vals: List[String]): Unit = {
     val oldLines = readFile().zipWithIndex
     var position: Option[Int] = None
     val prefix = s"$key="
@@ -61,7 +60,56 @@ class SettingsFile(directory: File, name: String) {
       case None => (newLines.map(_._1), Nil)
     }
     val inserted = vals.map(s => s"$prefix$s")
-    val all = Seq(before, inserted, after).flatten
+    val all = List(before, inserted, after).flatten
     writeFile(all)
+  }
+}
+
+object SettingsFile {
+  /**
+   * Just a fancy name for serialization and deserialization
+   * methods of a given type, preferrably to a human-readable form.
+   *
+   * @tparam A the type that can be (de)serialized
+   */
+  trait Codec[A] {
+    def toString(target: A): String = target.toString
+
+    def fromString(s: String): A
+  }
+
+  object Codec {
+
+    implicit val stringCodec = new Codec[String] {
+      override def fromString(s: String) = s
+    }
+
+    implicit val booleanCodec = new Codec[Boolean] {
+      override def fromString(s: String) = java.lang.Boolean.parseBoolean(s)
+    }
+
+    implicit val intCodec = new Codec[Int] {
+      override def fromString(s: String) = Integer.parseInt(s)
+    }
+
+    implicit val longCodec = new Codec[Long] {
+      override def fromString(s: String) = java.lang.Long.parseLong(s)
+    }
+
+    implicit val shortCodec = new Codec[Short] {
+      override def fromString(s: String) = java.lang.Short.parseShort(s)
+    }
+
+    implicit val byteCodec = new Codec[Byte] {
+      override def fromString(s: String) = java.lang.Byte.parseByte(s)
+    }
+
+    implicit val doubleCodec = new Codec[Double] {
+      override def fromString(s: String) = java.lang.Double.parseDouble(s)
+    }
+
+    implicit val floatCodec = new Codec[Float] {
+      override def fromString(s: String) = java.lang.Float.parseFloat(s)
+    }
   }
 }

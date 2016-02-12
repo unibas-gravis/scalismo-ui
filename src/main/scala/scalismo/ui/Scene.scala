@@ -4,7 +4,7 @@ import java.awt.Color
 
 import scalismo.geometry.{ Point, _3D }
 import scalismo.ui.Scene.ImageWindowLevel.ImageWindowLevelChanged
-import scalismo.ui.settings.PersistentSettings
+import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.visualization._
 
 import scala.collection.immutable.List
@@ -94,33 +94,33 @@ object Scene {
 
     protected[ui] override def isVisibleIn(viewport: Viewport) = _slicesVisible || viewport.isInstanceOf[TwoDViewport]
 
-    private var _slicesVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.SlicesVisible).getOrElse(false)
+    private var _slicesVisible = GlobalSettings.get[Boolean](GlobalSettings.Keys.SlicesVisible).getOrElse(false)
 
     def slicesVisible = _slicesVisible
 
     def slicesVisible_=(nv: Boolean) = {
       if (_slicesVisible != nv) {
         _slicesVisible = nv
-        PersistentSettings.set(PersistentSettings.Keys.SlicesVisible, nv)
+        GlobalSettings.set(GlobalSettings.Keys.SlicesVisible, nv)
         scene.publish(Scene.SlicingPosition.SlicesVisibleChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
       }
     }
 
-    private var _intersectionsVisible = PersistentSettings.get[Boolean](PersistentSettings.Keys.IntersectionsVisible).getOrElse(false)
+    private var _intersectionsVisible = GlobalSettings.get[Boolean](GlobalSettings.Keys.IntersectionsVisible).getOrElse(false)
 
     def intersectionsVisible = _intersectionsVisible
 
     def intersectionsVisible_=(nv: Boolean) = {
       if (_intersectionsVisible != nv) {
         _intersectionsVisible = nv
-        PersistentSettings.set(PersistentSettings.Keys.IntersectionsVisible, nv)
+        GlobalSettings.set(GlobalSettings.Keys.IntersectionsVisible, nv)
         scene.publish(Scene.SlicingPosition.IntersectionsVisibleChanged(this))
         scene.publish(Scene.VisibilityChanged(scene))
       }
     }
 
-    private var _opacity = Math.max(0.0, Math.min(1.0, PersistentSettings.get[Double](PersistentSettings.Keys.SlicesOpacity).getOrElse(0.0)))
+    private var _opacity = Math.max(0.0, Math.min(1.0, GlobalSettings.get[Double](GlobalSettings.Keys.SlicesOpacity).getOrElse(0.0)))
 
     def opacity = _opacity
 
@@ -128,7 +128,7 @@ object Scene {
       val sane = Math.max(0.0, Math.min(1.0, nv))
       if (_opacity != sane) {
         _opacity = sane
-        PersistentSettings.set(PersistentSettings.Keys.SlicesOpacity, sane)
+        GlobalSettings.set(GlobalSettings.Keys.SlicesOpacity, sane)
         scene.publish(Scene.SlicingPosition.OpacityChanged(this))
       }
     }
@@ -230,8 +230,8 @@ object Scene {
    * moving the level left or right changes the display brightness."
    */
   class ImageWindowLevel(val scene: Scene) {
-    private var _window: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelWindow).getOrElse(256.0)
-    private var _level: Double = PersistentSettings.get[Double](PersistentSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
+    private var _window: Double = GlobalSettings.get[Double](GlobalSettings.Keys.ImageWindowLevelWindow).getOrElse(256.0)
+    private var _level: Double = GlobalSettings.get[Double](GlobalSettings.Keys.ImageWindowLevelLevel).getOrElse(128.0)
 
     def window: Double = _window
 
@@ -283,28 +283,28 @@ object Scene {
     }
 
     private[ui] def save(): Unit = {
-      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelWindow, _window)
-      PersistentSettings.set[Double](PersistentSettings.Keys.ImageWindowLevelLevel, _level)
+      GlobalSettings.set[Double](GlobalSettings.Keys.ImageWindowLevelWindow, _window)
+      GlobalSettings.set[Double](GlobalSettings.Keys.ImageWindowLevelLevel, _level)
     }
   }
 
   class TwoDLandmarkingOptions {
-    private var _highlightClosest = PersistentSettings.get[Boolean](PersistentSettings.Keys.TwoDClickHighlight).getOrElse(true)
+    private var _highlightClosest = GlobalSettings.get[Boolean](GlobalSettings.Keys.TwoDClickHighlight).getOrElse(true)
 
     def highlightClosest: Boolean = _highlightClosest
 
     def highlightClosest_=(newValue: Boolean) = {
       _highlightClosest = newValue
-      PersistentSettings.set[Boolean](PersistentSettings.Keys.TwoDClickHighlight, _highlightClosest)
+      GlobalSettings.set[Boolean](GlobalSettings.Keys.TwoDClickHighlight, _highlightClosest)
     }
 
-    private var _snapRadius: Float = PersistentSettings.get[Float](PersistentSettings.Keys.TwoDClickSnapThreshold).getOrElse(5.0f)
+    private var _snapRadius: Float = GlobalSettings.get[Float](GlobalSettings.Keys.TwoDClickSnapThreshold).getOrElse(5.0f)
 
     def snapRadius: Float = _snapRadius
 
     def snapRadius_=(newValue: Float) = {
       _snapRadius = newValue
-      PersistentSettings.set[Float](PersistentSettings.Keys.TwoDClickSnapThreshold, _snapRadius)
+      GlobalSettings.set[Float](GlobalSettings.Keys.TwoDClickSnapThreshold, _snapRadius)
     }
   }
 

@@ -1,12 +1,12 @@
 package scalismo.ui
 
-import scalismo.ui.settings.PersistentSettings
+import scalismo.ui.settings.GlobalSettings
 
 import scala.collection.immutable
 
 object Perspective {
   def defaultPerspective(scene: Scene): Perspective = {
-    val saved = PersistentSettings.get[String](PersistentSettings.Keys.PerspectiveName).toOption
+    val saved = GlobalSettings.get[String](GlobalSettings.Keys.PerspectiveName)
     val factory = saved.flatMap(name => Perspectives.availablePerspectives.find(_.name == name)).getOrElse(SingleViewportPerspective)
     factory.bootstrap(scene)
   }
@@ -43,7 +43,7 @@ abstract class Perspective(template: Option[Perspective]) extends Nameable {
   }
 
   // since the constructor is invoked only when instantiating (switching to) a perspective, we can use this place to save the currently used perspective
-  PersistentSettings.set(PersistentSettings.Keys.PerspectiveName, this.name)
+  GlobalSettings.set(GlobalSettings.Keys.PerspectiveName, this.name)
 }
 
 object Perspectives {

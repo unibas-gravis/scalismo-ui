@@ -1,10 +1,27 @@
 package scalismo.ui.settings
 
+import scalismo.ui.settings.SettingsFile.Codec
+
 import scala.reflect.runtime.universe.{ TypeTag, typeOf }
 import scala.util.{ Failure, Success, Try }
 
-object PersistentSettings {
+/**
+ * High-level abstraction for storing user preferences / settings.
+ *
+ * Settings are identified by keys, and can have one or more values.
+ * Values can be of any type, as long as a codec for that type is defined below,
+ * or in a type class provided by the user.
+ *
+ * Applications can define their own keys;
+ * to avoid name clashes, keys should have package-like names. "common" is reserved
+ * for the keys defined in this source file.
+ *
+ */
+class PersistentSettings(val settingsFile: SettingsFile) {
 
+  /**
+   * Setting Keys used by the UI itself.
+   */
   object Keys {
     final val WindowHeight = "common.windowHeight"
     final val WindowWidth = "common.windowWidth"
@@ -20,105 +37,53 @@ object PersistentSettings {
     final val TwoDClickHighlight = "common.2dclick.highlight"
   }
 
-  val settingsFile = {
-    new ScalismoSettingsFile
-  }
-
-  class KeyDoesNotExistException extends Exception("Key not found")
-
-  val KeyDoesNotExist = new KeyDoesNotExistException
-
-  object Codecs {
-
-    def get[A: TypeTag]: Codec[A] = {
-      val codec: Option[Codec[_]] = typeOf[A] match {
-        case t if t <:< typeOf[String] => Some(StringCodec)
-        case t if t <:< typeOf[Int] => Some(IntCodec)
-        case t if t <:< typeOf[Long] => Some(LongCodec)
-        case t if t <:< typeOf[Short] => Some(ShortCodec)
-        case t if t <:< typeOf[Byte] => Some(ByteCodec)
-        case t if t <:< typeOf[Double] => Some(DoubleCodec)
-        case t if t <:< typeOf[Float] => Some(FloatCodec)
-        case t if t <:< typeOf[Boolean] => Some(BooleanCodec)
-        case _ => None
-      }
-      if (codec.isEmpty) {
-        throw new IllegalArgumentException("Settings of type " + typeOf[A].toString + " are not currently supported")
-      }
-      codec.get.asInstanceOf[Codec[A]]
-    }
-
-    abstract class Codec[A] {
-      def toString(target: A): String = target.toString
-
-      def fromString(s: String): A
-    }
-
-    object StringCodec extends Codec[String] {
-      override def fromString(s: String) = s
-    }
-
-    object BooleanCodec extends Codec[Boolean] {
-      override def fromString(s: String) = java.lang.Boolean.parseBoolean(s)
-    }
-
-    object IntCodec extends Codec[Int] {
-      override def fromString(s: String) = Integer.parseInt(s)
-    }
-
-    object LongCodec extends Codec[Long] {
-      override def fromString(s: String) = java.lang.Long.parseLong(s)
-    }
-
-    object ShortCodec extends Codec[Short] {
-      override def fromString(s: String) = java.lang.Short.parseShort(s)
-    }
-
-    object ByteCodec extends Codec[Byte] {
-      override def fromString(s: String) = java.lang.Byte.parseByte(s)
-    }
-
-    object DoubleCodec extends Codec[Double] {
-      override def fromString(s: String) = java.lang.Double.parseDouble(s)
-    }
-
-    object FloatCodec extends Codec[Float] {
-      override def fromString(s: String) = java.lang.Float.parseFloat(s)
-    }
-
-  }
-
-  def get[A: TypeTag](key: String, default: Option[A] = None, useDefaultOnFailure: Boolean = false): Try[A] = {
+  /**
+   * Returns a single-valued setting, wrapped in an Option. Returns None if the key is not found, or an error occured.
+   *
+   * If multiple values with this key are present, the first is returned.
+   *
+   * @param key settings key
+   * @tparam A type of the setting's value.
+   * @return the first value with the appropriate key, or None on error/not found.
+   */
+  def get[A: TypeTag: Codec](key: String): Option[A] = {
     typeOf[A] match {
       case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
       case _ => /* ok */
     }
 
-    val result = getList(key, default.map(List(_)), useDefaultOnFailure)
-    result match {
-      case Failure(error) => Failure(error)
-      case Success(l) => Success(l.head)
-    }
+    val result = getList(key)
+    result.flatMap(_.headOption)
   }
 
-  def getList[A: TypeTag](key: String, default: Option[List[A]] = None, useDefaultOnFailure: Boolean = false): Try[List[A]] = {
-    require(!useDefaultOnFailure || default.isDefined, "useDefaultOnFailure requires default value to be set")
-
-    val codec = Codecs.get[A]
+  /**
+   * Returns a multi-valued setting, wrapped in an Option.
+   *
+   * Returns an empty list if the key is not found, None if an error occurred.
+   *
+   * @param key settings key
+   * @tparam A type of the setting's value
+   * @return all values for the key, or None on error.
+   */
+  def getList[A: TypeTag: Codec](key: String): Option[List[A]] = {
 
     Try(doGet(key)) match {
-      case Failure(error) => if (useDefaultOnFailure) Success(default.get) else Failure(error)
-      case ok @ Success(r) =>
-        if (r.isEmpty) {
-          if (default.isDefined) Success(default.get)
-          else Failure(KeyDoesNotExist)
-        } else {
-          Success(r.map(s => codec.fromString(s)).toList)
-        }
+      case Failure(error) => None
+      case Success(r) => Some(r.map(s => implicitly[Codec[A]].fromString(s)))
     }
   }
 
-  def set[A: TypeTag](key: String, value: A): Try[Unit] = {
+  /**
+   * Sets a single-valued setting.
+   *
+   * All previous settings for the respective key are discarded and replaced by the new value.
+   *
+   * @param key settings key
+   * @param value settings value
+   * @tparam A type of the setting's value.
+   * @return Failure on error, Success otherwise
+   */
+  def set[A: TypeTag: Codec](key: String, value: A): Try[Unit] = {
     typeOf[A] match {
       case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the setList() method to set multi-valued settings.")
       case _ => /* ok */
@@ -126,16 +91,25 @@ object PersistentSettings {
     setList(key, List(value))
   }
 
-  def setList[A: TypeTag](key: String, values: List[A]): Try[Unit] = {
-    val codec = Codecs.get[A]
+  /**
+   * Sets a multi-valued setting.
+   *
+   * All previous settings for the respective key are discarded and replaced by the new values.
+   *
+   * @param key settings key
+   * @param values settings values
+   * @tparam A type of the setting's values.
+   * @return Failure on error, Success otherwise
+   */
 
-    Try(doSet(key, values.map(v => codec.toString(v)))) match {
-      case ok @ Success(r) => Success(())
+  def setList[A: TypeTag: Codec](key: String, values: List[A]): Try[Unit] = {
+    Try(doSet(key, values.map(v => implicitly[Codec[A]].toString(v)))) match {
+      case Success(r) => Success(())
       case Failure(oops) => Failure(oops)
     }
   }
 
-  private def doGet(key: String): Seq[String] = {
+  private def doGet(key: String): List[String] = {
     val sf: SettingsFile = settingsFile
     sf.getValues(key)
   }

@@ -5,8 +5,8 @@ import java.awt.{ BorderLayout, Color, Component => AComponent, Point }
 import java.io.File
 import javax.swing._
 
-import scalismo.ui.settings.PersistentSettings
-import scalismo.ui.settings.PersistentSettings.Keys.LastUsedDirectories
+import scalismo.ui.settings.GlobalSettings
+import scalismo.ui.settings.GlobalSettings.Keys.LastUsedDirectories
 
 import scala.swing.{ BorderPanel, Component, Label }
 import scala.util.Failure
@@ -20,11 +20,10 @@ class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
   val MaxDirs = 13
 
   def lastUsedDirectories: Seq[File] = {
-    val dirNames = PersistentSettings.getList[String](LastUsedDirectories, Some(Nil))
-    if (dirNames.isSuccess) {
+    val dirNames = GlobalSettings.getList[String](LastUsedDirectories)
+    if (dirNames.isDefined) {
       dirNames.get.map(n => new File(n)).filter(d => d.isDirectory).take(MaxDirs)
     } else {
-      dirNames.failed.get.printStackTrace()
       Nil
     }
   }
@@ -34,7 +33,7 @@ class EnhancedFileChooser(dir: File) extends scala.swing.FileChooser(dir) {
     if (dirs.nonEmpty) {
       val old = lastUsedDirectories.diff(dirs)
       val current = Seq(dirs, old).flatten.take(MaxDirs)
-      PersistentSettings.setList[String](LastUsedDirectories, current.map(_.getAbsolutePath).toList) match {
+      GlobalSettings.setList[String](LastUsedDirectories, current.map(_.getAbsolutePath).toList) match {
         case Failure(x) => x.printStackTrace()
         case _ => /* ok */
       }
