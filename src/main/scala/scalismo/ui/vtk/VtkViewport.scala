@@ -222,21 +222,6 @@ class VtkViewport(val parent: VtkPanel, val renderer: vtkRenderer) extends VtkCo
     }
     cam.SetPosition(pos)
     cam.SetFocalPoint(foc)
-
-    /* This is a horrible hack, but it seems to be the only way to prevent "intermittent black image slices".
-    * Essentially, what seems to always help in that case is to slightly zoom in or out. The code below
-    * simulates that (without actually zooming). Unfortunately, I did not manage to find out exactly which
-    * part of the code that this invokes is actually "responsible" for fixing the problem,
-    * so for now, we have to use this hacky approach.
-    */
-    parent.canvas.interactor.GetInteractorStyle() match {
-      case style: vtkInteractorStyleTrackballCamera =>
-        style.OnRightButtonDown()
-        style.OnMouseMove()
-        style.OnRightButtonUp()
-      case _ => // can't handle
-    }
-
   }
 
   def resetCamera(force: Boolean = false) = EdtUtil.onEdt {
