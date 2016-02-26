@@ -1,4 +1,4 @@
-package scalismo.ui.toolkit.swing
+package scalismo.ui.util
 
 import javax.swing.SwingUtilities
 

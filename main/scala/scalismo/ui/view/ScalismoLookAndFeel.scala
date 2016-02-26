@@ -1,8 +1,8 @@
-package scalismo.ui.toolkit.swing
+package scalismo.ui.view
 
 import javax.swing.{SwingUtilities, ToolTipManager, UIManager}
 
-import scalismo.ui.toolkit.Toolkit
+import scalismo.ui.util.EdtUtil
 
 import scala.swing.SimpleSwingApplication
 
@@ -26,7 +26,6 @@ object ScalismoLookAndFeel {
 
   def initializeWith(lookAndFeelClassName: String): Unit = {
     EdtUtil.onEdt({
-      Toolkit.instance = SwingToolkit
       UIManager.setLookAndFeel(lookAndFeelClassName)
       val laf = UIManager.getLookAndFeel
       if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
