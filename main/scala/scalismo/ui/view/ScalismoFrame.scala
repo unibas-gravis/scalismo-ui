@@ -1,18 +1,18 @@
 package scalismo.ui.view
 
-import javax.swing.{SwingUtilities, WindowConstants}
+import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.model.Scene
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.menu.FileMenu
 import scalismo.ui.view.menu.FileMenu.ExitItem
 
-import scala.swing.{BorderPanel, MainFrame, MenuBar}
+import scala.swing.{ BorderPanel, MainFrame, MenuBar }
 
 object ScalismoFrame {
   /**
-    * Type alias for a method which takes a [[Scene]], and produces a [[ScalismoFrame]] (or a subclass thereof)
-    **/
+   * Type alias for a method which takes a [[Scene]], and produces a [[ScalismoFrame]] (or a subclass thereof)
+   */
   type Constructor = (Scene => ScalismoFrame)
 
   val DefaultConstructor: Constructor = {
@@ -20,34 +20,34 @@ object ScalismoFrame {
   }
 
   /**
-    * Creates a [[ScalismoFrame]] (or a subclass thereof) given a [[Scene]] and a constructor method.
-    *
-    * This method takes care of invoking the constructor in the correct thread (EDT).
-    * @param scene the scene. If not specified, a new Scene is created.
-    * @param constructor the constructor method. If not specified, the [[DefaultConstructor]] is used.
-    * @return
-    */
+   * Creates a [[ScalismoFrame]] (or a subclass thereof) given a [[Scene]] and a constructor method.
+   *
+   * This method takes care of invoking the constructor in the correct thread (EDT).
+   * @param scene the scene. If not specified, a new Scene is created.
+   * @param constructor the constructor method. If not specified, the [[DefaultConstructor]] is used.
+   * @return
+   */
   def apply(scene: Scene = new Scene, constructor: Constructor = DefaultConstructor): ScalismoFrame = {
     EdtUtil.onEdtWait(constructor(scene))
   }
 }
 
 /**
-  * A ScalismoFrame is the top-level view object of every application using the Scalismo UI.
-  * @param scene a [[Scene]] object representing the model that the view uses.
-  *
-  * @see [[ScalismoApplication]]
-  */
-class ScalismoFrame protected(val scene: Scene) extends MainFrame {
+ * A ScalismoFrame is the top-level view object of every application using the Scalismo UI.
+ * @param scene a [[Scene]] object representing the model that the view uses.
+ *
+ * @see [[ScalismoApplication]]
+ */
+class ScalismoFrame protected (val scene: Scene) extends MainFrame {
 
   // some objects, like menu items or actions, want an implicit reference to a ScalismoFrame
   implicit val frame = this
 
   /**
-    * Initializes the frame layout and behavior.
-    *
-    * @param args command-line arguments
-    */
+   * Initializes the frame layout and behavior.
+   *
+   * @param args command-line arguments
+   */
   def setup(args: Array[String]): Unit = {
     setupMenus()
     setupToolbar()
@@ -68,9 +68,9 @@ class ScalismoFrame protected(val scene: Scene) extends MainFrame {
   }
 
   /**
-    * Sets up the main content.
-    * Override this to create an application with a different layout.
-    */
+   * Sets up the main content.
+   * Override this to create an application with a different layout.
+   */
   def setupPanels(): Unit = {
     val root = new BorderPanel
     root.layout(toolBar) = BorderPanel.Position.North

@@ -1,6 +1,6 @@
 package scalismo.ui.view
 
-import scala.swing.{Component, Orientable}
+import scala.swing.{ Component, Orientable }
 
 class ToolBar extends Component with Orientable.Wrapper {
   override lazy val peer = new javax.swing.JToolBar with SuperMixin
