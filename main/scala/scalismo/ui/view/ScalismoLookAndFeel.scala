@@ -1,39 +1,42 @@
 package scalismo.ui.view
 
-import javax.swing.{ SwingUtilities, ToolTipManager, UIManager }
+import javax.swing.{ ToolTipManager, UIManager }
 
-import scalismo.ui.util.EdtUtil
-
-import scala.swing.SimpleSwingApplication
+import scala.util.Try
 
 /**
  * Scalismo Look and Feel.
- *
- * By default, Scalismo tries to use the Nimbus L&F, and falls back to the System L&F if that doesn't work.
  */
 object ScalismoLookAndFeel {
+  /**
+   * The (class name of the) default look and feel. This is automatically determined,
+   * in the following order of preference: Nimbus, then System, then cross-platform.
+   */
   lazy val DefaultLookAndFeelClassName: String = {
-    val nimbus = UIManager.getInstalledLookAndFeels.filter(_.getName.equalsIgnoreCase("nimbus")).map(i => i.getClassName)
-    if (nimbus.nonEmpty) nimbus.head else UIManager.getSystemLookAndFeelClassName
+    val nimbus = "javax.swing.plaf.nimbus.NimbusLookAndFeel"
+    def system = UIManager.getSystemLookAndFeelClassName
+    Stream(nimbus, system).find { laf => Try(Class.forName(laf)).isSuccess }.getOrElse(UIManager.getCrossPlatformLookAndFeelClassName)
   }
 
   /**
    * Initializes the look and feel.
-   * This tweaks a few settings of the L&F so that it behaves the way we need it.
+   * This tweaks a few settings of the L&F so that it looks and behaves the way we like it.
+   *
    * @param lookAndFeelClassName class name of the L&F to use.
    */
   def initializeWith(lookAndFeelClassName: String): Unit = {
-    EdtUtil.onEdtWait({
-      UIManager.setLookAndFeel(lookAndFeelClassName)
-      val laf = UIManager.getLookAndFeel
-      if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-        val defaults = laf.getDefaults
-        defaults.put("Tree.drawHorizontalLines", true)
-        defaults.put("Tree.drawVerticalLines", true)
-      }
-      UIManager.put("FileChooser.readOnly", true)
-      ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
-    })
+    UIManager.setLookAndFeel(lookAndFeelClassName)
+    //TODO: not sure if these things really have to be done on the EDT. If they actually do, uncomment the block.
+    //EdtUtil.onEdtWait{
+    val laf = UIManager.getLookAndFeel
+    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
+      val defaults = laf.getDefaults
+      defaults.put("Tree.drawHorizontalLines", true)
+      defaults.put("Tree.drawVerticalLines", true)
+    }
+    UIManager.put("FileChooser.readOnly", true)
+    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
+    //}
   }
 }
 

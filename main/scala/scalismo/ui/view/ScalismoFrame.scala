@@ -3,42 +3,29 @@ package scalismo.ui.view
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.model.Scene
-import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.menu.FileMenu
 import scalismo.ui.view.menu.FileMenu.ExitItem
 
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
 
-object ScalismoFrame {
-  /**
-   * Type alias for a method which takes a [[Scene]], and produces a [[ScalismoFrame]] (or a subclass thereof)
-   */
-  type Constructor = (Scene => ScalismoFrame)
-
-  val DefaultConstructor: Constructor = {
-    s: Scene => new ScalismoFrame(s)
-  }
-
-  /**
-   * Creates a [[ScalismoFrame]] (or a subclass thereof) given a [[Scene]] and a constructor method.
-   *
-   * This method takes care of invoking the constructor in the correct thread (EDT).
-   * @param scene the scene. If not specified, a new Scene is created.
-   * @param constructor the constructor method. If not specified, the [[DefaultConstructor]] is used.
-   * @return
-   */
-  def apply(scene: Scene = new Scene, constructor: Constructor = DefaultConstructor): ScalismoFrame = {
-    EdtUtil.onEdtWait(constructor(scene))
-  }
-}
-
 /**
  * A ScalismoFrame is the top-level view object of every application using the Scalismo UI.
- * @param scene a [[Scene]] object representing the model that the view uses.
  *
+ * Note that because we use VTK, and that is rather shaky with multithreading,
+ * a ScalismoFrame MUST be instantiated on the Swing EDT. The constructor will throw
+ * an exception if this is not the case.
+ *
+ * @param scene a [[Scene]] object representing the model that the view uses.
  * @see [[ScalismoApplication]]
  */
-class ScalismoFrame protected (val scene: Scene) extends MainFrame {
+class ScalismoFrame(val scene: Scene) extends MainFrame {
+
+  /**
+   * Convenience constructor that instantiates a new Scene instead of requiring one as an argument.
+   */
+  def this() {
+    this(new Scene)
+  }
 
   // some objects, like menu items or actions, want an implicit reference to a ScalismoFrame
   implicit val frame = this

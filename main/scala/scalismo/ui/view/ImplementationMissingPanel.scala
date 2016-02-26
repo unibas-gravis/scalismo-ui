@@ -1,6 +1,6 @@
 package scalismo.ui.view
 
-import scala.swing.{ Label, BorderPanel }
+import scala.swing.{ BorderPanel, Label }
 
 // this is a temporary placeholder class while the implementation is being finished
 class ImplementationMissingPanel extends BorderPanel {
