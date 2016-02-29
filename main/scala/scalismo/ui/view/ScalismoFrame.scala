@@ -3,7 +3,8 @@ package scalismo.ui.view
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.model.Scene
-import scalismo.ui.view.menu.FileMenu
+import scalismo.ui.view.menu.HelpMenu.AboutItem
+import scalismo.ui.view.menu.{ HelpMenu, FileMenu }
 import scalismo.ui.view.menu.FileMenu.ExitItem
 
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
@@ -48,7 +49,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame {
     val fileMenu = new FileMenu
     fileMenu.contents += new ExitItem
 
-    menuBar.contents += fileMenu
+    val helpMenu = new HelpMenu
+    helpMenu.contents += new AboutItem
+
+    menuBar.contents ++= Seq(fileMenu, helpMenu)
   }
 
   def setupToolbar(): Unit = {

@@ -36,6 +36,7 @@ object ScalismoLookAndFeel {
     }
     UIManager.put("FileChooser.readOnly", true)
     ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
+    HighDpi.updateLookAndFeelDefaults()
     //}
   }
 }
