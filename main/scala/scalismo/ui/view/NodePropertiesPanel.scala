@@ -1,5 +1,5 @@
 package scalismo.ui.view
 
-class NodePropertiesPanel extends ImplementationMissingPanel {
+class NodePropertiesPanel(frame: ScalismoFrame) extends ImplementationMissingPanel {
 
 }

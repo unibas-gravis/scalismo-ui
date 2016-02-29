@@ -1,8 +1,10 @@
 package scalismo.ui.view
 
+import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.model.Scene
+import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.menu.HelpMenu.AboutItem
 import scalismo.ui.view.menu.{ HelpMenu, FileMenu }
 import scalismo.ui.view.menu.FileMenu.ExitItem
@@ -74,11 +76,44 @@ class ScalismoFrame(val scene: Scene) extends MainFrame {
 
   def setupBehavior(): Unit = {
     peer.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE)
-    centerOnScreen()
+    restoreWindowState()
   }
 
   override def closeOperation(): Unit = {
+    saveWindowState()
     dispose()
+  }
+
+  protected def saveWindowWidthHeight(): Unit = {
+    val dim = this.size
+    GlobalSettings.set(GlobalSettings.Keys.WindowWidth, dim.width)
+    GlobalSettings.set(GlobalSettings.Keys.WindowHeight, dim.height)
+  }
+
+  override def maximize(): Unit = {
+    // we need to store the width/height in the "unmaximized" state, before we actually go maximized.
+    saveWindowWidthHeight()
+    super.maximize()
+  }
+
+  protected def saveWindowState(): Unit = {
+    GlobalSettings.set(GlobalSettings.Keys.WindowMaximized, maximized)
+    if (!maximized) {
+      // Saving width/height in maximized state is pointless. It should have been done *before*
+      // the window was maximized (see the maximize() method)
+      saveWindowWidthHeight()
+    }
+  }
+
+  protected def restoreWindowState(): Unit = {
+    val width = GlobalSettings.get[Int](GlobalSettings.Keys.WindowWidth).getOrElse(1024)
+    val height = GlobalSettings.get[Int](GlobalSettings.Keys.WindowHeight).getOrElse(768)
+    size = new Dimension(width, height)
+    centerOnScreen()
+
+    if (GlobalSettings.get[Boolean](GlobalSettings.Keys.WindowMaximized).getOrElse(false)) {
+      maximize()
+    }
   }
 
   // double-check that we're on the correct thread, because if we're not,
@@ -86,8 +121,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame {
   require(SwingUtilities.isEventDispatchThread, "ScalismoFrame constructor must be invoked on the Swing EDT!")
 
   val toolBar = new ToolBar
-  val modelPanel = new ModelPanel
-  val perspectivePanel = new PerspectivePanel
+  val modelPanel = new ModelPanel(frame)
+  val perspectivePanel = new PerspectivePanel(frame)
   val statusBar = new StatusBar
 
 }

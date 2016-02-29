@@ -1,5 +1,5 @@
 package scalismo.ui.view
 
-class PerspectivePanel extends ImplementationMissingPanel {
+class PerspectivePanel(val frame: ScalismoFrame) extends ImplementationMissingPanel {
 
 }
