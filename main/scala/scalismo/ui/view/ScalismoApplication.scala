@@ -18,6 +18,7 @@ class ScalismoApplication(frame: => ScalismoFrame, lookAndFeelClassName: String 
   override lazy val top = EdtUtil.onEdtWait(frame)
 
   override def main(args: Array[String]) = {
+    scalismo.initialize()
     ScalismoLookAndFeel.initializeWith(lookAndFeelClassName)
     super.main(args)
   }

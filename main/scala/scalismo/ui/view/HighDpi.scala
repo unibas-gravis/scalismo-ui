@@ -20,7 +20,7 @@ object HighDpi {
     _factor = newValue
   }
 
-  def scale(loDpiPixels: Int) = Math.round(loDpiPixels * scaleFactor)
+  def scale(loDpiPixels: Int, factor: Float = scaleFactor) = Math.round(loDpiPixels * factor)
 
   private def transparentIcon(width: Int, height: Int): ImageIcon = Try {
     val ge = GraphicsEnvironment.getLocalGraphicsEnvironment
@@ -29,6 +29,10 @@ object HighDpi {
     val image = gc.createCompatibleImage(width, height, Transparency.TRANSLUCENT)
     new ImageIcon(image)
   }.getOrElse(null)
+
+  def scaleIcon(sourceIcon: Icon, factor: Float = scaleFactor): Icon = {
+    scaleIcon(sourceIcon, scale(sourceIcon.getIconWidth), scale(sourceIcon.getIconHeight))
+  }
 
   def scaleIcon(sourceIcon: Icon, width: Int, height: Int): Icon = {
     sourceIcon match {
