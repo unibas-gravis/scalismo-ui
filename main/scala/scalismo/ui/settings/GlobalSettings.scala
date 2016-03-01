@@ -7,6 +7,7 @@ object GlobalSettings extends PersistentSettings(GlobalSettingsFile) {
    * Setting Keys used by the UI itself.
    */
   object Keys {
+    val HighDpiScale = "common.highdpi.scale"
     val WindowHeight = "common.windowHeight"
     val WindowWidth = "common.windowWidth"
     val WindowMaximized = "common.windowMaximized"

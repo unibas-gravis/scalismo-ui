@@ -4,15 +4,23 @@ import java.awt.{ Font, GraphicsEnvironment, Transparency }
 import javax.swing.plaf.FontUIResource
 import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
 
+import scalismo.ui.settings.GlobalSettings
+
 import scala.collection.mutable
 import scala.util.Try
 
 object HighDpi {
 
-  // TODO: Whis will have to be configurable
-  val zoomFactor: Float = 20.0f / 12.0f
+  private var _factor: Float = GlobalSettings.get[Float](GlobalSettings.Keys.HighDpiScale).getOrElse(1)
 
-  def scale(loDpiPixels: Int) = Math.round(loDpiPixels * zoomFactor)
+  def scaleFactor: Float = _factor
+
+  def scaleFactor_=(newValue: Float): Unit = {
+    GlobalSettings.set[Float](GlobalSettings.Keys.HighDpiScale, newValue)
+    _factor = newValue
+  }
+
+  def scale(loDpiPixels: Int) = Math.round(loDpiPixels * scaleFactor)
 
   private def transparentIcon(width: Int, height: Int): ImageIcon = Try {
     val ge = GraphicsEnvironment.getLocalGraphicsEnvironment

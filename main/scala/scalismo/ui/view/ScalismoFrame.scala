@@ -6,7 +6,8 @@ import javax.swing.{ SwingUtilities, WindowConstants }
 import scalismo.ui.model.Scene
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.menu.HelpMenu.AboutItem
-import scalismo.ui.view.menu.{ HelpMenu, FileMenu }
+import scalismo.ui.view.menu.ViewMenu.HighDpiSetScaleItem
+import scalismo.ui.view.menu.{ ViewMenu, HelpMenu, FileMenu }
 import scalismo.ui.view.menu.FileMenu.ExitItem
 
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
@@ -54,7 +55,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame {
     val helpMenu = new HelpMenu
     helpMenu.contents += new AboutItem
 
-    menuBar.contents ++= Seq(fileMenu, helpMenu)
+    val viewMenu = new ViewMenu
+    viewMenu.contents += new HighDpiSetScaleItem
+
+    menuBar.contents ++= Seq(fileMenu, viewMenu, helpMenu)
   }
 
   def setupToolbar(): Unit = {
