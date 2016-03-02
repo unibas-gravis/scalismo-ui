@@ -21,7 +21,8 @@ class GroupNode(override val parent: GroupsNode, initialName: => String) extends
   name = initialName
 
   val triangleMeshes = new TriangleMeshesNode(this)
+  val pointClouds = new PointCloudsNode(this)
 
-  override val children: Seq[SceneNode] = List(triangleMeshes)
+  override val children: Seq[SceneNode] = List(triangleMeshes, pointClouds)
 }
 

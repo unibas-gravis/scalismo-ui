@@ -2,6 +2,7 @@ package scalismo.ui.model
 
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities.Renameable
+import scalismo.ui.model.properties.{ OpacityProperty, HasOpacity, ColorProperty, HasColor }
 
 class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TriangleMeshNode] {
   override val name: String = "Triangle Meshes"
@@ -13,7 +14,10 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, val mesh: TriangleMesh, initialName: => String) extends SceneNode with Renameable {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, val mesh: TriangleMesh, initialName: => String) extends SceneNode with Renameable with HasColor with HasOpacity {
   name = initialName
+
+  override val color = new ColorProperty()
+  override val opacity = new OpacityProperty()
 }
 

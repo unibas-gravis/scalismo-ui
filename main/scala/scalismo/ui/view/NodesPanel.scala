@@ -3,6 +3,7 @@ package scalismo.ui.view
 import java.awt
 import java.awt.event.{ MouseEvent, MouseAdapter }
 import java.util.EventObject
+import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JTree }
@@ -10,10 +11,12 @@ import javax.swing.{ Icon, JTree }
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.CollapsableView
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
+import scalismo.utils.Benchmark
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
 import scala.swing.{ BorderPanel, Component, ScrollPane }
+import scala.util.Try
 
 object NodesPanel {
 
@@ -94,6 +97,10 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
 
   val rootNode = new ViewNode(scene)
 
+  // indicator that a synchronization between model and view is currently
+  // being performed (i.e. tree is being programmatically modified)
+  private var synchronizing = false
+
   val mouseListener = new MouseAdapter() {
     override def mousePressed(event: MouseEvent) = handle(event)
 
@@ -101,29 +108,36 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
 
     def handle(event: MouseEvent) = {
       if (event.isPopupTrigger) {
-        val jtree = event.getSource.asInstanceOf[JTree]
         val x = event.getX
         val y = event.getY
-        val path = jtree.getPathForLocation(x, y)
-        if (path != null) {
-          jtree.setSelectionPath(path)
-          val node = getSceneNodeForEvent(event)
-          if (node.isDefined) {
-            //FIXME
-            synchronizeWholeTree()
-            //handlePopup(obj.get, x, y)
-          }
+        pathToSceneNode(tree.getPathForLocation(x, y)).foreach { node =>
+          val selected = getSelectedSceneNodes
+          // the action will always affect the node that was clicked. However,
+          // if the clicked node is part of a multi-selection, then it will also
+          // affect all other selected elements.
+          val affected = if (selected.contains(node)) selected else List(node)
+          println(s"TODO: popup, affected = $affected")
+          // FIXME: remove this
+          synchronizeWholeTree()
         }
+      }
+    }
+  }
+
+  val selectionListener = new TreeSelectionListener {
+    override def valueChanged(e: TreeSelectionEvent): Unit = {
+      if (!synchronizing) {
+        frame.selectedNodes = getSelectedSceneNodes
       }
     }
   }
 
   val treeModel = new DefaultTreeModel(rootNode)
 
-  val tree = new JTree(treeModel) {
+  val tree: JTree = new JTree(treeModel) {
     setCellRenderer(new SceneNodeCellRenderer)
-    getSelectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION)
-    //    addTreeSelectionListener(listener)
+    getSelectionModel.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION)
+    addTreeSelectionListener(selectionListener)
     //    addKeyListener(listener)
     addMouseListener(mouseListener)
     setExpandsSelectedPaths(true)
@@ -132,20 +146,48 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
 
   val scroll = new ScrollPane(Component.wrap(tree))
 
-  layout(scroll) = BorderPanel.Position.Center
+  def pathToSceneNode(path: TreePath): Option[SceneNode] = {
+    Option(path).flatMap { path => Try { path.getLastPathComponent.asInstanceOf[ViewNode].getUserObject }.toOption }
+  }
 
-  synchronizeWholeTree()
-
-  def getSceneNodeForEvent(event: EventObject): Option[SceneNode] = {
-    val jtree = event.getSource.asInstanceOf[JTree]
-    val node = jtree.getLastSelectedPathComponent.asInstanceOf[ViewNode]
-    if (node == null) None
-    else {
-      val obj = node.getUserObject()
-      obj match {
-        case sNode: SceneNode => Some(sNode)
-        case _ => None
+  def sceneNodeToPath(node: SceneNode): Option[TreePath] = {
+    def findRecursive(currentNode: ViewNode): Option[ViewNode] = {
+      if (currentNode.getUserObject eq node) Some(currentNode)
+      else {
+        currentNode.children().foreach { child =>
+          findRecursive(child.asInstanceOf[ViewNode]) match {
+            case found @ Some(_) => return found
+            case _ =>
+          }
+        }
+        None
       }
+    }
+
+    val viewNode: Option[ViewNode] = findRecursive(rootNode)
+    viewNode.map { defined =>
+      val pathAsArray = treeModel.getPathToRoot(defined).asInstanceOf[Array[Object]]
+      new TreePath(pathAsArray)
+    }
+  }
+
+  // helper function for collect(), to turn e.g. a List[Option[T]] into a (purged) List[T]
+  def definedOnly[T]: PartialFunction[Option[T], T] = { case option if option.isDefined => option.get }
+
+  // currently selected nodes
+  def getSelectedSceneNodes: List[SceneNode] = {
+    tree.getSelectionPaths match {
+      case null => Nil
+      case paths => paths.toList.map(pathToSceneNode).collect(definedOnly)
+    }
+  }
+
+  def setSelectedSceneNodes(nodes: immutable.Seq[SceneNode]) = {
+    val paths = nodes.map(sceneNodeToPath).collect(definedOnly)
+    if (paths.nonEmpty) {
+      tree.setSelectionPaths(paths.toArray)
+    } else {
+      tree.setSelectionRow(0)
     }
   }
 
@@ -160,53 +202,68 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
 
   def synchronizeWholeTree(): Unit = {
     println("synchronizing tree")
+    synchronizing = true
     // save user's selection for later
-    val path = tree.getSelectionPath
+    val selecteds = getSelectedSceneNodes
     synchronizeSingleNode(scene, rootNode)
-    if (path != null) {
-      println(path.getLastPathComponent)
-    } else {
-      tree.setSelectionRow(0)
-    }
-
     repaintTree()
+    synchronizing = false
+    setSelectedSceneNodes(selecteds)
   }
 
-  def synchronizeSingleNode(backend: SceneNode, frontend: ViewNode): Unit = {
-    def frontendChildren = frontend.children.map(_.asInstanceOf[ViewNode]).toList
+  def synchronizeSingleNode(model: SceneNode, view: ViewNode): Unit = {
+    // this method operates at the level of a single node, and synchronizes the view
+    // of that node's children.
 
-    def nodeOrNodeChildren(node: SceneNode): Seq[SceneNode] = {
+    // don't replace this with a val, it has to be freshly evaluated every time
+    def viewChildren = view.children.map(_.asInstanceOf[ViewNode]).toList
+
+    def nodeOrChildrenIfCollapsed(node: SceneNode): Seq[SceneNode] = {
       node match {
-        case coll: CollapsableView if coll.isViewCollapsed => node.children.flatMap(nodeOrNodeChildren)
+        case c: CollapsableView if c.isViewCollapsed => node.children.flatMap(nodeOrChildrenIfCollapsed)
         case _ => List(node)
       }
     }
 
-    val backendChildren = backend.children.flatMap(nodeOrNodeChildren)
+    val modelChildren = model.children.flatMap(nodeOrChildrenIfCollapsed)
 
-    val obsoleteIndexes = frontendChildren.zipWithIndex.filterNot({
-      case (n, i) => backendChildren.exists(_ eq n.getUserObject)
-    }).map(_._1)
+    // remove (obsolete) children that are in view, but not in model
+    // Note: don't replace the exists with contains: we're using object identity, not "normal" equality
+    viewChildren.filterNot({
+      n => modelChildren.exists(_ eq n.getUserObject)
+    }).foreach(treeModel.removeNodeFromParent(_))
 
-    obsoleteIndexes.foreach(treeModel.removeNodeFromParent(_))
+    val existingNodesInView = viewChildren.map(_.getUserObject)
 
-    val existingObjects = frontendChildren.map(_.getUserObject)
-    val newObjectsWithIndex = backendChildren.zipWithIndex.filterNot {
-      case (o, i) => existingObjects.exists(_ eq o)
+    val nodesToAddToView = modelChildren.zipWithIndex.filterNot {
+      case (o, _) => existingNodesInView.exists(_ eq o)
     }
 
-    newObjectsWithIndex.foreach({
+    nodesToAddToView.foreach({
       case (obj, idx) =>
         val node = new ViewNode(obj)
-        treeModel.insertNodeInto(node, frontend, idx)
+        treeModel.insertNodeInto(node, view, idx)
+        // this ensures the tree gets expanded to show newly added nodes
         val p = node.getPath.map(_.asInstanceOf[Object])
         tree.setSelectionPath(new TreePath(p))
     })
 
-    backendChildren.zip(frontendChildren).foreach {
-      case (back, front) => synchronizeSingleNode(back, front)
+    // recurse
+    modelChildren.zip(viewChildren).foreach {
+      case (m, v) => synchronizeSingleNode(m, v)
     }
 
+  }
+
+  //constructor logic
+  layout(scroll) = BorderPanel.Position.Center
+
+  synchronizeWholeTree()
+
+  listenTo(scene, frame)
+
+  reactions += {
+    case ScalismoFrame.event.SelectedNodesChanged => setSelectedSceneNodes(frame.selectedNodes)
   }
 
 }

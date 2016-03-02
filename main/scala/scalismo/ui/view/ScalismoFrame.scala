@@ -3,14 +3,22 @@ package scalismo.ui.view
 import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
-import scalismo.ui.model.Scene
+import scalismo.ui.event.{ ScalismoPublisher, Event }
+import scalismo.ui.model.{ SceneNode, Scene }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.menu.HelpMenu.AboutItem
 import scalismo.ui.view.menu.ViewMenu.HighDpiSetScaleItem
 import scalismo.ui.view.menu.{ ViewMenu, HelpMenu, FileMenu }
 import scalismo.ui.view.menu.FileMenu.ExitItem
 
+import scala.collection.immutable
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
+
+object ScalismoFrame {
+  object event {
+    case object SelectedNodesChanged extends Event
+  }
+}
 
 /**
  * A ScalismoFrame is the top-level view object of every application using the Scalismo UI.
@@ -22,7 +30,7 @@ import scala.swing.{ BorderPanel, MainFrame, MenuBar }
  * @param scene a [[Scene]] object representing the model that the view uses.
  * @see [[ScalismoApplication]]
  */
-class ScalismoFrame(val scene: Scene) extends MainFrame {
+class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   /**
    * Convenience constructor that instantiates a new Scene instead of requiring one as an argument.
@@ -117,6 +125,17 @@ class ScalismoFrame(val scene: Scene) extends MainFrame {
 
     if (GlobalSettings.get[Boolean](GlobalSettings.Keys.WindowMaximized).getOrElse(false)) {
       maximize()
+    }
+  }
+
+  private var _selectedNodes: immutable.Seq[SceneNode] = Nil
+
+  def selectedNodes = _selectedNodes
+
+  def selectedNodes_=(nodes: immutable.Seq[SceneNode]) = {
+    if (_selectedNodes != nodes) {
+      _selectedNodes = nodes
+      publishEdt(ScalismoFrame.event.SelectedNodesChanged)
     }
   }
 
