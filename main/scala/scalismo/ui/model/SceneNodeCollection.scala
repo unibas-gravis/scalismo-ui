@@ -18,10 +18,12 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
   def add(child: ChildNode): Unit = {
     require(child.parent == this)
     _items += child
+    publishEdt(SceneNode.event.ChildrenChanged(this))
   }
 
   def remove(child: ChildNode): Unit = {
     _items -= child
+    publishEdt(SceneNode.event.ChildrenChanged(this))
   }
 
   // a collection is hidden in the tree view if it contains less than 2 items.

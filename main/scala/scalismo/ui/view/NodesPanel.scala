@@ -8,7 +8,7 @@ import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JTree }
 
-import scalismo.ui.model.SceneNode
+import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.model.capabilities.CollapsableView
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 import scalismo.utils.Benchmark
@@ -117,8 +117,6 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
           // affect all other selected elements.
           val affected = if (selected.contains(node)) selected else List(node)
           println(s"TODO: popup, affected = $affected")
-          // FIXME: remove this
-          synchronizeWholeTree()
         }
       }
     }
@@ -201,7 +199,6 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
   }
 
   def synchronizeWholeTree(): Unit = {
-    println("synchronizing tree")
     synchronizing = true
     // save user's selection for later
     val selecteds = getSelectedSceneNodes
@@ -263,7 +260,8 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
   listenTo(scene, frame)
 
   reactions += {
-    case ScalismoFrame.event.SelectedNodesChanged => setSelectedSceneNodes(frame.selectedNodes)
+    case ScalismoFrame.event.SelectedNodesChanged(_) => setSelectedSceneNodes(frame.selectedNodes)
+    case Scene.event.SceneChanged(_) => synchronizeWholeTree()
   }
 
 }

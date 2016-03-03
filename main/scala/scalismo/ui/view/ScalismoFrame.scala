@@ -6,6 +6,7 @@ import javax.swing.{ SwingUtilities, WindowConstants }
 import scalismo.ui.event.{ ScalismoPublisher, Event }
 import scalismo.ui.model.{ SceneNode, Scene }
 import scalismo.ui.settings.GlobalSettings
+import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.HelpMenu.AboutItem
 import scalismo.ui.view.menu.ViewMenu.HighDpiSetScaleItem
 import scalismo.ui.view.menu.{ ViewMenu, HelpMenu, FileMenu }
@@ -16,7 +17,7 @@ import scala.swing.{ BorderPanel, MainFrame, MenuBar }
 
 object ScalismoFrame {
   object event {
-    case object SelectedNodesChanged extends Event
+    case class SelectedNodesChanged(frame: ScalismoFrame) extends Event
   }
 }
 
@@ -135,7 +136,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   def selectedNodes_=(nodes: immutable.Seq[SceneNode]) = {
     if (_selectedNodes != nodes) {
       _selectedNodes = nodes
-      publishEdt(ScalismoFrame.event.SelectedNodesChanged)
+      publishEdt(SelectedNodesChanged(this))
     }
   }
 

@@ -14,24 +14,32 @@ class SimpleViewer extends ScalismoFrame {
     super.setup(args)
     statusBar.set("Hello World!")
 
-    val firstGroup = scene.groups.add("first")
-    scene.groups.add("second")
+    new Thread() {
+      override def run(): Unit = {
+        def sleep() = Thread.sleep(1500)
 
-    val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
-    val mn = firstGroup.triangleMeshes.add(m, "face")
+        sleep()
+        val firstGroup = scene.groups.add("first")
+        sleep()
+        scene.groups.add("second")
 
-    // demonstration of implicits syntax
-    scene.groups(0).triangleMeshes.head.mesh
-
-    listenTo(mn.color, mn.opacity)
+        sleep()
+        val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
+        val mn = firstGroup.triangleMeshes.add(m, "face")
+        listenTo(mn.color, mn.opacity)
+        sleep()
+        firstGroup.triangleMeshes.add(m, "copy")
+        sleep()
+        mn.color.value = Color.RED
+        sleep()
+        mn.opacity.value = -5
+      }
+    }.start()
 
     reactions += {
-      case PropertyChanged(p) if p == mn.color => println(p)
-      case PropertyChanged(p) if p == mn.opacity => println(p)
+      case PropertyChanged(p) => println(p)
     }
 
-    mn.color.value = Color.RED
-    mn.opacity.value = -5
   }
 }
 
