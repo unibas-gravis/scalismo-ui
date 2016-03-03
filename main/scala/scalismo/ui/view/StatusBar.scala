@@ -1,19 +1,17 @@
 package scalismo.ui.view
 
-import java.awt
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Font, GraphicsEnvironment, Transparency }
+import java.awt.{ Color, Component => AComponent, Font }
 import java.text.SimpleDateFormat
 import javax.swing._
 
 import scalismo.ui.model.StatusMessage
+import scalismo.ui.model.StatusMessage._
 import scalismo.ui.util.EdtUtil
-import HighDpi.scale
-import StatusMessage._
-import scalismo.ui.view.helper.CustomListCellRenderer
+import scalismo.ui.view.HighDpi.scale
+import scalismo.ui.view.swing.CustomListCellRenderer
 
 import scala.swing.{ Action, _ }
-import scala.util.Try
 
 object StatusBar {
 
@@ -88,7 +86,7 @@ class StatusBar extends BorderPanel {
   }
 
   private class StatusMessageCellRenderer extends CustomListCellRenderer {
-    override def updateListCellRendererComponent(component: awt.Component, list: scala.Any, value: scala.Any, index: Int, isSelected: Boolean, cellHasFocus: Boolean): awt.Component = {
+    override def updateListCellRendererComponent(component: AComponent, list: scala.Any, value: scala.Any, index: Int, isSelected: Boolean, cellHasFocus: Boolean): AComponent = {
       (component, value) match {
         case (label: JLabel, message: StatusMessage) => updateLabelToShowStatusMessage(message, label, withTimestamp = true)
         case _ => // can't handle

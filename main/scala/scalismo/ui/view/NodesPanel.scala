@@ -1,8 +1,6 @@
 package scalismo.ui.view
 
-import java.awt
-import java.awt.event.{ MouseEvent, MouseAdapter }
-import java.util.EventObject
+import java.awt.event.{ MouseAdapter, MouseEvent }
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
@@ -11,7 +9,6 @@ import javax.swing.{ Icon, JTree }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.model.capabilities.CollapsableView
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.utils.Benchmark
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
@@ -56,7 +53,7 @@ object NodesPanel {
 
     private var recursingInGetRendererComponent = false
 
-    override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): awt.Component = {
+    override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): java.awt.Component = {
       val sceneNode = value.asInstanceOf[ViewNode].getUserObject
 
       Icons.getForNode(sceneNode).apply()
@@ -145,7 +142,11 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
   val scroll = new ScrollPane(Component.wrap(tree))
 
   def pathToSceneNode(path: TreePath): Option[SceneNode] = {
-    Option(path).flatMap { path => Try { path.getLastPathComponent.asInstanceOf[ViewNode].getUserObject }.toOption }
+    Option(path).flatMap { path =>
+      Try {
+        path.getLastPathComponent.asInstanceOf[ViewNode].getUserObject
+      }.toOption
+    }
   }
 
   def sceneNodeToPath(node: SceneNode): Option[TreePath] = {
@@ -170,7 +171,9 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
   }
 
   // helper function for collect(), to turn e.g. a List[Option[T]] into a (purged) List[T]
-  def definedOnly[T]: PartialFunction[Option[T], T] = { case option if option.isDefined => option.get }
+  def definedOnly[T]: PartialFunction[Option[T], T] = {
+    case option if option.isDefined => option.get
+  }
 
   // currently selected nodes
   def getSelectedSceneNodes: List[SceneNode] = {

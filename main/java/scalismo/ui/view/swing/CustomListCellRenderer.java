@@ -1,4 +1,4 @@
-package scalismo.ui.view.helper;
+package scalismo.ui.view.swing;
 
 import javax.swing.*;
 import java.awt.*;
