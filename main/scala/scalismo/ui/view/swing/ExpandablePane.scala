@@ -58,7 +58,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
     // on all subsequent calls, return the stored value.
     if (operational && !isPreferredSizeSet) {
       val auto = super.getPreferredSize
-      //setPreferredSize(new Dimension(auto.width, auto.height))
+      setPreferredSize(new Dimension(auto.width, auto.height))
     }
     super.getPreferredSize
   }
