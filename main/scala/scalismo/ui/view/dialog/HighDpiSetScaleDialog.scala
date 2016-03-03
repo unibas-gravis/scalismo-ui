@@ -29,12 +29,12 @@ class HighDpiSetScaleDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
   val ok = new Button(new Action("OK") {
     override def apply(): Unit = {
       val factor = scaleSlider.value / 100f
-      dispose()
 
       if (factor != HighDpi.scaleFactor) {
         HighDpi.scaleFactor = factor
-        Dialog.showMessage(frame.contents.head, "Please restart the application to see your changes applied.", "UI scale was changed")
+        Dialog.showMessage(main, "Please restart the application to see your changes applied.", "UI scale was changed")
       }
+      dispose()
     }
   })
 

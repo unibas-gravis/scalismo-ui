@@ -129,11 +129,11 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     }
   }
 
-  private var _selectedNodes: immutable.Seq[SceneNode] = Nil
+  private var _selectedNodes: List[SceneNode] = Nil
 
   def selectedNodes = _selectedNodes
 
-  def selectedNodes_=(nodes: immutable.Seq[SceneNode]) = {
+  def selectedNodes_=(nodes: List[SceneNode]) = {
     if (_selectedNodes != nodes) {
       _selectedNodes = nodes
       publishEdt(SelectedNodesChanged(this))

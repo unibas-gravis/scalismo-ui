@@ -16,8 +16,9 @@ class ModelPanel(val frame: ScalismoFrame) extends BorderPanel {
     // that preferredSize returns something sensible
     verticalSplit.dividerLocation = (verticalSplit.preferredSize.height * 0.5).toInt
 
-    val horizontalSplit = Component.wrap(new ExpandablePane(JSplitPane.HORIZONTAL_SPLIT, verticalSplit.peer))
-    layout(horizontalSplit) = BorderPanel.Position.Center
+    // disabled for now, as it interferes with automatic size adjustion
+    //val horizontalSplit = Component.wrap(new ExpandablePane(JSplitPane.HORIZONTAL_SPLIT, verticalSplit.peer))
+    layout(verticalSplit) = BorderPanel.Position.Center
   }
 
   val nodesPanel = new NodesPanel(frame)

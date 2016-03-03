@@ -1,6 +1,6 @@
 package scalismo.ui.view
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
+import java.awt.event.{ ComponentEvent, ComponentAdapter, MouseAdapter, MouseEvent }
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
@@ -72,10 +72,14 @@ object NodesPanel {
           val Margin = 3
           val bounds = tree.getPathBounds(tree.getPathForRow(row))
           val treeWidth = tree.getWidth
+          setPreferredSize(null)
           if (bounds != null && treeWidth - Margin > bounds.x) {
-            val pref = component.getPreferredSize
-            pref.width = treeWidth - Margin - bounds.x
-            setPreferredSize(pref)
+            val pref = getPreferredSize
+            val alternativeWidth = treeWidth - Margin - bounds.x
+            if (alternativeWidth > pref.width) {
+              pref.width = alternativeWidth
+              setPreferredSize(pref)
+            }
           }
           recursingInGetRendererComponent = false
         }
@@ -127,6 +131,12 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
     }
   }
 
+  val componentListener = new ComponentAdapter {
+    override def componentResized(e: ComponentEvent): Unit = {
+      repaintTree()
+    }
+  }
+
   val treeModel = new DefaultTreeModel(rootNode)
 
   val tree: JTree = new JTree(treeModel) {
@@ -135,6 +145,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
     addTreeSelectionListener(selectionListener)
     //    addKeyListener(listener)
     addMouseListener(mouseListener)
+    addComponentListener(componentListener)
     setExpandsSelectedPaths(true)
     setLargeModel(true)
   }
@@ -199,6 +210,9 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
       case _ => //don't know how to handle
     }
     tree.treeDidChange()
+    if (preferredSize.width > size.width) {
+      frame.peer.revalidate()
+    }
   }
 
   def synchronizeWholeTree(): Unit = {

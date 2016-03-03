@@ -4,8 +4,6 @@ import java.awt.Color
 import java.io.File
 
 import scalismo.io.MeshIO
-import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
-import scalismo.ui.model.properties.{ NodeProperty, ColorProperty }
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
@@ -16,7 +14,7 @@ class SimpleViewer extends ScalismoFrame {
 
     new Thread() {
       override def run(): Unit = {
-        def sleep() = Thread.sleep(1500)
+        def sleep() = Thread.sleep(1)
 
         sleep()
         val firstGroup = scene.groups.add("first")
@@ -32,14 +30,9 @@ class SimpleViewer extends ScalismoFrame {
         sleep()
         mn.color.value = Color.RED
         sleep()
-        mn.opacity.value = -5
+        mn.opacity.value = .2f
       }
     }.start()
-
-    reactions += {
-      case PropertyChanged(p) => println(p)
-    }
-
   }
 }
 

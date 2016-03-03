@@ -47,12 +47,18 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
 
   private def pane = this
 
+  override def setPreferredSize(size: Dimension): Unit = {
+    super.setPreferredSize(size)
+    invalidate()
+    getParent.revalidate()
+  }
+
   override def getPreferredSize: Dimension = {
     // on the very first call, calculate the preferred size and store it.
     // on all subsequent calls, return the stored value.
     if (operational && !isPreferredSizeSet) {
       val auto = super.getPreferredSize
-      setPreferredSize(new Dimension(auto.width, auto.height))
+      //setPreferredSize(new Dimension(auto.width, auto.height))
     }
     super.getPreferredSize
   }
@@ -114,8 +120,6 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
             }
           }
           pane.setPreferredSize(newSize)
-          pane.invalidate()
-          pane.getParent.revalidate()
         }
       }
     }

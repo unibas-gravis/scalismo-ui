@@ -1,6 +1,6 @@
 package scalismo.ui.view
 
-import java.awt.{ Font, GraphicsEnvironment, Transparency }
+import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
 import javax.swing.plaf.FontUIResource
 import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
 
@@ -20,7 +20,11 @@ object HighDpi {
     _factor = newValue
   }
 
-  def scale(loDpiPixels: Int, factor: Float = scaleFactor) = Math.round(loDpiPixels * factor)
+  def scale(loDpiPixels: Int, factor: Float = scaleFactor): Int = Math.round(loDpiPixels * factor)
+
+  def scaleDimension(loDpiDimension: Dimension, factor: Float = scaleFactor): Dimension = {
+    new Dimension(scale(loDpiDimension.width, factor), scale(loDpiDimension.height, factor))
+  }
 
   private def transparentIcon(width: Int, height: Int): ImageIcon = Try {
     val ge = GraphicsEnvironment.getLocalGraphicsEnvironment
