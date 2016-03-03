@@ -29,7 +29,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
       setUI(new SynthUI)
       true
     case _ =>
-      //println(s"Warning: no class match found for ${getUI.getClass}; PseudoSplitPane will not work correctly.")
+      //println(s"Warning: no class match found for ${getUI.getClass}; ExpandablePane will not work correctly.")
       false
   }
 
@@ -38,8 +38,8 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
 
   // initialization
   if (!reverseOrder) {
-    setRightComponent(ExpandablePane.zeroComponent)
     setLeftComponent(leftOrTop)
+    setRightComponent(ExpandablePane.zeroComponent)
   } else {
     setLeftComponent(ExpandablePane.zeroComponent)
     setRightComponent(leftOrTop)
@@ -66,7 +66,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
     // to allow for enlarging the panel)
     if (operational && dragging) {
       // this currently travels all the way up to a
-      // root container (i.e., usually a frame).
+      // root container (usually a frame).
       def containing(current: Container): Container = {
         val parent = current.getParent
         if (parent == null) current else containing(parent)
