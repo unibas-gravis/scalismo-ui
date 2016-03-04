@@ -65,7 +65,7 @@ object NodePropertiesPanel {
     }
 
     def setSelectedItem(view: PropertyPanel): Boolean = {
-      for (index <- 0 to peer.getTabCount) {
+      (0 until peer.getTabCount).foreach { index =>
         peer.getTabComponentAt(index) match {
           case tab: Tab if tab.view.uniqueId == view.uniqueId =>
             peer.setSelectedIndex(index)
