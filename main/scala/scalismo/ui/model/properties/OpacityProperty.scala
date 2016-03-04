@@ -1,7 +1,5 @@
 package scalismo.ui.model.properties
 
-import java.awt.Color
-
 object OpacityProperty {
   val DefaultValue: Float = 1.0f
 }

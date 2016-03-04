@@ -2,8 +2,8 @@ package scalismo.ui.view
 
 import java.awt.Color
 
-import scala.swing.{ Slider, Label }
 import scala.swing.event.ValueChanged
+import scala.swing.{ Label, Slider }
 
 class FancySlider extends Slider {
   // intended to be overwritten in subclasses if needed

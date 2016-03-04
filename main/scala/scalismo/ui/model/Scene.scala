@@ -7,9 +7,13 @@ import scalismo.ui.model.SceneNode.event.ChildrenChanged
 import scala.collection.immutable.Seq
 
 object Scene {
+
   object event {
+
     case class SceneChanged(scene: Scene) extends Event
+
   }
+
 }
 
 class Scene extends SceneNode {
@@ -27,6 +31,6 @@ class Scene extends SceneNode {
   override val children: Seq[SceneNode] = List(groups)
 
   reactions += {
-    case ChildrenChanged(node) => publishEdt(SceneChanged(this))
+    case ChildrenChanged(node) => publishEvent(SceneChanged(this))
   }
 }

@@ -4,9 +4,13 @@ import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
 
 object NodeProperty {
+
   object event {
+
     case class PropertyChanged[V](property: NodeProperty[V]) extends Event
+
   }
+
 }
 
 class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
@@ -26,7 +30,7 @@ class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
 
   def value_=(newValue: V) = {
     _value = sanitize(newValue)
-    publishEdt(PropertyChanged(this))
+    publishEvent(PropertyChanged(this))
   }
 
   override def toString: String = s"${getClass.getName}[$value]"

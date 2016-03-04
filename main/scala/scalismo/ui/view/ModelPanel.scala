@@ -1,10 +1,6 @@
 package scalismo.ui.view
 
-import javax.swing.{ JButton, JSplitPane }
-
-import scalismo.ui.view.swing.ExpandablePane
-
-import scala.swing.{ BorderPanel, Component, Orientation, SplitPane }
+import scala.swing.{ BorderPanel, Orientation, SplitPane }
 
 class ModelPanel(val frame: ScalismoFrame) extends BorderPanel {
 

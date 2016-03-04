@@ -66,6 +66,7 @@ class SettingsFile(directory: File, name: String) {
 }
 
 object SettingsFile {
+
   /**
    * Just a fancy name for serialization and deserialization
    * methods of a given type, preferrably to a human-readable form.
@@ -112,4 +113,5 @@ object SettingsFile {
       override def fromString(s: String) = java.lang.Float.parseFloat(s)
     }
   }
+
 }

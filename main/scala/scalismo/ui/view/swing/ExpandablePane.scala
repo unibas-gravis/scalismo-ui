@@ -1,8 +1,8 @@
 package scalismo.ui.view.swing
 
+import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Container, Dimension }
-import java.awt.event.{ MouseEvent, MouseAdapter }
-import javax.swing.{ JSplitPane, JComponent }
+import javax.swing.{ JComponent, JSplitPane }
 
 object ExpandablePane {
   private[ExpandablePane] val ZeroSize: Dimension = new Dimension(0, 0)
@@ -10,6 +10,7 @@ object ExpandablePane {
   // this is a def, rather than a val, so that a new component gets created for every instance.
   private[ExpandablePane] def zeroComponent: JComponent = new JComponent {
     override def getPreferredSize: Dimension = ZeroSize
+
     override def getMinimumSize: Dimension = ZeroSize
   }
 }

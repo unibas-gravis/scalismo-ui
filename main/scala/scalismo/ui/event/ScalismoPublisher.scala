@@ -22,13 +22,13 @@ trait ScalismoPublisher extends Publisher {
    * NOTE: this in turn results in a "... overrides concrete,
    * non-deprecated ..." warning, but that one can be safely IGNORED.
    */
-  @deprecated(message = "Use the publishEdt method instead", since = "always")
+  @deprecated(message = "Use the publishEvent method instead", since = "always")
   override def publish(e: Event) = {
     doPublish(e)
   }
 
   // this is the preferred method to use
-  def publishEdt(e: Event) = {
+  def publishEvent(e: Event) = {
     EdtUtil.onEdtWait(doPublish(e))
   }
 

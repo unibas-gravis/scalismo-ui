@@ -1,13 +1,13 @@
 package scalismo.ui.view.dialog
 
 import java.awt.Font
-import java.awt.event.{ KeyEvent, KeyAdapter, MouseEvent, MouseAdapter }
+import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
 import javax.swing.UIManager
 
 import scalismo.ui.view.{ FancySlider, HighDpi, ScalismoFrame }
 
-import scala.swing.event.ValueChanged
 import scala.swing._
+import scala.swing.event.ValueChanged
 
 class HighDpiSetScaleDialog(implicit val frame: ScalismoFrame) extends Dialog(frame) {
 

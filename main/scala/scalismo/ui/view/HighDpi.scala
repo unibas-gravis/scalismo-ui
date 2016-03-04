@@ -35,7 +35,7 @@ object HighDpi {
   }.getOrElse(null)
 
   def scaleIcon(sourceIcon: Icon, factor: Float = scaleFactor): Icon = {
-    scaleIcon(sourceIcon, scale(sourceIcon.getIconWidth), scale(sourceIcon.getIconHeight))
+    if (sourceIcon == null) null else scaleIcon(sourceIcon, scale(sourceIcon.getIconWidth), scale(sourceIcon.getIconHeight))
   }
 
   def scaleIcon(sourceIcon: Icon, width: Int, height: Int): Icon = {

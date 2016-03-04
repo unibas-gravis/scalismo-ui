@@ -1,7 +1,7 @@
 package scalismo.ui.model
 
 import scalismo.ui.model.capabilities.Renameable
-import scalismo.ui.model.properties.{ OpacityProperty, ColorProperty, HasOpacity, HasColor }
+import scalismo.ui.model.properties.{ ColorProperty, HasColor, HasOpacity, OpacityProperty }
 
 class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollection[PointCloudNode] {
   override val name: String = "Point Clouds"

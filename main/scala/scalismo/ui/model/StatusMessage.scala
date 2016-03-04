@@ -2,7 +2,7 @@ package scalismo.ui.model
 
 import java.util.Date
 
-import scalismo.ui.model.StatusMessage.{ Kind, Information }
+import scalismo.ui.model.StatusMessage.{ Information, Kind }
 
 object StatusMessage {
 

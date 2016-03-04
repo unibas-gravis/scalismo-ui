@@ -3,22 +3,25 @@ package scalismo.ui.view
 import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
-import scalismo.ui.event.{ ScalismoPublisher, Event }
-import scalismo.ui.model.{ SceneNode, Scene }
+import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
+import scalismo.ui.view.menu.FileMenu.ExitItem
 import scalismo.ui.view.menu.HelpMenu.AboutItem
 import scalismo.ui.view.menu.ViewMenu.HighDpiSetScaleItem
-import scalismo.ui.view.menu.{ ViewMenu, HelpMenu, FileMenu }
-import scalismo.ui.view.menu.FileMenu.ExitItem
+import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
-import scala.collection.immutable
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
 
 object ScalismoFrame {
+
   object event {
+
     case class SelectedNodesChanged(frame: ScalismoFrame) extends Event
+
   }
+
 }
 
 /**
@@ -136,7 +139,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   def selectedNodes_=(nodes: List[SceneNode]) = {
     if (_selectedNodes != nodes) {
       _selectedNodes = nodes
-      publishEdt(SelectedNodesChanged(this))
+      publishEvent(SelectedNodesChanged(this))
     }
   }
 

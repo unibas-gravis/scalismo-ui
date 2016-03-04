@@ -1,10 +1,10 @@
 package scalismo.ui.view.menu
 
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.action.{ HighDpiSetScaleAction, AboutDialogAction }
+import scalismo.ui.view.action.HighDpiSetScaleAction
 
-import scala.swing.{ MenuItem, Menu }
 import scala.swing.event.Key
+import scala.swing.{ Menu, MenuItem }
 
 class ViewMenu extends Menu("View") {
   mnemonic = Key.V

@@ -1,6 +1,7 @@
 package scalismo.ui.view.action
 
 import javax.swing.UIManager
+
 import scalismo.ui.view.{ HighDpi, ScalismoFrame }
 
 import scala.swing.{ Action, Dialog }

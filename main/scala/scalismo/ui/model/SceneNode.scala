@@ -5,9 +5,13 @@ import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scala.collection.immutable
 
 object SceneNode {
+
   object event {
+
     case class ChildrenChanged(node: SceneNode) extends Event
+
   }
+
 }
 
 trait SceneNode extends ScalismoPublisher {

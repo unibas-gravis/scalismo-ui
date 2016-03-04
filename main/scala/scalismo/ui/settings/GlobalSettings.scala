@@ -1,6 +1,7 @@
 package scalismo.ui.settings
 
 object GlobalSettingsFile extends SettingsFile(SettingsDirectory.get().get, "global.ini")
+
 object GlobalSettings extends PersistentSettings(GlobalSettingsFile) {
 
   /**
@@ -21,4 +22,5 @@ object GlobalSettings extends PersistentSettings(GlobalSettingsFile) {
     //    final val TwoDClickSnapThreshold = "common.2dclick.snapthreshold"
     //    final val TwoDClickHighlight = "common.2dclick.highlight"
   }
+
 }

@@ -1,13 +1,13 @@
 package scalismo.ui.view
 
-import java.awt.event.{ ComponentEvent, ComponentAdapter, MouseAdapter, MouseEvent }
+import java.awt.event.{ ComponentAdapter, ComponentEvent, MouseAdapter, MouseEvent }
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JTree }
 
-import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.model.capabilities.CollapsableView
+import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
@@ -36,7 +36,11 @@ object NodesPanel {
 
     object Icons {
       /* note: this uses the "closed" icon for leaves. */
-      final val DefaultIcons = new Icons(HighDpi.scaleIcon(getDefaultOpenIcon), HighDpi.scaleIcon(getDefaultClosedIcon), HighDpi.scaleIcon(getDefaultClosedIcon))
+      final val DefaultIcons = {
+        val open = HighDpi.scaleIcon(getDefaultOpenIcon)
+        val closed = HighDpi.scaleIcon(getDefaultClosedIcon)
+        new Icons(open, closed, closed)
+      }
 
       def getForNode(node: SceneNode): Icons = {
         node match {

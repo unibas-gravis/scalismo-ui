@@ -8,8 +8,8 @@ import javax.swing.event.{ ChangeEvent, ChangeListener }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasColor, HasOpacity, NodeProperty, OpacityProperty }
-import scalismo.ui.view.{ ScalismoFrame, HighDpi, Constants }
 import scalismo.ui.view.swing.ColorPickerPanel
+import scalismo.ui.view.{ Constants, HighDpi, ScalismoFrame }
 
 import scala.swing.event.Event
 import scala.swing.{ BorderPanel, Component }
@@ -67,7 +67,7 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
       if (!deaf) {
         val rgb = peer.getRGB
         val c: Color = new Color(rgb(0), rgb(1), rgb(2))
-        publishEdt(ColorChosen(c))
+        publishEvent(ColorChosen(c))
       }
     }
 
