@@ -9,7 +9,7 @@ import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.ExitItem
 import scalismo.ui.view.menu.HelpMenu.AboutItem
-import scalismo.ui.view.menu.ViewMenu.HighDpiSetScaleItem
+import scalismo.ui.view.menu.ViewMenu.{ HighDpiSetScaleItem, PerspectiveMenu }
 import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
@@ -68,7 +68,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     helpMenu.contents += new AboutItem
 
     val viewMenu = new ViewMenu
-    viewMenu.contents += new HighDpiSetScaleItem
+    viewMenu.contents ++= Seq(new PerspectiveMenu, new HighDpiSetScaleItem)
 
     menuBar.contents ++= Seq(fileMenu, viewMenu, helpMenu)
   }
@@ -85,7 +85,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     root.layout(toolBar) = BorderPanel.Position.North
     root.layout(modelPanel) = BorderPanel.Position.West
     root.layout(statusBar) = BorderPanel.Position.South
-    root.layout(perspectivePanel) = BorderPanel.Position.Center
+    root.layout(perspectivesPanel) = BorderPanel.Position.Center
 
     this.contents = root
   }
@@ -149,7 +149,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   val toolBar = new ToolBar
   val modelPanel = new ModelPanel(frame)
-  val perspectivePanel = new PerspectivePanel(frame)
+  val perspectivesPanel: PerspectivesPanel = new PerspectivesPanel(frame)
   val statusBar = new StatusBar
 
 }
