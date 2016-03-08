@@ -4,12 +4,16 @@ import java.awt.Color
 import java.io.File
 
 import scalismo.io.MeshIO
+import scalismo.ui.model.StatusMessage
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
 
   override def setup(args: Array[String]): Unit = {
     super.setup(args)
+    statusBar.set(new StatusMessage("Warning", StatusMessage.Warning))
+    statusBar.set(new StatusMessage("Error", StatusMessage.Error))
+    statusBar.set(new StatusMessage("Question", StatusMessage.Question))
     statusBar.set("Hello World!")
 
     new Thread() {

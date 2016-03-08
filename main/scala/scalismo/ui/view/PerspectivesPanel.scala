@@ -1,7 +1,5 @@
 package scalismo.ui.view
 
-import java.awt.Color
-
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.perspective.{ Perspective, PerspectiveFactory }

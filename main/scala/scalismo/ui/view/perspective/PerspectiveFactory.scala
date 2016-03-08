@@ -40,5 +40,6 @@ trait PerspectiveFactory {
    * @return the unique, human-readable name of the perspective.
    */
   def perspectiveName: String
+
   def instantiate(frame: ScalismoFrame): Perspective
 }

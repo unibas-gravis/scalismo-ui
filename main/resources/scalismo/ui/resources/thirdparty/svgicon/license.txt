@@ -1,0 +1,11 @@
+SVGIcon.java
+
+A Swing Icon that draws an SVG image.
+
+Cameron McCormack <cam (at) mcc.id.au>
+
+Permission is hereby granted to use, copy, modify and distribte this
+code for any purpose, without fee.
+
+Initial version: April 21, 2005
+

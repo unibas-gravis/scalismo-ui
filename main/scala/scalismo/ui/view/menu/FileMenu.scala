@@ -1,7 +1,7 @@
 package scalismo.ui.view.menu
 
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.action.ExitAction
+import scalismo.ui.view.action.CloseFrameAction
 
 import scala.swing.event.Key
 import scala.swing.{ Menu, MenuItem }
@@ -12,8 +12,8 @@ class FileMenu extends Menu("File") {
 
 object FileMenu {
 
-  class ExitItem(implicit frame: ScalismoFrame) extends MenuItem(new ExitAction("Exit")) {
-    mnemonic = Key.X
+  class CloseFrameItem(implicit frame: ScalismoFrame) extends MenuItem(new CloseFrameAction) {
+    mnemonic = Key.C
   }
 
 }

@@ -7,8 +7,8 @@ import javax.swing._
 
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.model.StatusMessage._
+import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.HighDpi.scale
 import scalismo.ui.view.swing.CustomListCellRenderer
 
 import scala.swing.{ Action, _ }
@@ -17,19 +17,17 @@ object StatusBar {
 
   private[StatusBar] case class UIOptions(color: Color, icon: Icon)
 
-  private final val IconSize = scale(14)
-
-  private def createIcon(partialName: String): Icon = {
-    val icon = UIManager.getIcon(s"OptionPane.${partialName}Icon")
-    HighDpi.scaleIcon(icon, IconSize, IconSize)
-  }
-
+  //  private def createIcon(partialName: String): Icon = {
+  //    val icon = UIManager.getIcon(s"OptionPane.${partialName}Icon")
+  //    HighDpi.scaleIcon(icon, Constants.DefaultIconSize, Constants.DefaultIconSize)
+  //  }
+  //
   private val uiOptions = {
     val list: List[(StatusMessage.Kind, UIOptions)] = List(
-      Information -> UIOptions(Color.BLACK, createIcon("information")),
-      Warning -> UIOptions(Color.ORANGE.darker(), createIcon("warning")),
-      Error -> UIOptions(Color.RED, createIcon("error")),
-      Question -> UIOptions(Color.BLUE, createIcon("question"))
+      Information -> UIOptions(Color.BLACK, BundledIcon.Information.standardSized()),
+      Warning -> UIOptions(Color.ORANGE.darker(), BundledIcon.Warning.standardSized()),
+      Error -> UIOptions(Color.RED, BundledIcon.Error.standardSized()),
+      Question -> UIOptions(Color.BLUE, BundledIcon.Question.standardSized())
     )
     list.toMap
   }

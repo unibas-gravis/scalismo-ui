@@ -41,7 +41,7 @@ Source code, binaries and/or any other resources in the package labeled "com.bri
 
 package scalismo.ui.view.swing;
 
-import scalismo.ui.view.HighDpi;
+import scalismo.ui.view.ScalableUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -89,7 +89,7 @@ public class ColorPickerPanel extends JPanel {
      * to render the graphic.  This image is created once at a fixed
      * size and is never replaced.)
      */
-    public static final int MAX_SIZE = HighDpi.scale(325, HighDpi.scaleFactor());
+    public static final int MAX_SIZE = ScalableUI.scale(325, ScalableUI.scaleFactor());
 
     /** This controls how the colors are displayed. */
 //	private int mode = ColorPicker.BRI;

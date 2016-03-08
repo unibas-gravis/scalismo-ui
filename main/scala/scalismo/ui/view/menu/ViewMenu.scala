@@ -1,7 +1,7 @@
 package scalismo.ui.view.menu
 
 import scalismo.ui.event.ScalismoPublisher
-import scalismo.ui.view.action.HighDpiSetScaleAction
+import scalismo.ui.view.action.ShowDisplayScalingDialogAction
 import scalismo.ui.view.perspective.PerspectiveFactory
 import scalismo.ui.view.{ PerspectivesPanel, ScalismoFrame }
 
@@ -14,8 +14,8 @@ class ViewMenu extends Menu("View") {
 
 object ViewMenu {
 
-  class HighDpiSetScaleItem(implicit val frame: ScalismoFrame) extends MenuItem(new HighDpiSetScaleAction("Set UI scale")) {
-    mnemonic = Key.S
+  class ShowDisplayScalingDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowDisplayScalingDialogAction) {
+    mnemonic = Key.D
   }
 
   class PerspectiveMenu(implicit val frame: ScalismoFrame) extends Menu("Perspective") {

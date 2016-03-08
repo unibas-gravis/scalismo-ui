@@ -1,6 +1,6 @@
 package scalismo.ui.view.perspective
 
-import scalismo.ui.view.{ ViewportPanel, ScalismoFrame, ViewportPanel3D }
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel3D }
 
 import scala.swing.BorderPanel
 

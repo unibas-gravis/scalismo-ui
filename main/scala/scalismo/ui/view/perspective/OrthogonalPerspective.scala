@@ -1,7 +1,7 @@
 package scalismo.ui.view.perspective
 
 import scalismo.ui.model.Axis
-import scalismo.ui.view.{ ViewportPanel2D, ViewportPanel3D, ViewportPanel, ScalismoFrame }
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 
 import scala.swing.GridPanel
 
@@ -13,5 +13,5 @@ class OrthogonalPerspective(override val frame: ScalismoFrame, override val fact
 object OrthogonalPerspective extends PerspectiveFactory {
   override def instantiate(frame: ScalismoFrame): Perspective = new OrthogonalPerspective(frame, this)
 
-  override def perspectiveName: String = "3D and Orthogonal Slices"
+  override def perspectiveName: String = "Orthogonal Slices"
 }

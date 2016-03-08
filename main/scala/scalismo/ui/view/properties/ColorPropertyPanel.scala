@@ -9,7 +9,7 @@ import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasColor, HasOpacity, NodeProperty, OpacityProperty }
 import scalismo.ui.view.swing.ColorPickerPanel
-import scalismo.ui.view.{ Constants, HighDpi, ScalismoFrame }
+import scalismo.ui.view.{ Constants, ScalableUI, ScalismoFrame }
 
 import scala.swing.event.Event
 import scala.swing.{ BorderPanel, Component }
@@ -22,7 +22,7 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
   case class ColorChosen(color: Color) extends Event
 
   class ColorDisplayer extends Component {
-    val BorderWidth = HighDpi.scale(1)
+    val BorderWidth = ScalableUI.scale(1)
     override lazy val peer = new JPanel {
       override def paintComponent(g: Graphics): Unit = {
         val dim: Dimension = getSize
@@ -45,7 +45,7 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
     }
 
     peer.setOpaque(false)
-    peer.setPreferredSize(HighDpi.scaleDimension(new Dimension(20, 20)))
+    peer.setPreferredSize(ScalableUI.scaleDimension(new Dimension(20, 20)))
     peer.setBorder(new LineBorder(Color.BLACK, BorderWidth, false))
   }
 

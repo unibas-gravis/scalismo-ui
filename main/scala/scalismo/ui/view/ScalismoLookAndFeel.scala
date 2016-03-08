@@ -1,6 +1,6 @@
 package scalismo.ui.view
 
-import javax.swing.{ ToolTipManager, UIManager }
+import javax.swing.{ ToolTipManager, UIDefaults, UIManager }
 
 import scala.util.Try
 
@@ -26,18 +26,43 @@ object ScalismoLookAndFeel {
    */
   def initializeWith(lookAndFeelClassName: String): Unit = {
     UIManager.setLookAndFeel(lookAndFeelClassName)
-    //TODO: not sure if these things really have to be done on the EDT. If they actually do, uncomment the block.
-    //EdtUtil.onEdtWait{
+
+    ScalableUI.updateLookAndFeelDefaults()
+
+    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
+
+    allDefaults.foreach(_.put("FileChooser.readOnly", true))
+    replaceDialogIcons()
+
     val laf = UIManager.getLookAndFeel
     if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-      val defaults = laf.getDefaults
-      defaults.put("Tree.drawHorizontalLines", true)
-      defaults.put("Tree.drawVerticalLines", true)
+      val nimbus = laf.getDefaults
+      nimbus.put("Tree.drawHorizontalLines", true)
+      nimbus.put("Tree.drawVerticalLines", true)
     }
-    UIManager.put("FileChooser.readOnly", true)
-    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
-    HighDpi.updateLookAndFeelDefaults()
-    //}
+  }
+
+  /*
+  * It's not always clear whether setting the global defaults also affects the actual LAF.
+  * I've seen some weird race conditions happening. This method returns both the global
+  * and the LAF defaults, so that changes can be applied to both as necessary.
+  */
+  private def allDefaults: List[UIDefaults] = List(UIManager.getDefaults, UIManager.getLookAndFeel.getDefaults)
+
+  private def replaceDialogIcons(): Unit = {
+    import scalismo.ui.resources.icons.BundledIcon._
+
+    val replacements = List((Information, "information"), (Warning, "warning"), (Error, "error"), (Question, "question"))
+    replacements.foreach {
+      case (icon, partialName) =>
+        val key = s"OptionPane.${partialName}Icon"
+        allDefaults.foreach { defaults =>
+          Option(defaults.getIcon(key)).foreach { original =>
+            val replacement = ScalableUI.resizeIcon(icon, original.getIconWidth, original.getIconHeight)
+            defaults.put(key, replacement)
+          }
+        }
+    }
   }
 }
 

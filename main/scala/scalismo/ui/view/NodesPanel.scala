@@ -36,22 +36,16 @@ object NodesPanel {
 
     object Icons {
       /* note: this uses the "closed" icon for leaves. */
-      final val DefaultIcons = {
-        val open = HighDpi.scaleIcon(getDefaultOpenIcon)
-        val closed = HighDpi.scaleIcon(getDefaultClosedIcon)
-        new Icons(open, closed, closed)
-      }
+      //      final val DefaultIcons = {
+      //        val open = ScalableUI.scaleIcon(getDefaultOpenIcon)
+      //        val closed = ScalableUI.scaleIcon(getDefaultClosedIcon)
+      //        new Icons(open, closed, closed)
+      //      }
 
-      def getForNode(node: SceneNode): Icons = {
-        node match {
-          //          case vis: VisualizableSceneTreeObject[_] =>
-          //            IconFactory.iconFor(vis) match {
-          //              case None => DefaultIcons
-          //              case Some(icon) =>
-          //                new Icons(icon, icon, icon)
-          //            }
-          case _ => DefaultIcons
-        }
+      def forNode(node: SceneNode): Icons = {
+        val base = scalismo.ui.resources.icons.BundledIcon.forNode(node)
+        //base.map{single => new Icons(single, single, single)}.getOrElse(DefaultIcons)
+        new Icons(base, base, base)
       }
     }
 
@@ -60,7 +54,7 @@ object NodesPanel {
     override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): java.awt.Component = {
       val sceneNode = value.asInstanceOf[ViewNode].getUserObject
 
-      Icons.getForNode(sceneNode).apply()
+      Icons.forNode(sceneNode).apply()
 
       val component = super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus)
 

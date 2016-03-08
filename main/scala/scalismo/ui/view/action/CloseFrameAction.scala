@@ -4,7 +4,7 @@ import scalismo.ui.view.ScalismoFrame
 
 import scala.swing.Action
 
-class ExitAction(title: String)(implicit frame: ScalismoFrame) extends Action(title) {
+class CloseFrameAction(title: String = "Close")(implicit frame: ScalismoFrame) extends Action(title) {
   override def apply(): Unit = {
     frame.closeOperation()
   }

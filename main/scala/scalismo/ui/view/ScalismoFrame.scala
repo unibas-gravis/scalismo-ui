@@ -7,9 +7,9 @@ import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
-import scalismo.ui.view.menu.FileMenu.ExitItem
-import scalismo.ui.view.menu.HelpMenu.AboutItem
-import scalismo.ui.view.menu.ViewMenu.{ HighDpiSetScaleItem, PerspectiveMenu }
+import scalismo.ui.view.menu.FileMenu.CloseFrameItem
+import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
+import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowDisplayScalingDialogItem }
 import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
 import scala.swing.{ BorderPanel, MainFrame, MenuBar }
@@ -62,13 +62,13 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     menuBar = new MenuBar
 
     val fileMenu = new FileMenu
-    fileMenu.contents += new ExitItem
+    fileMenu.contents += new CloseFrameItem
 
     val helpMenu = new HelpMenu
-    helpMenu.contents += new AboutItem
+    helpMenu.contents += new ShowAboutDialogItem
 
     val viewMenu = new ViewMenu
-    viewMenu.contents ++= Seq(new PerspectiveMenu, new HighDpiSetScaleItem)
+    viewMenu.contents ++= Seq(new PerspectiveMenu, new ShowDisplayScalingDialogItem)
 
     menuBar.contents ++= Seq(fileMenu, viewMenu, helpMenu)
   }
@@ -142,6 +142,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
       publishEvent(SelectedNodesChanged(this))
     }
   }
+
+  // constructor logic
+
+  title = "Scalismo UI"
 
   // double-check that we're on the correct thread, because if we're not,
   // all hell will break loose in the VTK components.

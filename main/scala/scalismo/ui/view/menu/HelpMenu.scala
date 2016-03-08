@@ -1,7 +1,7 @@
 package scalismo.ui.view.menu
 
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.action.AboutDialogAction
+import scalismo.ui.view.action.ShowAboutDialogAction
 
 import scala.swing.event.Key
 import scala.swing.{ Menu, MenuItem }
@@ -12,7 +12,7 @@ class HelpMenu extends Menu("Help") {
 
 object HelpMenu {
 
-  class AboutItem(implicit val frame: ScalismoFrame) extends MenuItem(new AboutDialogAction("About")) {
+  class ShowAboutDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowAboutDialogAction) {
     mnemonic = Key.A
   }
 
