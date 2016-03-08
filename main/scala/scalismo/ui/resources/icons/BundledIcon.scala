@@ -1,48 +1,46 @@
 package scalismo.ui.resources.icons
 
-import javax.swing.Icon
+import java.awt.Color
 
-import scalismo.ui.model._
+import jiconfont.IconCode
+import jiconfont.icons.FontAwesome
 import scalismo.ui.resources.icons.png.PngIconResource
-import scalismo.ui.resources.icons.svg.SvgIconResource
 
 object BundledIcon {
-  lazy val Fallback = SvgIconResource.load("fallback.svg")
+  lazy val Fallback = FontIcon.load(FontAwesome.BOLT)
+
+  /* can be used to generate a FontAwesome IconCode
+   * that is not defined as a constant in the FontAwesome class.
+   */
+  def awesome(char: Char): IconCode = new IconCode {
+    override def getUnicode: Char = char
+
+    override def getFontFamily: String = "FontAwesome"
+
+    override def name(): String = "generated"
+  }
 
   // this is relatively heavy, and seldomly needed, so we don't create a val.
   def Logo = PngIconResource.load("logo.png")
 
   // basic icons
-  lazy val Information = SvgIconResource.load("information.svg")
-  lazy val Warning = SvgIconResource.load("warning.svg")
-  lazy val Error = SvgIconResource.load("error.svg")
-  lazy val Question = SvgIconResource.load("question.svg")
+  lazy val Information = FontIcon.load(FontAwesome.INFO_CIRCLE, color = Color.BLUE.darker())
+  lazy val Warning = FontIcon.load(FontAwesome.EXCLAMATION_TRIANGLE, color = Color.ORANGE)
+  lazy val Error = FontIcon.load(FontAwesome.TIMES_CIRCLE, color = Color.RED.darker())
+  lazy val Question = FontIcon.load(FontAwesome.QUESTION_CIRCLE, color = Color.BLUE.darker())
 
   // toolbar or other general-purpose icons
-  lazy val Reset = SvgIconResource.load("reset.svg")
-  lazy val Screenshot = SvgIconResource.load("screenshot.svg")
+  lazy val Reset = FontIcon.load(FontAwesome.UNDO)
+  lazy val Screenshot = FontIcon.load(FontAwesome.CAMERA)
+  lazy val Remove = FontIcon.load(awesome('\uf00d'))
 
   // general SceneNode icons
-  lazy val Scene = SvgIconResource.load("scene.svg")
-  lazy val Group = SvgIconResource.load("group.svg")
-  lazy val Collection = SvgIconResource.load("collection.svg")
+  lazy val Scene = FontIcon.load(FontAwesome.HOME)
+  lazy val Group = FontIcon.load(FontAwesome.CUBES)
+  lazy val FolderOpen = FontIcon.load(FontAwesome.FOLDER_OPEN_O)
+  lazy val FolderClosed = FontIcon.load(FontAwesome.FOLDER_O)
 
   // particular SceneNode classes
-  lazy val TriangleMesh = PngIconResource.load("mesh.png")
+  lazy val TriangleMesh = FontIcon.load(FontAwesome.DIAMOND)
 
-  /* FIXME:
-   * This method is definitely at the wrong abstraction level.
-   * It should be moved somewhere closer to the view.
-   */
-  def forNode(node: SceneNode): Icon = {
-    val icon = node match {
-      case scene: Scene => Scene
-      case group: GroupNode => Group
-      case triangleMeshNode: TriangleMeshNode => TriangleMesh
-      case coll: SceneNodeCollection[_] => Collection
-      case _ => Fallback
-    }
-
-    icon.standardSized()
-  }
 }

@@ -6,8 +6,9 @@ import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JTree }
 
+import scalismo.ui.model._
 import scalismo.ui.model.capabilities.CollapsableView
-import scalismo.ui.model.{ Scene, SceneNode }
+import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
@@ -36,17 +37,25 @@ object NodesPanel {
 
     object Icons {
       /* note: this uses the "closed" icon for leaves. */
-      //      final val DefaultIcons = {
-      //        val open = ScalableUI.scaleIcon(getDefaultOpenIcon)
-      //        val closed = ScalableUI.scaleIcon(getDefaultClosedIcon)
-      //        new Icons(open, closed, closed)
-      //      }
+
+      private def iconForNode(node: SceneNode, open: Boolean): Icon = {
+        val icon = node match {
+          case scene: Scene => BundledIcon.Scene
+          case group: GroupNode => BundledIcon.Group
+          case triangleMeshNode: TriangleMeshNode => BundledIcon.TriangleMesh
+          case coll: SceneNodeCollection[_] => if (open) BundledIcon.FolderOpen else BundledIcon.FolderClosed
+          case _ => BundledIcon.Fallback
+        }
+
+        icon.standardSized()
+      }
 
       def forNode(node: SceneNode): Icons = {
-        val base = scalismo.ui.resources.icons.BundledIcon.forNode(node)
-        //base.map{single => new Icons(single, single, single)}.getOrElse(DefaultIcons)
-        new Icons(base, base, base)
+        val closed = iconForNode(node, open = false)
+        val open = iconForNode(node, open = true)
+        new Icons(open, closed, closed)
       }
+
     }
 
     private var recursingInGetRendererComponent = false

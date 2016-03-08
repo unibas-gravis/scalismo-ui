@@ -7,6 +7,10 @@ import scalismo.ui.view.{ Constants, ScalableUI }
 trait ScalableIcon extends Icon {
   def standardSized(): Icon = {
     val scaledSize = ScalableUI.scale(Constants.StandardUnscaledIconSize)
-    ScalableUI.resizeIcon(this, scaledSize, scaledSize)
+    resize(scaledSize, scaledSize)
+  }
+
+  def resize(width: Int, height: Int) = {
+    ScalableUI.resizeIcon(this, width, height)
   }
 }

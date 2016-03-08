@@ -2,21 +2,19 @@ package scalismo.ui.resources.thirdparty
 
 import java.util.Scanner
 
-import scalismo.ui.resources.thirdparty.batik.Batik
 import scalismo.ui.resources.thirdparty.breeze.Breeze
 import scalismo.ui.resources.thirdparty.interpreterpane.InterpreterPane
 import scalismo.ui.resources.thirdparty.javagraphics.JavaGraphics
 import scalismo.ui.resources.thirdparty.jhdf.Jhdf
+import scalismo.ui.resources.thirdparty.jiconfont.JIconFont
 import scalismo.ui.resources.thirdparty.jogl.Jogl
-import scalismo.ui.resources.thirdparty.linea.Linea
 import scalismo.ui.resources.thirdparty.niftijio.NiftiJio
 import scalismo.ui.resources.thirdparty.spire.Spire
 import scalismo.ui.resources.thirdparty.spray.Spray
-import scalismo.ui.resources.thirdparty.svgicon.SvgIcon
 import scalismo.ui.resources.thirdparty.vtk.Vtk
 
 object ThirdPartyResource {
-  val All: List[ThirdPartyResource] = List(Vtk, Jogl, Jhdf, Breeze, NiftiJio, Linea, Spire, Spray, InterpreterPane, JavaGraphics, SvgIcon, Batik).sortBy(_.name.toLowerCase)
+  val All: List[ThirdPartyResource] = List(Vtk, Jogl, Jhdf, Breeze, NiftiJio, Spire, Spray, InterpreterPane, JavaGraphics, JIconFont).sortBy(_.name.toLowerCase)
 }
 
 abstract class ThirdPartyResource {

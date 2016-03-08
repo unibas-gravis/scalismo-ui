@@ -292,7 +292,6 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       "UI Version" -> BuildInfo.version,
       "Scalismo Version" -> scalismo.BuildInfo.version,
       "Scala Version" -> BuildInfo.scalaVersion,
-      "SBT Version" -> BuildInfo.sbtVersion,
       "Build Time" -> BuildInfo.buildTime
     )
 

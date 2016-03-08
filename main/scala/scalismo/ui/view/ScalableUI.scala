@@ -4,8 +4,8 @@ import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
 import javax.swing.plaf.FontUIResource
 import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
 
+import scalismo.ui.resources.icons.FontIcon
 import scalismo.ui.settings.GlobalSettings
-import scalismo.ui.view.swing.SVGIcon
 
 import scala.collection.mutable
 
@@ -65,8 +65,8 @@ object ScalableUI {
       sourceIcon
     } else {
       sourceIcon match {
+        case icon: FontIcon => icon.resize(width, height)
         case icon: ImageIcon => new ImageIcon(icon.getImage.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
-        case icon: SVGIcon => icon.createResized(width, height)
         case icon: Icon =>
           val (w, h) = (icon.getIconWidth, icon.getIconHeight)
           val ge = GraphicsEnvironment.getLocalGraphicsEnvironment

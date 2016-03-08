@@ -25,7 +25,7 @@ object StatusBar {
   private val uiOptions = {
     val list: List[(StatusMessage.Kind, UIOptions)] = List(
       Information -> UIOptions(Color.BLACK, BundledIcon.Information.standardSized()),
-      Warning -> UIOptions(Color.ORANGE.darker(), BundledIcon.Warning.standardSized()),
+      Warning -> UIOptions(Color.ORANGE, BundledIcon.Warning.standardSized()),
       Error -> UIOptions(Color.RED, BundledIcon.Error.standardSized()),
       Question -> UIOptions(Color.BLUE, BundledIcon.Question.standardSized())
     )
@@ -106,7 +106,9 @@ class StatusBar extends BorderPanel {
       rollover = false
       rollover = false
     }
-    toolBar.add(clearLogAction)
+    toolBar.add(new Button(clearLogAction) {
+      icon = BundledIcon.Remove.standardSized()
+    })
     layout(toolBar) = BorderPanel.Position.North
 
     visible = false
