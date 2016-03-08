@@ -13,7 +13,7 @@ class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollectio
   }
 }
 
-class PointCloudNode(override val parent: PointCloudsNode, val pointCloud: PointCloud, initialName: => String) extends SceneNode with Renameable with HasColor with HasOpacity {
+class PointCloudNode(override val parent: PointCloudsNode, val pointCloud: PointCloud, initialName: String) extends SceneNode with Renameable with HasColor with HasOpacity {
   name = initialName
 
   override val color = new ColorProperty()

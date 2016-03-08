@@ -17,6 +17,11 @@ object SceneNode {
 trait SceneNode extends ScalismoPublisher {
   def name: String
 
+  /**
+   * Returns this node's parent [[SceneNode]], or null if this node is itself a [[Scene]].
+   *
+   * @return this node's parent [[SceneNode]], or null if this node is itself a [[Scene]]
+   */
   def parent: SceneNode
 
   lazy val scene: Scene = parent.scene
