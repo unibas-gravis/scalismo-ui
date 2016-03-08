@@ -136,7 +136,7 @@ object AboutDialog {
   }
 
   class ThirdPartyPanel(frame: ScalismoFrame) extends BorderPanel {
-    val description = "The scalismo framework, and the user interface, use a number of third-party open source libraries and resources. These dependencies are listed below."
+    val description = "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
 
     val north = new TextArea(description) {
       peer.setLineWrap(true)
