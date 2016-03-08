@@ -3,6 +3,7 @@ package scalismo.ui.resources.thirdparty
 import java.util.Scanner
 
 import scalismo.ui.resources.thirdparty.breeze.Breeze
+import scalismo.ui.resources.thirdparty.fontawesome.FontAwesome
 import scalismo.ui.resources.thirdparty.interpreterpane.InterpreterPane
 import scalismo.ui.resources.thirdparty.javagraphics.JavaGraphics
 import scalismo.ui.resources.thirdparty.jhdf.Jhdf
@@ -14,7 +15,7 @@ import scalismo.ui.resources.thirdparty.spray.Spray
 import scalismo.ui.resources.thirdparty.vtk.Vtk
 
 object ThirdPartyResource {
-  val All: List[ThirdPartyResource] = List(Vtk, Jogl, Jhdf, Breeze, NiftiJio, Spire, Spray, InterpreterPane, JavaGraphics, JIconFont).sortBy(_.name.toLowerCase)
+  val All: List[ThirdPartyResource] = List(Vtk, Jogl, Jhdf, Breeze, NiftiJio, Spire, Spray, InterpreterPane, JavaGraphics, JIconFont, FontAwesome).sortBy(_.name.toLowerCase)
 }
 
 abstract class ThirdPartyResource {
