@@ -14,7 +14,7 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, val mesh: TriangleMesh, initialName: => String) extends SceneNode with Renameable with HasColor with HasOpacity {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, val mesh: TriangleMesh, initialName: String) extends SceneNode with Renameable with HasColor with HasOpacity {
   name = initialName
 
   override val color = new ColorProperty()

@@ -22,8 +22,11 @@ class Scene extends SceneNode {
   override lazy val scene: Scene = this
 
   override val parent: SceneNode = {
-    // should actually be null, but we play it safe.
-    this
+    /* A Scene is the only SceneNode without a parent, and should be handled accordingly.
+     * If some algorithm carelessly tries to access the scene's parent, the NPE that will
+     * get thrown is actually a feature ("you are doing something wrong!"), not a bug.
+     */
+    null
   }
 
   val groups = new GroupsNode(this)
