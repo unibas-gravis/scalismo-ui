@@ -28,7 +28,12 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
       icon = BundledIcon.Reset.standardSized()
     })
 
-    toolBar.add(new Button() {
+    toolBar.add(new Button(new Action(null) {
+      override def apply(): Unit = {
+        // FIXME
+        ???
+      }
+    }) {
       tooltip = "Screenshot"
       icon = BundledIcon.Screenshot.standardSized()
     })
@@ -56,7 +61,11 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
     super.setupToolBar()
 
     List(Axis.X, Axis.Y, Axis.Z).foreach { axis =>
-      val button = new Button(axis.toString) {
+      val button = new Button(new Action(axis.toString) {
+        override def apply(): Unit = {
+          renderer.setCameraToAxis(axis)
+        }
+      }) {
         foreground = AxisColor.forAxis(axis).darker()
       }
       toolBar.add(button)

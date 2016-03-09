@@ -1,11 +1,15 @@
 package scalismo.ui.rendering
 
+import java.awt.image.BufferedImage
+import java.io.File
 import java.util.concurrent.locks.ReentrantLock
+import javax.imageio.ImageIO
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
-import scalismo.ui.model.Renderable
+import scalismo.ui.model.{ Axis, Renderable }
 import scalismo.ui.model.Scene.event.SceneChanged
+import scalismo.ui.rendering.RendererPanel.Cameras
 import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, DynamicActor }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ViewportPanel
@@ -13,7 +17,37 @@ import vtk._
 import vtk.rendering.vtkInteractorForwarder
 
 import scala.swing.{ BorderPanel, Component }
+import scala.util.Try
 
+object RendererPanel {
+
+  // Helper object to properly set camera positions for 2D slices.
+  private[RendererPanel] object Cameras {
+    // the state of a freshly created camera.
+    case class DefaultCameraState(position: Array[Double], focalPoint: Array[Double], viewUp: Array[Double])
+
+    private var _defaultCameraState: Option[DefaultCameraState] = None
+
+    // this will have an effect exactly once, on the very first invocation.
+    def setDefaultCameraState(cam: vtkCamera) = Cameras.synchronized {
+      if (_defaultCameraState.isEmpty) {
+        _defaultCameraState = Some(DefaultCameraState(cam.GetPosition(), cam.GetFocalPoint(), cam.GetViewUp()))
+      }
+    }
+
+    def defaultCameraState: DefaultCameraState = _defaultCameraState.get
+
+    case class CameraChangeFromDefault(pitch: Option[Double], roll: Option[Double], yaw: Option[Double])
+
+    def cameraChangeForAxis(axis: Axis): CameraChangeFromDefault = {
+      axis match {
+        case Axis.Y => CameraChangeFromDefault(Some(90), None, None)
+        case Axis.X => CameraChangeFromDefault(None, None, Some(90))
+        case Axis.Z => CameraChangeFromDefault(None, None, None)
+      }
+    }
+  }
+}
 class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   private class RenderableAndActors(val renderable: Renderable, val actorsOption: Option[Actors]) {
@@ -23,6 +57,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
   val scene = viewport.frame.scene
 
   private val implementation = new Implementation
+  Cameras.setDefaultCameraState(implementation.getActiveCamera)
 
   layout(Component.wrap(implementation.getComponent)) = BorderPanel.Position.Center
 
@@ -86,6 +121,36 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   def resetCamera(): Unit = {
     implementation.resetCamera()
+  }
+
+  def screenshot(file: File): Try[Unit] = Try {
+    val source = implementation.getComponent
+    val image = new BufferedImage(source.getWidth, source.getHeight, BufferedImage.TYPE_INT_RGB)
+    val g = image.createGraphics()
+
+    // parameter description: see
+    // https://jogamp.org/deployment/jogamp-next/javadoc/jogl/javadoc/javax/media/opengl/awt/GLJPanel.html#setupPrint%28double,%20double,%20int,%20int,%20int%29
+    source.setupPrint(1, 1, 0, -1, -1)
+    source.printAll(g)
+    source.releasePrint()
+
+    image.flush()
+    ImageIO.write(image, "png", file)
+  }
+
+  def setCameraToAxis(axis: Axis): Unit = {
+    val cam = implementation.getActiveCamera
+    val default = Cameras.defaultCameraState
+    cam.SetPosition(default.position)
+    cam.SetFocalPoint(default.focalPoint)
+    cam.SetViewUp(default.viewUp)
+
+    val change = Cameras.cameraChangeForAxis(axis)
+    change.yaw.foreach(v => cam.Azimuth(v))
+    change.pitch.foreach(v => cam.Elevation(v))
+    change.roll.foreach(v => cam.Roll(v))
+    cam.OrthogonalizeViewUp()
+    resetCamera()
   }
 
   /**
