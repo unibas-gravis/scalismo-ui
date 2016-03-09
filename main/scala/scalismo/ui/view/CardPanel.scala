@@ -40,6 +40,7 @@ object CardPanel {
     var minimumHeight = 0
   }
 
+  val NoCard: String = null
 }
 
 class CardPanel extends Panel with LayoutContainer {
@@ -52,7 +53,7 @@ class CardPanel extends Panel with LayoutContainer {
   val layoutManager = peer.getLayout.asInstanceOf[CustomCardLayout]
 
   private var cards: Map[UniqueID, ComponentWithUniqueId] = Map.empty
-  private var _current: UniqueID = ""
+  private var _current: UniqueID = CardPanel.NoCard
 
   protected def areValid(c: UniqueID) = (true, "")
 

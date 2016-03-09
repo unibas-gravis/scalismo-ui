@@ -30,7 +30,7 @@ class SimpleViewer extends ScalismoFrame {
         val mn = firstGroup.triangleMeshes.add(m, "face")
         listenTo(mn.color, mn.opacity)
         sleep()
-        firstGroup.triangleMeshes.add(m, "copy")
+        //firstGroup.triangleMeshes.add(m, "copy")
         sleep()
         mn.color.value = Color.RED
         sleep()

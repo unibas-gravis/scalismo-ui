@@ -31,7 +31,7 @@ class Scene extends SceneNode {
 
   val groups = new GroupsNode(this)
 
-  override val children: Seq[SceneNode] = List(groups)
+  override val children: List[SceneNode] = List(groups)
 
   reactions += {
     case ChildrenChanged(node) => publishEvent(SceneChanged(this))

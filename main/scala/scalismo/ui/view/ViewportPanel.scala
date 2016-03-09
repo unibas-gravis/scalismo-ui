@@ -1,22 +1,18 @@
 package scalismo.ui.view
 
-import java.awt.Color
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, SwingConstants }
 
 import scalismo.ui.model.Axis
+import scalismo.ui.rendering.RendererPanel
 import scalismo.ui.resources.icons.BundledIcon
 
 import scala.swing._
 
-abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel {
+sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel {
   def name: String
 
-  val renderer = new Label("RENDERER") {
-    opaque = true
-    background = Color.BLACK
-    foreground = Color.YELLOW
-  }
+  val renderer = new RendererPanel(this)
 
   val toolBar = new ToolBar {
     floatable = false
@@ -25,7 +21,9 @@ abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel {
   }
 
   def setupToolBar(): Unit = {
-    toolBar.add(new Button() {
+    toolBar.add(new Button(new Action(null) {
+      override def apply(): Unit = renderer.resetCamera()
+    }) {
       tooltip = "Reset Camera"
       icon = BundledIcon.Reset.standardSized()
     })
@@ -47,6 +45,10 @@ abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel {
   // constructor
   setupToolBar()
   setupLayout()
+
+  def setAttached(attached: Boolean): Unit = {
+    renderer.setAttached(attached)
+  }
 }
 
 class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") extends ViewportPanel(frame) {

@@ -15,7 +15,7 @@ object SceneNodeCollection {
 trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with CollapsableView {
   private var _items = mutable.ListBuffer.empty[ChildNode]
 
-  override final def children: Seq[ChildNode] = _items.toList
+  override final def children: List[ChildNode] = _items.toList
 
   def add(child: ChildNode): Unit = {
     require(child.parent == this)

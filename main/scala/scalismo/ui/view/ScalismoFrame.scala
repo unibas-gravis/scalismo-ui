@@ -5,6 +5,7 @@ import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
+import scalismo.ui.rendering.Rendering
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.CloseFrameItem
@@ -112,6 +113,11 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     super.maximize()
   }
 
+  override def dispose(): Unit = {
+    super.dispose()
+    Rendering.unregister(this)
+  }
+
   protected def saveWindowState(): Unit = {
     GlobalSettings.set(GlobalSettings.Keys.WindowMaximized, maximized)
     if (!maximized) {
@@ -150,6 +156,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   // double-check that we're on the correct thread, because if we're not,
   // all hell will break loose in the VTK components.
   require(SwingUtilities.isEventDispatchThread, "ScalismoFrame constructor must be invoked on the Swing EDT!")
+
+  Rendering.register(this)
 
   val toolBar = new ToolBar
   val modelPanel = new ModelPanel(frame)

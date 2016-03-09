@@ -26,9 +26,13 @@ trait SceneNode extends ScalismoPublisher {
 
   lazy val scene: Scene = parent.scene
 
-  def children: immutable.Seq[SceneNode] = Nil
+  def children: List[SceneNode] = Nil
 
   override def toString: String = name
+
+  def renderables: List[Renderable] = {
+    children.flatMap(_.renderables)
+  }
 
   // the scene listens to events on all nodes
   scene.listenTo(this)
