@@ -1,4 +1,4 @@
-package scalismo.ui.view
+package scalismo.ui.view.util
 
 import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
 import javax.swing.plaf.FontUIResource
@@ -39,7 +39,7 @@ object ScalableUI {
    * the default value ([[ScalableUI.scaleFactor]] is used.
    *
    * @param loDpiPixels unscaled number (usually in pixels)
-   * @param factor scale factor. If not specified, [[ScalableUI.scaleFactor]] is used.
+   * @param factor      scale factor. If not specified, [[ScalableUI.scaleFactor]] is used.
    * @return the argument multiplied by the given factor, rounded to the next integer.
    */
   def scale(loDpiPixels: Int, factor: Float = scaleFactor): Int = Math.round(loDpiPixels * factor)
@@ -53,7 +53,7 @@ object ScalableUI {
    * The resulting icon's size will be the size of the icon, multiplied by the given factor.
    *
    * @param sourceIcon the icon to scale
-   * @param factor the factor to change the icon's size. If unspecified, the currently set default scale factor is applied
+   * @param factor     the factor to change the icon's size. If unspecified, the currently set default scale factor is applied
    * @return the scaled icon
    */
   def scaleIcon(sourceIcon: Icon, factor: Float = scaleFactor): Icon = {

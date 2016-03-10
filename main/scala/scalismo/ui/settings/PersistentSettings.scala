@@ -3,8 +3,7 @@ package scalismo.ui.settings
 import scalismo.ui.settings.SettingsFile.Codec
 
 import scala.reflect.runtime.universe.{ TypeTag, typeOf }
-import scala.util.{ Failure, Success, Try }
-
+import scala.util._
 /**
  * High-level abstraction for storing user preferences / settings.
  *
@@ -60,7 +59,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    *
    * All previous settings for the respective key are discarded and replaced by the new value.
    *
-   * @param key settings key
+   * @param key   settings key
    * @param value settings value
    * @tparam A type of the setting's value.
    * @return Failure on error, Success otherwise
@@ -78,7 +77,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    *
    * All previous settings for the respective key are discarded and replaced by the new values.
    *
-   * @param key settings key
+   * @param key    settings key
    * @param values settings values
    * @tparam A type of the setting's values.
    * @return Failure on error, Success otherwise

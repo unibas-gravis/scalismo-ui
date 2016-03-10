@@ -1,9 +1,10 @@
 package plugin
 
-import java.awt.Color
 import java.io.File
 
+import scalismo.common.ScalarArray
 import scalismo.io.MeshIO
+import scalismo.mesh.ScalarMeshField
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
@@ -26,15 +27,13 @@ class SimpleViewer extends ScalismoFrame {
         scene.groups.add("second")
 
         sleep()
-        val m = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
-        val mn = firstGroup.triangleMeshes.add(m, "face")
-        listenTo(mn.color, mn.opacity)
+        val mesh = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
+        val meshNode = firstGroup.triangleMeshes.add(mesh, "face")
         sleep()
-        //firstGroup.triangleMeshes.add(m, "copy")
-        sleep()
-        mn.color.value = Color.RED
-        sleep()
-        mn.opacity.value = .2f
+
+        val meshField: ScalarMeshField[Float] = new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
+        val meshFieldNode = firstGroup.scalarMeshFields.add(meshField, "Field")
+
       }
     }.start()
   }

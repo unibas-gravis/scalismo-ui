@@ -2,8 +2,6 @@ package scalismo.ui.model
 
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 
-import scala.collection.immutable
-
 object SceneNode {
 
   object event {

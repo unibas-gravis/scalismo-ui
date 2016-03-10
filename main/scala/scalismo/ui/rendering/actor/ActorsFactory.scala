@@ -6,7 +6,7 @@ import scalismo.ui.view.ViewportPanel
 import scala.reflect.ClassTag
 
 object ActorsFactory {
-  val BuiltinFactories: List[ActorsFactory] = List(TriangleMeshActor)
+  val BuiltinFactories: List[ActorsFactory] = List(TriangleMeshActor, ScalarMeshFieldActor)
 
   var _factories: Map[Class[_ <: Renderable], ActorsFactory] = Map.empty
 
@@ -31,6 +31,7 @@ object ActorsFactory {
 
 trait ActorsFactory {
   def supportedClasses: List[Class[_ <: Renderable]]
+
   def untypedActorsFor(renderable: Renderable, viewport: ViewportPanel): Option[Actors]
 }
 

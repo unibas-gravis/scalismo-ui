@@ -18,6 +18,7 @@ class ToolBar extends Component with Orientable.Wrapper {
    *
    * This method will create a [[Button]] bound to the specified action,
    * add it to the toolbar, and return that button.
+   *
    * @param action the action to be added
    * @return the button object that was added to the toolbar and bound to the action.
    */

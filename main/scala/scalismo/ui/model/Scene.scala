@@ -4,8 +4,6 @@ import scalismo.ui.event.Event
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.SceneNode.event.ChildrenChanged
 
-import scala.collection.immutable.Seq
-
 object Scene {
 
   object event {

@@ -2,6 +2,8 @@ package scalismo.ui.view
 
 import javax.swing.{ ToolTipManager, UIDefaults, UIManager }
 
+import scalismo.ui.view.util.ScalableUI
+
 import scala.util.Try
 
 /**

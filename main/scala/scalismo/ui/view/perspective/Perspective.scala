@@ -1,6 +1,7 @@
 package scalismo.ui.view.perspective
 
-import scalismo.ui.view.{ CardPanel, ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.util.CardPanel
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 trait Perspective extends CardPanel.ComponentWithUniqueId {
   def factory: PerspectiveFactory

@@ -8,11 +8,18 @@ import javax.swing.event.{ ChangeEvent, ChangeListener }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasColor, HasOpacity, NodeProperty, OpacityProperty }
+import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.swing.ColorPickerPanel
-import scalismo.ui.view.{ Constants, ScalableUI, ScalismoFrame }
+import scalismo.ui.view.util.{ Constants, ScalableUI }
 
 import scala.swing.event.Event
 import scala.swing.{ BorderPanel, Component }
+
+object ColorPropertyPanel extends PropertyPanel.Factory {
+  override def create(frame: ScalismoFrame): PropertyPanel = {
+    new ColorPropertyPanel(frame)
+  }
+}
 
 class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
   override def description: String = "Color"
@@ -121,9 +128,10 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    if (nodes.nonEmpty && nodes.forall(_.isInstanceOf[HasColor])) {
-      targets = nodes.collect { case c: HasColor => c }
-      targets.headOption.foreach(t => listenTo(t.color))
+    val supported = allOf[HasColor](nodes)
+    if (supported.nonEmpty) {
+      targets = supported
+      listenTo(targets.head.color)
       targetOpacityOption().foreach(o => listenTo(o))
       updateUi()
       true

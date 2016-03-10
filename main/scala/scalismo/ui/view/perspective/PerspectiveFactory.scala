@@ -37,6 +37,7 @@ object PerspectiveFactory {
 trait PerspectiveFactory {
   /**
    * Name of the perspective. This *MUST* be globally unique.
+   *
    * @return the unique, human-readable name of the perspective.
    */
   def perspectiveName: String

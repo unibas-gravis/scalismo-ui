@@ -1,9 +1,9 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties._
-import scalismo.ui.rendering.actor.{ DynamicActor, SingleActor }
+import scalismo.ui.rendering.actor.{ EventActor, SingleActor }
 
-trait ActorOpacity extends SingleActor with DynamicActor {
+trait ActorOpacity extends SingleActor with EventActor {
   def opacity: OpacityProperty
 
   listenTo(opacity)

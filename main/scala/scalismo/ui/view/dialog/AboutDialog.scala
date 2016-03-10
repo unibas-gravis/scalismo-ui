@@ -7,9 +7,10 @@ import javax.swing._
 
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.resources.thirdparty.ThirdPartyResource
+import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.AboutDialog._
 import scalismo.ui.view.dialog.AboutDialog.scaled._
-import scalismo.ui.view.{ LinkLabel, ScalableUI, ScalismoFrame }
+import scalismo.ui.view.util.{ LinkLabel, ScalableUI }
 
 import scala.swing.GridBagPanel.Anchor
 import scala.swing.Swing.EmptyIcon

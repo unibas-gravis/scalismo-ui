@@ -5,8 +5,9 @@ import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
 import javax.swing.BorderFactory
 
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.{ Constants, FancySlider, ScalableUI, ScalismoFrame }
+import scalismo.ui.view.ScalismoFrame
+import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
+import scalismo.ui.view.util.{ Constants, FancySlider, ScalableUI }
 
 import scala.swing._
 import scala.swing.event.ValueChanged

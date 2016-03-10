@@ -6,6 +6,7 @@ import javax.swing.{ BorderFactory, SwingConstants }
 import scalismo.ui.model.Axis
 import scalismo.ui.rendering.RendererPanel
 import scalismo.ui.resources.icons.BundledIcon
+import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 
 import scala.swing._
 

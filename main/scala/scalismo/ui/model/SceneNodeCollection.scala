@@ -2,7 +2,6 @@ package scalismo.ui.model
 
 import scalismo.ui.model.capabilities.CollapsableView
 
-import scala.collection.immutable.Seq
 import scala.collection.{ immutable, mutable }
 
 object SceneNodeCollection {
@@ -29,5 +28,5 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
   }
 
   // a collection is hidden in the tree view if it contains less than 2 items.
-  override def isViewCollapsed: Boolean = _items.length < 2
+  override def isViewCollapsed: Boolean = false // FIXME: _items.length < 2
 }

@@ -11,9 +11,9 @@ import scala.swing.BorderPanel
  * except that each component only takes as much space as it
  * actually needs. This is achieved by nesting BorderPanels.
  *
- * @param frame top-level frame
+ * @param frame       top-level frame
  * @param description human-readable name
- * @param delegates property panels to be combined.
+ * @param delegates   property panels to be combined.
  */
 class CombinedPropertiesPanel(override val frame: ScalismoFrame, override val description: String, delegates: PropertyPanel*) extends BorderPanel with PropertyPanel {
 

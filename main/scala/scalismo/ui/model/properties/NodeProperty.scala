@@ -19,6 +19,7 @@ class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
    * Sanitize a value so that it fits into the expected value domain.
    *
    * For instance, the OpacityProperty sanitizes input values to be in [0,1].
+   *
    * @param possiblyNotSane a value, possibly not a sane one
    * @return the sanitized version of the value
    */

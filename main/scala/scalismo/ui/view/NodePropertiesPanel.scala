@@ -6,8 +6,10 @@ import javax.swing.{ JLabel, JTabbedPane }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged
-import scalismo.ui.view.properties.{ ColorPropertyPanel, CombinedPropertiesPanel, OpacityPropertyPanel, PropertyPanel }
+import scalismo.ui.view.properties._
+import scalismo.ui.view.util.CardPanel
 
+import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 import scala.swing.{ BorderPanel, Component, ScrollPane }
 
@@ -88,10 +90,19 @@ object NodePropertiesPanel {
 
   }
 
-  // built-in, default providers. These are defined here as functions which construct the object,
-  // so they're only instantiated at runtime.
-  val BuiltinProviders: List[ScalismoFrame => PropertyPanel] = {
-    def appearancePanel = { f: ScalismoFrame => new CombinedPropertiesPanel(f, "Appearance", new ColorPropertyPanel(f), new OpacityPropertyPanel(f)) }
+  // built-in, default handlers
+  val BuiltinHandlers: List[ScalismoFrame => PropertyPanel] = {
+
+    def appearancePanel: ScalismoFrame => PropertyPanel = { frame: ScalismoFrame =>
+      val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
+      props += ColorPropertyPanel
+      props += ScalarRangePropertyPanel
+      props += OpacityPropertyPanel
+      props += LineWidthPropertyPanel
+
+      new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
+    }
+
     List(
       appearancePanel,
       // I know this is redundant. Will be removed once we have more implementations.
@@ -103,28 +114,30 @@ object NodePropertiesPanel {
 
 class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
 
-  private var _providers: List[PropertyPanel] = Nil
+  private var _handlers: List[PropertyPanel] = Nil
 
-  // "providers" are PropertyPanels that can show various properties (like color etc).
-  // If the default implementation has to be modified, developers can either
-  // call the respective methods to add/remove providers, or override the
-  // setupProviders() method altogether.
-  def providers: List[PropertyPanel] = _providers
+  /**
+   * Handlers are PropertyPanels that can show various properties (like color etc).
+   * If the default implementation has to be modified, developers can either
+   * call the respective methods to add/remove handlers, or override the
+   * setupHandlers() method altogether.
+   */
+  def handlers: List[PropertyPanel] = _handlers
 
-  def addProvider(provider: PropertyPanel) = {
-    _providers ++= List(provider)
-    cards.add(provider)
+  def addHandler(handler: PropertyPanel) = {
+    _handlers ++= List(handler)
+    cards.add(handler)
   }
 
-  def removeProvider(provider: PropertyPanel) = {
-    _providers = _providers.filterNot(_ eq provider)
-    cards.remove(provider)
+  def removeHandler(handler: PropertyPanel) = {
+    _handlers = _handlers.filterNot(_ eq handler)
+    cards.remove(handler)
   }
 
-  def setupProviders() = {
+  def setupHandlers() = {
     // default implementation: instantiate all builtin providers.
-    NodePropertiesPanel.BuiltinProviders.foreach { constructor =>
-      addProvider(constructor(frame))
+    NodePropertiesPanel.BuiltinHandlers.foreach { constructor =>
+      addHandler(constructor(frame))
     }
   }
 
@@ -160,7 +173,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
     val selected = frame.selectedNodes
 
     tabs.peer.removeAll()
-    val active = providers.filter(_.setNodes(selected))
+    val active = handlers.filter(_.setNodes(selected))
     cards.setActiveCards(active)
     active foreach (view => tabs.add(view))
 
@@ -203,7 +216,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   layout(tabs) = BorderPanel.Position.North
   layout(scroll) = BorderPanel.Position.Center
 
-  setupProviders()
+  setupHandlers()
 
   listenTo(frame)
   listenTo(tabs)

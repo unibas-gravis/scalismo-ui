@@ -2,8 +2,6 @@ package scalismo.ui.model
 
 import scalismo.ui.model.capabilities.Renameable
 
-import scala.collection.immutable.Seq
-
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
 
@@ -21,8 +19,9 @@ class GroupNode(override val parent: GroupsNode, initialName: => String) extends
   name = initialName
 
   val triangleMeshes = new TriangleMeshesNode(this)
+  val scalarMeshFields = new ScalarMeshFieldsNode(this)
   val pointClouds = new PointCloudsNode(this)
 
-  override val children: List[SceneNode] = List(triangleMeshes, pointClouds)
+  override val children: List[SceneNode] = List(triangleMeshes, scalarMeshFields, pointClouds)
 }
 

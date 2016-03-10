@@ -4,7 +4,7 @@ object OpacityProperty {
   val DefaultValue: Float = 1.0f
 }
 
-class OpacityProperty(initialValue: => Float) extends NodeProperty[Float](initialValue) {
+class OpacityProperty(initialValue: Float) extends NodeProperty[Float](initialValue) {
   def this() = this(OpacityProperty.DefaultValue)
 
   override protected def sanitize(possiblyNotSane: Float): Float = {

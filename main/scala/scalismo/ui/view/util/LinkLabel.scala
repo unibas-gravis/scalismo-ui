@@ -1,4 +1,4 @@
-package scalismo.ui.view
+package scalismo.ui.view.util
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Color, Cursor, Desktop }

@@ -3,31 +3,28 @@ package scalismo.ui.view.properties
 import javax.swing.border.TitledBorder
 
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasOpacity, NodeProperty }
+import scalismo.ui.model.properties.{ HasLineWidth, LineWidthProperty, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.FancySlider
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
 
-object OpacityPropertyPanel extends PropertyPanel.Factory {
-
+object LineWidthPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {
-    new OpacityPropertyPanel(frame)
+    new LineWidthPropertyPanel(frame)
   }
 }
 
-class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
-  override def description: String = "Opacity"
+class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
+  override def description: String = "2D Outline Width"
 
-  private var targets: List[HasOpacity] = Nil
+  private var targets: List[HasLineWidth] = Nil
 
   private val slider = new FancySlider {
-    min = 0
-    max = 100
-    value = 100
-
-    override def formattedValue(sliderValue: Int): String = s"$sliderValue%"
+    min = 1
+    max = LineWidthProperty.MaxValue
+    value = 1
   }
 
   layout(new BorderPanel {
@@ -50,29 +47,29 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   def updateUi() = {
     deafToOwnEvents()
-    targets.headOption.foreach(t => slider.value = (t.opacity.value * 100.0f).toInt)
+    targets.headOption.foreach(t => slider.value = t.lineWidth.value)
     listenToOwnEvents()
   }
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasOpacity](nodes)
+    val supported = allOf[HasLineWidth](nodes)
     if (supported.nonEmpty) {
       targets = supported
-      listenTo(targets.head.opacity)
+      listenTo(targets.head.lineWidth)
       updateUi()
       true
     } else false
   }
 
   def cleanup(): Unit = {
-    targets.headOption.foreach(t => deafTo(t.opacity))
+    targets.headOption.foreach(t => deafTo(t.lineWidth))
     targets = Nil
   }
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
+    case ValueChanged(c) => targets.foreach(_.lineWidth.value = slider.value)
   }
 
 }

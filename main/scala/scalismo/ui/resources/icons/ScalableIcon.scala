@@ -2,7 +2,7 @@ package scalismo.ui.resources.icons
 
 import javax.swing.Icon
 
-import scalismo.ui.view.{ Constants, ScalableUI }
+import scalismo.ui.view.util.{ Constants, ScalableUI }
 
 trait ScalableIcon extends Icon {
   def standardSized(): Icon = {

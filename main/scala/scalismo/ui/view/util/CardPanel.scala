@@ -1,10 +1,10 @@
-package scalismo.ui.view
+package scalismo.ui.view.util
 
 import java.awt
 import java.awt.{ CardLayout, Component => AComponent, Dimension, Insets }
 import java.util.UUID
 
-import scalismo.ui.view.CardPanel.{ ComponentWithUniqueId, CustomCardLayout }
+import scalismo.ui.view.util.CardPanel.{ ComponentWithUniqueId, CustomCardLayout }
 
 import scala.swing.{ Component, LayoutContainer, Panel }
 

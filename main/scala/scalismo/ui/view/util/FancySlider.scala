@@ -1,4 +1,4 @@
-package scalismo.ui.view
+package scalismo.ui.view.util
 
 import java.awt.Color
 

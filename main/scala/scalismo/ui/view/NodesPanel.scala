@@ -40,10 +40,11 @@ object NodesPanel {
 
       private def iconForNode(node: SceneNode, open: Boolean): Icon = {
         val icon = node match {
-          case scene: Scene => BundledIcon.Scene
-          case group: GroupNode => BundledIcon.Group
-          case triangleMeshNode: TriangleMeshNode => BundledIcon.TriangleMesh
-          case coll: SceneNodeCollection[_] => if (open) BundledIcon.FolderOpen else BundledIcon.FolderClosed
+          case _: Scene => BundledIcon.Scene
+          case _: GroupNode => BundledIcon.Group
+          case _: TriangleMeshNode => BundledIcon.Mesh
+          case _: ScalarMeshFieldNode => BundledIcon.Mesh
+          case _: SceneNodeCollection[_] => if (open) BundledIcon.FolderOpen else BundledIcon.FolderClosed
           case _ => BundledIcon.Fallback
         }
 
@@ -94,8 +95,6 @@ object NodesPanel {
       component
     }
 
-    // just for visual debugging, if needed
-    //setBorder(BorderFactory.createLineBorder(Color.BLACK))
   }
 
 }

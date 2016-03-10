@@ -7,10 +7,10 @@ import javax.imageio.ImageIO
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
-import scalismo.ui.model.{ Axis, Renderable }
 import scalismo.ui.model.Scene.event.SceneChanged
+import scalismo.ui.model.{ Axis, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
-import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, DynamicActor }
+import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, EventActor }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ViewportPanel
 import vtk._
@@ -23,6 +23,7 @@ object RendererPanel {
 
   // Helper object to properly set camera positions for 2D slices.
   private[RendererPanel] object Cameras {
+
     // the state of a freshly created camera.
     case class DefaultCameraState(position: Array[Double], focalPoint: Array[Double], viewUp: Array[Double])
 
@@ -47,7 +48,9 @@ object RendererPanel {
       }
     }
   }
+
 }
+
 class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   private class RenderableAndActors(val renderable: Renderable, val actorsOption: Option[Actors]) {
@@ -92,7 +95,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       obsolete.foreach(ra => ra.vtkActors.foreach { actor =>
         renderer.RemoveActor(actor)
         actor match {
-          case dyn: DynamicActor =>
+          case dyn: EventActor =>
             deafTo(dyn)
             dyn.onDestroy()
           case _ => // do nothing
@@ -104,7 +107,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     if (created.nonEmpty) {
       created.foreach(_.vtkActors.foreach { actor =>
         actor match {
-          case dyn: DynamicActor => listenTo(dyn)
+          case dyn: EventActor => listenTo(dyn)
           case _ =>
         }
         renderer.AddActor(actor)

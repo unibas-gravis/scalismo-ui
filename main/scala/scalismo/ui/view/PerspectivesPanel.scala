@@ -4,6 +4,7 @@ import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.perspective.{ Perspective, PerspectiveFactory }
+import scalismo.ui.view.util.CardPanel
 
 import scala.swing.BorderPanel
 

@@ -1,11 +1,12 @@
 package scalismo.ui.rendering.actor
 
-import scalismo.geometry.{ _3D, Point }
-import scalismo.ui.model.TriangleMeshNode
-import scalismo.ui.model.properties.{ OpacityProperty, ColorProperty }
+import scalismo.mesh.TriangleMesh
+import scalismo.ui.model.properties.{ ColorProperty, OpacityProperty, ScalarRangeProperty }
+import scalismo.ui.model.{ ScalarMeshFieldNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.actor.mixin.{ ActorOpacity, ActorColor }
-import scalismo.ui.view.{ ViewportPanel3D, ViewportPanel }
+import scalismo.ui.rendering.actor.MeshActor.Renderable
+import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorOpacity, ActorScalarRange }
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel3D }
 import scalismo.utils.MeshConversion
 import vtk.vtkPolyData
 
@@ -19,10 +20,56 @@ object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
   }
 }
 
-trait MeshActor extends PolyDataActor with ActorOpacity {
-  def renderable: TriangleMeshNode
+object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
-  override lazy val opacity: OpacityProperty = renderable.opacity
+  override def actorsFor(renderable: ScalarMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
+    viewport match {
+      case _3d: ViewportPanel3D => Some(new ScalarMeshFieldActor3D(renderable))
+      case _ => None
+    }
+  }
+}
+
+object MeshActor {
+
+  trait Renderable {
+    def opacity: OpacityProperty
+
+    def mesh: TriangleMesh
+  }
+
+  object Renderable {
+
+    class TriangleMeshRenderable(node: TriangleMeshNode) extends Renderable {
+      override def opacity = node.opacity
+
+      override def mesh = node.source
+
+      def color = node.color
+    }
+
+    class ScalarMeshFieldRenderable(node: ScalarMeshFieldNode) extends Renderable {
+      override def opacity = node.opacity
+
+      override def mesh = node.source.mesh
+
+      def scalarRange = node.scalarRange
+
+      def field = node.source
+    }
+
+    def apply(source: TriangleMeshNode): TriangleMeshRenderable = new TriangleMeshRenderable(source)
+
+    def apply(source: ScalarMeshFieldNode): ScalarMeshFieldRenderable = new ScalarMeshFieldRenderable(source)
+
+  }
+
+}
+
+trait MeshActor[R <: Renderable] extends SinglePolyDataActor with ActorOpacity {
+  def renderable: R
+
+  override def opacity: OpacityProperty = renderable.opacity
 
   protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData
 
@@ -36,8 +83,7 @@ trait MeshActor extends PolyDataActor with ActorOpacity {
       polydata = meshToPolyData(template)
       onGeometryChanged()
     }
-
-    //publishEdt(VtkContext.RenderRequest(this))
+    requestRendering()
   }
 
   protected def onInstantiated(): Unit = {}
@@ -47,14 +93,14 @@ trait MeshActor extends PolyDataActor with ActorOpacity {
   //    case MeshView.Reloaded(m) => rerender(geometryChanged = true, canUseTemplate = false)
   //  }
 
-  listenTo(renderable)
+  //listenTo(renderable)
 
   onInstantiated()
 
   rerender(geometryChanged = true)
 }
 
-abstract class MeshActor3D(override val renderable: TriangleMeshNode) extends MeshActor {
+abstract class MeshActor3D[R <: Renderable](override val renderable: R) extends MeshActor[R] {
 
   // not declaring this as lazy causes all sorts of weird VTK errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)
@@ -75,8 +121,8 @@ abstract class MeshActor3D(override val renderable: TriangleMeshNode) extends Me
 
 }
 
-trait TriangleMeshActor extends MeshActor with ActorColor {
-  //override def renderable: TriangleMeshRenderable
+trait TriangleMeshActor extends MeshActor[Renderable.TriangleMeshRenderable] with ActorColor {
+  override def renderable: Renderable.TriangleMeshRenderable
 
   override def color: ColorProperty = renderable.color
 
@@ -86,10 +132,17 @@ trait TriangleMeshActor extends MeshActor with ActorColor {
 
 }
 
-class TriangleMeshActor3D(override val renderable: TriangleMeshNode) extends MeshActor3D(renderable) with TriangleMeshActor {
+trait ScalarMeshFieldActor extends MeshActor[Renderable.ScalarMeshFieldRenderable] with ActorScalarRange {
+  override def renderable: Renderable.ScalarMeshFieldRenderable
 
-  //class TriangleMeshActor3D(source: TriangleMeshNode) extends PolyDataActor with ActorColor {
-  //  override def color: ColorProperty = source.color
-  //
-  //
+  override def scalarRange: ScalarRangeProperty = renderable.scalarRange
+
+  override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
+    Caches.ScalarMeshFieldCache.getOrCreate(renderable.field, MeshConversion.scalarMeshFieldToVtkPolyData(renderable.field))
+  }
+
 }
+
+class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(Renderable(node)) with TriangleMeshActor
+
+class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(Renderable(node)) with ScalarMeshFieldActor

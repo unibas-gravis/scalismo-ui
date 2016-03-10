@@ -7,7 +7,7 @@ import javax.swing.ImageIcon
 
 import jiconfont.icons.FontAwesome
 import jiconfont.{ IconCode, IconFont }
-import scalismo.ui.view.Constants
+import scalismo.ui.view.util.Constants
 
 object FontIcon {
 

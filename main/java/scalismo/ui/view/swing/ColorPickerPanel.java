@@ -41,7 +41,7 @@ Source code, binaries and/or any other resources in the package labeled "com.bri
 
 package scalismo.ui.view.swing;
 
-import scalismo.ui.view.ScalableUI;
+import scalismo.ui.view.util.ScalableUI;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

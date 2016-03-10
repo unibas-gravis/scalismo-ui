@@ -41,6 +41,6 @@ object BundledIcon {
   lazy val FolderClosed = FontIcon.load(FontAwesome.FOLDER_O)
 
   // particular SceneNode classes
-  lazy val TriangleMesh = FontIcon.load(FontAwesome.DIAMOND)
+  lazy val Mesh = FontIcon.load(FontAwesome.DIAMOND)
 
 }

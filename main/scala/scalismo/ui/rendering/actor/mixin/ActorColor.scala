@@ -1,9 +1,9 @@
 package scalismo.ui.rendering.actor.mixin
 
-import scalismo.ui.model.properties.{ NodeProperty, ColorProperty }
-import scalismo.ui.rendering.actor.{ DynamicActor, SingleActor }
+import scalismo.ui.model.properties.{ ColorProperty, NodeProperty }
+import scalismo.ui.rendering.actor.{ EventActor, SingleActor }
 
-trait ActorColor extends SingleActor with DynamicActor {
+trait ActorColor extends SingleActor with EventActor {
   def color: ColorProperty
 
   listenTo(color)
