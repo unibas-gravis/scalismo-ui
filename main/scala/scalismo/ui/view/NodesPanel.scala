@@ -4,12 +4,13 @@ import java.awt.event.{ ComponentAdapter, ComponentEvent, MouseAdapter, MouseEve
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
-import javax.swing.{ Icon, JTree }
+import javax.swing.{ Icon, JPopupMenu, JTree }
 
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.CollapsableView
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
+import scalismo.ui.view.action.popup.PopupAction
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
@@ -115,15 +116,25 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
 
     def handle(event: MouseEvent) = {
       if (event.isPopupTrigger) {
-        val x = event.getX
-        val y = event.getY
+        val (x, y) = (event.getX, event.getY)
         pathToSceneNode(tree.getPathForLocation(x, y)).foreach { node =>
           val selected = getSelectedSceneNodes
           // the action will always affect the node that was clicked. However,
           // if the clicked node is part of a multi-selection, then it will also
           // affect all other selected elements.
           val affected = if (selected.contains(node)) selected else List(node)
-          println(s"TODO: popup, affected = $affected")
+
+          val actions = PopupAction(affected)(frame)
+          if (actions.nonEmpty) {
+            val pop = new JPopupMenu()
+            actions.foreach { a =>
+              pop.add(a.peer)
+            }
+            pop.show(tree, x, y)
+            // needed because otherwise the popup is sometimes (partly) hidden by the renderer window
+            frame.peer.revalidate()
+          }
+
         }
       }
     }

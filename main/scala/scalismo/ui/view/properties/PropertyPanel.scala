@@ -1,6 +1,7 @@
 package scalismo.ui.view.properties
 
 import scalismo.ui.model.SceneNode
+import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.CardPanel
 
@@ -10,7 +11,7 @@ import scala.reflect.ClassTag
  * A PropertyPanel is a UI component to show or manipulate aspects of
  * [[SceneNode]]s.
  */
-trait PropertyPanel extends CardPanel.ComponentWithUniqueId {
+trait PropertyPanel extends CardPanel.ComponentWithUniqueId with NodeListFilters {
   /** human-readable description, used in tabs. */
   def description: String
 
@@ -39,32 +40,6 @@ trait PropertyPanel extends CardPanel.ComponentWithUniqueId {
    * @return true if this panel can handle the provided nodes, false otherwise.
    */
   def setNodes(nodes: List[SceneNode]): Boolean
-
-  /**
-   * This is a helper method, designed for use in [[setNodes]],
-   * which will filter and return the nodes of a given type T.
-   *
-   * @param nodes a list of SceneNode
-   * @tparam T the type you're interested in
-   * @return all the elements in the nodes list which are of type T, as a List[T]
-   */
-  def someOf[T: ClassTag](nodes: List[SceneNode]): List[T] = {
-    nodes.collect { case n: T => n }
-  }
-
-  /**
-   * This is a helper method, designed for use in [[setNodes]],
-   * which will return a non-empty list of items of type T,
-   * if and only if *all* of the given nodes are of type T.
-   *
-   * @param nodes a list of SceneNode
-   * @tparam T the type you're interested in
-   * @return the elements in the nodes list, as a List[T], if *all* of them are of type T, or an empty list otherwise.
-   */
-  def allOf[T: ClassTag](nodes: List[SceneNode]): List[T] = {
-    val candidates = someOf[T](nodes)
-    if (candidates.length == nodes.length) candidates else Nil
-  }
 
   override def toString(): String = description
 

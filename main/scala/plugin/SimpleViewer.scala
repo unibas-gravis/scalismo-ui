@@ -31,8 +31,8 @@ class SimpleViewer extends ScalismoFrame {
         val meshNode = firstGroup.triangleMeshes.add(mesh, "face")
         sleep()
 
-        val meshField: ScalarMeshField[Float] = new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
-        val meshFieldNode = firstGroup.scalarMeshFields.add(meshField, "Field")
+        //        val meshField: ScalarMeshField[Float] = new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
+        //        val meshFieldNode = firstGroup.scalarMeshFields.add(meshField, "Field")
 
       }
     }.start()

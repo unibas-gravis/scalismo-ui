@@ -104,9 +104,8 @@ object NodePropertiesPanel {
     }
 
     List(
-      appearancePanel,
-      // I know this is redundant. Will be removed once we have more implementations.
-      { f => new ColorPropertyPanel(f) }, { f => new OpacityPropertyPanel(f) }
+      SlicingPositionPanel,
+      appearancePanel
     )
   }
 

@@ -32,7 +32,7 @@ object ViewMenu {
       listenTo(panel)
 
       reactions += {
-        case ButtonClicked(b) => panel.perspective_=(factory)
+        case ButtonClicked(_) => panel.perspective = factory
         case PerspectivesPanel.event.PerspectiveChanged(_) => updateUi()
       }
 

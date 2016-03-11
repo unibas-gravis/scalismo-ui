@@ -8,11 +8,12 @@ import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.{ Axis, Renderable }
+import scalismo.ui.control.SlicingPosition
+import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
 import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, EventActor }
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.ViewportPanel
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
 import vtk._
 import vtk.rendering.vtkInteractorForwarder
 
@@ -62,6 +63,13 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
   private val implementation = new Implementation
   Cameras.setDefaultCameraState(implementation.getActiveCamera)
 
+  viewport match {
+    case _2d: ViewportPanel2D =>
+      listenTo(viewport.frame.sceneControl.slicingPosition)
+      setCameraToAxis(_2d.axis)
+    case _ => // nothing
+  }
+
   layout(Component.wrap(implementation.getComponent)) = BorderPanel.Position.Center
 
   listenTo(scene)
@@ -69,6 +77,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
   reactions += {
     case SceneChanged(_) if attached => update()
     case RendererContext.event.RenderRequest(_) if attached && !updating => implementation.Render()
+    case pc @ SlicingPosition.event.PointChanged(_, _, _) => handlePointChanged(pc)
   }
 
   private var currentActors: List[RenderableAndActors] = Nil
@@ -81,10 +90,24 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     update()
   }
 
+  private var _currentBoundingBox: BoundingBox = BoundingBox.Invalid
+
+  def currentBoundingBox: BoundingBox = _currentBoundingBox
+
+  private def currentBoundingBox_=(newBb: BoundingBox): Unit = {
+    if (_currentBoundingBox != newBb) {
+      _currentBoundingBox = newBb
+      // we take a shortcut here, and directly send on behalf of the viewport.
+      viewport.publishEvent(ViewportPanel.event.BoundingBoxChanged(viewport))
+    }
+  }
+
   def update(): Unit = EdtUtil.onEdtWait {
     updating = true
     val renderer = implementation.getRenderer
     val renderables = if (attached) scene.renderables else Nil
+
+    val wasEmpty = currentActors.isEmpty
 
     val obsolete = currentActors.filter(ra => !renderables.exists(_ eq ra.renderable))
 
@@ -113,13 +136,23 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
         renderer.AddActor(actor)
       })
       currentActors = currentActors ++ created
-      refillRenderer()
+    }
+
+    if (created.nonEmpty || obsolete.nonEmpty) {
+      // something has changed
+      actorsChanged(camReset = wasEmpty)
     }
     updating = false
   }
 
-  private def refillRenderer(): Unit = {
-    resetCamera()
+  private def actorsChanged(camReset: Boolean): Unit = {
+    if (camReset) {
+      resetCamera()
+    }
+    currentBoundingBox = currentActors.foldLeft(BoundingBox.Invalid: BoundingBox)({
+      case (bb, actors) =>
+        bb.union(actors.actorsOption.map(_.boundingBox).getOrElse(BoundingBox.Invalid))
+    })
   }
 
   def resetCamera(): Unit = {
@@ -154,6 +187,32 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     change.roll.foreach(v => cam.Roll(v))
     cam.OrthogonalizeViewUp()
     resetCamera()
+  }
+
+  private def handlePointChanged(pc: SlicingPosition.event.PointChanged): Unit = {
+    viewport match {
+      case vp2d: ViewportPanel2D =>
+        val cam = implementation.getActiveCamera()
+        val pos = cam.GetPosition()
+        val foc = cam.GetFocalPoint()
+        vp2d.axis match {
+          case Axis.X =>
+            val amount = pc.previous.x - pc.current.x
+            pos(0) += amount
+            foc(0) += amount
+          case Axis.Y =>
+            val amount = pc.previous.y - pc.current.y
+            pos(1) += amount
+            foc(1) += amount
+          case Axis.Z =>
+            val amount = pc.previous.z - pc.current.z
+            pos(2) += amount
+            foc(2) += amount
+        }
+        cam.SetPosition(pos)
+        cam.SetFocalPoint(foc)
+      case _ => // can't handle
+    }
   }
 
   /**

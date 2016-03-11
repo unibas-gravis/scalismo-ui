@@ -4,6 +4,7 @@ import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.control.SceneControl
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.rendering.Rendering
 import scalismo.ui.settings.GlobalSettings
@@ -46,6 +47,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   // some objects, like menu items or actions, want an implicit reference to a ScalismoFrame
   implicit val frame = this
+
+  lazy val sceneControl: SceneControl = new SceneControl(this, scene)
 
   /**
    * Initializes the frame layout and behavior.
@@ -160,8 +163,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   Rendering.register(this)
 
   val toolBar = new ToolBar
-  val modelPanel = new ModelPanel(frame)
-  val perspectivesPanel: PerspectivesPanel = new PerspectivesPanel(frame)
+  val modelPanel = new ModelPanel(this)
+  val perspectivesPanel: PerspectivesPanel = new PerspectivesPanel(this)
   val statusBar = new StatusBar
+
+  sceneControl.setup()
 
 }

@@ -3,15 +3,30 @@ package scalismo.ui.view
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, SwingConstants }
 
-import scalismo.ui.model.Axis
+import scalismo.geometry._3D
+import scalismo.ui.event.ScalismoPublisher
+import scalismo.ui.control.SlicingPosition
+import scalismo.ui.model.{ BoundingBox, Scene, Axis }
 import scalismo.ui.rendering.RendererPanel
 import scalismo.ui.resources.icons.BundledIcon
+import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 
 import scala.swing._
+import scala.swing.event.{ ValueChanged, Event }
 
-sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel {
+object ViewportPanel {
+  object event {
+    case class BoundingBoxChanged(source: ViewportPanel) extends Event
+    case class Detached(source: ViewportPanel) extends Event
+  }
+}
+
+sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel with ScalismoPublisher {
   def name: String
+
+  def scene: Scene = frame.scene
 
   val renderer = new RendererPanel(this)
 
@@ -31,8 +46,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
     toolBar.add(new Button(new Action(null) {
       override def apply(): Unit = {
-        // FIXME
-        ???
+        new SaveAction(renderer.screenshot, FileIoMetadata.Png, "Save screenshot")(frame).apply()
       }
     }) {
       tooltip = "Screenshot"
@@ -53,8 +67,13 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
   setupLayout()
 
   def setAttached(attached: Boolean): Unit = {
+    if (!attached) {
+      publishEvent(ViewportPanel.event.Detached(this))
+    }
     renderer.setAttached(attached)
   }
+
+  def currentBoundingBox: BoundingBox = renderer.currentBoundingBox
 }
 
 class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") extends ViewportPanel(frame) {
@@ -77,11 +96,25 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
   override def name = axis.toString
 
-  lazy val positionPlusButton = new Button("+")
-  lazy val positionMinusButton = new Button("-")
   lazy val positionSlider = new Slider {
     peer.setOrientation(SwingConstants.VERTICAL)
   }
+
+  lazy val positionPlusButton = new Button(new Action("+") {
+    override def apply(): Unit = {
+      if (positionSlider.value < positionSlider.max) {
+        positionSlider.value = positionSlider.value + 1
+      }
+    }
+  })
+
+  lazy val positionMinusButton = new Button(new Action("-") {
+    override def apply(): Unit = {
+      if (positionSlider.value > positionSlider.min) {
+        positionSlider.value = positionSlider.value - 1
+      }
+    }
+  })
 
   lazy val sliderPanel = new BorderPanel {
     layout(positionPlusButton) = BorderPanel.Position.North
@@ -101,5 +134,45 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
   }
 
   renderer.border = BorderFactory.createLineBorder(AxisColor.forAxis(axis), ScalableUI.scale(3))
+
+  listenTo(frame.sceneControl.slicingPosition, positionSlider)
+
+  def updateSliderValue(p: scalismo.geometry.Point3D): Unit = {
+    val v = axis match {
+      case Axis.X => p.x
+      case Axis.Y => p.y
+      case Axis.Z => p.z
+    }
+    deafTo(positionSlider)
+    positionSlider.value = Math.round(v)
+    listenTo(positionSlider)
+  }
+
+  def updateSliderMinMax(b: BoundingBox): Unit = {
+    val (min, max) = axis match {
+      case Axis.X => (b.xMin, b.xMax)
+      case Axis.Y => (b.yMin, b.yMax)
+      case Axis.Z => (b.zMin, b.zMax)
+    }
+    deafTo(positionSlider)
+    positionSlider.min = Math.floor(min).toInt
+    positionSlider.max = Math.ceil(max).toInt
+    listenTo(positionSlider)
+  }
+
+  def sliderValueChanged(): Unit = {
+    val pos = frame.sceneControl.slicingPosition
+    axis match {
+      case Axis.X => pos.x = positionSlider.value
+      case Axis.Y => pos.y = positionSlider.value
+      case Axis.Z => pos.z = positionSlider.value
+    }
+  }
+
+  reactions += {
+    case SlicingPosition.event.PointChanged(_, _, current) => updateSliderValue(current)
+    case SlicingPosition.event.BoundingBoxChanged(s) => updateSliderMinMax(s.boundingBox)
+    case ValueChanged(s) if s eq positionSlider => sliderValueChanged()
+  }
 }
 
