@@ -1,5 +1,7 @@
 package scalismo.ui.view
 
+import java.awt
+import java.awt.{ Color, Graphics }
 import java.awt.event._
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
@@ -8,14 +10,15 @@ import javax.swing.{ Icon, JPopupMenu, JTree }
 
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
-import scalismo.ui.resources.icons.BundledIcon
+import scalismo.ui.model.properties.{ NodeProperty, ColorProperty }
+import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 import scalismo.ui.view.action.popup.PopupAction
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
-import scala.swing.{ BorderPanel, Component, ScrollPane }
+import scala.swing.{ Reactor, BorderPanel, Component, ScrollPane }
 import scala.util.Try
 
 object NodesPanel {
@@ -38,24 +41,31 @@ object NodesPanel {
     }
 
     object Icons {
+      val fallback = BundledIcon.Fallback.standardSized()
       /* note: this uses the "closed" icon for leaves. */
 
-      private def iconForNode(node: SceneNode, open: Boolean): Icon = {
-        val icon = node match {
-          case _: Scene => BundledIcon.Scene
-          case _: GroupNode => BundledIcon.Group
-          case _: TriangleMeshNode => BundledIcon.Mesh
-          case _: ScalarMeshFieldNode => BundledIcon.Mesh
-          case _: SceneNodeCollection[_] => if (open) BundledIcon.FolderOpen else BundledIcon.FolderClosed
-          case _ => BundledIcon.Fallback
+      private def closedIcon(node: SceneNode): Option[ScalableIcon] = {
+        node match {
+          case _: Scene => Some(BundledIcon.Scene)
+          case _: GroupNode => Some(BundledIcon.Group)
+          case n: TriangleMeshNode => Some(BundledIcon.Mesh.colored(n.color.value.darker()))
+          case n: PointCloudNode => Some(BundledIcon.PointCloud.colored(n.color.value.darker()))
+          case _: ScalarMeshFieldNode => Some(BundledIcon.Mesh)
+          case _: SceneNodeCollection[_] => Some(BundledIcon.FolderClosed)
+          case _ => None
         }
+      }
 
-        icon.standardSized()
+      private def openIcon(node: SceneNode): Option[ScalableIcon] = {
+        node match {
+          case _: SceneNodeCollection[_] => Some(BundledIcon.FolderOpen)
+          case _ => None
+        }
       }
 
       def forNode(node: SceneNode): Icons = {
-        val closed = iconForNode(node, open = false)
-        val open = iconForNode(node, open = true)
+        val closed = closedIcon(node).map(_.standardSized()).getOrElse(BundledIcon.Fallback)
+        val open = openIcon(node).map(_.standardSized()).getOrElse(closed)
         new Icons(open, closed, closed)
       }
 
@@ -301,11 +311,12 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
 
   synchronizeWholeTree()
 
-  listenTo(scene, frame)
+  listenTo(scene, frame, ColorProperty)
 
   reactions += {
     case ScalismoFrame.event.SelectedNodesChanged(_) => setSelectedSceneNodes(frame.selectedNodes)
     case Scene.event.SceneChanged(_) => synchronizeWholeTree()
+    case ColorProperty.event.SomeColorPropertyChanged => repaintTree()
   }
 
 }

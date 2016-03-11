@@ -10,7 +10,5 @@ trait ScalableIcon extends Icon {
     resize(scaledSize, scaledSize)
   }
 
-  def resize(width: Int, height: Int) = {
-    ScalableUI.resizeIcon(this, width, height)
-  }
+  def resize(width: Int, height: Int): Icon
 }

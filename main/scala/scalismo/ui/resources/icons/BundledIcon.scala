@@ -42,5 +42,6 @@ object BundledIcon {
 
   // particular SceneNode classes
   lazy val Mesh = FontIcon.load(FontAwesome.DIAMOND)
+  lazy val PointCloud = FontIcon.load(awesome('\uf1e3'))
 
 }
