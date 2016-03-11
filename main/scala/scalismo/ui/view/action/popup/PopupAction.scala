@@ -9,10 +9,10 @@ import scala.swing.Action
 object PopupAction {
 
   trait Factory extends NodeListFilters {
-    def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): Option[PopupAction]
+    def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupAction]
   }
 
-  val BuiltinFactories: List[Factory] = List(SaveSaveableAction, RemoveRemoveablesAction)
+  val BuiltinFactories: List[Factory] = List(GroupAction, LoadLoadableAction, SaveSaveableAction, RemoveRemoveablesAction)
 
   var _factories: List[Factory] = BuiltinFactories
 

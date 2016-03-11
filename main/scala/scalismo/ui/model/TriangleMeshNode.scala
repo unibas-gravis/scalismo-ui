@@ -4,14 +4,26 @@ import java.io.File
 
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
-import scalismo.ui.model.capabilities.{ Removeable, Renameable, RenderableSceneNode, Saveable }
+import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.FileIoMetadata
 
-import scala.util.Try
+import scala.util.{ Failure, Success, Try }
 
-class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TriangleMeshNode] {
+class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TriangleMeshNode] with Loadable {
   override val name: String = "Triangle Meshes"
+
+  override def loadMetadata: FileIoMetadata = FileIoMetadata.TriangleMesh
+
+  override def load(file: File): Try[Unit] = {
+    val r = MeshIO.readMesh(file)
+    r match {
+      case Failure(ex) => Failure(ex)
+      case Success(mesh) =>
+        add(mesh, file.getName)
+        Success(())
+    }
+  }
 
   def add(mesh: TriangleMesh, name: String): TriangleMeshNode = {
     val node = new TriangleMeshNode(this, mesh, name)

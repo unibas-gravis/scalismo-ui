@@ -7,7 +7,7 @@ import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.EnhancedFileChooser
 
-import scala.swing.{ Action, Component, Dialog, FileChooser }
+import scala.swing.{ Action, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }
 
 object SaveAction {
@@ -21,7 +21,6 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     if (name != SaveAction.DefaultName) name
     else "Save " + metadata.description
   }
-  lazy val parentComponent: Component = null
 
   lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
@@ -30,8 +29,10 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     fileFilter = new FileNameExtensionFilter(metadata.longDescription, metadata.fileExtensions: _*)
   }
 
+  def parentComponent = frame.contents.head
+
   def apply() = {
-    if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {
+    if (chooser.showSaveDialog(frame.contents.head) == FileChooser.Result.Approve) {
       if (chooser.selectedFile.exists && confirmWhenExists) {
         val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
         result match {
