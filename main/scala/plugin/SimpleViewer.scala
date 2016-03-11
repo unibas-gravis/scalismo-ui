@@ -2,9 +2,7 @@ package plugin
 
 import java.io.File
 
-import scalismo.common.ScalarArray
 import scalismo.io.MeshIO
-import scalismo.mesh.ScalarMeshField
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
@@ -31,6 +29,9 @@ class SimpleViewer extends ScalismoFrame {
         val meshNode = firstGroup.triangleMeshes.add(mesh, "face")
         sleep()
 
+        (1 to 5).foreach { i =>
+          firstGroup.pointClouds.add(Nil, i.toString)
+        }
         //        val meshField: ScalarMeshField[Float] = new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
         //        val meshFieldNode = firstGroup.scalarMeshFields.add(meshField, "Field")
 

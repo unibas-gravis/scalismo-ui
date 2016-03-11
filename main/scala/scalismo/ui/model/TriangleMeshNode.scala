@@ -4,7 +4,7 @@ import java.io.File
 
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
-import scalismo.ui.model.capabilities.{ Saveable, Renameable, RenderableSceneNode }
+import scalismo.ui.model.capabilities.{ Removeable, Renameable, RenderableSceneNode, Saveable }
 import scalismo.ui.model.properties._
 import scalismo.ui.util.FileIoMetadata
 
@@ -20,12 +20,14 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, val source: TriangleMesh, initialName: String) extends RenderableSceneNode with Saveable with Renameable with HasColor with HasOpacity with HasLineWidth {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, val source: TriangleMesh, initialName: String) extends RenderableSceneNode with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth {
   name = initialName
 
   override def save(file: File): Try[Unit] = MeshIO.writeMesh(source, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.TriangleMesh
+
+  override def remove(): Unit = parent.remove(this)
 
   override val color = new ColorProperty()
   override val opacity = new OpacityProperty()

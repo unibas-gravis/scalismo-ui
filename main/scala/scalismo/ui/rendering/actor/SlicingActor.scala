@@ -1,7 +1,7 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.{ BoundingBox, Axis }
+import scalismo.ui.model.{ Axis, BoundingBox }
 import scalismo.ui.view.ViewportPanel2D
 import vtk.{ vtkCutter, vtkPlane }
 

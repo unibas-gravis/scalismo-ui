@@ -1,14 +1,15 @@
 package scalismo.ui.view
 
-import java.awt.event.{ ComponentAdapter, ComponentEvent, MouseAdapter, MouseEvent }
+import java.awt.event._
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JPopupMenu, JTree }
 
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.CollapsableView
+import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
 import scalismo.ui.resources.icons.BundledIcon
+import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 import scalismo.ui.view.action.popup.PopupAction
 
@@ -100,7 +101,7 @@ object NodesPanel {
 
 }
 
-class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
+class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilters {
   val scene = frame.scene
 
   val rootNode = new ViewNode(scene)
@@ -154,13 +155,22 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel {
     }
   }
 
+  var keyListener = new KeyAdapter {
+    override def keyTyped(event: KeyEvent): Unit = {
+      if (event.getKeyChar == '\u007f') {
+        // delete
+        allOf[Removeable](getSelectedSceneNodes).foreach(_.remove())
+      }
+    }
+  }
+
   val treeModel = new DefaultTreeModel(rootNode)
 
   val tree: JTree = new JTree(treeModel) {
     setCellRenderer(new SceneNodeCellRenderer)
     getSelectionModel.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION)
     addTreeSelectionListener(selectionListener)
-    //    addKeyListener(listener)
+    addKeyListener(keyListener)
     addMouseListener(mouseListener)
     addComponentListener(componentListener)
     setExpandsSelectedPaths(true)

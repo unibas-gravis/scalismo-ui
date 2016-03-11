@@ -1,7 +1,7 @@
 package scalismo.ui.model
 
 import scalismo.mesh.ScalarMeshField
-import scalismo.ui.model.capabilities.{ Renameable, RenderableSceneNode }
+import scalismo.ui.model.capabilities.{ Removeable, Renameable, RenderableSceneNode }
 import scalismo.ui.model.properties._
 
 class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarMeshFieldNode] {
@@ -14,7 +14,7 @@ class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeColl
   }
 }
 
-class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, val source: ScalarMeshField[Float], initialName: String) extends RenderableSceneNode with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
+class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, val source: ScalarMeshField[Float], initialName: String) extends RenderableSceneNode with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
   name = initialName
 
   override val opacity = new OpacityProperty()
@@ -23,5 +23,7 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, val source:
     val (min, max) = (source.values.min, source.values.max)
     new ScalarRangeProperty(ScalarRange(min, max, min, max))
   }
+
+  override def remove(): Unit = parent.remove(this)
 }
 

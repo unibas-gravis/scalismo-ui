@@ -9,5 +9,6 @@ import scala.util.Try
 
 trait Saveable extends SceneNode {
   def saveMetadata: FileIoMetadata
+
   def save(file: File): Try[Unit]
 }

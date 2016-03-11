@@ -1,20 +1,28 @@
 package scalismo.ui.control
 
-import scalismo.geometry.{ Point3D, _3D, Point }
+import scalismo.geometry.{ Point, Point3D }
+import scalismo.ui.control.SlicingPosition.event
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ BoundingBox, Scene }
 import scalismo.ui.settings.GlobalSettings
-import scalismo.ui.control.SlicingPosition.event
-import scalismo.ui.view.{ ScalismoFrame, PerspectivesPanel, ViewportPanel }
+import scalismo.ui.view.{ PerspectivesPanel, ScalismoFrame, ViewportPanel }
 
 object SlicingPosition {
+
   object event {
+
     case class SlicesVisibleChanged(source: SlicingPosition) extends Event
+
     case class IntersectionsVisibleChanged(source: SlicingPosition) extends Event
+
     case class OpacityChanged(source: SlicingPosition) extends Event
+
     case class PointChanged(source: SlicingPosition, previous: Point3D, current: Point3D) extends Event
+
     case class BoundingBoxChanged(source: SlicingPosition) extends Event
+
   }
+
 }
 
 class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends ScalismoPublisher {
@@ -101,7 +109,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     }
   }
 
-  private def recalculatePoint(): Unit = {
+  private def sanitizePoint(): Unit = {
     val sx = Math.min(Math.max(boundingBox.xMin, x), boundingBox.xMax)
     val sy = Math.min(Math.max(boundingBox.yMin, y), boundingBox.yMax)
     val sz = Math.min(Math.max(boundingBox.zMin, z), boundingBox.zMax)
@@ -114,10 +122,12 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   private def boundingBox_=(nb: BoundingBox): Unit = {
     if (_boundingBox != nb) {
+      val wasInvalid = _boundingBox == BoundingBox.Invalid
       _boundingBox = nb
       publishEvent(event.BoundingBoxChanged(this))
+      if (wasInvalid) center()
+      sanitizePoint()
     }
-    recalculatePoint()
   }
 
   def viewports: List[ViewportPanel] = frame.perspectivesPanel.perspectiveInstance.viewports
@@ -134,7 +144,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     updateBoundingBox()
   }
 
-  def recenter(): Unit = {
+  def center(): Unit = {
     point = boundingBox.center
   }
 

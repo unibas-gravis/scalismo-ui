@@ -3,7 +3,6 @@ package scalismo.ui.model
 import scalismo.ui.event.Event
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.SceneNode.event.ChildrenChanged
-import scalismo.ui.control.SceneControl
 
 object Scene {
 

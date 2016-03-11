@@ -3,14 +3,14 @@ package scalismo.ui.view.properties
 import java.awt.Font
 import javax.swing.border.TitledBorder
 
-import scalismo.ui.model.{ Scene, SceneNode, Axis }
 import scalismo.ui.control.SlicingPosition
+import scalismo.ui.model.{ Axis, Scene, SceneNode }
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{ FancySlider, AxisColor }
+import scalismo.ui.view.util.{ AxisColor, FancySlider }
 
 import scala.swing.GridBagPanel.{ Anchor, Fill }
 import scala.swing._
-import scala.swing.event.{ ValueChanged, ButtonClicked }
+import scala.swing.event.{ ButtonClicked, ValueChanged }
 
 object SlicingPositionPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new SlicingPositionPanel(frame)
@@ -138,13 +138,14 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[Scene](nodes)
-    if (supported.length == 1 && supported.head == frame.sceneControl.scene) {
-      slicingPosition = Some(frame.sceneControl.slicingPosition)
-      listenTo(slicingPosition.get)
-      updateUi()
-      true
-    } else false
+    singleNode[Scene](nodes) match {
+      case Some(s) if s == frame.sceneControl.scene =>
+        slicingPosition = Some(frame.sceneControl.slicingPosition)
+        listenTo(slicingPosition.get)
+        updateUi()
+        true
+      case _ => false
+    }
   }
 
   def cleanup() = {

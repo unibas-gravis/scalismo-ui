@@ -7,8 +7,8 @@ import javax.imageio.ImageIO
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
-import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.control.SlicingPosition
+import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
 import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, EventActor }

@@ -5,8 +5,6 @@ import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.CardPanel
 
-import scala.reflect.ClassTag
-
 /**
  * A PropertyPanel is a UI component to show or manipulate aspects of
  * [[SceneNode]]s.

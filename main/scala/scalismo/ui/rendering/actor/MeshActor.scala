@@ -1,13 +1,13 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.mesh.TriangleMesh
-import scalismo.ui.model.properties.{ LineWidthProperty, ColorProperty, OpacityProperty, ScalarRangeProperty }
-import scalismo.ui.model.{ BoundingBox, Axis, ScalarMeshFieldNode, TriangleMeshNode }
+import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
+import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.Renderable
-import scalismo.ui.rendering.actor.mixin.{ ActorLineWidth, ActorColor, ActorOpacity, ActorScalarRange }
+import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorScalarRange }
 import scalismo.ui.rendering.util.BoundingBoxUtil
-import scalismo.ui.view.{ ViewportPanel2D, ViewportPanel, ViewportPanel3D }
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
 import vtk.vtkPolyData
 
@@ -35,7 +35,9 @@ object MeshActor {
 
   trait Renderable {
     def opacity: OpacityProperty
+
     def lineWidth: LineWidthProperty
+
     def mesh: TriangleMesh
   }
 
@@ -45,6 +47,7 @@ object MeshActor {
       override def opacity = node.opacity
 
       override def mesh = node.source
+
       override def lineWidth = node.lineWidth
 
       def color = node.color
@@ -54,6 +57,7 @@ object MeshActor {
       override def opacity = node.opacity
 
       override def lineWidth = node.lineWidth
+
       override def mesh = node.source.mesh
 
       def scalarRange = node.scalarRange
@@ -160,7 +164,9 @@ abstract class MeshActor2D[R <: Renderable](override val renderable: R, viewport
 }
 
 class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(Renderable(node)) with TriangleMeshActor
+
 class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(Renderable(node), viewport) with TriangleMeshActor
 
 class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(Renderable(node)) with ScalarMeshFieldActor
+
 class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(Renderable(node), viewport) with ScalarMeshFieldActor

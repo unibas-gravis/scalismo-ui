@@ -1,6 +1,6 @@
 package scalismo.ui.model
 
-import scalismo.ui.model.capabilities.Renameable
+import scalismo.ui.model.capabilities.{ Removeable, Renameable }
 import scalismo.ui.model.properties.{ ColorProperty, HasColor, HasOpacity, OpacityProperty }
 
 class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollection[PointCloudNode] {
@@ -13,10 +13,13 @@ class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollectio
   }
 }
 
-class PointCloudNode(override val parent: PointCloudsNode, val pointCloud: PointCloud, initialName: String) extends SceneNode with Renameable with HasColor with HasOpacity {
+class PointCloudNode(override val parent: PointCloudsNode, val pointCloud: PointCloud, initialName: String) extends SceneNode with Removeable with Renameable with HasColor with HasOpacity {
   name = initialName
 
   override val color = new ColorProperty()
   override val opacity = new OpacityProperty()
+
+  override def remove(): Unit = parent.remove(this)
+
 }
 

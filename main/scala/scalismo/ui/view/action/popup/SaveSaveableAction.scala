@@ -7,7 +7,7 @@ import scalismo.ui.view.action.SaveAction
 
 object SaveSaveableAction extends PopupAction.Factory {
   override def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): Option[PopupAction] = {
-    single[Saveable](context).map(n => new SaveSaveableAction(n))
+    singleNode[Saveable](context).map(n => new SaveSaveableAction(n))
   }
 }
 

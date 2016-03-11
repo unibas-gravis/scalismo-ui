@@ -3,8 +3,8 @@ package scalismo.ui.view
 import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
-import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.control.SceneControl
+import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.rendering.Rendering
 import scalismo.ui.settings.GlobalSettings

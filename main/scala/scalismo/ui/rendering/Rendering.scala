@@ -8,7 +8,7 @@ object Rendering {
 
   private var clients: List[Object] = Nil
 
-  // This is a def so that the interval can be easily overridden. The unit is in seconds.
+  // This is a var so that the interval can be easily overridden. The unit is in seconds.
   var GarbageCollectorInterval: Int = 60
 
   /* This is *required*, otherwise you'll run out of memory sooner or later. The current rendering engine (VTK)

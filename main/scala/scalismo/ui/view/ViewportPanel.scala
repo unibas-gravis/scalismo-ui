@@ -3,10 +3,9 @@ package scalismo.ui.view
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, SwingConstants }
 
-import scalismo.geometry._3D
-import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.{ BoundingBox, Scene, Axis }
+import scalismo.ui.event.ScalismoPublisher
+import scalismo.ui.model.{ Axis, BoundingBox, Scene }
 import scalismo.ui.rendering.RendererPanel
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
@@ -14,13 +13,18 @@ import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 
 import scala.swing._
-import scala.swing.event.{ ValueChanged, Event }
+import scala.swing.event.{ Event, ValueChanged }
 
 object ViewportPanel {
+
   object event {
+
     case class BoundingBoxChanged(source: ViewportPanel) extends Event
+
     case class Detached(source: ViewportPanel) extends Event
+
   }
+
 }
 
 sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPanel with ScalismoPublisher {

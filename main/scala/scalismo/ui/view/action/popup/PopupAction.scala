@@ -7,11 +7,12 @@ import scalismo.ui.view.ScalismoFrame
 import scala.swing.Action
 
 object PopupAction {
+
   trait Factory extends NodeListFilters {
     def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): Option[PopupAction]
   }
 
-  val BuiltinFactories: List[Factory] = List(SaveSaveableAction)
+  val BuiltinFactories: List[Factory] = List(SaveSaveableAction, RemoveRemoveablesAction)
 
   var _factories: List[Factory] = BuiltinFactories
 
