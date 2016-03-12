@@ -12,7 +12,7 @@ object PopupAction {
     def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupAction]
   }
 
-  val BuiltinFactories: List[Factory] = List(GroupAction, LoadLoadableAction, SaveSaveableAction, RemoveRemoveablesAction)
+  val BuiltinFactories: List[Factory] = List(VisibilityAction, GroupAction, LoadLoadableAction, SaveSaveableAction, RemoveRemoveablesAction)
 
   var _factories: List[Factory] = BuiltinFactories
 

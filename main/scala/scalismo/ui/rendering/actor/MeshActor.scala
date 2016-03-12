@@ -4,7 +4,7 @@ import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
 import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.actor.MeshActor.Renderable
+import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorScalarRange }
 import scalismo.ui.rendering.util.BoundingBoxUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
@@ -33,7 +33,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
 object MeshActor {
 
-  trait Renderable {
+  trait MeshRenderable {
     def opacity: OpacityProperty
 
     def lineWidth: LineWidthProperty
@@ -41,9 +41,9 @@ object MeshActor {
     def mesh: TriangleMesh
   }
 
-  object Renderable {
+  private[actor] object MeshRenderable {
 
-    class TriangleMeshRenderable(node: TriangleMeshNode) extends Renderable {
+    class TriangleMeshRenderable(node: TriangleMeshNode) extends MeshRenderable {
       override def opacity = node.opacity
 
       override def mesh = node.source
@@ -53,7 +53,7 @@ object MeshActor {
       def color = node.color
     }
 
-    class ScalarMeshFieldRenderable(node: ScalarMeshFieldNode) extends Renderable {
+    class ScalarMeshFieldRenderable(node: ScalarMeshFieldNode) extends MeshRenderable {
       override def opacity = node.opacity
 
       override def lineWidth = node.lineWidth
@@ -73,7 +73,7 @@ object MeshActor {
 
 }
 
-trait MeshActor[R <: Renderable] extends SinglePolyDataActor with ActorOpacity {
+trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity {
   def renderable: R
 
   override def opacity: OpacityProperty = renderable.opacity
@@ -107,8 +107,8 @@ trait MeshActor[R <: Renderable] extends SinglePolyDataActor with ActorOpacity {
   rerender(geometryChanged = true)
 }
 
-trait TriangleMeshActor extends MeshActor[Renderable.TriangleMeshRenderable] with ActorColor {
-  override def renderable: Renderable.TriangleMeshRenderable
+trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable] with ActorColor {
+  override def renderable: MeshRenderable.TriangleMeshRenderable
 
   override def color: ColorProperty = renderable.color
 
@@ -118,8 +118,8 @@ trait TriangleMeshActor extends MeshActor[Renderable.TriangleMeshRenderable] wit
 
 }
 
-trait ScalarMeshFieldActor extends MeshActor[Renderable.ScalarMeshFieldRenderable] with ActorScalarRange {
-  override def renderable: Renderable.ScalarMeshFieldRenderable
+trait ScalarMeshFieldActor extends MeshActor[MeshRenderable.ScalarMeshFieldRenderable] with ActorScalarRange {
+  override def renderable: MeshRenderable.ScalarMeshFieldRenderable
 
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
@@ -129,7 +129,7 @@ trait ScalarMeshFieldActor extends MeshActor[Renderable.ScalarMeshFieldRenderabl
 
 }
 
-abstract class MeshActor3D[R <: Renderable](override val renderable: R) extends MeshActor[R] {
+abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) extends MeshActor[R] {
 
   // not declaring this as lazy causes all sorts of weird VTK errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)
@@ -150,7 +150,7 @@ abstract class MeshActor3D[R <: Renderable](override val renderable: R) extends 
 
 }
 
-abstract class MeshActor2D[R <: Renderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with MeshActor[R] with ActorLineWidth {
+abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with MeshActor[R] with ActorLineWidth {
   override def lineWidth: LineWidthProperty = renderable.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender()
@@ -163,10 +163,10 @@ abstract class MeshActor2D[R <: Renderable](override val renderable: R, viewport
   override protected def sourceBoundingBox: BoundingBox = BoundingBoxUtil.bounds2BoundingBox(polydata.GetBounds())
 }
 
-class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(Renderable(node)) with TriangleMeshActor
+class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(MeshRenderable(node)) with TriangleMeshActor
 
-class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(Renderable(node), viewport) with TriangleMeshActor
+class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TriangleMeshActor
 
-class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(Renderable(node)) with ScalarMeshFieldActor
+class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(MeshRenderable(node)) with ScalarMeshFieldActor
 
-class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(Renderable(node), viewport) with ScalarMeshFieldActor
+class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with ScalarMeshFieldActor

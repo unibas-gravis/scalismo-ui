@@ -1,8 +1,10 @@
 package scalismo.ui.model
 
+import scalismo.ui.control.SceneControl
 import scalismo.ui.event.Event
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.SceneNode.event.ChildrenChanged
+import scalismo.ui.view.ScalismoFrame
 
 object Scene {
 
@@ -33,6 +35,12 @@ class Scene extends SceneNode {
 
   reactions += {
     case ChildrenChanged(node) => publishEvent(SceneChanged(this))
+  }
+
+  def control(implicit frame: ScalismoFrame): SceneControl = {
+    val result = frame.sceneControl
+    require(result.scene == this)
+    result
   }
 
 }

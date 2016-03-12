@@ -11,6 +11,8 @@ trait Perspective extends CardPanel.ComponentWithUniqueId {
   def viewports: List[ViewportPanel]
 
   final override val uniqueId = factory.perspectiveName
+
+  override def toString = factory.perspectiveName
 }
 
 object Perspective {

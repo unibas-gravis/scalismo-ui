@@ -167,6 +167,8 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   val perspectivesPanel: PerspectivesPanel = new PerspectivesPanel(this)
   val statusBar = new StatusBar
 
-  sceneControl.setup()
+  // the controls can only be initialized once the frame is fully constructed,
+  // because they listen to events from panels.
+  sceneControl.initialize()
 
 }

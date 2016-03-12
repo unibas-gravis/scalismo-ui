@@ -1,7 +1,7 @@
 package scalismo.ui.control
 
-import scalismo.ui.model.Scene
-import scalismo.ui.view.ScalismoFrame
+import scalismo.ui.model.{ Renderable, Scene }
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 /**
  * This class is in a bit of an awkward position, as it conceptually sits
@@ -14,8 +14,14 @@ import scalismo.ui.view.ScalismoFrame
  */
 class SceneControl(val frame: ScalismoFrame, val scene: Scene) {
   val slicingPosition = new SlicingPosition(scene, frame)
+  val nodeVisibility = new NodeVisibility(frame)
 
-  def setup(): Unit = {
-    slicingPosition.setup()
+  def initialize(): Unit = {
+    slicingPosition.initialize()
+    nodeVisibility.initialize()
+  }
+
+  def renderablesFor(viewport: ViewportPanel): List[Renderable] = {
+    scene.renderables.filter(r => nodeVisibility.isVisible(r, viewport))
   }
 }

@@ -7,7 +7,7 @@ import javax.imageio.ImageIO
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
-import scalismo.ui.control.SlicingPosition
+import scalismo.ui.control.{ NodeVisibility, SlicingPosition }
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
@@ -58,7 +58,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     def vtkActors: List[vtkActor] = actorsOption.map(_.vtkActors).getOrElse(Nil)
   }
 
-  val scene = viewport.frame.scene
+  val frame = viewport.frame
 
   private val implementation = new Implementation
   Cameras.setDefaultCameraState(implementation.getActiveCamera)
@@ -72,22 +72,22 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   layout(Component.wrap(implementation.getComponent)) = BorderPanel.Position.Center
 
-  listenTo(scene)
+  listenTo(frame.scene, frame.sceneControl.nodeVisibility)
 
   reactions += {
-    case SceneChanged(_) if attached => update()
-    case RendererContext.event.RenderRequest(_) if attached && !updating => implementation.Render()
-    case pc @ SlicingPosition.event.PointChanged(_, _, _) => handlePointChanged(pc)
+    case SceneChanged(_) if attached => updateAllActors()
+    case RendererContext.event.RenderRequest(_) if attached => implementation.Render()
+    case pc @ SlicingPosition.event.PointChanged(_, _, _) => handleSlicingPositionPointChanged(pc)
+    case NodeVisibility.event.NodeVisibilityChanged(_, view) if attached && view == this.viewport => updateAllActors()
   }
 
   private var currentActors: List[RenderableAndActors] = Nil
 
   private var attached: Boolean = false
-  private var updating = false
 
   def setAttached(attached: Boolean): Unit = {
     this.attached = attached
-    update()
+    updateAllActors()
   }
 
   private var _currentBoundingBox: BoundingBox = BoundingBox.Invalid
@@ -102,61 +102,75 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     }
   }
 
-  def update(): Unit = EdtUtil.onEdtWait {
-    updating = true
-    val renderer = implementation.getRenderer
-    val renderables = if (attached) scene.renderables else Nil
+  private var updating = false
 
-    val wasEmpty = currentActors.isEmpty
+  // this is a comparatively expensive operation, so it should only be invoked if something "big" has changed.
+  private def updateAllActors(): Unit = {
+    if (!updating) {
+      EdtUtil.onEdtWait {
+        updating = true
+        val renderer = implementation.getRenderer
+        val renderables = if (attached) frame.sceneControl.renderablesFor(viewport) else Nil
 
-    val obsolete = currentActors.filter(ra => !renderables.exists(_ eq ra.renderable))
+        val wasEmpty = currentActors.isEmpty
 
-    val missing = renderables.diff(currentActors.map(_.renderable))
-    val created = missing.map(r => new RenderableAndActors(r, ActorsFactory.factoryFor(r).flatMap(f => f.untypedActorsFor(r, viewport))))
+        val obsolete = currentActors.filter(ra => !renderables.exists(_ eq ra.renderable))
 
-    if (obsolete.nonEmpty) {
-      obsolete.foreach(ra => ra.vtkActors.foreach { actor =>
-        renderer.RemoveActor(actor)
-        actor match {
-          case dyn: EventActor =>
-            deafTo(dyn)
-            dyn.onDestroy()
-          case _ => // do nothing
+        val missing = renderables.diff(currentActors.map(_.renderable))
+        val created = missing.map(r => new RenderableAndActors(r, ActorsFactory.factoryFor(r).flatMap(f => f.untypedActorsFor(r, viewport))))
+
+        if (obsolete.nonEmpty) {
+          obsolete.foreach(ra => ra.vtkActors.foreach { actor =>
+            renderer.RemoveActor(actor)
+            actor match {
+              case dyn: EventActor =>
+                deafTo(dyn)
+                dyn.onDestroy()
+              case _ => // do nothing
+            }
+          })
+          currentActors = currentActors diff obsolete
         }
-      })
-      currentActors = currentActors diff obsolete
-    }
 
-    if (created.nonEmpty) {
-      created.foreach(_.vtkActors.foreach { actor =>
-        actor match {
-          case dyn: EventActor => listenTo(dyn)
-          case _ =>
+        if (created.nonEmpty) {
+          created.foreach(_.vtkActors.foreach { actor =>
+            actor match {
+              case eventActor: EventActor => listenTo(eventActor)
+              case _ =>
+            }
+            renderer.AddActor(actor)
+          })
+          currentActors = currentActors ++ created
         }
-        renderer.AddActor(actor)
-      })
-      currentActors = currentActors ++ created
-    }
 
-    if (created.nonEmpty || obsolete.nonEmpty) {
-      // something has changed
-      actorsChanged(camReset = wasEmpty)
+        if (created.nonEmpty || obsolete.nonEmpty) {
+          // something has changed
+          actorsChanged(camReset = wasEmpty)
+        }
+        updating = false
+      }
     }
-    updating = false
   }
 
   private def actorsChanged(camReset: Boolean): Unit = {
-    if (camReset) {
-      resetCamera()
-    }
     currentBoundingBox = currentActors.foldLeft(BoundingBox.Invalid: BoundingBox)({
       case (bb, actors) =>
         bb.union(actors.actorsOption.map(_.boundingBox).getOrElse(BoundingBox.Invalid))
     })
+    if (camReset) {
+      resetCamera()
+    } else {
+      render()
+    }
   }
 
   def resetCamera(): Unit = {
     implementation.resetCamera()
+    render()
+  }
+
+  def render(): Unit = {
+    implementation.Render()
   }
 
   def screenshot(file: File): Try[Unit] = Try {
@@ -189,7 +203,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     resetCamera()
   }
 
-  private def handlePointChanged(pc: SlicingPosition.event.PointChanged): Unit = {
+  private def handleSlicingPositionPointChanged(pc: SlicingPosition.event.PointChanged): Unit = {
     viewport match {
       case vp2d: ViewportPanel2D =>
         val cam = implementation.getActiveCamera()

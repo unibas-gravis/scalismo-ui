@@ -78,6 +78,8 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
   }
 
   def currentBoundingBox: BoundingBox = renderer.currentBoundingBox
+
+  override def toString: String = name
 }
 
 class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") extends ViewportPanel(frame) {

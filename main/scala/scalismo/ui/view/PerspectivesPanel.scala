@@ -12,7 +12,7 @@ object PerspectivesPanel {
 
   object event {
 
-    case class PerspectiveChanged(panel: PerspectivesPanel) extends Event
+    case class PerspectiveChanged(panel: PerspectivesPanel, currentPerspective: Perspective, previousPerspective: Option[Perspective]) extends Event
 
   }
 
@@ -27,9 +27,8 @@ class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with Scali
 
   def perspective_=(factory: PerspectiveFactory): Unit = {
     if (factory.perspectiveName != cards.currentId) {
-      if (cards.currentId != CardPanel.NoCard) {
-        perspectiveInstance.viewports.foreach(_.setAttached(false))
-      }
+      val previous = perspectiveInstance
+      viewports.foreach(_.setAttached(false))
 
       if (!cards.contains(factory.perspectiveName)) {
         // we're extra careful with the instantiation, ensuring that it really happens on the EDT
@@ -41,9 +40,9 @@ class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with Scali
       cards.show(factory.perspectiveName)
       cards.setActiveCards(List(cards.currentComponent))
 
-      perspectiveInstance.viewports.foreach(_.setAttached(true))
+      viewports.foreach(_.setAttached(true))
 
-      publishEvent(PerspectivesPanel.event.PerspectiveChanged(this))
+      publishEvent(PerspectivesPanel.event.PerspectiveChanged(this, perspectiveInstance.get, previous))
     }
   }
 
@@ -51,9 +50,14 @@ class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with Scali
     PerspectiveFactory.factories.find(_.perspectiveName == cards.currentId).get
   }
 
-  def perspectiveInstance: Perspective = {
-    cards.currentComponent.asInstanceOf[Perspective]
+  private def perspectiveInstance: Option[Perspective] = {
+    if (cards.currentId != CardPanel.NoCard) {
+      Some(cards.currentComponent.asInstanceOf[Perspective])
+    } else None
   }
+
+  // convenience / shortcut method
+  def viewports: List[ViewportPanel] = perspectiveInstance.map(_.viewports).getOrElse(Nil)
 
   perspective = PerspectiveFactory.defaultPerspective
 

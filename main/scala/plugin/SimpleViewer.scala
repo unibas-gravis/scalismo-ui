@@ -27,13 +27,27 @@ class SimpleViewer extends ScalismoFrame {
         sleep()
         val mesh = MeshIO.readMesh(new File("/home/langguth/AAA_data/face.vtk")).get
         val meshNode = firstGroup.triangleMeshes.add(mesh, "face")
-        sleep()
+        val meshCopy = firstGroup.triangleMeshes.add(mesh, "copy")
+        if (false) {
+          // yeah, I know you love these :-)
+          // anyway, here are a few examples of how the visibility stuff could be used:
+          val allViews = frame.perspectivesPanel.viewports
+          val oneView = allViews.head
 
-        (1 to 5).foreach { i =>
-          firstGroup.pointClouds.add(Nil, i.toString)
+          // global visibility: as a Boolean
+          val visibleGlobally: Boolean = meshNode.visible
+          meshNode.visible = false
+
+          // visibility in a single viewport
+          val visibleInOne: Boolean = meshNode.visible(oneView)
+          meshNode.visible(oneView) = false
+
+          // visibility in a number of viewports
+          val visibleInAll: Boolean = meshNode.visible(allViews)
+          meshNode.visible(allViews) = false
+
         }
-        //        val meshField: ScalarMeshField[Float] = new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray))
-        //        val meshFieldNode = firstGroup.scalarMeshFields.add(meshField, "Field")
+        sleep()
 
       }
     }.start()

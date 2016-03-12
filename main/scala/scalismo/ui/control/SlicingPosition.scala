@@ -130,7 +130,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     }
   }
 
-  def viewports: List[ViewportPanel] = frame.perspectivesPanel.perspectiveInstance.viewports
+  def viewports: List[ViewportPanel] = frame.perspectivesPanel.viewports
 
   private def updateBoundingBox(): Unit = {
     boundingBox = viewports.foldLeft(BoundingBox.Invalid: BoundingBox)({
@@ -149,12 +149,12 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
   }
 
   reactions += {
-    case PerspectivesPanel.event.PerspectiveChanged(_) => perspectiveChanged()
+    case PerspectivesPanel.event.PerspectiveChanged(_, _, _) => perspectiveChanged()
     case ViewportPanel.event.BoundingBoxChanged(_) => updateBoundingBox()
     case ViewportPanel.event.Detached(vp) => deafTo(vp)
   }
 
-  def setup(): Unit = {
+  def initialize(): Unit = {
     listenTo(frame.perspectivesPanel)
     perspectiveChanged()
   }
