@@ -18,6 +18,20 @@ object FontIcon {
     Seq(create(FontAwesome.getIconFont)).toMap
   }
 
+  /**
+   * can be used to generate a FontAwesome IconCode
+   * that is not defined as a constant in the FontAwesome class.
+   * @param char a Unicode character, for example '\uf1e3'
+   * @return an IconCode bound to the FontAwesome font, usable for the [[load]] method
+   */
+  def awesome(char: Char): IconCode = new IconCode {
+    override def getUnicode: Char = char
+
+    override def getFontFamily: String = "FontAwesome"
+
+    override def name(): String = "generated"
+  }
+
   def load(code: IconCode, width: Int = Constants.StandardUnscaledIconSize, height: Int = Constants.StandardUnscaledIconSize, color: Color = Color.BLACK): FontIcon = {
     val string = Character.toString(code.getUnicode)
     val image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)

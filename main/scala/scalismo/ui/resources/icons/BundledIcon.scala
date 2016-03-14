@@ -2,23 +2,12 @@ package scalismo.ui.resources.icons
 
 import java.awt.Color
 
-import jiconfont.IconCode
 import jiconfont.icons.FontAwesome
+import scalismo.ui.resources.icons.FontIcon.awesome
 import scalismo.ui.resources.icons.png.PngIconResource
 
 object BundledIcon {
   lazy val Fallback = FontIcon.load(FontAwesome.BOLT)
-
-  /* can be used to generate a FontAwesome IconCode
-   * that is not defined as a constant in the FontAwesome class.
-   */
-  def awesome(char: Char): IconCode = new IconCode {
-    override def getUnicode: Char = char
-
-    override def getFontFamily: String = "FontAwesome"
-
-    override def name(): String = "generated"
-  }
 
   // this is relatively heavy, and seldomly needed, so we don't create a val.
   def Logo = PngIconResource.load("logo.png")
@@ -43,5 +32,7 @@ object BundledIcon {
   // particular SceneNode classes
   lazy val Mesh = FontIcon.load(FontAwesome.DIAMOND)
   lazy val PointCloud = FontIcon.load(awesome('\uf1e3'))
+  lazy val Landmark = FontIcon.load(FontAwesome.CROSSHAIRS)
+  lazy val Transformation = FontIcon.load(FontAwesome.ARROW_RIGHT)
 
 }

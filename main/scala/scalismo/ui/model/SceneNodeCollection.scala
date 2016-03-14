@@ -16,13 +16,14 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
 
   override final def children: List[ChildNode] = _items.toList
 
-  def add(child: ChildNode): Unit = {
+  protected def add(child: ChildNode): Unit = {
     require(child.parent == this)
     _items += child
     publishEvent(SceneNode.event.ChildrenChanged(this))
   }
 
   def remove(child: ChildNode): Unit = {
+    require(_items.contains(child))
     _items -= child
     publishEvent(SceneNode.event.ChildrenChanged(this))
   }

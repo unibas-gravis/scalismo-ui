@@ -32,17 +32,24 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, val source: TriangleMesh, initialName: String) extends RenderableSceneNode with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh, initialName: String) extends Transformable[TriangleMesh] with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth {
   name = initialName
 
-  override def save(file: File): Try[Unit] = MeshIO.writeMesh(source, file)
+  override val color = new ColorProperty()
+  override val opacity = new OpacityProperty()
+  override val lineWidth = new LineWidthProperty()
+
+  override def transformationsNode: TransformationsNode = parent.parent.transformations
+
+  override def transform(untransformed: TriangleMesh, transformation: PointTransformation): TriangleMesh = {
+    untransformed.transform(transformation)
+  }
+
+  override def save(file: File): Try[Unit] = MeshIO.writeMesh(transformedSource, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.TriangleMesh
 
   override def remove(): Unit = parent.remove(this)
 
-  override val color = new ColorProperty()
-  override val opacity = new OpacityProperty()
-  override val lineWidth = new LineWidthProperty()
 }
 

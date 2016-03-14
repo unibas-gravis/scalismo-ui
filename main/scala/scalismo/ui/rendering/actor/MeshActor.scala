@@ -1,8 +1,9 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.mesh.TriangleMesh
+import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
-import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, TriangleMeshNode }
+import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorScalarRange }
@@ -39,21 +40,23 @@ object MeshActor {
     def lineWidth: LineWidthProperty
 
     def mesh: TriangleMesh
+
+    def node: SceneNode
   }
 
   private[actor] object MeshRenderable {
 
-    class TriangleMeshRenderable(node: TriangleMeshNode) extends MeshRenderable {
+    class TriangleMeshRenderable(override val node: TriangleMeshNode) extends MeshRenderable {
       override def opacity = node.opacity
 
-      override def mesh = node.source
+      override def mesh = node.transformedSource
 
       override def lineWidth = node.lineWidth
 
       def color = node.color
     }
 
-    class ScalarMeshFieldRenderable(node: ScalarMeshFieldNode) extends MeshRenderable {
+    class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
       override def opacity = node.opacity
 
       override def lineWidth = node.lineWidth
@@ -82,12 +85,12 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
 
   protected var polydata: vtkPolyData = meshToPolyData(None)
 
+  // this is invoked from within the rerender method, if the geometry has changed.
   protected def onGeometryChanged(): Unit
 
-  protected def rerender(geometryChanged: Boolean = false, canUseTemplate: Boolean = true) = {
+  protected def rerender(geometryChanged: Boolean) = {
     if (geometryChanged) {
-      val template = if (canUseTemplate) Some(polydata) else None
-      polydata = meshToPolyData(template)
+      polydata = meshToPolyData(Some(polydata))
       onGeometryChanged()
     }
     requestRendering()
@@ -95,16 +98,16 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
 
   protected def onInstantiated(): Unit = {}
 
-  //  reactions += {
-  //    case MeshView.GeometryChanged(m) => rerender(geometryChanged = true)
-  //    case MeshView.Reloaded(m) => rerender(geometryChanged = true, canUseTemplate = false)
-  //  }
-
-  //listenTo(renderable)
-
   onInstantiated()
 
   rerender(geometryChanged = true)
+
+  listenTo(renderable.node)
+
+  reactions += {
+    case Transformable.event.GeometryChanged(_) => rerender(geometryChanged = true)
+  }
+
 }
 
 trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable] with ActorColor {
@@ -153,7 +156,7 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
 abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with MeshActor[R] with ActorLineWidth {
   override def lineWidth: LineWidthProperty = renderable.lineWidth
 
-  override protected def onSlicingPositionChanged(): Unit = rerender()
+  override protected def onSlicingPositionChanged(): Unit = rerender(geometryChanged = false)
 
   override protected def onGeometryChanged(): Unit = {
     planeCutter.SetInputData(polydata)

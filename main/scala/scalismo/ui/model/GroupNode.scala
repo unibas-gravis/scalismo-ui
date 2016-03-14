@@ -18,10 +18,12 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
 class GroupNode(override val parent: GroupsNode, initialName: => String) extends SceneNode with Renameable {
   name = initialName
 
+  val transformations = new TransformationsNode(this)
+  val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
   val scalarMeshFields = new ScalarMeshFieldsNode(this)
   val pointClouds = new PointCloudsNode(this)
 
-  override val children: List[SceneNode] = List(triangleMeshes, scalarMeshFields, pointClouds)
+  override val children: List[SceneNode] = List(transformations, landmarks, triangleMeshes, scalarMeshFields, pointClouds)
 }
 

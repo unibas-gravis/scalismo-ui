@@ -6,7 +6,7 @@ import scalismo.ui.view.ViewportPanel
 import scala.reflect.ClassTag
 
 object ActorsFactory {
-  val BuiltinFactories: List[ActorsFactory] = List(TriangleMeshActor, ScalarMeshFieldActor)
+  val BuiltinFactories: List[ActorsFactory] = List(TriangleMeshActor, ScalarMeshFieldActor, LandmarkActor)
 
   var _factories: Map[Class[_ <: Renderable], ActorsFactory] = Map.empty
 
