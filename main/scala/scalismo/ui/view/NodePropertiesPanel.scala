@@ -105,6 +105,7 @@ object NodePropertiesPanel {
 
     List(
       SlicingPositionPanel,
+      GaussianProcessCoefficientsPanel,
       appearancePanel
     )
   }

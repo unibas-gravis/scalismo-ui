@@ -59,7 +59,7 @@ class SimpleViewer extends ScalismoFrame {
       val rand = new Random()
 
       override def run(): Unit = {
-        def sleep() = Thread.sleep(3000)
+        def sleep() = {} //Thread.sleep(1000)
 
         def randomRigid() = {
           val randoms = (0 until 6).map(_ => rand.nextFloat() - .5f)
@@ -73,11 +73,10 @@ class SimpleViewer extends ScalismoFrame {
 
         while (true) {
           sleep()
-
           gp.transformation = gp.transformation.copy(coefficients = randomCoeffs())
-          sleep()
 
-          rigid.transformation = randomRigid()
+          //          sleep()
+          //          rigid.transformation = randomRigid()
         }
 
       }
