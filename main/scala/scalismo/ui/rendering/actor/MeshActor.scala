@@ -7,7 +7,7 @@ import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, Triangle
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorScalarRange }
-import scalismo.ui.rendering.util.BoundingBoxUtil
+import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
 import vtk.vtkPolyData
@@ -93,7 +93,7 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
       polydata = meshToPolyData(Some(polydata))
       onGeometryChanged()
     }
-    requestRendering()
+    actorChanged(geometryChanged)
   }
 
   protected def onInstantiated(): Unit = {}
@@ -163,7 +163,7 @@ abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, view
     planeCutter.Modified()
   }
 
-  override protected def sourceBoundingBox: BoundingBox = BoundingBoxUtil.bounds2BoundingBox(polydata.GetBounds())
+  override protected def sourceBoundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(polydata.GetBounds())
 }
 
 class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(MeshRenderable(node)) with TriangleMeshActor

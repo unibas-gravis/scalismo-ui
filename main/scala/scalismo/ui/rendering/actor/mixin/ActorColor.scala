@@ -1,9 +1,10 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties.{ ColorProperty, NodeProperty }
-import scalismo.ui.rendering.actor.{ EventActor, SingleActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleActor }
+import scalismo.ui.rendering.util.VtkUtil
 
-trait ActorColor extends SingleActor with EventActor {
+trait ActorColor extends SingleActor with ActorEvents {
   def color: ColorProperty
 
   listenTo(color)
@@ -13,9 +14,8 @@ trait ActorColor extends SingleActor with EventActor {
   }
 
   private def setAppearance() = {
-    val c = color.value.getColorComponents(null)
-    GetProperty().SetColor(c(0), c(1), c(2))
-    requestRendering()
+    GetProperty().SetColor(VtkUtil.colorToArray(color.value))
+    actorChanged()
   }
 
   setAppearance()

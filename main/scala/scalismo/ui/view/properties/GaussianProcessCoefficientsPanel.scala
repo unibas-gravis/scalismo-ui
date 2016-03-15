@@ -23,7 +23,7 @@ object GaussianProcessCoefficientsPanel extends PropertyPanel.Factory {
 }
 
 class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
-  val description = "Shape Parameters"
+  val description = "Coefficients"
 
   val reset = new Button("Mean")
   val random = new Button("Random")

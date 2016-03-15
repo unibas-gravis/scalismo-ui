@@ -21,6 +21,7 @@ object FontIcon {
   /**
    * can be used to generate a FontAwesome IconCode
    * that is not defined as a constant in the FontAwesome class.
+   *
    * @param char a Unicode character, for example '\uf1e3'
    * @return an IconCode bound to the FontAwesome font, usable for the [[load]] method
    */

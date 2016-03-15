@@ -11,4 +11,5 @@ object Axis {
 
   case object Z extends Axis
 
+  val All: List[Axis] = List(X, Y, Z)
 }

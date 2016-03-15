@@ -1,9 +1,9 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties.{ LineWidthProperty, NodeProperty }
-import scalismo.ui.rendering.actor.{ EventActor, SingleActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleActor }
 
-trait ActorLineWidth extends SingleActor with EventActor {
+trait ActorLineWidth extends SingleActor with ActorEvents {
   def lineWidth: LineWidthProperty
 
   listenTo(lineWidth)
@@ -14,7 +14,7 @@ trait ActorLineWidth extends SingleActor with EventActor {
 
   private def setAppearance() = {
     GetProperty().SetLineWidth(lineWidth.value)
-    requestRendering()
+    actorChanged()
   }
 
   setAppearance()

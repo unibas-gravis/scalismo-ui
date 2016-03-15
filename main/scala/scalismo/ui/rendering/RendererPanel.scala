@@ -8,7 +8,7 @@ import scalismo.ui.control.{ NodeVisibility, SlicingPosition }
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
-import scalismo.ui.rendering.actor.{ Actors, ActorsFactory, EventActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, Actors, ActorsFactory }
 import scalismo.ui.rendering.internal.RenderingComponent
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
@@ -73,7 +73,12 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   reactions += {
     case SceneChanged(_) if attached => updateAllActors()
-    case RendererContext.event.RenderRequest(_) if attached => implementation.Render()
+    case ActorEvents.event.ActorChanged(_, geometryChanged) if attached =>
+      if (geometryChanged) {
+        actorsChanged(cameraReset = false)
+      } else {
+        implementation.Render()
+      }
     case pc @ SlicingPosition.event.PointChanged(_, _, _) => handleSlicingPositionPointChanged(pc)
     case NodeVisibility.event.NodeVisibilityChanged(_, view) if attached && view == this.viewport => updateAllActors()
   }
@@ -109,7 +114,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
         val renderer = implementation.getRenderer
         val renderables = if (attached) frame.sceneControl.renderablesFor(viewport) else Nil
 
-        val wasEmpty = currentActors.isEmpty
+        val wasEmpty = currentBoundingBox == BoundingBox.Invalid
 
         val obsolete = currentActors.filter(ra => !renderables.exists(_ eq ra.renderable))
 
@@ -120,7 +125,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
           obsolete.foreach(ra => ra.vtkActors.foreach { actor =>
             renderer.RemoveActor(actor)
             actor match {
-              case dyn: EventActor =>
+              case dyn: ActorEvents =>
                 deafTo(dyn)
                 dyn.onDestroy()
               case _ => // do nothing
@@ -132,7 +137,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
         if (created.nonEmpty) {
           created.foreach(_.vtkActors.foreach { actor =>
             actor match {
-              case eventActor: EventActor => listenTo(eventActor)
+              case eventActor: ActorEvents => listenTo(eventActor)
               case _ =>
             }
             renderer.AddActor(actor)
@@ -142,19 +147,19 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
         if (created.nonEmpty || obsolete.nonEmpty) {
           // something has changed
-          actorsChanged(camReset = wasEmpty)
+          actorsChanged(cameraReset = wasEmpty)
         }
         updating = false
       }
     }
   }
 
-  private def actorsChanged(camReset: Boolean): Unit = {
+  private def actorsChanged(cameraReset: Boolean): Unit = {
     currentBoundingBox = currentActors.foldLeft(BoundingBox.Invalid: BoundingBox)({
       case (bb, actors) =>
         bb.union(actors.actorsOption.map(_.boundingBox).getOrElse(BoundingBox.Invalid))
     })
-    if (camReset) {
+    if (cameraReset) {
       resetCamera()
     } else {
       render()

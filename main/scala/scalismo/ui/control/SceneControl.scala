@@ -22,6 +22,7 @@ class SceneControl(val frame: ScalismoFrame, val scene: Scene) {
   }
 
   def renderablesFor(viewport: ViewportPanel): List[Renderable] = {
-    scene.renderables.filter(r => nodeVisibility.isVisible(r, viewport))
+    val sceneRenderables = scene.renderables.filter(r => nodeVisibility.isVisible(r, viewport))
+    sceneRenderables ++ slicingPosition.renderablesFor(viewport)
   }
 }

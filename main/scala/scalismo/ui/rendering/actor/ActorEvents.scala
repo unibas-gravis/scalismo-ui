@@ -1,12 +1,21 @@
 package scalismo.ui.rendering.actor
 
-import scalismo.ui.rendering.RendererContext
-import vtk.vtkActor
+import scalismo.ui.event.{ Event, ScalismoPublisher }
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.Publisher
 
-trait EventActor extends vtkActor with RendererContext {
+object ActorEvents {
+
+  object event {
+
+    case class ActorChanged(source: ActorEvents, didGeometryChange: Boolean) extends Event
+
+  }
+
+}
+
+trait ActorEvents extends ScalismoPublisher {
 
   private lazy val listening: ArrayBuffer[Publisher] = new ArrayBuffer
 
@@ -18,6 +27,17 @@ trait EventActor extends vtkActor with RendererContext {
   override def deafTo(ps: Publisher*): Unit = {
     listening --= ps
     super.deafTo(ps: _*)
+  }
+
+  //  def actorPropertyChanged(): Unit = {
+  //    publishEvent(ActorEvents.event.ActorPropertyChanged(this))
+  //  }
+  //
+  //  def actorGeometryChanged(): Unit = {
+  //    publishEvent(ActorEvents.event.ActorGeometryChanged(this))
+  //  }
+  def actorChanged(didGeometryChange: Boolean = false) = {
+    publishEvent(ActorEvents.event.ActorChanged(this, didGeometryChange))
   }
 
   /*

@@ -6,7 +6,7 @@ import scalismo.ui.view.ViewportPanel
 import scala.reflect.ClassTag
 
 object ActorsFactory {
-  val BuiltinFactories: List[ActorsFactory] = List(TriangleMeshActor, ScalarMeshFieldActor, LandmarkActor)
+  val BuiltinFactories: List[ActorsFactory] = List(BoundingBoxActor, TriangleMeshActor, ScalarMeshFieldActor, LandmarkActor)
 
   var _factories: Map[Class[_ <: Renderable], ActorsFactory] = Map.empty
 
@@ -26,7 +26,13 @@ object ActorsFactory {
     _factories = _factories.filterNot(_._1 == clazz)
   }
 
-  def factoryFor(renderable: Renderable): Option[ActorsFactory] = factories.get(renderable.getClass)
+  def factoryFor(renderable: Renderable): Option[ActorsFactory] = {
+    val result = factories.get(renderable.getClass)
+    if (result.isEmpty) {
+      println("Warning: no ActorsFactory for " + renderable.getClass)
+    }
+    result
+  }
 }
 
 trait ActorsFactory {

@@ -4,7 +4,7 @@ import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty }
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }
 import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity }
-import scalismo.ui.rendering.util.BoundingBoxUtil
+import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk._
 
@@ -72,7 +72,7 @@ trait LandmarkActor extends ActorColor with ActorOpacity {
       ellipsoid.SetZRadius(zRadius)
     }
 
-    requestRendering()
+    actorChanged(geometryChanged)
   }
 
   listenTo(node)
@@ -102,7 +102,7 @@ class LandmarkActor2D(override val node: LandmarkNode, viewport: ViewportPanel2D
 
   override protected def sourceBoundingBox: BoundingBox = {
     transformFilter.Update()
-    BoundingBoxUtil.bounds2BoundingBox(transformFilter.GetOutput().GetBounds())
+    VtkUtil.bounds2BoundingBox(transformFilter.GetOutput().GetBounds())
   }
 
 }

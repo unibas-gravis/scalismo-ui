@@ -1,9 +1,9 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties._
-import scalismo.ui.rendering.actor.{ EventActor, SingleActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleActor }
 
-trait ActorOpacity extends SingleActor with EventActor {
+trait ActorOpacity extends SingleActor with ActorEvents {
   def opacity: OpacityProperty
 
   listenTo(opacity)
@@ -14,7 +14,7 @@ trait ActorOpacity extends SingleActor with EventActor {
 
   private def setAppearance() = {
     GetProperty().SetOpacity(opacity.value)
-    requestRendering()
+    actorChanged()
   }
 
   setAppearance()
