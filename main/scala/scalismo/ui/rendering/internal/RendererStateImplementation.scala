@@ -63,14 +63,15 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
         case Some(Axis.X) => array(0) = viewport.frame.sceneControl.slicingPosition.x
         case Some(Axis.Y) => array(1) = viewport.frame.sceneControl.slicingPosition.y
         case Some(Axis.Z) => array(2) = viewport.frame.sceneControl.slicingPosition.z
+        case _ => //
       }
       // return None if the point found is not within the bounding box of the scene
-      //      val point = viewportOption.flatMap { vp =>
-      //        val point = Point[_3D](array)
-      //        val bb = vp.scene.slicingPosition.boundingBox
-      //        if (bb.contains(point)) Some(point) else None
-      //      }
-      PointAndProp(Some(scalismo.geometry.Point[_3D](array)), None)
+      val pointOption = {
+        val point: Point3D = scalismo.geometry.Point[_3D](array)
+        val bb = viewport.frame.sceneControl.slicingPosition.boundingBox
+        if (bb.contains(point)) Some(point) else None
+      }
+      PointAndProp(pointOption, None)
     }
   }
 
