@@ -1,11 +1,13 @@
 package scalismo.ui.rendering.internal
 
-import java.awt.{ Point, Component }
+import java.awt.{ Component, Point }
 
 import scalismo.ui.rendering.internal.CoordinateAdapter.VtkPoint
 
 object CoordinateAdapter {
+
   class VtkPoint(x: Int, y: Int) extends Point(x, y)
+
 }
 
 class CoordinateAdapter {

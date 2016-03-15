@@ -19,7 +19,10 @@ class SimpleViewer extends ScalismoFrame {
     val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
     val mesh = model.referenceMesh
     val group = scene.groups.add("firstGroup")
-    val meshNode = group.triangleMeshes.add(mesh, "face")
+    //val meshNode = group.triangleMeshes.add(mesh, "face")
+
+    //group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
+    group.pointClouds.add((0 to 5).map(_ * 10).map(x => Point3D(x, x, x)), "pc")
 
     group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)))
     group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)))

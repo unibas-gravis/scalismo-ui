@@ -1,0 +1,85 @@
+package scalismo.ui.rendering.actor
+
+import scalismo.ui.model.capabilities.Transformable
+import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, NodeProperty, OpacityProperty }
+import scalismo.ui.model.{ BoundingBox, PointCloudNode }
+import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorSceneNode }
+import scalismo.ui.rendering.util.VtkUtil
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
+
+object PointCloudActor extends SimpleActorsFactory[PointCloudNode] {
+  override def actorsFor(renderable: PointCloudNode, viewport: ViewportPanel): Option[Actors] = {
+    viewport match {
+      case _3d: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
+      case _2d: ViewportPanel2D => Some(new PointCloudActor2D(renderable, _2d))
+    }
+  }
+}
+
+trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorColor with ActorSceneNode {
+  override def sceneNode: PointCloudNode
+
+  override def opacity: OpacityProperty = sceneNode.opacity
+
+  override def color: ColorProperty = sceneNode.color
+
+  protected def onInstantiated(): Unit
+
+  lazy val sphere = new vtkSphereSource
+
+  def transformedPoints = new vtkPoints {
+    sceneNode.transformedSource.foreach { point =>
+      InsertNextPoint(point(0), point(1), point(2))
+    }
+  }
+
+  lazy val polydata = new vtkPolyData
+
+  lazy val glyph = new vtkGlyph3D {
+    SetSourceConnection(sphere.GetOutputPort)
+    SetInputData(polydata)
+  }
+
+  def rerender(geometryChanged: Boolean) = {
+    if (geometryChanged) {
+      polydata.SetPoints(transformedPoints)
+    }
+    sphere.SetRadius(sceneNode.radius.value)
+    mapper.Modified()
+    actorChanged(geometryChanged)
+  }
+
+  listenTo(sceneNode, sceneNode.radius)
+
+  reactions += {
+    case Transformable.event.GeometryChanged(_) => rerender(true)
+    case NodeProperty.event.PropertyChanged(p) if p eq sceneNode.radius => rerender(true)
+  }
+
+  onInstantiated()
+
+  rerender(true)
+
+}
+
+class PointCloudActor2D(override val sceneNode: PointCloudNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with PointCloudActor with ActorLineWidth {
+  override def lineWidth: LineWidthProperty = sceneNode.lineWidth
+
+  override protected def onSlicingPositionChanged(): Unit = rerender(false)
+
+  override protected def onInstantiated(): Unit = {
+    planeCutter.SetInputConnection(glyph.GetOutputPort())
+  }
+
+  override protected def sourceBoundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(polydata.GetBounds())
+
+}
+
+class PointCloudActor3D(override val sceneNode: PointCloudNode) extends PointCloudActor {
+  override protected def onInstantiated(): Unit = {
+    mapper.SetInputConnection(glyph.GetOutputPort)
+  }
+
+}
+

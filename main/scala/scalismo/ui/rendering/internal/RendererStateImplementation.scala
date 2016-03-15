@@ -3,7 +3,7 @@ package scalismo.ui.rendering.internal
 import java.awt.{ Component, Point }
 
 import scalismo.geometry.{ Point3D, _3D }
-import scalismo.ui.model.{ SceneNode, Axis }
+import scalismo.ui.model.{ Axis, SceneNode }
 import scalismo.ui.rendering.RendererState
 import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.rendering.actor.mixin.ActorSceneNode

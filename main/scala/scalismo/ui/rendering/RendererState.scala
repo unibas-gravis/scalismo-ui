@@ -7,7 +7,9 @@ import scalismo.ui.model.SceneNode
 import scalismo.ui.rendering.RendererState.PointAndNode
 
 object RendererState {
+
   case class PointAndNode(pointOption: Option[Point3D], nodeOption: Option[SceneNode])
+
 }
 
 trait RendererState {

@@ -1,6 +1,6 @@
 package scalismo.ui.rendering.actor
 
-import scalismo.mesh.TriangleMesh
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
 import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
@@ -47,25 +47,25 @@ object MeshActor {
   private[actor] object MeshRenderable {
 
     class TriangleMeshRenderable(override val node: TriangleMeshNode) extends MeshRenderable {
-      override def opacity = node.opacity
+      override def opacity: OpacityProperty = node.opacity
 
-      override def mesh = node.transformedSource
+      override def mesh: TriangleMesh = node.transformedSource
 
-      override def lineWidth = node.lineWidth
+      override def lineWidth: LineWidthProperty = node.lineWidth
 
-      def color = node.color
+      def color: ColorProperty = node.color
     }
 
     class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
-      override def opacity = node.opacity
+      override def opacity: OpacityProperty = node.opacity
 
-      override def lineWidth = node.lineWidth
+      override def lineWidth: LineWidthProperty = node.lineWidth
 
-      override def mesh = node.source.mesh
+      override def mesh: TriangleMesh = field.mesh
 
-      def scalarRange = node.scalarRange
+      def scalarRange: ScalarRangeProperty = node.scalarRange
 
-      def field = node.source
+      def field: ScalarMeshField[Float] = node.transformedSource
     }
 
     def apply(source: TriangleMeshNode): TriangleMeshRenderable = new TriangleMeshRenderable(source)

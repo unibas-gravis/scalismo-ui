@@ -15,6 +15,27 @@ import scala.swing.{ BorderPanel, Component, ScrollPane }
 
 object NodePropertiesPanel {
 
+  // built-in, default handlers
+  val BuiltinHandlers: List[ScalismoFrame => PropertyPanel] = {
+
+    def appearancePanel: ScalismoFrame => PropertyPanel = { frame: ScalismoFrame =>
+      val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
+      props += ColorPropertyPanel
+      props += ScalarRangePropertyPanel
+      props += OpacityPropertyPanel
+      props += RadiusPropertyPanel
+      props += LineWidthPropertyPanel
+
+      new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
+    }
+
+    List(
+      SlicingPositionPanel,
+      GaussianProcessCoefficientsPanel,
+      appearancePanel
+    )
+  }
+
   class Tab(val view: PropertyPanel) extends JLabel(view.description)
 
   class Tabs extends Component with ScalismoPublisher {
@@ -88,26 +109,6 @@ object NodePropertiesPanel {
 
     }
 
-  }
-
-  // built-in, default handlers
-  val BuiltinHandlers: List[ScalismoFrame => PropertyPanel] = {
-
-    def appearancePanel: ScalismoFrame => PropertyPanel = { frame: ScalismoFrame =>
-      val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
-      props += ColorPropertyPanel
-      props += ScalarRangePropertyPanel
-      props += OpacityPropertyPanel
-      props += LineWidthPropertyPanel
-
-      new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
-    }
-
-    List(
-      SlicingPositionPanel,
-      GaussianProcessCoefficientsPanel,
-      appearancePanel
-    )
   }
 
 }
