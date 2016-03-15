@@ -21,9 +21,9 @@ class SimpleViewer extends ScalismoFrame {
     val group = scene.groups.add("firstGroup")
     val meshNode = group.triangleMeshes.add(mesh, "face")
 
-    group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)), "one")
-    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)), "two")
-    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)), "three")
+    group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)))
+    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)))
+    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)))
     //
     val gpt = PointTransformation.LowRankGpPointTransformation(model.gp.interpolateNearestNeighbor)
     val gp = group.transformations.add(gpt, "Gaussian Process")

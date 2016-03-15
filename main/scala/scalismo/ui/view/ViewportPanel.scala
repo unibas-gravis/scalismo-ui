@@ -6,7 +6,7 @@ import javax.swing.{ BorderFactory, SwingConstants }
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.{ Axis, BoundingBox, Scene }
-import scalismo.ui.rendering.RendererPanel
+import scalismo.ui.rendering.{ RendererState, RendererPanel }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.action.SaveAction
@@ -32,7 +32,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
   def scene: Scene = frame.scene
 
-  val renderer = new RendererPanel(this)
+  val rendererPanel = new RendererPanel(this)
 
   val toolBar = new ToolBar {
     floatable = false
@@ -42,7 +42,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
   def setupToolBar(): Unit = {
     toolBar.add(new Button(new Action(null) {
-      override def apply(): Unit = renderer.resetCamera()
+      override def apply(): Unit = rendererPanel.resetCamera()
     }) {
       tooltip = "Reset Camera"
       icon = BundledIcon.Reset.standardSized()
@@ -50,7 +50,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
     toolBar.add(new Button(new Action(null) {
       override def apply(): Unit = {
-        new SaveAction(renderer.screenshot, FileIoMetadata.Png, "Save screenshot")(frame).apply()
+        new SaveAction(rendererPanel.screenshot, FileIoMetadata.Png, "Save screenshot")(frame).apply()
       }
     }) {
       tooltip = "Screenshot"
@@ -61,25 +61,28 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
   def setupLayout(): Unit = {
     layout(toolBar) = BorderPanel.Position.North
-    layout(renderer) = BorderPanel.Position.Center
+    layout(rendererPanel) = BorderPanel.Position.Center
   }
-
-  border = new TitledBorder(name)
-
-  // constructor
-  setupToolBar()
-  setupLayout()
 
   def setAttached(attached: Boolean): Unit = {
     if (!attached) {
       publishEvent(ViewportPanel.event.Detached(this))
     }
-    renderer.setAttached(attached)
+    rendererPanel.setAttached(attached)
   }
 
-  def currentBoundingBox: BoundingBox = renderer.currentBoundingBox
+  def currentBoundingBox: BoundingBox = rendererPanel.currentBoundingBox
+
+  def rendererState: RendererState = rendererPanel.rendererState
 
   override def toString: String = name
+
+  // constructor
+  border = new TitledBorder(name)
+
+  setupToolBar()
+  setupLayout()
+
 }
 
 class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") extends ViewportPanel(frame) {
@@ -89,7 +92,7 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
     List(Axis.X, Axis.Y, Axis.Z).foreach { axis =>
       val button = new Button(new Action(axis.toString) {
         override def apply(): Unit = {
-          renderer.setCameraToAxis(axis)
+          rendererPanel.setCameraToAxis(axis)
         }
       }) {
         foreground = AxisColor.forAxis(axis).darker()
@@ -139,7 +142,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
     case _ => // unexpected, can't handle
   }
 
-  renderer.border = BorderFactory.createLineBorder(AxisColor.forAxis(axis), ScalableUI.scale(3))
+  rendererPanel.border = BorderFactory.createLineBorder(AxisColor.forAxis(axis), ScalableUI.scale(3))
 
   listenTo(frame.sceneControl.slicingPosition, positionSlider)
 

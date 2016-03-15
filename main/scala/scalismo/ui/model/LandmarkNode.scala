@@ -14,6 +14,10 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     add(node)
     node
   }
+
+  def add(landmark: Landmark[_3D]): LandmarkNode = {
+    add(landmark, landmark.id)
+  }
 }
 
 class LandmarkNode(override val parent: LandmarksNode, override val source: Landmark[_3D], initialName: String) extends Transformable[Landmark[_3D]] with Removeable with Renameable with HasColor with HasOpacity with HasLineWidth {
@@ -29,6 +33,6 @@ class LandmarkNode(override val parent: LandmarksNode, override val source: Land
     untransformed.copy(point = transformation(untransformed.point))
   }
 
-  override def transformationsNode: TransformationsNode = parent.parent.transformations
+  override def group: GroupNode = parent.parent
 }
 

@@ -205,6 +205,8 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     resetCamera()
   }
 
+  def rendererState: RendererState = implementation.rendererState
+
   private def handleSlicingPositionPointChanged(pc: SlicingPosition.event.PointChanged): Unit = {
     viewport match {
       case vp2d: ViewportPanel2D =>

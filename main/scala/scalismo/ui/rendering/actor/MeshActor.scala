@@ -6,7 +6,7 @@ import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityP
 import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
-import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorScalarRange }
+import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
@@ -76,10 +76,12 @@ object MeshActor {
 
 }
 
-trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity {
+trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity with ActorSceneNode {
   def renderable: R
 
   override def opacity: OpacityProperty = renderable.opacity
+
+  override def sceneNode: SceneNode = renderable.node
 
   protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData
 

@@ -13,14 +13,14 @@ object Transformable {
 
 }
 
-trait Transformable[T] extends RenderableSceneNode {
+trait Transformable[T] extends RenderableSceneNode with Grouped {
   def source: T // the untransformed T
+
+  private def transformationsNode: TransformationsNode = group.transformations
 
   private var _transformedSource = transform(source, transformationsNode.combinedTransformation)
 
   def transformedSource: T = _transformedSource
-
-  def transformationsNode: TransformationsNode
 
   def transform(untransformed: T, transformation: PointTransformation): T
 

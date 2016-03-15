@@ -26,6 +26,8 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
   private val eventForwarder = new InteractorForwarder(this)
   eventForwarder.setEventInterceptor(interceptor)
 
+  val rendererState = new RendererStateImplementation(renderer, viewport)
+
   private var interactor = new RenderWindowInteractor()
   private val glPanel = new GLJPanelWithViewport(viewport, new GLCapabilities(GLProfile.getDefault()))
 
@@ -164,6 +166,7 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
   override def setSize(w: Int, h: Int): Unit = {
     if (renderWindow != null && interactor != null) {
       executeInterruptibly {
+        rendererState.setSize(w, h, glPanel)
         renderWindow.SetSize(w, h)
         interactor.SetSize(w, h)
       }
