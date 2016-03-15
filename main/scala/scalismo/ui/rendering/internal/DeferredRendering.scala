@@ -1,6 +1,6 @@
 package scalismo.ui.rendering.internal
 
-import java.util.{TimerTask, Timer}
+import java.util.{ Timer, TimerTask }
 
 object DeferredRendering {
   // this should be almost unnoticeable for humans, but helps to prevent lags

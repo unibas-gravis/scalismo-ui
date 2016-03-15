@@ -4,6 +4,7 @@ import java.awt.Dimension
 import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.control.SceneControl
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.rendering.Rendering
@@ -152,6 +153,18 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     }
   }
 
+  private var _interactor: Interactor = new DefaultInteractor
+
+  def interactor: Interactor = _interactor
+
+  def interactor_=(newInteractor: Interactor) = {
+    if (newInteractor != interactor) {
+      interactor.onDeactivated(this)
+      _interactor = newInteractor
+      newInteractor.onActivated(this)
+    }
+  }
+
   // constructor logic
 
   title = "Scalismo UI"
@@ -168,7 +181,6 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   val statusBar = new StatusBar
 
   // the controls can only be initialized once the frame is fully constructed,
-  // because they listen to events from panels.
   sceneControl.initialize()
-
+  interactor.onActivated(this)
 }

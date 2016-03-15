@@ -57,7 +57,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   val frame = viewport.frame
 
-  private val implementation = new RenderingComponent
+  private val implementation = new RenderingComponent(viewport)
   Cameras.setDefaultCameraState(implementation.getActiveCamera)
 
   viewport match {

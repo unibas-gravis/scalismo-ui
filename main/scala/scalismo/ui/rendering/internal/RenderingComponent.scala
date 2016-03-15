@@ -4,13 +4,14 @@ import java.util.concurrent.locks.ReentrantLock
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
+import scalismo.ui.view.ViewportPanel
 import vtk._
 
 /**
  * This is essentially a Scala re-implementation based on [[vtk.rendering.jogl.vtkJoglPanelComponent]].
  * It includes a couple of bugfixes and extensions.
  */
-class RenderingComponent extends vtk.rendering.vtkComponent[GLJPanel] {
+class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkComponent[GLJPanel] {
 
   ////// fields / constructor
 
@@ -21,12 +22,12 @@ class RenderingComponent extends vtk.rendering.vtkComponent[GLJPanel] {
   // Keep camera around to prevent its creation/deletion in Java world
   private var camera = renderer.GetActiveCamera()
 
-  private val interceptor = new EventInterceptor()
+  private val interceptor = new EventInterceptor(viewport.frame)
   private val eventForwarder = new InteractorForwarder(this)
   eventForwarder.setEventInterceptor(interceptor)
 
   private var interactor = new RenderWindowInteractor()
-  private val glPanel = new GLJPanel(new GLCapabilities(GLProfile.getDefault()))
+  private val glPanel = new GLJPanelWithViewport(viewport, new GLCapabilities(GLProfile.getDefault()))
 
   private var inRenderCall = false
 
@@ -56,6 +57,7 @@ class RenderingComponent extends vtk.rendering.vtkComponent[GLJPanel] {
   glPanel.addMouseListener(eventForwarder)
   glPanel.addMouseMotionListener(eventForwarder)
   glPanel.addKeyListener(eventForwarder)
+  glPanel.addMouseWheelListener(interceptor)
 
   glPanel.addGLEventListener(new GLEventListener {
 

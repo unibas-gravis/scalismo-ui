@@ -4,7 +4,6 @@ import scalismo.ui.settings.SettingsFile.Codec
 
 import scala.reflect.runtime.universe.{ TypeTag, typeOf }
 import scala.util._
-
 /**
  * High-level abstraction for storing user preferences / settings.
  *

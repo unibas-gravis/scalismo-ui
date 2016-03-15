@@ -3,7 +3,7 @@ package plugin
 import java.io.File
 
 import breeze.linalg.DenseVector
-import scalismo.geometry.{Point3D, Landmark, _3D}
+import scalismo.geometry.{ Landmark, Point3D, _3D }
 import scalismo.io.StatismoIO
 import scalismo.registration.RigidTransformationSpace
 import scalismo.ui.model.PointTransformation
@@ -19,17 +19,16 @@ class SimpleViewer extends ScalismoFrame {
     val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
     val mesh = model.referenceMesh
     val group = scene.groups.add("firstGroup")
-    //    //scene.groups.add("second")
-    //
-        group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)), "one")
-        group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)), "two")
-        group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)), "three")
+    val meshNode = group.triangleMeshes.add(mesh, "face")
+
+    group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)), "one")
+    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)), "two")
+    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)), "three")
     //
     val gpt = PointTransformation.LowRankGpPointTransformation(model.gp.interpolateNearestNeighbor)
     val gp = group.transformations.add(gpt, "Gaussian Process")
     //    val rigid = group.transformations.add(PointTransformation.Identity, "identity")
 
-    val meshNode = group.triangleMeshes.add(mesh, "face")
     //    //val meshCopy = firstGroup.triangleMeshes.add(mesh, "copy")
     //    if (false) {
     //      // yeah, I know you love these :-)
@@ -51,32 +50,32 @@ class SimpleViewer extends ScalismoFrame {
     //
     //    }
     //
-        new Thread() {
-          val rand = new Random()
+    new Thread() {
+      val rand = new Random()
 
-          override def run(): Unit = {
-            def sleep() = {}//Thread.sleep(1000)
+      override def run(): Unit = {
+        def sleep() = {} //Thread.sleep(1000)
 
-            def randomRigid() = {
-              val randoms = (0 until 6).map(_ => rand.nextFloat() - .5f)
-              RigidTransformationSpace[_3D]().transformForParameters(DenseVector(randoms.toArray))
-            }
+        def randomRigid() = {
+          val randoms = (0 until 6).map(_ => rand.nextFloat() - .5f)
+          RigidTransformationSpace[_3D]().transformForParameters(DenseVector(randoms.toArray))
+        }
 
-            def randomCoeffs() = {
-              val randoms = (0 until model.gp.rank).map(_ => (rand.nextFloat() - .5f) * 7)
-              DenseVector(randoms.toArray)
-            }
+        def randomCoeffs() = {
+          val randoms = (0 until model.gp.rank).map(_ => (rand.nextFloat() - .5f) * 7)
+          DenseVector(randoms.toArray)
+        }
 
-            while (true) {
-              sleep()
-              gp.transformation = gp.transformation.copy(coefficients = randomCoeffs())
+        while (true) {
+          sleep()
+          gp.transformation = gp.transformation.copy(coefficients = randomCoeffs())
 
-              //          sleep()
-              //          rigid.transformation = randomRigid()
-            }
+          //          sleep()
+          //          rigid.transformation = randomRigid()
+        }
 
-          }
-        }//.start()
+      }
+    } //.start()
   }
 
 }
