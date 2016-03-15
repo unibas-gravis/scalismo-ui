@@ -174,4 +174,14 @@ class RenderingComponent extends vtk.rendering.vtkComponent[GLJPanel] {
     }
   }
 
+  private val deferred = new DeferredRendering(Render())
+
+  def render(allowDeferred: Boolean = true): Unit = {
+    if (!allowDeferred) {
+      Render()
+    } else {
+      deferred.request()
+    }
+  }
+
 }

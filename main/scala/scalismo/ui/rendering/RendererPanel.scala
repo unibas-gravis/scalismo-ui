@@ -77,7 +77,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       if (geometryChanged) {
         actorsChanged(cameraReset = false)
       } else {
-        implementation.Render()
+        render()
       }
     case pc @ SlicingPosition.event.PointChanged(_, _, _) => handleSlicingPositionPointChanged(pc)
     case NodeVisibility.event.NodeVisibilityChanged(_, view) if attached && view == this.viewport => updateAllActors()
@@ -172,7 +172,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
   }
 
   def render(): Unit = {
-    implementation.Render()
+    implementation.render()
   }
 
   def screenshot(file: File): Try[Unit] = Try {
