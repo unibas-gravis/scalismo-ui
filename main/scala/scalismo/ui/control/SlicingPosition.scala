@@ -85,7 +85,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     if (_point != np) {
       val prev = _point
       _point = np
-      publishEvent(event.PointChanged(this, np, prev))
+      publishEvent(event.PointChanged(this, prev, np))
     }
   }
 

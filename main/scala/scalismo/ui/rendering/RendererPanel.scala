@@ -213,15 +213,15 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
         val foc = cam.GetFocalPoint()
         vp2d.axis match {
           case Axis.X =>
-            val amount = pc.previous.x - pc.current.x
+            val amount = pc.current.x - pc.previous.x
             pos(0) += amount
             foc(0) += amount
           case Axis.Y =>
-            val amount = pc.previous.y - pc.current.y
+            val amount = pc.current.y - pc.previous.y
             pos(1) += amount
             foc(1) += amount
           case Axis.Z =>
-            val amount = pc.previous.z - pc.current.z
+            val amount = pc.current.z - pc.previous.z
             pos(2) += amount
             foc(2) += amount
         }
