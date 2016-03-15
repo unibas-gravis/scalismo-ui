@@ -11,6 +11,9 @@ import scalismo.ui.view.util.Constants
 
 object FontIcon {
 
+  // this is a fully transparent white, so not a color we'll encounter.
+  val RainbowColor: Color = new Color(0x00ffffff, true)
+
   private val fonts: Map[String, Font] = {
     def create(iconFont: IconFont): (String, Font) = {
       (iconFont.getFontFamily, Font.createFont(Font.TRUETYPE_FONT, iconFont.getFontInputStream))
@@ -39,6 +42,7 @@ object FontIcon {
     val graphics: Graphics2D = image.createGraphics()
 
     val baseFont = fonts(code.getFontFamily)
+
     val needed = new Dimension
 
     var font = baseFont
@@ -62,11 +66,34 @@ object FontIcon {
     // now draw the text
     graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
     graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
-    graphics.setColor(color)
+
+    graphics.setColor(if (color == RainbowColor) Color.BLACK else color)
     graphics.setFont(font)
-    // the y position also needs to take into account
+
+    // the y position also needs to take into account how far the character goes below the baseline
     graphics.drawString(string, xOffset, yOffset + Math.abs(bounds.getY.toFloat))
     graphics.dispose()
+
+    if (color == RainbowColor) {
+      // adapted from: http://www.java2s.com/Code/Java/2D-Graphics-GUI/RainbowColor.htm
+      def rainbow(x: Int, y: Int) = {
+        val red = (x * 255) / (height - 1)
+        val green = (y * 255) / (width - 1)
+        // the higher the "blue" value, the brighter the overall image
+        val blue = 160
+        ((red << 16) | (green << 8) | blue) | 0xff000000
+      }
+
+      (0 until width).foreach { x =>
+        (0 until height).foreach { y =>
+          val alpha = (image.getRGB(x, y) >> 24) & 0xff
+          // the higher the alpha threshold, the thinner the resulting icon will appear
+          if (alpha > 128) {
+            image.setRGB(x, y, rainbow(x, y))
+          }
+        }
+      }
+    }
 
     new FontIcon(code, color, image)
   }

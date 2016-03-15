@@ -3,8 +3,10 @@ package plugin
 import java.io.File
 
 import breeze.linalg.DenseVector
+import scalismo.common.ScalarArray
 import scalismo.geometry.{ Landmark, Point3D, _3D }
 import scalismo.io.StatismoIO
+import scalismo.mesh.ScalarMeshField
 import scalismo.registration.RigidTransformationSpace
 import scalismo.ui.model.PointTransformation
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
@@ -19,9 +21,9 @@ class SimpleViewer extends ScalismoFrame {
     val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
     val mesh = model.referenceMesh
     val group = scene.groups.add("firstGroup")
-    //val meshNode = group.triangleMeshes.add(mesh, "face")
+    val meshNode = group.triangleMeshes.add(mesh, "face")
 
-    //group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
+    group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
     group.pointClouds.add((0 to 5).map(_ * 10).map(x => Point3D(x, x, x)), "pc")
 
     group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)))
@@ -30,7 +32,7 @@ class SimpleViewer extends ScalismoFrame {
     //
     val gpt = PointTransformation.LowRankGpPointTransformation(model.gp.interpolateNearestNeighbor)
     val gp = group.transformations.add(gpt, "Gaussian Process")
-    //    val rigid = group.transformations.add(PointTransformation.Identity, "identity")
+    val rigid = group.transformations.add(PointTransformation.Identity, "identity")
 
     //    //val meshCopy = firstGroup.triangleMeshes.add(mesh, "copy")
     //    if (false) {
