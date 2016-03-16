@@ -20,6 +20,7 @@ object NodePropertiesPanel {
 
     def appearancePanel: ScalismoFrame => PropertyPanel = { frame: ScalismoFrame =>
       val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
+      props += WindowLevelPropertyPanel
       props += ColorPropertyPanel
       props += ScalarRangePropertyPanel
       props += OpacityPropertyPanel

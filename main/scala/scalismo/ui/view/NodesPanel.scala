@@ -9,7 +9,7 @@ import javax.swing.{ Icon, JPopupMenu, JTree }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
 import scalismo.ui.model.properties.ColorProperty
-import scalismo.ui.resources.icons.{ FontIcon, BundledIcon, ScalableIcon }
+import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 import scalismo.ui.view.action.popup.PopupAction
@@ -50,6 +50,7 @@ object NodesPanel {
           case n: PointCloudNode => Some(BundledIcon.PointCloud.colored(n.color.value.darker))
           case n: LandmarkNode => Some(BundledIcon.Landmark.colored(n.color.value.darker))
           case _: ScalarMeshFieldNode => Some(BundledIcon.Mesh.colored(FontIcon.RainbowColor))
+          case _: ImageNode => Some(BundledIcon.Image)
           case _: TransformationNode[_] => Some(BundledIcon.Transformation)
           case _: SceneNodeCollection[_] => Some(BundledIcon.FolderClosed)
           case _ => None

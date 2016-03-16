@@ -34,5 +34,6 @@ object BundledIcon {
   lazy val PointCloud = FontIcon.load(awesome('\uf1e3'))
   lazy val Landmark = FontIcon.load(FontAwesome.CROSSHAIRS)
   lazy val Transformation = FontIcon.load(FontAwesome.ARROW_CIRCLE_RIGHT)
+  lazy val Image = FontIcon.load(FontAwesome.PICTURE_O)
 
 }
