@@ -12,7 +12,7 @@ trait NodeListFilters {
    * @tparam T the type you're interested in
    * @return all the elements in the nodes list which are of type T, as a List[T]
    */
-  final def someOf[T: ClassTag](nodes: List[SceneNode]): List[T] = {
+  final def someMatch[T: ClassTag](nodes: List[SceneNode]): List[T] = {
     nodes.collect { case n: T => n }
   }
 
@@ -25,8 +25,8 @@ trait NodeListFilters {
    * @tparam T the type you're interested in
    * @return the elements in the nodes list, as a List[T], if *all* of them are of type T, or an empty list otherwise.
    */
-  final def allOf[T: ClassTag](nodes: List[SceneNode]): List[T] = {
-    val candidates = someOf[T](nodes)
+  final def allMatch[T: ClassTag](nodes: List[SceneNode]): List[T] = {
+    val candidates = someMatch[T](nodes)
     if (candidates.length == nodes.length) candidates else Nil
   }
 
@@ -39,8 +39,13 @@ trait NodeListFilters {
    * @return Some[T] if the list consisted of a single item of type T, or None otherwise
    */
 
-  final def singleNode[T: ClassTag](nodes: List[SceneNode]): Option[T] = {
-    allOf(nodes).headOption
+  final def singleMatch[T: ClassTag](nodes: List[SceneNode]): Option[T] = {
+    val candidates = allMatch(nodes)
+    if (candidates.length == 1) {
+      candidates.headOption
+    } else {
+      None
+    }
   }
 
 }
