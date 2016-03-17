@@ -3,6 +3,7 @@ package scalismo.ui.event
 import scalismo.ui.util.EdtUtil
 
 import scala.swing.Publisher
+import com.github.ghik.silencer.silent
 
 /**
  * Provides a method for publishing events on the correct thread.
@@ -21,8 +22,14 @@ trait ScalismoPublisher extends Publisher {
    *
    * NOTE: this in turn results in a "... overrides concrete,
    * non-deprecated ..." warning, but that one can be safely IGNORED.
+   *
+   * NOTE-2: The warnings mentioned above have been silenced using
+   * https://github.com/ghik/silencer -- for this class only.
+   * Thus, the UI should compile without warnings, but you will still
+   * get a warning if you try to use the publish() method. Sweet! :-)
    */
-  @deprecated(message = "Use the publishEvent method instead", since = "always")
+  @deprecated(message = "use method publishEvent instead", since = "always")
+  @silent
   override def publish(e: Event) = {
     doPublish(e)
   }
