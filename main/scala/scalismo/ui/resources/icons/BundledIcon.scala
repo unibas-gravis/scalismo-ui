@@ -29,6 +29,8 @@ object BundledIcon {
   lazy val Exit = FontIcon.load(Entypo.LOGOUT)
   lazy val Scale = FontIcon.load(Entypo.RESIZE_FULL)
   lazy val Perspective = FontIcon.load(Elusive.GLASSES)
+  lazy val Visible = FontIcon.load(Elusive.EYE_OPEN)
+  lazy val Invisible = FontIcon.load(Elusive.EYE_CLOSE)
 
   // general SceneNode icons
   lazy val Scene = FontIcon.load(FontAwesome.HOME)

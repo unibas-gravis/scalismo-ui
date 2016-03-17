@@ -12,7 +12,7 @@ import scalismo.ui.model.properties.ColorProperty
 import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.ui.view.action.popup.PopupAction
+import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
@@ -139,8 +139,9 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
           val actions = PopupAction(affected)(frame)
           if (actions.nonEmpty) {
             val pop = new JPopupMenu()
-            actions.foreach { a =>
-              pop.add(a.peer)
+            actions.foreach {
+              case menu: PopupActionWithOwnMenu => pop.add(menu.menuItem.peer)
+              case a: PopupAction => pop.add(a.peer)
             }
             pop.show(tree, x, y)
             // needed because otherwise the popup is sometimes (partly) hidden by the renderer window

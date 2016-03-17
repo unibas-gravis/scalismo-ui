@@ -1,9 +1,9 @@
 package scalismo.ui.event
 
+import com.github.ghik.silencer.silent
 import scalismo.ui.util.EdtUtil
 
 import scala.swing.Publisher
-import com.github.ghik.silencer.silent
 
 /**
  * Provides a method for publishing events on the correct thread.

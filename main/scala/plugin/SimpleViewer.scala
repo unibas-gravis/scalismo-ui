@@ -2,7 +2,8 @@ package plugin
 
 import java.io.File
 
-import scalismo.io.ImageIO
+import scalismo.io.{ ImageIO, StatismoIO }
+import scalismo.ui.control.NodeVisibility.RenderableNodeWithVisibility
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
@@ -13,9 +14,9 @@ class SimpleViewer extends ScalismoFrame {
     val group = scene.groups.add("da group")
     val img = ImageIO.read3DScalarImage[Short](new File("/home/langguth/AAA_data/bladder.nii")).get.map(_.toFloat)
     group.images.add(img, "img")
-    //    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
-    //    val mesh = model.referenceMesh
-    //    val meshNode = group.triangleMeshes.add(mesh, "face")
+    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
+    val mesh = model.referenceMesh
+    val meshNode = group.triangleMeshes.add(mesh, "face")
 
     //    group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
     //    group.pointClouds.add((0 to 5).map(_ * 10).map(x => Point3D(x, x, x)), "pc")
@@ -29,25 +30,27 @@ class SimpleViewer extends ScalismoFrame {
     //    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)))
     //    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)))
     //
-    //    if (false) {
-    //      // yeah, I know you love these :-)
-    //      // anyway, here are a few examples of how the visibility stuff could be used:
-    //      val allViews = frame.perspectivesPanel.viewports
-    //      val oneView = allViews.head
-    //
-    //      // global visibility: as a Boolean
-    //      val visibleGlobally: Boolean = meshNode.visible
-    //      meshNode.visible = false
-    //
-    //      // visibility in a single viewport
-    //      val visibleInOne: Boolean = meshNode.visible(oneView)
-    //      meshNode.visible(oneView) = false
-    //
-    //      // visibility in a number of viewports
-    //      val visibleInAll: Boolean = meshNode.visible(allViews)
-    //      meshNode.visible(allViews) = false
-    //
-    //    }
+    if (false) {
+      // yeah, I know you love these :-)
+      // anyway, here are a few examples of how the visibility stuff could be used:
+      val allViews = frame.perspective.viewports
+      val oneView = allViews.head
+
+      val meshV: RenderableNodeWithVisibility = meshNode
+
+      //          // global visibility: as a Boolean
+      //          val visibleGlobally: Boolean = meshNode.visible
+      //          meshNode.visible = false
+      //
+      //          // visibility in a single viewport
+      //          val visibleInOne: Boolean = meshNode.visible(oneView)
+      //          meshNode.visible(oneView) = false
+      //
+      //          // visibility in a number of viewports
+      //          val visibleInAll: Boolean = meshNode.visible(allViews)
+      //          meshNode.visible(allViews) = false
+
+    }
     //
     //    new Thread() {
     //      val rand = new Random()
