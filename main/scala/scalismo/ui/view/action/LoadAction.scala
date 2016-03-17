@@ -46,12 +46,12 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onSuccess(file: File): Unit = {
-    frame.statusBar.set(s"File loaded: ${file.getName}")
+    frame.status.set(s"File loaded: ${file.getName}")
   }
 
   def onFailure(file: File, exception: Throwable): Unit = {
     val message = s"Unable to load file ${file.getName}"
-    frame.statusBar.set(StatusMessage(message, StatusMessage.Error))
+    frame.status.set(StatusMessage(message, StatusMessage.Error))
     ErrorDialog.show(exception, additionalMessage = message, title = "Loading failed")
   }
 }

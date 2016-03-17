@@ -8,17 +8,17 @@ import scalismo.ui.view.util.CardPanel
 
 import scala.swing.BorderPanel
 
-object PerspectivesPanel {
+object PerspectivePanel {
 
   object event {
 
-    case class PerspectiveChanged(panel: PerspectivesPanel, currentPerspective: Perspective, previousPerspective: Option[Perspective]) extends Event
+    case class PerspectiveChanged(panel: PerspectivePanel, currentPerspective: Perspective, previousPerspective: Option[Perspective]) extends Event
 
   }
 
 }
 
-class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with ScalismoPublisher {
+class PerspectivePanel(val frame: ScalismoFrame) extends BorderPanel with ScalismoPublisher {
 
   // because of issues with VTK rendering, we can't just create and dispose render windows
   // as needed (the program would crash at some point in time). Therefore, we instantiate
@@ -42,7 +42,7 @@ class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with Scali
 
       viewports.foreach(_.setAttached(true))
 
-      publishEvent(PerspectivesPanel.event.PerspectiveChanged(this, perspectiveInstance.get, previous))
+      publishEvent(PerspectivePanel.event.PerspectiveChanged(this, perspectiveInstance.get, previous))
     }
   }
 

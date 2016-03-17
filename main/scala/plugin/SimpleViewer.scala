@@ -2,8 +2,7 @@ package plugin
 
 import java.io.File
 
-import scalismo.geometry.{ Landmark, Point3D }
-import scalismo.io.{ ImageIO, StatismoIO }
+import scalismo.io.ImageIO
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
@@ -77,7 +76,7 @@ class SimpleViewer extends ScalismoFrame {
     //      }
     //    } //.start()
 
-    perspectivesPanel.resetAllCameras()
+    perspective.resetAllCameras()
     // end of setup
   }
 

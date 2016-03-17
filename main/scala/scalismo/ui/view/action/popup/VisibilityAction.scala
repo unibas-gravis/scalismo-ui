@@ -5,8 +5,8 @@ import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 object VisibilityAction extends PopupAction.Factory {
   override def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupAction] = {
-    val show = new VisibilityAction(context, frame.perspectivesPanel.viewports, true)
-    val hide = new VisibilityAction(context, frame.perspectivesPanel.viewports, false)
+    val show = new VisibilityAction(context, frame.perspective.viewports, true)
+    val hide = new VisibilityAction(context, frame.perspective.viewports, false)
     List(show, hide)
   }
 }

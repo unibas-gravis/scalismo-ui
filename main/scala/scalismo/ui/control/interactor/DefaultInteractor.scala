@@ -32,11 +32,11 @@ class DefaultInteractor extends Interactor {
   }
 
   override def onActivated(frame: ScalismoFrame): Unit = {
-    frame.toolBar.add(landmarkingButton)
+    frame.toolbar.add(landmarkingButton)
   }
 
   override def onDeactivated(frame: ScalismoFrame): Unit = {
-    frame.toolBar.remove(landmarkingButton)
+    frame.toolbar.remove(landmarkingButton)
   }
 
   override def mousePressed(e: MouseEvent): Result = {

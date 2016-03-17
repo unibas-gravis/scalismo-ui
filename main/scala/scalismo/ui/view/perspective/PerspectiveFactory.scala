@@ -13,7 +13,14 @@ import scalismo.ui.view.ScalismoFrame
  * before a frame is actually created.
  */
 object PerspectiveFactory {
-  final val BuiltinFactories: List[PerspectiveFactory] = List(OrthogonalPerspective, Single3DViewportPerspective, Two3DViewportsPerspective)
+  final val BuiltinFactories: List[PerspectiveFactory] = List(
+    OrthogonalPerspective,
+    ThreeDOnlyPerspective,
+    ThreeDTwicePerspective,
+    TwoDOnlyPerspective.X,
+    TwoDOnlyPerspective.Y,
+    TwoDOnlyPerspective.Z
+  )
 
   private var _factories: List[PerspectiveFactory] = BuiltinFactories
 

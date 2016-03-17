@@ -4,7 +4,7 @@ import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.action.ShowDisplayScalingDialogAction
 import scalismo.ui.view.perspective.PerspectiveFactory
-import scalismo.ui.view.{ PerspectivesPanel, ScalismoFrame }
+import scalismo.ui.view.{ PerspectivePanel, ScalismoFrame }
 
 import scala.swing.event.{ ButtonClicked, Key }
 import scala.swing.{ Menu, MenuItem, RadioMenuItem }
@@ -23,7 +23,7 @@ object ViewMenu {
     mnemonic = Key.P
     icon = BundledIcon.Perspective.standardSized()
 
-    val panel = frame.perspectivesPanel
+    val panel = frame.perspective
 
     private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.perspectiveName) with ScalismoPublisher {
 
@@ -35,7 +35,7 @@ object ViewMenu {
 
       reactions += {
         case ButtonClicked(_) => panel.perspective = factory
-        case PerspectivesPanel.event.PerspectiveChanged(_, _, _) => updateUi()
+        case PerspectivePanel.event.PerspectiveChanged(_, _, _) => updateUi()
       }
 
       updateUi()

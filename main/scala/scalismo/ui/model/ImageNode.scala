@@ -9,7 +9,7 @@ import scalismo.io.ImageIO
 import scalismo.io.ImageIO.ScalarType
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileUtil, FileIoMetadata }
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 import spire.math.{ UByte, UInt, UShort }
 
 import scala.reflect.ClassTag

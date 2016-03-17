@@ -105,7 +105,7 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
     }
   }
 
-  private[NodeVisibility] def allViewports: List[ViewportPanel] = frame.perspectivesPanel.viewports
+  private[NodeVisibility] def allViewports: List[ViewportPanel] = frame.perspective.viewports
 
   private def handlePerspectiveChange(current: Perspective, previous: Perspective) = {
     val oldViewports = previous.viewports
@@ -150,10 +150,10 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
   }
 
   def initialize(): Unit = {
-    listenTo(frame.perspectivesPanel)
+    listenTo(frame.perspective)
   }
 
   reactions += {
-    case PerspectivesPanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined => handlePerspectiveChange(current, previous.get)
+    case PerspectivePanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined => handlePerspectiveChange(current, previous.get)
   }
 }

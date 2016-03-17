@@ -70,12 +70,12 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onSuccess(file: File): Unit = {
-    frame.statusBar.set(s"File saved: ${file.getName}")
+    frame.status.set(s"File saved: ${file.getName}")
   }
 
   def onFailure(file: File, exception: Throwable): Unit = {
     val message = s"Unable to save file ${file.getName}"
-    frame.statusBar.set(StatusMessage(message, StatusMessage.Error))
+    frame.status.set(StatusMessage(message, StatusMessage.Error))
     ErrorDialog.show(exception, additionalMessage = message, title = "Saving failed")
   }
 

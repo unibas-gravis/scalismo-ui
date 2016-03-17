@@ -96,10 +96,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
    */
   def setupPanels(): Unit = {
     val root = new BorderPanel
-    root.layout(toolBar) = BorderPanel.Position.North
+    root.layout(toolbar) = BorderPanel.Position.North
     root.layout(modelPanel) = BorderPanel.Position.West
-    root.layout(statusBar) = BorderPanel.Position.South
-    root.layout(perspectivesPanel) = BorderPanel.Position.Center
+    root.layout(status) = BorderPanel.Position.South
+    root.layout(perspective) = BorderPanel.Position.Center
 
     this.contents = root
   }
@@ -184,10 +184,10 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   Rendering.register(this)
 
-  val toolBar = new ToolBar
+  val toolbar = new ToolBar
   val modelPanel = new ModelPanel(this)
-  val perspectivesPanel: PerspectivesPanel = new PerspectivesPanel(this)
-  val statusBar = new StatusBar
+  val perspective: PerspectivePanel = new PerspectivePanel(this)
+  val status = new StatusBar
 
   // the controls can only be initialized once the frame is fully constructed,
   sceneControl.initialize()
