@@ -106,32 +106,16 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   position.add(y, 2)
   position.add(z, 3)
 
-  val visibility = new BorderPanel {
+  val slicesVisible = new CheckBox("Show bounding box and slices")
+
+  val visibilityPanel = new BorderPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
-    val flow = new FlowPanel
-
-    val slicesVisible = new CheckBox("Show bounding box/slices")
-    val intersectionsVisible = new CheckBox("2D: show intersecting slice positions")
-
-    val opacity = new Slider {
-      val s = preferredSize
-      s.width /= 2
-      preferredSize = s
-    }
-
-    val opacityLabel = new Label("3D: slice opacity")
-    flow.contents ++= Seq(opacityLabel, opacity)
-
-    val north = new BorderPanel
-    north.layout(slicesVisible) = BorderPanel.Position.West
-    north.layout(flow) = BorderPanel.Position.East
-    layout(north) = BorderPanel.Position.North
-    layout(intersectionsVisible) = BorderPanel.Position.Center
+    layout(slicesVisible) = BorderPanel.Position.Center
   }
 
   layout(new BorderPanel {
     layout(new BorderPanel {
-      layout(visibility) = BorderPanel.Position.North
+      layout(visibilityPanel) = BorderPanel.Position.North
     }) = BorderPanel.Position.North
     layout(position) = BorderPanel.Position.Center
   }) = BorderPanel.Position.North
@@ -157,23 +141,18 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
     slicingPosition.foreach { sp =>
       deafToOwnEvents()
       axisControls.foreach(_.update())
-      visibility.slicesVisible.selected = sp.visible
-      visibility.intersectionsVisible.selected = sp.intersectionsVisible2D
-      visibility.opacity.value = (sp.opacity * 100).toInt
-      Seq(visibility.intersectionsVisible, visibility.opacityLabel, visibility.opacity) foreach {
-        _.enabled = sp.visible
-      }
+      slicesVisible.selected = sp.visible
       revalidate()
       listenToOwnEvents()
     }
   }
 
   def deafToOwnEvents() = {
-    deafTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
+    deafTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
   def listenToOwnEvents() = {
-    listenTo(x.slider, y.slider, z.slider, visibility.slicesVisible, visibility.opacity, visibility.intersectionsVisible)
+    listenTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
   reactions += {
@@ -185,13 +164,8 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
         case x.slider => slicingPosition.foreach(_.x = x.value)
         case y.slider => slicingPosition.foreach(_.y = y.value)
         case z.slider => slicingPosition.foreach(_.z = z.value)
-        case visibility.opacity => slicingPosition.foreach(_.opacity = visibility.opacity.value / 100.0)
       }
-    case ButtonClicked(checkbox: CheckBox) =>
-      checkbox match {
-        case visibility.slicesVisible => slicingPosition.foreach(_.visible = checkbox.selected)
-        case visibility.intersectionsVisible => slicingPosition.foreach(_.intersectionsVisible2D = checkbox.selected)
-      }
+    case ButtonClicked(cb: CheckBox) if cb == slicesVisible => slicingPosition.foreach(_.visible = cb.selected)
   }
 
   listenToOwnEvents()

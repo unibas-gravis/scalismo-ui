@@ -14,10 +14,6 @@ object SlicingPosition {
 
     case class VisibilityChanged(source: SlicingPosition) extends Event
 
-    case class Intersections2DVisibilityChanged(source: SlicingPosition) extends Event
-
-    case class SliceOpacity3DChanged(source: SlicingPosition) extends Event
-
     case class PointChanged(source: SlicingPosition, previous: Point3D, current: Point3D) extends Event
 
     case class BoundingBoxChanged(source: SlicingPosition) extends Event
@@ -45,33 +41,6 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
       publishEvent(event.VisibilityChanged(this))
       //scene.publishEdt(Scene.SlicingPosition.SlicesVisibleChanged(this))
       //scene.publishEdt(Scene.VisibilityChanged(scene))
-    }
-  }
-
-  private var _intersectionsVisible2D = GlobalSettings.get[Boolean](GlobalSettings.Keys.SlicingPositionShowIntersections2D).getOrElse(false)
-
-  def intersectionsVisible2D = _intersectionsVisible2D
-
-  def intersectionsVisible2D_=(nv: Boolean) = {
-    if (_intersectionsVisible2D != nv) {
-      _intersectionsVisible2D = nv
-      GlobalSettings.set(GlobalSettings.Keys.SlicingPositionShowIntersections2D, nv)
-      publishEvent(event.Intersections2DVisibilityChanged(this))
-      //scene.publishEdt(Scene.SlicingPosition.IntersectionsVisibleChanged(this))
-      //scene.publishEdt(Scene.VisibilityChanged(scene))
-    }
-  }
-
-  private var _sliceOpacity3D = Math.max(0.0, Math.min(1.0, GlobalSettings.get[Double](GlobalSettings.Keys.SlicingPositionSliceOpacity3D).getOrElse(0.0)))
-
-  def opacity = _sliceOpacity3D
-
-  def opacity_=(nv: Double) = {
-    val sane = Math.max(0.0, Math.min(1.0, nv))
-    if (_sliceOpacity3D != sane) {
-      _sliceOpacity3D = sane
-      GlobalSettings.set(GlobalSettings.Keys.SlicingPositionSliceOpacity3D, sane)
-      publishEvent(event.SliceOpacity3DChanged(this))
     }
   }
 
