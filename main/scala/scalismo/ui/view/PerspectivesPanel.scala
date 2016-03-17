@@ -59,6 +59,13 @@ class PerspectivesPanel(val frame: ScalismoFrame) extends BorderPanel with Scali
   // convenience / shortcut method
   def viewports: List[ViewportPanel] = perspectiveInstance.map(_.viewports).getOrElse(Nil)
 
+  // convenience method
+  def resetAllCameras(): Unit = {
+    viewports.foreach(_.rendererPanel.resetCamera())
+  }
+
+  // constructor
+
   perspective = PerspectiveFactory.defaultPerspective
 
   layout(cards) = BorderPanel.Position.Center

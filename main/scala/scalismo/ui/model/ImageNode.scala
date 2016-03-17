@@ -9,7 +9,7 @@ import scalismo.io.ImageIO
 import scalismo.io.ImageIO.ScalarType
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.util.{ FileUtil, FileIoMetadata }
 import spire.math.{ UByte, UInt, UShort }
 
 import scala.reflect.ClassTag
@@ -30,7 +30,7 @@ class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[Ima
   override def load(file: File): Try[Unit] = {
     read3DScalarImageAsType[Float](file) match {
       case Success(image) =>
-        add(image, file.getName)
+        add(image, FileUtil.basename(file))
         Success(())
       case Failure(ex) => Failure(ex)
     }

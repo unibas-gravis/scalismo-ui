@@ -64,7 +64,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends PolyDataActor with ActorOpacity with ActorEvents with ActorSceneNode {
+class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends PolyDataActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
 
   override def opacity = sceneNode.opacity
 

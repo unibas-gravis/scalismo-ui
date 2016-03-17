@@ -3,7 +3,7 @@ package plugin
 import java.io.File
 
 import scalismo.geometry.{ Landmark, Point3D }
-import scalismo.io.StatismoIO
+import scalismo.io.{ ImageIO, StatismoIO }
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
@@ -12,11 +12,11 @@ class SimpleViewer extends ScalismoFrame {
     super.setup(args)
 
     val group = scene.groups.add("da group")
-    //    val img = ImageIO.read3DScalarImage[Short](new File("/home/langguth/AAA_data/bladder.nii")).get.map(_.toFloat)
-    //    group.images.add(img, "img")
-    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
-    val mesh = model.referenceMesh
-    val meshNode = group.triangleMeshes.add(mesh, "face")
+    val img = ImageIO.read3DScalarImage[Short](new File("/home/langguth/AAA_data/bladder.nii")).get.map(_.toFloat)
+    group.images.add(img, "img")
+    //    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
+    //    val mesh = model.referenceMesh
+    //    val meshNode = group.triangleMeshes.add(mesh, "face")
 
     //    group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
     //    group.pointClouds.add((0 to 5).map(_ * 10).map(x => Point3D(x, x, x)), "pc")
@@ -26,9 +26,9 @@ class SimpleViewer extends ScalismoFrame {
     //    val rigid = group.transformations.add(PointTransformation.Identity, "identity")
 
     //    val meshCopy = group.triangleMeshes.add(mesh, "copy")
-    group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)))
-    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)))
-    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)))
+    //    group.landmarks.add(new Landmark("one", Point3D(0, 0, 130)))
+    //    group.landmarks.add(new Landmark("two", Point3D(20, 0, 150)))
+    //    group.landmarks.add(new Landmark("three", Point3D(-20, 0, 150)))
     //
     //    if (false) {
     //      // yeah, I know you love these :-)
@@ -77,8 +77,8 @@ class SimpleViewer extends ScalismoFrame {
     //      }
     //    } //.start()
 
+    perspectivesPanel.resetAllCameras()
     // end of setup
-    //ErrorDialog.show(new IllegalStateException)
   }
 
 }
