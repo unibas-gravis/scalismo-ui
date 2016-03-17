@@ -5,6 +5,10 @@ import scalismo.geometry.{ Point, _3D }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.LowRankGaussianProcess
 
+/**
+  * The general PointTransformation type is simply an alias / another name for
+  * "a function that can transform 3D points to other 3D points".
+\  */
 object PointTransformation {
   val Identity: RigidTransformation[_3D] = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
 

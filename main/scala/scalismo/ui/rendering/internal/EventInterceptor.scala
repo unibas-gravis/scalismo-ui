@@ -2,7 +2,7 @@ package scalismo.ui.rendering.internal
 
 import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent, MouseWheelListener }
 
-import scalismo.ui.control.interactor.Interactor.Result.Block
+import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.view.ScalismoFrame
 import vtk.rendering.vtkEventInterceptor
 

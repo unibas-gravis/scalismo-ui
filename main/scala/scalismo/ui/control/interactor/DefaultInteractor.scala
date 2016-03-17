@@ -4,8 +4,8 @@ import java.awt.event.{ MouseEvent, MouseWheelEvent }
 import java.awt.{ Color, Cursor }
 
 import scalismo.geometry.{ Landmark, _3D }
-import scalismo.ui.control.interactor.Interactor.Result
-import scalismo.ui.control.interactor.Interactor.Result.{ Block, Pass }
+import scalismo.ui.control.interactor.Interactor.Verdict
+import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
 import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel2D }
@@ -39,21 +39,15 @@ class DefaultInteractor extends Interactor {
     frame.toolbar.remove(landmarkingButton)
   }
 
-  override def mousePressed(e: MouseEvent): Result = {
-    e.viewport match {
-      case _2d: ViewportPanel2D if e.getButton != MouseEvent.BUTTON3 => Block
-      case _ => Pass
-    }
+  override def mousePressed(e: MouseEvent): Verdict = {
+    Recipe.Block2DTranslationAndRotation.mousePressed(e)
   }
 
-  override def mouseReleased(e: MouseEvent): Result = {
-    e.viewport match {
-      case _2d: ViewportPanel2D if e.getButton != MouseEvent.BUTTON3 => Block
-      case _ => Pass
-    }
+  override def mouseReleased(e: MouseEvent): Verdict = {
+    Recipe.Block2DTranslationAndRotation.mouseReleased(e)
   }
 
-  override def mouseClicked(e: MouseEvent): Result = {
+  override def mouseClicked(e: MouseEvent): Verdict = {
     if (landmarkingButton.selected) {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
       pointAndNode.nodeOption.foreach { node =>
@@ -69,19 +63,14 @@ class DefaultInteractor extends Interactor {
   }
 
   // set the cursor to a crosshair if we're in landmarking mode
-  override def mouseEntered(e: MouseEvent): Result = {
+  override def mouseEntered(e: MouseEvent): Verdict = {
     val cursor = if (landmarkingButton.selected) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
     e.canvas.setCursor(cursor)
-    Pass
+
+    Recipe.RequestFocusOnEnter.mouseEntered(e)
   }
 
-  // allow scrolling through 2D viewports. We simply trigger the existing +/- buttons.
   override def mouseWheelMoved(e: MouseWheelEvent): Unit = {
-    e.viewport match {
-      case _2d: ViewportPanel2D =>
-        val button = if (e.getWheelRotation > 0) _2d.positionMinusButton else _2d.positionPlusButton
-        button.action.apply()
-      case _ =>
-    }
+    Recipe.Scroll2D.mouseWheelMoved(e)
   }
 }

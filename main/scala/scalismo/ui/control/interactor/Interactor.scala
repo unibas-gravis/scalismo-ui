@@ -3,8 +3,8 @@ package scalismo.ui.control.interactor
 import java.awt.AWTEvent
 import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent }
 
-import scalismo.ui.control.interactor.Interactor.Result.Pass
-import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Result }
+import scalismo.ui.control.interactor.Interactor.Verdict.Pass
+import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
 import scalismo.ui.rendering.internal.GLJPanelWithViewport
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
@@ -12,13 +12,13 @@ import scala.language.implicitConversions
 
 object Interactor {
 
-  sealed trait Result
+  sealed trait Verdict
 
-  object Result {
+  object Verdict {
 
-    case object Pass extends Result
+    case object Pass extends Verdict
 
-    case object Block extends Result
+    case object Block extends Verdict
 
   }
 
@@ -50,32 +50,52 @@ object Interactor {
 trait Interactor {
   implicit protected def pimpEvent[E <: AWTEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
 
+  /**
+    * This method is invoked when an interactor is
+    * actived in a frame.
+    *
+    * It can be used to initialize the interactor state,
+    * or to add UI elements (e.g. toolbar buttons)
+    * to the frame.
+    *
+    */
   def onActivated(frame: ScalismoFrame): Unit = {}
 
+  /**
+    * This method is invoked when an interactor is
+    * deactivated, i.e., removed.
+    *
+    * It should clean up / revert any
+    * changes that the interactor made to the UI.
+    *
+    */
   def onDeactivated(frame: ScalismoFrame): Unit = {}
 
-  def keyPressed(e: KeyEvent): Result = Pass
+  def keyPressed(e: KeyEvent): Verdict = Pass
 
-  def keyTyped(e: KeyEvent): Result = Pass
+  def keyTyped(e: KeyEvent): Verdict = Pass
 
-  def mouseMoved(e: MouseEvent): Result = Pass
+  def mouseMoved(e: MouseEvent): Verdict = Pass
 
-  def mouseExited(e: MouseEvent): Result = Pass
+  def mouseExited(e: MouseEvent): Verdict = Pass
 
-  def mouseClicked(e: MouseEvent): Result = Pass
+  def mouseClicked(e: MouseEvent): Verdict = Pass
 
-  def keyReleased(e: KeyEvent): Result = Pass
+  def keyReleased(e: KeyEvent): Verdict = Pass
 
-  def mouseDragged(e: MouseEvent): Result = Pass
+  def mouseDragged(e: MouseEvent): Verdict = Pass
 
-  def mouseEntered(e: MouseEvent): Result = Pass
+  def mouseEntered(e: MouseEvent): Verdict = Pass
 
-  def mousePressed(e: MouseEvent): Result = Pass
+  def mousePressed(e: MouseEvent): Verdict = Pass
 
-  def mouseReleased(e: MouseEvent): Result = Pass
+  def mouseReleased(e: MouseEvent): Verdict = Pass
 
-  // VTK doesn't handle wheel events anyway, so
-  // no need for a return value. But it may be useful for reacting to such events
+  /* The rendering implementation (VTK) does not
+   * handle scroll events, so there is no need
+   * for a return value here -- nothing is being
+   * intercepted anyway.
+   */
   def mouseWheelMoved(e: MouseWheelEvent): Unit = {}
 
 }

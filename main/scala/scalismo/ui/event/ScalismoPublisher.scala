@@ -10,7 +10,7 @@ import scala.swing.Publisher
  *
  * To ensure that events
  * are published on the Swing Event Dispatch Thread, use the
- * publishEdt method.
+ * publishEvent method.
  */
 trait ScalismoPublisher extends Publisher {
 
