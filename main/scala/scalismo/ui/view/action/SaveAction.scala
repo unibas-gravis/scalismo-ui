@@ -3,15 +3,17 @@ package scalismo.ui.view.action
 import java.io.File
 import javax.swing.filechooser.FileNameExtensionFilter
 
+import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
+import scalismo.ui.view.dialog.ErrorDialog
 import scalismo.ui.view.util.EnhancedFileChooser
 
 import scala.swing.{ Action, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }
 
 object SaveAction {
-  val DefaultName = "Save..."
+  val DefaultName = "Save ..."
 }
 
 class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val name: String = SaveAction.DefaultName)(implicit val frame: ScalismoFrame) extends Action(name) {
@@ -29,10 +31,10 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     fileFilter = new FileNameExtensionFilter(metadata.longDescription, metadata.fileExtensions: _*)
   }
 
-  def parentComponent = frame.contents.head
+  def parentComponent = frame.componentForDialogs
 
   def apply() = {
-    if (chooser.showSaveDialog(frame.contents.head) == FileChooser.Result.Approve) {
+    if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {
       if (chooser.selectedFile.exists && confirmWhenExists) {
         val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
         result match {
@@ -72,7 +74,10 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
   }
 
   def onFailure(file: File, exception: Throwable): Unit = {
-    Dialog.showMessage(parentComponent, "ERROR:\n" + exception.getMessage, "Save failed", Dialog.Message.Error)
+    val message = s"Unable to save file ${file.getName}"
+    frame.statusBar.set(StatusMessage(message, StatusMessage.Error))
+    ErrorDialog.show(exception, additionalMessage = message, title = "Saving failed")
   }
+
 }
 

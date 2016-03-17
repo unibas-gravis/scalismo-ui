@@ -188,7 +188,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
     // we have to account for type erasure, that's why we need the collect
-    singleNode[TransformationNode[_ <: PointTransformation]](nodes).collect { case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] => tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]] } match {
+    singleMatch[TransformationNode[_ <: PointTransformation]](nodes).collect { case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] => tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]] } match {
       case None => false
       case Some(tn) =>
         node = Some(tn)

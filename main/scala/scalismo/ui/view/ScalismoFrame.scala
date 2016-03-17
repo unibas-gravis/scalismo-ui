@@ -15,7 +15,7 @@ import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
 import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowDisplayScalingDialogItem }
 import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
-import scala.swing.{ BorderPanel, MainFrame, MenuBar }
+import scala.swing.{ BorderPanel, Component, MainFrame, MenuBar }
 
 object ScalismoFrame {
 
@@ -48,6 +48,15 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   // some objects, like menu items or actions, want an implicit reference to a ScalismoFrame
   implicit val frame = this
+
+  /* This is the component that is returned as the parent component when creating a dialog.
+   * Normally, this should not be null. However, it seems like there is a bug on Linux where
+   * dialogs sometimes show up empty if this value is NOT null, so for now we return null
+  */
+  def componentForDialogs: Component = {
+    contents.headOption.orNull
+    //null
+  }
 
   lazy val sceneControl: SceneControl = new SceneControl(this, scene)
 

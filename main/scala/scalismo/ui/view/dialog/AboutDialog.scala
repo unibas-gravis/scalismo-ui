@@ -10,7 +10,7 @@ import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.AboutDialog._
 import scalismo.ui.view.dialog.AboutDialog.scaled._
-import scalismo.ui.view.util.{ LinkLabel, ScalableUI }
+import scalismo.ui.view.util.{ LinkLabel, MultiLineLabel, ScalableUI }
 
 import scala.swing.GridBagPanel.Anchor
 import scala.swing.Swing.EmptyIcon
@@ -139,17 +139,7 @@ object AboutDialog {
   class ThirdPartyPanel(frame: ScalismoFrame) extends BorderPanel {
     val description = "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
 
-    val north = new TextArea(description) {
-      peer.setLineWrap(true)
-      peer.setWrapStyleWord(true)
-      peer.setEditable(false)
-      peer.setCursor(null)
-      peer.setOpaque(false)
-      peer.setFocusable(false)
-      peer.setBackground(new Color(UIManager.getColor("control").getRGB))
-      val hv = s_10
-      peer.setBorder(BorderFactory.createEmptyBorder(hv, hv, hv, hv))
-    }
+    val north = new MultiLineLabel(description)
 
     val center = new BorderPanel {
       // if this becomes too long, it will have to be wrapped in a scroll pane.

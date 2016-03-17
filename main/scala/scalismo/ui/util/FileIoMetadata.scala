@@ -27,7 +27,23 @@ object FileIoMetadata {
 
   val TriangleMesh = new FileIoMetadata {
     override val description = "Triangle Mesh"
-    override val fileExtensions = List("vtk", "stl")
+    override val fileExtensions = List("stl", "vtk")
   }
+
+  val Image = new FileIoMetadata {
+    override val description = "3D Image"
+    override val fileExtensions = List("nii", "vtk")
+  }
+
+  val Landmarks = new FileIoMetadata {
+    override val description = "Landmarks"
+    override val fileExtensions = List("json", "csv")
+  }
+
+  val StatisticalShapeModel = new FileIoMetadata {
+    override val description = "Statistical Shape Model"
+    override val fileExtensions = List("h5")
+  }
+
 }
 

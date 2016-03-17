@@ -1,12 +1,17 @@
 package scalismo.ui.model
 
 import java.awt.Color
+import java.io.File
 
 import scalismo.geometry.{ Landmark, _3D }
-import scalismo.ui.model.capabilities.{ Removeable, Renameable, Transformable }
+import scalismo.io.LandmarkIO
+import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
-class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] {
+import scala.util.{ Failure, Success, Try }
+
+class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] with Loadable with Saveable {
   override val name: String = "Landmarks"
 
   def add(landmark: Landmark[_3D], name: String): LandmarkNode = {
@@ -15,8 +20,47 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     node
   }
 
+  // convenience method which uses the name from the landmark
   def add(landmark: Landmark[_3D]): LandmarkNode = {
     add(landmark, landmark.id)
+  }
+
+  override def loadMetadata: FileIoMetadata = FileIoMetadata.Landmarks
+
+  override def saveMetadata: FileIoMetadata = FileIoMetadata.Landmarks
+
+  override def load(file: File): Try[Unit] = {
+    val read = if (FileUtil.extension(file) == "csv") {
+      LandmarkIO.readLandmarksCsv[_3D] _
+    } else {
+      LandmarkIO.readLandmarksJson[_3D] _
+    }
+
+    read(file) match {
+      case Success(landmarks) =>
+        landmarks.foreach(add)
+        Success(())
+      case Failure(ex) => Failure(ex)
+    }
+  }
+
+  override def save(file: File): Try[Unit] = {
+    saveNodes(children, file)
+  }
+
+  def saveNodes(nodes: List[LandmarkNode], file: File): Try[Unit] = {
+    require(nodes.forall(_.parent == this))
+
+    val landmarks = nodes.map { node =>
+      // landmark may have been renamed and / or transformed
+      node.transformedSource.copy(id = node.name)
+    }
+    val ok = if (FileUtil.extension(file) == "csv") {
+      LandmarkIO.writeLandmarksCsv(landmarks, file)
+    } else {
+      LandmarkIO.writeLandmarksJson(landmarks, file)
+    }
+    ok
   }
 }
 

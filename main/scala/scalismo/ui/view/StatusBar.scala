@@ -1,7 +1,7 @@
 package scalismo.ui.view
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Component => AComponent, Font }
+import java.awt.{ Color, Component => AComponent, Cursor, Font }
 import java.text.SimpleDateFormat
 import javax.swing._
 
@@ -10,24 +10,21 @@ import scalismo.ui.model.StatusMessage._
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.swing.CustomListCellRenderer
+import scalismo.ui.view.util.ScalableUI
 
+import scala.swing.event.Key
 import scala.swing.{ Action, _ }
 
 object StatusBar {
 
-  private[StatusBar] case class UIOptions(color: Color, icon: Icon)
+  private[StatusBar] case class UIOptions(textColor: Color, icon: Icon)
 
-  //  private def createIcon(partialName: String): Icon = {
-  //    val icon = UIManager.getIcon(s"OptionPane.${partialName}Icon")
-  //    HighDpi.scaleIcon(icon, Constants.DefaultIconSize, Constants.DefaultIconSize)
-  //  }
-  //
   private val uiOptions = {
     val list: List[(StatusMessage.Kind, UIOptions)] = List(
       Information -> UIOptions(Color.BLACK, BundledIcon.Information.standardSized()),
-      Warning -> UIOptions(Color.ORANGE, BundledIcon.Warning.standardSized()),
-      Error -> UIOptions(Color.RED, BundledIcon.Error.standardSized()),
-      Question -> UIOptions(Color.BLUE, BundledIcon.Question.standardSized())
+      Warning -> UIOptions(Color.BLACK, BundledIcon.Warning.standardSized()),
+      Error -> UIOptions(Color.BLACK, BundledIcon.Error.standardSized()),
+      Question -> UIOptions(Color.BLACK, BundledIcon.Question.standardSized())
     )
     list.toMap
   }
@@ -57,13 +54,17 @@ class StatusBar extends BorderPanel {
     logPanel.visible = visible
   }
 
-  private val statusLabel = new Label(" ") {
+  private val statusLabel = new Label("Welcome to the Scalismo Viewer!", BundledIcon.Smiley.standardSized(), Alignment.Leading) {
 
     import BorderFactory._
 
-    horizontalAlignment = Alignment.Leading
+    val _3 = ScalableUI.scale(3)
+    val _2 = ScalableUI.scale(2)
+    border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
 
-    border = createCompoundBorder(createEmptyBorder(0, 3, 3, 3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(2, 2, 2, 2)))
+    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+
+    tooltip = "Click on the status bar to show the history of messages"
 
     peer.addMouseListener(new MouseAdapter {
       override def mouseClicked(e: MouseEvent): Unit = toggleShowLogAction.apply()
@@ -118,14 +119,16 @@ class StatusBar extends BorderPanel {
     layout(statusLabel) = BorderPanel.Position.Center
   }
 
-  private lazy val toggleShowLogAction: Action = new Action("@") {
+  private lazy val toggleShowLogAction: Action = new Action("") {
     override def apply(): Unit = {
       logPanel.visible = !logPanel.visible
       bottom.peer.revalidate()
     }
   }
 
-  private lazy val clearLogAction: Action = new Action("Clear Log") {
+  private lazy val clearLogAction: Action = new Action("Clear History") {
+    mnemonic = Key.C.id
+
     override def apply(): Unit = logModel.clear()
   }
 
@@ -142,7 +145,7 @@ class StatusBar extends BorderPanel {
 
     label.setText(text)
     val options = StatusBar.uiOptions(message.kind)
-    label.setForeground(options.color)
+    label.setForeground(options.textColor)
     label.setIcon(options.icon)
     label.setFont(label.getFont.deriveFont(if (message.highPriority) font.getStyle | Font.BOLD else font.getStyle & ~Font.BOLD))
   }

@@ -53,7 +53,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasRadius](nodes)
+    val supported = allMatch[HasRadius](nodes)
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.radius)

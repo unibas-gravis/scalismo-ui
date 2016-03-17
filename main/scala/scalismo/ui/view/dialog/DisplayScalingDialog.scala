@@ -28,7 +28,7 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
       if (factor != ScalableUI.scaleFactor) {
         ScalableUI.scaleFactor = factor
-        Dialog.showMessage(null, "Please restart the application to see your changes applied.", "Display Scaling was changed")
+        Dialog.showMessage(frame.componentForDialogs, "Please restart the application to see your changes applied.", "Display Scaling was changed")
       }
       dispose()
     }

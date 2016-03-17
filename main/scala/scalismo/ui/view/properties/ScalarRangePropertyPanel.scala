@@ -104,7 +104,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasScalarRange](nodes)
+    val supported = allMatch[HasScalarRange](nodes)
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.scalarRange)

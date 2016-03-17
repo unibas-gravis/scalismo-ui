@@ -128,7 +128,7 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
 }
 
 class ImageActor3D(node: ImageNode, viewport: ViewportPanel3D) extends Actors {
-  override def vtkActors: List[ImageActor2D] = Axis.All.map { axis => ImageActor2D(node, axis, viewport.frame) }
+  override val vtkActors: List[ImageActor2D] = Axis.All.map { axis => ImageActor2D(node, axis, viewport.frame) }
 
   // the actors all return the same bounding box, so we just take the first
   override def boundingBox: BoundingBox = vtkActors.headOption.map(a => VtkUtil.bounds2BoundingBox(a.data.points.GetBounds())).getOrElse(BoundingBox.Invalid)

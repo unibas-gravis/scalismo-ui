@@ -5,7 +5,7 @@ import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import javax.swing.ImageIcon
 
-import jiconfont.icons.FontAwesome
+import jiconfont.icons.{ Elusive, Entypo, FontAwesome }
 import jiconfont.{ IconCode, IconFont }
 import scalismo.ui.view.util.Constants
 
@@ -14,11 +14,14 @@ object FontIcon {
   // this is a fully transparent white, so not a color we'll encounter.
   val RainbowColor: Color = new Color(0x00ffffff, true)
 
+  // Map of supported icon fonts.
   private val fonts: Map[String, Font] = {
-    def create(iconFont: IconFont): (String, Font) = {
+    def createTuple(iconFont: IconFont): (String, Font) = {
       (iconFont.getFontFamily, Font.createFont(Font.TRUETYPE_FONT, iconFont.getFontInputStream))
     }
-    Seq(create(FontAwesome.getIconFont)).toMap
+    // this is where a new supported icon font would have to be added.
+    val iconFonts = Seq(FontAwesome.getIconFont, Entypo.getIconFont, Elusive.getIconFont)
+    iconFonts.map(createTuple).toMap
   }
 
   /**
@@ -28,10 +31,12 @@ object FontIcon {
    * @param char a Unicode character, for example '\uf1e3'
    * @return an IconCode bound to the FontAwesome font, usable for the [[load]] method
    */
-  def awesome(char: Char): IconCode = new IconCode {
+  def awesome(char: Char): IconCode = generic(char, FontAwesome.getIconFont)
+
+  def generic(char: Char, iconFont: IconFont): IconCode = new IconCode {
     override def getUnicode: Char = char
 
-    override def getFontFamily: String = "FontAwesome"
+    override def getFontFamily: String = iconFont.getFontFamily
 
     override def name(): String = "generated"
   }

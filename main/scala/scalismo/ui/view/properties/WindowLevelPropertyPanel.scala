@@ -41,27 +41,45 @@ object WindowLevelPropertyPanel extends PropertyPanel.Factory {
         Math.round(size.width * percent)
       }
 
-      val g2 = image.getGraphics.asInstanceOf[Graphics2D]
-      g2.setStroke(new BasicStroke(5.scaled))
+      val lineWidth = {
+        val proposed = 3.scaled
+        // ensure it's an odd value
+        if (proposed % 2 == 1) proposed else proposed + 1
+      }
 
-      // background
-      g2.setColor(Color.LIGHT_GRAY)
-      g2.fillRect(0, 0, size.width, size.height)
+      val g2 = image.getGraphics.asInstanceOf[Graphics2D]
+      g2.setStroke(new BasicStroke(1))
 
       // window
       val wl = a(level - window / 2.0f)
       val wr = a(level + window / 2.0f)
-      g2.setColor(Color.GREEN.darker)
-      g2.fillRect(wl, 0, wr - wl, size.height)
+      val ww = wr - wl
+
+      // left of window: everything BLACK
+      g2.setColor(Color.BLACK)
+      g2.fillRect(0, 0, wl, size.height)
+
+      // right of window: everything WHITE
+      g2.setColor(Color.WHITE)
+      g2.fillRect(wr, 0, size.width - wr, size.height)
+
+      (wl to wr).foreach { x =>
+        // wr: 255, wl: 0
+        val intensity = (x - wl).toFloat / ww
+        g2.setColor(new Color(intensity, intensity, intensity))
+        g2.drawLine(x, 0, x, size.height)
+      }
+
+      g2.setStroke(new BasicStroke(lineWidth))
 
       // level
       g2.setColor(Color.RED.darker)
       val l = a(level)
       g2.drawLine(l, 0, l, size.height)
 
-      //      // border
-      //      g2.setColor(Color.DARK_GRAY)
-      //      g2.drawRect(0, 0, size.width, size.height)
+      // border around window
+      g2.setColor(Color.GREEN.darker)
+      g2.drawRect(wl, 0, ww, size.height)
 
       g2.dispose()
       g.drawImage(image, 0, 0, size.width, size.height, null)
@@ -128,7 +146,7 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val images = allOf[ImageNode](nodes)
+    val images = allMatch[ImageNode](nodes)
     if (images.nonEmpty) {
       targets = images
       listenTo(images.head.windowLevel)

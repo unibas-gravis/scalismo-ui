@@ -128,7 +128,7 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasColor](nodes)
+    val supported = allMatch[HasColor](nodes)
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.color)

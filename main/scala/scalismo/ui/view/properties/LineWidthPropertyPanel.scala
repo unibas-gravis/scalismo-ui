@@ -53,7 +53,7 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasLineWidth](nodes)
+    val supported = allMatch[HasLineWidth](nodes)
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.lineWidth)

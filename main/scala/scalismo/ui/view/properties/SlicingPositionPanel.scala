@@ -138,7 +138,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    singleNode[Scene](nodes) match {
+    singleMatch[Scene](nodes) match {
       case Some(s) if s == frame.sceneControl.scene =>
         slicingPosition = Some(frame.sceneControl.slicingPosition)
         listenTo(slicingPosition.get)

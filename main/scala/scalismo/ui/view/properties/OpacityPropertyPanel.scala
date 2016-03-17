@@ -56,7 +56,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
-    val supported = allOf[HasOpacity](nodes)
+    val supported = allMatch[HasOpacity](nodes)
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.opacity)

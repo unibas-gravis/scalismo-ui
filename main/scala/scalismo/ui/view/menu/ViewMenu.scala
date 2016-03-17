@@ -1,6 +1,7 @@
 package scalismo.ui.view.menu
 
 import scalismo.ui.event.ScalismoPublisher
+import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.action.ShowDisplayScalingDialogAction
 import scalismo.ui.view.perspective.PerspectiveFactory
 import scalismo.ui.view.{ PerspectivesPanel, ScalismoFrame }
@@ -20,6 +21,7 @@ object ViewMenu {
 
   class PerspectiveMenu(implicit val frame: ScalismoFrame) extends Menu("Perspective") {
     mnemonic = Key.P
+    icon = BundledIcon.Perspective.standardSized()
 
     val panel = frame.perspectivesPanel
 

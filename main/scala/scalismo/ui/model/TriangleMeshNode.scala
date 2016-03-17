@@ -7,7 +7,7 @@ import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
 import scala.util.{ Failure, Success, Try }
 
@@ -21,7 +21,7 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
     r match {
       case Failure(ex) => Failure(ex)
       case Success(mesh) =>
-        add(mesh, file.getName)
+        add(mesh, FileUtil.basename(file))
         Success(())
     }
   }

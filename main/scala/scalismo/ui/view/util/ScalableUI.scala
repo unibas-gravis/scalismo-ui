@@ -4,7 +4,7 @@ import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
 import javax.swing.plaf.FontUIResource
 import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
 
-import scalismo.ui.resources.icons.FontIcon
+import scalismo.ui.resources.icons.ScalableIcon
 import scalismo.ui.settings.GlobalSettings
 
 import scala.collection.mutable
@@ -60,12 +60,21 @@ object ScalableUI {
     resizeIcon(sourceIcon, scale(sourceIcon.getIconWidth), scale(sourceIcon.getIconHeight))
   }
 
+  def standardSizedIcon(icon: Icon): Icon = {
+    icon match {
+      case scalable: ScalableIcon => scalable.standardSized()
+      case i =>
+        val standardSize = ScalableUI.scale(Constants.StandardUnscaledIconSize)
+        resizeIcon(i, standardSize, standardSize)
+    }
+  }
+
   def resizeIcon(sourceIcon: Icon, width: Int, height: Int): Icon = {
     if (sourceIcon.getIconWidth == width && sourceIcon.getIconHeight == height) {
       sourceIcon
     } else {
       sourceIcon match {
-        case icon: FontIcon => icon.resize(width, height)
+        case icon: ScalableIcon => icon.resize(width, height)
         case icon: ImageIcon => new ImageIcon(icon.getImage.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
         case icon: Icon =>
           val (w, h) = (icon.getIconWidth, icon.getIconHeight)

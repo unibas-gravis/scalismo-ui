@@ -170,7 +170,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete
-        allOf[Removeable](getSelectedSceneNodes).foreach(_.remove())
+        allMatch[Removeable](getSelectedSceneNodes).foreach(_.remove())
       }
     }
   }

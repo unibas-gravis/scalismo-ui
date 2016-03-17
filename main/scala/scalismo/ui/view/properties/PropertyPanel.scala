@@ -30,7 +30,7 @@ trait PropertyPanel extends CardPanel.ComponentWithUniqueId with NodeListFilters
    * selected nodes. If it's not, then it won't be shown, but if it is, then it has to
    * be in a usable state upon return.
    *
-   * It is generally recommended to use the [[allOf]] method in implementations, which
+   * It is generally recommended to use the [[allMatch]] method in implementations, which
    * offers a type-safe and convenient way to make decisions about whether a non-empty list of
    * supported nodes was provided.
    *
