@@ -1,6 +1,6 @@
 package scalismo.ui.control.interactor
 
-import java.awt.event.{ MouseEvent, MouseWheelEvent }
+import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent }
 import java.awt.{ Color, Cursor }
 
 import scalismo.ui.control.interactor.Interactor.Verdict
@@ -54,12 +54,24 @@ class DefaultInteractor extends Interactor {
     }
   }
 
+  override def keyPressed(e: KeyEvent): Verdict = {
+    Recipe.ShiftKeySetsSlicePosition.keyPressedOrReleased(e)
+    Recipe.ControlKeyShowsImageInformation.keyPressedOrReleased(e)
+    Pass
+  }
+
+  override def keyReleased(e: KeyEvent): Verdict = {
+    Recipe.ShiftKeySetsSlicePosition.keyPressedOrReleased(e)
+    Recipe.ControlKeyShowsImageInformation.keyPressedOrReleased(e)
+    Pass
+  }
   override def mouseMoved(e: MouseEvent): Verdict = {
     if (landmarkingButton.selected) {
       Recipe.HighlightOutlineOfPickableObject.mouseMoved(e)
-    } else {
-      Pass
     }
+    Recipe.ShiftKeySetsSlicePosition.mouseMoved(e)
+    Recipe.ControlKeyShowsImageInformation.mouseMoved(e)
+    Pass
   }
 
   // set the cursor to a crosshair if we're in landmarking mode

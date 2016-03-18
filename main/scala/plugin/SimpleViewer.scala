@@ -14,8 +14,10 @@ class SimpleViewer extends ScalismoFrame {
     val group = scene.groups.add("da group")
     val img = ImageIO.read3DScalarImage[Short](new File("/home/langguth/AAA_data/bladder.nii")).get.map(_.toFloat)
     group.images.add(img, "img")
-    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/bladder-augmented.h5")).get
+    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/bladder.h5")).get
+    val pc = model.referenceMesh.points.toIndexedSeq
     group.addStatisticalMeshModel(model, "bladder")
+    //group.pointClouds.add(pc, "pc")
     //    val mesh = model.referenceMesh
     //    val meshNode = group.triangleMeshes.add(mesh, "face")
 

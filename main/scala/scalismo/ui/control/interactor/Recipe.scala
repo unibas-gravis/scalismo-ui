@@ -1,13 +1,14 @@
 package scalismo.ui.control.interactor
 
-import java.awt.AWTEvent
-import java.awt.event.{ MouseEvent, MouseWheelEvent }
+import java.awt.{ Point, AWTEvent }
+import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
 
 import scalismo.geometry.{ _3D, Landmark }
 import scalismo.ui.control.interactor.Interactor.Verdict.{ Pass, Block }
 import scalismo.ui.control.interactor.Interactor.{ Verdict, PimpedEvent }
-import scalismo.ui.model.{ ImageNode, SceneNode }
+import scalismo.ui.model.{ StatusMessage, ImageNode, SceneNode }
 import scalismo.ui.model.capabilities.{ InverseTransformation, Grouped }
+import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.view.ViewportPanel2D
 
 import scala.language.implicitConversions
@@ -23,11 +24,11 @@ import scala.language.implicitConversions
  * out of hand when combinations of functionality are needed.
  *
  * The objects defined here are all named after their purpose,
- * and the methods they provide mimick the methods found in
- * the Interactor trait.
+ * and the methods they provide generally mimick the methods
+ * found in the Interactor trait.
  */
 object Recipe {
-  implicit def pimpEvent[E <: AWTEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
+  implicit def pimpEvent[E <: InputEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
 
   /**
    * Request the window focus when the mouse enters the canvas.
@@ -132,6 +133,64 @@ object Recipe {
 
     def mouseReleased(e: MouseEvent): Verdict = mousePressed(e)
 
+  }
+
+  object ShiftKeySetsSlicePosition {
+    private var active: Boolean = false
+    private var point = new Point
+    def keyPressedOrReleased(e: KeyEvent): Verdict = {
+      // 1 is the shift key
+      active = (e.getModifiers & 1) == 1
+      updateSlicePosition(e)
+    }
+
+    def mouseMoved(e: MouseEvent): Verdict = {
+      point = e.getPoint
+      updateSlicePosition(e)
+    }
+
+    private def updateSlicePosition(e: InputEvent): Verdict = {
+      if (active) {
+        e.viewport.rendererState.pointAndNodeAtPosition(point).pointOption match {
+          case Some(position) => e.viewport.frame.sceneControl.slicingPosition.point = position
+          case _ =>
+        }
+      }
+      Pass
+    }
+  }
+
+  object ControlKeyShowsImageInformation {
+    private var active: Boolean = false
+    private var point = new Point
+    def keyPressedOrReleased(e: KeyEvent): Verdict = {
+      // 2 is the control key
+      active = (e.getModifiers & 2) == 2
+      showInformation(e)
+    }
+
+    def mouseMoved(e: MouseEvent): Verdict = {
+      point = e.getPoint
+      showInformation(e)
+    }
+
+    private def showInformation(e: InputEvent): Verdict = {
+      if (active) {
+        val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(point)
+        pointAndNode match {
+          case PointAndNode(Some(p3d), Some(img: ImageNode)) =>
+            val id = img.source.domain.findClosestPoint(p3d)
+            val intensity = img.source(id.id).toString.toFloat
+
+            val message = StatusMessage(f"${img.name}(${p3d.x}%2.2f,${p3d.y}%2.2f,${p3d.z}%2.2f) = $intensity%2.2f", log = false)
+            e.viewport.frame.status.set(message)
+
+          case _ =>
+        }
+
+      }
+      Pass
+    }
   }
 
 }

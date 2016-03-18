@@ -1,7 +1,7 @@
 package scalismo.ui.control.interactor
 
 import java.awt.AWTEvent
-import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent }
+import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
 
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
 import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
@@ -22,7 +22,7 @@ object Interactor {
 
   }
 
-  class PimpedEvent[E <: AWTEvent](val event: E) extends AnyVal {
+  class PimpedEvent[E <: InputEvent](val event: E) extends AnyVal {
     /** The low-level JComponent where stuff is actually rendered. */
     def canvas: GLJPanelWithViewport = event.getSource.asInstanceOf[GLJPanelWithViewport]
 
@@ -48,7 +48,7 @@ object Interactor {
  *
  */
 trait Interactor {
-  implicit protected def pimpEvent[E <: AWTEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
+  implicit protected def pimpEvent[E <: InputEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
 
   /**
    * This method is invoked when an interactor is
