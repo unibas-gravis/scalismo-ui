@@ -2,10 +2,10 @@ package scalismo.ui.view.action.popup
 
 import java.awt.Color
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.{ BorderFactory, Icon }
+import javax.swing.{ BorderFactory, Icon, JComponent }
 
 import scalismo.ui.control.NodeVisibility
-import scalismo.ui.control.NodeVisibility.State
+import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
@@ -28,52 +28,77 @@ object VisibilityAction extends PopupAction.Factory {
 class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
   val control = frame.sceneControl.nodeVisibility
 
-  override def menuItem: MenuItem = {
-    val menu = new Menu("Visible in")
-    frame.perspective.viewports.foreach { vp =>
-      menu.peer.add(new ViewportVisibilityItem(vp).peer)
+  override def menuItem: JComponent = {
+    val viewports = frame.perspective.viewports
+    if (viewports.length > 1) {
+      val menu = new Menu("Visible in") {
+        def updateIcon(): Unit = {
+          icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
+        }
+
+        listenTo(control)
+
+        reactions += {
+          case NodeVisibility.event.NodeVisibilityChanged(node, viewport) =>
+            if (nodes.contains(node) && viewports.contains(viewport)) {
+              updateIcon()
+              peer.repaint()
+            }
+        }
+
+        peer.add(new ViewportVisibilityItem(viewports, "(all)").peer)
+
+        viewports.foreach { vp =>
+          peer.add(new ViewportVisibilityItem(List(vp), vp.name).peer)
+        }
+        updateIcon()
+      }
+      menu.peer
+
+    } else {
+      new ViewportVisibilityItem(viewports, "Visible").peer
     }
-    menu.icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
-    menu
   }
 
   def iconFor(state: NodeVisibility.State): Icon = {
     val icon = state match {
-      case State.Visible => BundledIcon.Visible
-      case State.Invisible => BundledIcon.Invisible
-      case State.PartlyVisible => BundledIcon.Visible.colored(Color.GRAY)
+      case Visible => BundledIcon.Visible
+      case Invisible => BundledIcon.Invisible
+      case PartlyVisible => BundledIcon.Visible.colored(Color.GRAY)
     }
     icon.standardSized()
   }
 
-  class ViewportVisibilityItem(viewport: ViewportPanel) extends BorderPanel {
-    val b = ScalableUI.scale(5)
-    border = BorderFactory.createEmptyBorder(b, b, b, b)
-    layoutManager.setHgap(b)
-    val label = new Label(viewport.name)
+  class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
+    val tb = ScalableUI.scale(2)
+    val lr = ScalableUI.scale(12)
 
-    def currentState = control.getVisibilityState(nodes, viewport)
+    def currentState = control.getVisibilityState(nodes, viewports)
 
-    val iconLabel = new Label {
-      icon = iconFor(currentState)
-      peer.addMouseListener(new MouseAdapter {
-        override def mouseClicked(e: MouseEvent): Unit = {
-          if (e.getButton == MouseEvent.BUTTON1) {
-            val toggle = currentState match {
-              case NodeVisibility.State.Visible => false
-              case _ => true
-            }
-            control.setVisibility(nodes, viewport, toggle)
-            icon = iconFor(currentState)
+    border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
+    icon = iconFor(currentState)
 
-            peer.repaint()
+    peer.addMouseListener(new MouseAdapter {
+      override def mouseClicked(e: MouseEvent): Unit = {
+        if (e.getButton == MouseEvent.BUTTON1) {
+          val toggle = currentState match {
+            case Visible => false
+            case _ => true
           }
+          control.setVisibility(nodes, viewports, toggle)
         }
-      })
-    }
-    layout(label) = BorderPanel.Position.Center
-    layout(iconLabel) = BorderPanel.Position.West
+      }
+    })
 
+    listenTo(control)
+
+    reactions += {
+      case NodeVisibility.event.NodeVisibilityChanged(node, viewport) =>
+        if (nodes.contains(node) && viewports.contains(viewport)) {
+          icon = iconFor(currentState)
+          peer.repaint()
+        }
+    }
   }
 
 }

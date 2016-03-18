@@ -14,6 +14,8 @@ object RendererState {
 
 trait RendererState {
   def pointAndNodeAtPosition(point: Point): PointAndNode
+
   def isHighlightable(node: SceneNode): Boolean
+
   def setHighlighted(node: SceneNode, onOff: Boolean): Unit
 }

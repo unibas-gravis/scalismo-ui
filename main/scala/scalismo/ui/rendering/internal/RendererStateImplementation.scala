@@ -11,8 +11,6 @@ import scalismo.ui.rendering.internal.CoordinateAdapter.VtkPoint
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
 import vtk._
 
-import scala.collection.immutable
-
 class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel) extends RendererState {
   val adapter = new CoordinateAdapter
 

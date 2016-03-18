@@ -65,6 +65,7 @@ class DefaultInteractor extends Interactor {
     Recipe.ControlKeyShowsImageInformation.keyPressedOrReleased(e)
     Pass
   }
+
   override def mouseMoved(e: MouseEvent): Verdict = {
     if (landmarkingButton.selected) {
       Recipe.HighlightOutlineOfPickableObject.mouseMoved(e)

@@ -1,14 +1,14 @@
 package scalismo.ui.view.action.popup
 
-import javax.swing.Icon
+import javax.swing.{ Icon, JComponent }
 
 import scalismo.ui.model.SceneNode
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI
 
+import scala.swing.Action
 import scala.swing.Swing.EmptyIcon
-import scala.swing.{ Action, MenuItem }
 
 sealed trait PopupActionable
 
@@ -56,5 +56,5 @@ abstract class PopupAction(name: String, icon: Icon = EmptyIcon) extends Action(
 }
 
 abstract class PopupActionWithOwnMenu extends PopupActionable {
-  def menuItem: MenuItem
+  def menuItem: JComponent
 }

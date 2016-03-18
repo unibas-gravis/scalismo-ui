@@ -140,7 +140,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
           if (actions.nonEmpty) {
             val pop = new JPopupMenu()
             actions.foreach {
-              case menu: PopupActionWithOwnMenu => pop.add(menu.menuItem.peer)
+              case menu: PopupActionWithOwnMenu => pop.insert(menu.menuItem, pop.getComponentCount)
               case a: PopupAction => pop.add(a.peer)
             }
             pop.show(tree, x, y)

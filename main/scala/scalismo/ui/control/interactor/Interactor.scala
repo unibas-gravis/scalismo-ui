@@ -1,6 +1,5 @@
 package scalismo.ui.control.interactor
 
-import java.awt.AWTEvent
 import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
 
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass

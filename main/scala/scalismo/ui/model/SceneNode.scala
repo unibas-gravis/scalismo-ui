@@ -5,8 +5,6 @@ import scalismo.ui.model.capabilities.RenderableSceneNode
 
 object SceneNode {
 
-  import scala.language.implicitConversions
-
   object event {
 
     case class ChildrenChanged(node: SceneNode) extends Event

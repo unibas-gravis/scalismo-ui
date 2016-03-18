@@ -13,6 +13,7 @@ import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 import scala.util.{ Failure, Success, Try }
 
 object LandmarksNode {
+
   class NameGenerator {
 
     final val Prefixes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -34,6 +35,7 @@ object LandmarksNode {
       suffix = 0
     }
   }
+
 }
 
 class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] with Loadable with Saveable {

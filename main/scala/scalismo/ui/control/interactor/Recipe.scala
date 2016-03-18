@@ -1,13 +1,13 @@
 package scalismo.ui.control.interactor
 
-import java.awt.{ Point, AWTEvent }
+import java.awt.Point
 import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
 
-import scalismo.geometry.{ _3D, Landmark }
-import scalismo.ui.control.interactor.Interactor.Verdict.{ Pass, Block }
-import scalismo.ui.control.interactor.Interactor.{ Verdict, PimpedEvent }
-import scalismo.ui.model.{ StatusMessage, ImageNode, SceneNode }
-import scalismo.ui.model.capabilities.{ InverseTransformation, Grouped }
+import scalismo.geometry.{ Landmark, _3D }
+import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
+import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
+import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
+import scalismo.ui.model.{ ImageNode, SceneNode, StatusMessage }
 import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.view.ViewportPanel2D
 
@@ -138,6 +138,7 @@ object Recipe {
   object ShiftKeySetsSlicePosition {
     private var active: Boolean = false
     private var point = new Point
+
     def keyPressedOrReleased(e: KeyEvent): Verdict = {
       // 1 is the shift key
       active = (e.getModifiers & 1) == 1
@@ -163,6 +164,7 @@ object Recipe {
   object ControlKeyShowsImageInformation {
     private var active: Boolean = false
     private var point = new Point
+
     def keyPressedOrReleased(e: KeyEvent): Verdict = {
       // 2 is the control key
       active = (e.getModifiers & 2) == 2

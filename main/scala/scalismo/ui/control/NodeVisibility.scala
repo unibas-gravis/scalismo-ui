@@ -1,7 +1,6 @@
 package scalismo.ui.control
 
-import scalismo.ui.control.NodeVisibility.State._
-import scalismo.ui.control.NodeVisibility.{ Context, Node, State }
+import scalismo.ui.control.NodeVisibility._
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
@@ -9,7 +8,28 @@ import scalismo.ui.view._
 import scalismo.ui.view.perspective.Perspective
 
 import scala.collection.mutable
+import scala.language.implicitConversions
 
+/**
+ * This class controls the visibility of nodes in the various viewports of a frame.
+ *
+ * There are a couple of convenient implicits defined, so code like the following works without
+ * any additional imports:
+ *
+ * val allViews = frame.perspective.viewports
+ * val oneView = allViews.head
+ *
+ * node.visible(oneView) = false
+ * node.visible(allViews) = false
+ * // global visibility
+ * node.visible = false
+ *
+ * // as a boolean
+ * if (node.visible) {}
+ * // as a state
+ * if (node.visible() == NodeVisibility.Invisible) {}
+ *
+ */
 object NodeVisibility {
 
   // convenience type aliases
@@ -20,58 +40,11 @@ object NodeVisibility {
 
   }
 
-  object State {
+  case object Visible extends State
 
-    case object Visible extends State
+  case object Invisible extends State
 
-    case object Invisible extends State
-
-    case object PartlyVisible extends State
-
-  }
-
-  //  import scala.language.implicitConversions
-  //
-  //  object Visible {
-  //    implicit def visibleAsBoolean(v: Visible): Boolean = v.visible
-  //  }
-  //
-  //  class Visible private[NodeVisibility] (map: NodeVisibility, node: SceneNode) {
-  //    def visible: Boolean = map.isVisible(node)
-  //
-  //    def visible_=(show: Boolean): Unit = map.setVisible(node, map.allViewports, show)
-  //
-  //    def update(viewports: List[ViewportPanel], show: Boolean): Unit = {
-  //      map.setVisible(node, viewports, show)
-  //    }
-  //
-  //    def apply(viewports: List[ViewportPanel]): Boolean = {
-  //      map.isVisible(node, viewports)
-  //    }
-  //
-  //    def update(viewport: ViewportPanel, show: Boolean): Unit = {
-  //      map.setVisible(node, viewport, show)
-  //    }
-  //
-  //    def apply(viewportPanel: ViewportPanel): Boolean = {
-  //      map.isVisible(node, viewportPanel)
-  //    }
-  //
-  //    override def toString: String = {
-  //      s"Visible [node=$node, hidden in ${map.toString(node)}]"
-  //    }
-  //  }
-  //
-  //  class SceneNodeWithVisibility(node: SceneNode)(implicit frame: ScalismoFrame) {
-  //    private val map: NodeVisibility = frame.sceneControl.nodeVisibility
-  //
-  //    private val _visibility: Visible = new Visible(map, node)
-  //
-  //    def visible: Visible = _visibility
-  //
-  //    def visible_=(nv: Boolean): Unit = _visibility.visible = nv
-  //
-  //  }
+  case object PartlyVisible extends State
 
   object event {
 
@@ -80,99 +53,38 @@ object NodeVisibility {
   }
 
   class RenderableNodeWithVisibility(node: RenderableSceneNode)(implicit frame: ScalismoFrame) {
+    def visible: Visibility = new Visibility(node)
 
+    def visible_=(show: Boolean) = frame.sceneControl.nodeVisibility.setVisibility(node, frame.perspective.viewports, show)
+  }
+
+  class Visibility(node: RenderableSceneNode)(implicit frame: ScalismoFrame) {
+    private def control = frame.sceneControl.nodeVisibility
+
+    def update(viewports: List[ViewportPanel], show: Boolean): Unit = control.setVisibility(node, viewports, show)
+
+    def update(viewport: ViewportPanel, show: Boolean): Unit = control.setVisibility(node, viewport, show)
+
+    def apply(viewport: ViewportPanel): State = control.getVisibilityState(node, viewport)
+
+    def apply(viewports: List[ViewportPanel]): State = control.getVisibilityState(node, viewports)
+
+    def apply(): State = control.getVisibilityState(node, frame.perspective.viewports)
+  }
+
+  object Visibility {
+    implicit def asState(visibility: Visibility)(implicit frame: ScalismoFrame): State = {
+      visibility.apply(frame.perspective.viewports)
+    }
+
+    implicit def asBoolean(visibility: Visibility)(implicit frame: ScalismoFrame): Boolean = {
+      asState(visibility) == Visible
+    }
   }
 
 }
 
 class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
-  // OLD IMPLEMENTATION
-  //  def isVisible(node: SceneNode, viewports: List[ViewportPanel] = allViewports): Boolean = {
-  //    viewports.forall(v => isVisible(node, v))
-  //  }
-  //
-  //  def toString(node: SceneNode) = {
-  //    hidden.get(node).toString
-  //  }
-  //
-  //  def isVisible(node: SceneNode, viewport: ViewportPanel): Boolean = {
-  //    !hidden.get(node).exists(_.contains(viewport))
-  //  }
-  //
-  //  def setNodeVisibility(node: SceneNode, viewports: List[ViewportPanel], show: Boolean): Unit = {
-  //    def nodeAndChildren(node: SceneNode): List[SceneNode] = {
-  //      node :: node.children.flatMap(child => nodeAndChildren(child))
-  //    }
-  //
-  //    nodeAndChildren(node).foreach { node =>
-  //      setVisible(node, viewports, show)
-  //    }
-  //  }
-  //
-  //  private[NodeVisibility] def setVisible(node: SceneNode, viewport: ViewportPanel, show: Boolean): Unit = {
-  //    setVisible(node, List(viewport), show)
-  //  }
-  //
-  //  private[NodeVisibility] def setVisible(node: SceneNode, viewports: List[ViewportPanel], show: Boolean): Unit = {
-  //    val previous = hidden.getOrElse(node, Set.empty)
-  //    val (added, removed) = if (show) (Set.empty, viewports.distinct) else (viewports.distinct, Set.empty)
-  //    val current = (previous -- removed) ++ added
-  //    if (current != previous) {
-  //      if (current.isEmpty) {
-  //        hidden.remove(node)
-  //      } else {
-  //        hidden(node) = current
-  //      }
-  //      (removed ++ added).foreach { viewport =>
-  //        publishEvent(NodeVisibility.event.NodeVisibilityChanged(node, viewport))
-  //      }
-  //    }
-  //  }
-  //
-  //  private[NodeVisibility] def allViewports: List[ViewportPanel] = frame.perspective.viewports
-  //
-  //  private def handlePerspectiveChange(current: Perspective, previous: Perspective) = {
-  //    val oldViewports = previous.viewports
-  //    val newViewports = current.viewports
-  //
-  //    val newHidden: List[(SceneNode, List[ViewportPanel])] = {
-  //      val old3DCount = oldViewports.collect { case _3d: ViewportPanel3D => _3d }.length
-  //      val new3DViews = newViewports.collect { case _3d: ViewportPanel3D => _3d }
-  //
-  //      hidden.keys.toList.map { node =>
-  //        if (!isVisible(node, oldViewports)) {
-  //          // easy case: node was hidden in all viewports, so it just remains hidden
-  //          (node, newViewports)
-  //        } else {
-  //          // we have to do some guesswork now.
-  //
-  //          // We'll assume that if a node was hidden in a particular 2D axis view, it should remain hidden for that axis
-  //          val axesToHide = oldViewports.collect { case _2d: ViewportPanel2D if !isVisible(node, _2d) => _2d.axis }.distinct
-  //          val hide2D = newViewports.collect { case _2d: ViewportPanel2D if axesToHide.contains(_2d.axis) => _2d }
-  //
-  //          // For 3D views, we'll assume that if a node was hidden in *strictly more* than half of the views, it should
-  //          // remain hidden in *all* of the new 3D views. Otherwise, it gets shown.
-  //          val hidden3D = oldViewports.collect { case _3d: ViewportPanel3D if !isVisible(node, _3d) => _3d }.length
-  //          val hide3D = if (hidden3D > old3DCount / 2) new3DViews else Nil
-  //
-  //          // return the viewports to hide the object in
-  //          (node, hide2D ++ hide3D)
-  //        }
-  //      }
-  //    }
-  //
-  //    hidden.clear()
-  //    newHidden.foreach {
-  //      case (node, viewports) =>
-  //        if (viewports.nonEmpty) {
-  //          hidden(node) = viewports.toSet
-  //          viewports.foreach { vp =>
-  //            publishEvent(NodeVisibility.event.NodeVisibilityChanged(node, vp))
-  //          }
-  //        }
-  //    }
-  //  }
-  //
   private val hiddenMap = new mutable.WeakHashMap[Node, Set[Context]]
 
   // lowest level: single node, non-empty set of contexts
@@ -293,7 +205,13 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
   }
 
   private def handlePerspectiveChange(current: Perspective, previous: Perspective) = {
-    // FIXME
+    // We keep it simple here, and only hide items if they have been completely hidden before.
+    // anything else would just be guesswork.
+
+    val oldViewports = previous.viewports
+    val completelyHidden = hiddenMap.keys.collect { case n if getVisibilityState(n, oldViewports) == Invisible => n }
+    hiddenMap.clear()
+    setVisibility(completelyHidden, current.viewports, show = false)
   }
 
   def initialize(): Unit = {

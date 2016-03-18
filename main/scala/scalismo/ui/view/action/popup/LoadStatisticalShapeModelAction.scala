@@ -3,7 +3,7 @@ package scalismo.ui.view.action.popup
 import java.io.File
 
 import scalismo.io.StatismoIO
-import scalismo.ui.model.{ GroupNode, PointTransformation, SceneNode }
+import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 import scalismo.ui.view.ScalismoFrame

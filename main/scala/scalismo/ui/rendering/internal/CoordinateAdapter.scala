@@ -38,10 +38,10 @@ class CoordinateAdapter {
    * The only scale values that have been observed in the wild
    * so far are 1 and 2.
    *
-   * @param width width as reported by JOGL panel
+   * @param width  width as reported by JOGL panel
    * @param height height as reported by JOGL panel
-   * @param panel the JOGL panel itself, used to determine
-   *              what Java thinks the width and height are.
+   * @param panel  the JOGL panel itself, used to determine
+   *               what Java thinks the width and height are.
    *
    */
   def setSize(width: Int, height: Int, panel: Component): Unit = {
