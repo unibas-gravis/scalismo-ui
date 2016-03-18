@@ -1,5 +1,6 @@
 package scalismo.ui.model
 
+import scalismo.statisticalmodel.StatisticalMeshModel
 import scalismo.ui.model.capabilities.Renameable
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
@@ -26,5 +27,12 @@ class GroupNode(override val parent: GroupsNode, initialName: => String) extends
   val images = new ImagesNode(this)
 
   override val children: List[SceneNode] = List(transformations, landmarks, triangleMeshes, scalarMeshFields, pointClouds, images)
+
+  // this is a convenience method to add a statistical model as a (gp, mesh) combination.
+  def addStatisticalMeshModel(model: StatisticalMeshModel, initialName: String): Unit = {
+    triangleMeshes.add(model.referenceMesh, initialName)
+    transformations.add(PointTransformation.LowRankGpPointTransformation(model.gp.interpolateNearestNeighbor), initialName)
+
+  }
 }
 

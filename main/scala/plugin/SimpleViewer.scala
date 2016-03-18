@@ -14,9 +14,10 @@ class SimpleViewer extends ScalismoFrame {
     val group = scene.groups.add("da group")
     val img = ImageIO.read3DScalarImage[Short](new File("/home/langguth/AAA_data/bladder.nii")).get.map(_.toFloat)
     group.images.add(img, "img")
-    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
-    val mesh = model.referenceMesh
-    val meshNode = group.triangleMeshes.add(mesh, "face")
+    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/bladder-augmented.h5")).get
+    group.addStatisticalMeshModel(model, "bladder")
+    //    val mesh = model.referenceMesh
+    //    val meshNode = group.triangleMeshes.add(mesh, "face")
 
     //    group.scalarMeshFields.add(new ScalarMeshField(mesh, ScalarArray(mesh.points.zipWithIndex.map { case (pt, idx) => idx.toFloat }.toArray)), "smf")
     //    group.pointClouds.add((0 to 5).map(_ * 10).map(x => Point3D(x, x, x)), "pc")
@@ -36,7 +37,7 @@ class SimpleViewer extends ScalismoFrame {
       val allViews = frame.perspective.viewports
       val oneView = allViews.head
 
-      val meshV: RenderableNodeWithVisibility = meshNode
+      //val meshV: RenderableNodeWithVisibility = meshNode
 
       //          // global visibility: as a Boolean
       //          val visibleGlobally: Boolean = meshNode.visible

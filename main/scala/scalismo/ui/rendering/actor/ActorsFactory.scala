@@ -6,13 +6,13 @@ import scalismo.ui.view.ViewportPanel
 import scala.reflect.ClassTag
 
 /**
-  * The ActorsFactory creates VTK actors from something that is renderable.
-  *
-  * This object is a "super factory" in the sense that it maintains a
-  * mapping of which classes of renderables should be fed to which
-  * factories to produce the final result.
-  *
-  */
+ * The ActorsFactory creates VTK actors from something that is renderable.
+ *
+ * This object is a "super factory" in the sense that it maintains a
+ * mapping of which classes of renderables should be fed to which
+ * factories to produce the final result.
+ *
+ */
 object ActorsFactory {
   val BuiltinFactories: List[ActorsFactory] = List(BoundingBoxActor, TriangleMeshActor, ScalarMeshFieldActor, PointCloudActor, LandmarkActor, ImageActor)
 
@@ -44,11 +44,11 @@ object ActorsFactory {
 }
 
 /**
-  * This is a low-level trait for factories that can map arbitrary
-  * objects to actors. It should not normally be extended.
-  *
-  * See [[SimpleActorsFactory]] for a type-safe variant.
-  */
+ * This is a low-level trait for factories that can map arbitrary
+ * objects to actors. It should not normally be extended.
+ *
+ * See [[SimpleActorsFactory]] for a type-safe variant.
+ */
 trait ActorsFactory {
   def supportedClasses: List[Class[_ <: Renderable]]
 
@@ -56,12 +56,12 @@ trait ActorsFactory {
 }
 
 /**
-  * A SimpleActorsFactory is a clean and simple factory that produces actors for
-  * a given type.
-  *
-  * It takes care of all the gory details of type erasure and runtime classes.
-  * This is the class you'll normally want to extend.
-  */
+ * A SimpleActorsFactory is a clean and simple factory that produces actors for
+ * a given type.
+ *
+ * It takes care of all the gory details of type erasure and runtime classes.
+ * This is the class you'll normally want to extend.
+ */
 abstract class SimpleActorsFactory[T <: Renderable: ClassTag] extends ActorsFactory {
   final override def supportedClasses: List[Class[_ <: Renderable]] = {
     List(implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[_ <: Renderable]])

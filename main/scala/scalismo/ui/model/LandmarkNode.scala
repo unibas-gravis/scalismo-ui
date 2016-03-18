@@ -5,14 +5,41 @@ import java.io.File
 
 import scalismo.geometry.{ Landmark, _3D }
 import scalismo.io.LandmarkIO
+import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
 import scala.util.{ Failure, Success, Try }
 
+object LandmarksNode {
+  class NameGenerator {
+
+    final val Prefixes = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+    private var prefix = 0
+    private var suffix = 0
+
+    def nextName() = {
+      val p = Prefixes(prefix)
+      val name = if (suffix == 0) p.toString else s"${p}_$suffix"
+      prefix = (prefix + 1) % Prefixes.length()
+      if (prefix == 0) suffix += 1
+
+      name
+    }
+
+    def reset() = {
+      prefix = 0
+      suffix = 0
+    }
+  }
+}
+
 class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] with Loadable with Saveable {
   override val name: String = "Landmarks"
+
+  val nameGenerator = new NameGenerator
 
   def add(landmark: Landmark[_3D], name: String): LandmarkNode = {
     val node = new LandmarkNode(this, landmark, name)

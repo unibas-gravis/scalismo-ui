@@ -240,6 +240,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       case (bb, actors) =>
         bb.union(actors.actorsOption.map(_.boundingBox).getOrElse(BoundingBox.Invalid))
     })
+    render()
   }
 
   // constructor

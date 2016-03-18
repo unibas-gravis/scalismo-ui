@@ -6,16 +6,22 @@ import scalismo.geometry.{ Point3D, _3D }
 import scalismo.ui.model.{ Axis, SceneNode }
 import scalismo.ui.rendering.RendererState
 import scalismo.ui.rendering.RendererState.PointAndNode
-import scalismo.ui.rendering.actor.mixin.ActorSceneNode
+import scalismo.ui.rendering.actor.mixin.{ ActorLineWidth, ActorSceneNode }
 import scalismo.ui.rendering.internal.CoordinateAdapter.VtkPoint
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
-import vtk.{ vtkCellPicker, vtkCoordinate, vtkProp3D, vtkRenderer }
+import vtk._
+
+import scala.collection.immutable
 
 class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel) extends RendererState {
   val adapter = new CoordinateAdapter
 
   val cellPicker = new vtkCellPicker {
     PickFromListOff()
+    // This is needed so that 2D sliced actors can also be picked.
+    // (At the default tolerance of 1e-6, it's virtually impossible to
+    // hit a 2D line). This might need a bit more tweaking.
+    SetTolerance(.005)
   }
 
   lazy val axis: Option[Axis] = viewport match {
@@ -25,6 +31,33 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
 
   def setSize(width: Int, height: Int, panel: Component) = {
     adapter.setSize(width, height, panel)
+  }
+
+  override def isHighlightable(node: SceneNode): Boolean = {
+    findHighlightable(node).nonEmpty
+  }
+
+  override def setHighlighted(node: SceneNode, onOff: Boolean): Unit = {
+    findHighlightable(node).foreach { actor =>
+      val add = if (onOff) 1 else 0
+      actor.GetProperty().SetLineWidth(actor.lineWidth.value + add)
+      viewport.rendererPanel.render()
+    }
+  }
+
+  def findHighlightable(node: SceneNode): Option[ActorSceneNode with ActorLineWidth] = {
+    val actors = renderer.GetActors()
+    val count = actors.GetNumberOfItems()
+    if (count > 1) {
+      actors.InitTraversal()
+      (0 until count) foreach { actor =>
+        actors.GetNextActor() match {
+          case ok: ActorSceneNode with ActorLineWidth if ok.sceneNode == node => return Some(ok)
+          case _ =>
+        }
+      }
+    }
+    None
   }
 
   override def pointAndNodeAtPosition(point: Point): PointAndNode = {

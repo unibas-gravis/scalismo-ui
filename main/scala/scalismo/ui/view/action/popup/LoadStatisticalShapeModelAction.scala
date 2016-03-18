@@ -23,8 +23,7 @@ class LoadStatisticalShapeModelAction(group: GroupNode)(implicit frame: Scalismo
       case Failure(ex) => Failure(ex)
       case Success(model) =>
         val basename = FileUtil.basename(file)
-        group.triangleMeshes.add(model.referenceMesh, s"$basename - reference")
-        group.transformations.add(PointTransformation.LowRankGpPointTransformation(model.gp.interpolateNearestNeighbor), s"$basename - gaussian process")
+        group.addStatisticalMeshModel(model, basename)
         Success(())
     }
   }

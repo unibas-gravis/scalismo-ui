@@ -27,8 +27,6 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor
 
   override def vtkActors: List[vtkActor] = this :: sliceActors
 
-  GetProperty().SetColor(VtkUtil.colorToArray(Color.WHITE))
-
   def update() = {
     val points = new vtkPoints()
     val bb = slicingPosition.boundingBox
@@ -48,6 +46,11 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor
 
     actorChanged()
   }
+
+  GetProperty().SetColor(VtkUtil.colorToArray(Color.WHITE))
+
+  // this actor is not pickable (for clicking etc.)
+  SetPickable(0)
 
   listenTo(slicingPosition)
 
@@ -77,8 +80,6 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
   def slicingPosition: SlicingPosition
 
   def axis: Axis
-
-  GetProperty().SetColor(VtkUtil.colorToArray(AxisColor.forAxis(axis)))
 
   def update() = {
     // this is a (minimally) more expensive way to construct what will end up being
@@ -111,6 +112,11 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 
     val visible = bb != BoundingBox.Invalid && slicingPosition.visible
     GetProperty().SetOpacity(if (visible) 1 else 0)
+
+    GetProperty().SetColor(VtkUtil.colorToArray(AxisColor.forAxis(axis)))
+
+    // this actor is not pickable (for clicking etc.)
+    SetPickable(0)
 
     actorChanged()
   }

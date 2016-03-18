@@ -51,24 +51,24 @@ trait Interactor {
   implicit protected def pimpEvent[E <: AWTEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
 
   /**
-    * This method is invoked when an interactor is
-    * actived in a frame.
-    *
-    * It can be used to initialize the interactor state,
-    * or to add UI elements (e.g. toolbar buttons)
-    * to the frame.
-    *
-    */
+   * This method is invoked when an interactor is
+   * activated in a frame.
+   *
+   * It can be used to initialize the interactor state,
+   * or to add UI elements (e.g. toolbar buttons)
+   * to the frame.
+   *
+   */
   def onActivated(frame: ScalismoFrame): Unit = {}
 
   /**
-    * This method is invoked when an interactor is
-    * deactivated, i.e., removed.
-    *
-    * It should clean up / revert any
-    * changes that the interactor made to the UI.
-    *
-    */
+   * This method is invoked when an interactor is
+   * deactivated, i.e., removed.
+   *
+   * It should clean up / revert any
+   * changes that the interactor made to the UI.
+   *
+   */
   def onDeactivated(frame: ScalismoFrame): Unit = {}
 
   def keyPressed(e: KeyEvent): Verdict = Pass

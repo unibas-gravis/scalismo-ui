@@ -3,12 +3,10 @@ package scalismo.ui.control.interactor
 import java.awt.event.{ MouseEvent, MouseWheelEvent }
 import java.awt.{ Color, Cursor }
 
-import scalismo.geometry.{ Landmark, _3D }
 import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
-import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
+import scalismo.ui.control.interactor.Interactor.Verdict.Pass
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel2D }
+import scalismo.ui.view.ScalismoFrame
 
 import scala.swing.ToggleButton
 import scala.swing.event.ButtonClicked
@@ -48,18 +46,20 @@ class DefaultInteractor extends Interactor {
   }
 
   override def mouseClicked(e: MouseEvent): Verdict = {
+
     if (landmarkingButton.selected) {
-      val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
-      pointAndNode.nodeOption.foreach { node =>
-        node match {
-          case ok: Grouped with InverseTransformation =>
-            val name = "YEEHAA!"
-            val lm = new Landmark[_3D](name, ok.inverseTransform(pointAndNode.pointOption.get))
-            ok.group.landmarks.add(lm, name)
-        }
-      }
-      Block
-    } else super.mouseClicked(e)
+      Recipe.AddLandmarkOnClick.mouseClicked(e)
+    } else {
+      Pass
+    }
+  }
+
+  override def mouseMoved(e: MouseEvent): Verdict = {
+    if (landmarkingButton.selected) {
+      Recipe.HighlightOutlineOfPickableObject.mouseMoved(e)
+    } else {
+      Pass
+    }
   }
 
   // set the cursor to a crosshair if we're in landmarking mode
