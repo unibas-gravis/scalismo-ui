@@ -9,6 +9,7 @@ import scalismo.ui.control.NodeVisibility.State
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
+import scalismo.ui.view.util.ScalableUI
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 import scala.swing._
@@ -25,11 +26,14 @@ object VisibilityAction extends PopupAction.Factory {
 }
 
 class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
+  val control = frame.sceneControl.nodeVisibility
+
   override def menuItem: MenuItem = {
     val menu = new Menu("Visible in")
     frame.perspective.viewports.foreach { vp =>
       menu.peer.add(new ViewportVisibilityItem(vp).peer)
     }
+    menu.icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
     menu
   }
 
@@ -43,12 +47,10 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
   }
 
   class ViewportVisibilityItem(viewport: ViewportPanel) extends BorderPanel {
-    val b = 10
+    val b = ScalableUI.scale(5)
     border = BorderFactory.createEmptyBorder(b, b, b, b)
     layoutManager.setHgap(b)
     val label = new Label(viewport.name)
-
-    val control = frame.sceneControl.nodeVisibility
 
     def currentState = control.getVisibilityState(nodes, viewport)
 
@@ -56,24 +58,16 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
       icon = iconFor(currentState)
       peer.addMouseListener(new MouseAdapter {
         override def mouseClicked(e: MouseEvent): Unit = {
-          // just in case
           if (e.getButton == MouseEvent.BUTTON1) {
-            //println(s"bef $viewport $nodes $currentState")
             val toggle = currentState match {
               case NodeVisibility.State.Visible => false
               case _ => true
             }
             control.setVisibility(nodes, viewport, toggle)
-            //println(s"aft $viewport $nodes $currentState")
             icon = iconFor(currentState)
 
-            // not sure which of these are required... we do the full monty
-            peer.invalidate()
-            peer.revalidate()
-            peer.validate()
             peer.repaint()
           }
-
         }
       })
     }
