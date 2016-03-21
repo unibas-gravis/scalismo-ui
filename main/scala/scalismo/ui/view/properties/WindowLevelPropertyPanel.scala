@@ -72,13 +72,12 @@ object WindowLevelPropertyPanel extends PropertyPanel.Factory {
 
       g2.setStroke(new BasicStroke(lineWidth))
 
-      // level
-      g2.setColor(Color.RED.darker)
+      // level bar
+      g2.setColor(Color.GREEN.darker)
       val l = a(level)
       g2.drawLine(l, 0, l, size.height)
 
       // border around window
-      g2.setColor(Color.GREEN.darker)
       g2.drawRect(wl, 0, ww, size.height)
 
       g2.dispose()

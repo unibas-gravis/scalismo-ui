@@ -38,11 +38,11 @@ class DefaultInteractor extends Interactor {
   }
 
   override def mousePressed(e: MouseEvent): Verdict = {
-    Recipe.Block2DTranslationAndRotation.mousePressed(e)
+    Recipe.Block2DRotation.mousePressed(e)
   }
 
   override def mouseReleased(e: MouseEvent): Verdict = {
-    Recipe.Block2DTranslationAndRotation.mouseReleased(e)
+    Recipe.Block2DRotation.mouseReleased(e)
   }
 
   override def mouseClicked(e: MouseEvent): Verdict = {

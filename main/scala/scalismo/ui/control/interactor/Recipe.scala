@@ -117,16 +117,16 @@ object Recipe {
   }
 
   /**
-   * Blocks rotation and translation in a 2D viewport.
+   * Blocks rotation in a 2D viewport.
    *
    * This ensures that a 2D viewport camera remains
    * at the correct angle and focuses the correct point.
-   * Zooming is not affected (i.e., allowed).
+   * Zooming and translation are not affected (i.e., allowed).
    */
-  object Block2DTranslationAndRotation {
+  object Block2DRotation {
     def mousePressed(e: MouseEvent): Verdict = {
       e.viewport match {
-        case _2d: ViewportPanel2D if e.getButton != MouseEvent.BUTTON3 => Block
+        case _2d: ViewportPanel2D if e.getButton == MouseEvent.BUTTON1 => Block
         case _ => Pass
       }
     }
@@ -181,10 +181,11 @@ object Recipe {
         val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(point)
         pointAndNode match {
           case PointAndNode(Some(p3d), Some(img: ImageNode)) =>
-            val id = img.source.domain.findClosestPoint(p3d)
-            val intensity = img.source(id.id).toString.toFloat
+            val ptId = img.source.domain.findClosestPoint(p3d)
+            val pt = ptId.point
+            val intensity = img.source(ptId.id)
 
-            val message = StatusMessage(f"${img.name}(${p3d.x}%2.2f,${p3d.y}%2.2f,${p3d.z}%2.2f) = $intensity%2.2f", log = false)
+            val message = StatusMessage(f"${img.name}(${pt.x}%2.2f,${pt.y}%2.2f,${pt.z}%2.2f) = $intensity%2.2f", log = false)
             e.viewport.frame.status.set(message)
 
           case _ =>

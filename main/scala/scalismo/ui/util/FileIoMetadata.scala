@@ -30,7 +30,6 @@ object FileIoMetadata {
     override val fileExtensions = List("stl", "vtk")
   }
 
-
   val ScalarMeshField = new FileIoMetadata {
     override val description = "Scalar Mesh Field"
     override val fileExtensions = List("vtk")
