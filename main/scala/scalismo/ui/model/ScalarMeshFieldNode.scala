@@ -1,9 +1,15 @@
 package scalismo.ui.model
 
+import java.io.File
+
 import scalismo.geometry.Point3D
+import scalismo.io.MeshIO
 import scalismo.mesh.ScalarMeshField
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
+import scalismo.ui.util.FileIoMetadata
+
+import scala.util.Try
 
 class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarMeshFieldNode] {
   override val name: String = "Scalar Mesh Fields"
@@ -15,7 +21,7 @@ class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeColl
   }
 }
 
-class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override val source: ScalarMeshField[Float], initialName: String) extends Transformable[ScalarMeshField[Float]] with InverseTransformation with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
+class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override val source: ScalarMeshField[Float], initialName: String) extends Transformable[ScalarMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
   name = initialName
 
   override val opacity = new OpacityProperty()
@@ -37,6 +43,10 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override va
   override def transform(untransformed: ScalarMeshField[Float], transformation: PointTransformation): ScalarMeshField[Float] = {
     untransformed.copy(mesh = untransformed.mesh.transform(transformation))
   }
+
+  override def save(file: File): Try[Unit] = MeshIO.writeScalarMeshField[Float](transformedSource, file)
+
+  override def saveMetadata: FileIoMetadata = FileIoMetadata.ScalarMeshField
 
 }
 
