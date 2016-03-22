@@ -1,9 +1,10 @@
 package scalismo.ui.rendering.actor
 
+import scalismo.geometry.{ SquareMatrix, _3D }
 import scalismo.ui.model.capabilities.Transformable
-import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty }
+import scalismo.ui.model.properties.{ NodeProperty, ColorProperty, LineWidthProperty, OpacityProperty }
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }
-import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity }
+import scalismo.ui.rendering.actor.mixin.{ ActorSceneNode, ActorColor, ActorLineWidth, ActorOpacity }
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk._
@@ -17,13 +18,11 @@ object LandmarkActor extends SimpleActorsFactory[LandmarkNode] {
   }
 }
 
-trait LandmarkActor extends ActorColor with ActorOpacity {
-  //with RotatableActor {
-  def node: LandmarkNode
+trait LandmarkActor extends ActorColor with ActorOpacity with ActorSceneNode {
+  override def sceneNode: LandmarkNode
 
-  override lazy val color: ColorProperty = node.color
-  override lazy val opacity: OpacityProperty = node.opacity
-  //override lazy val rotation: RotationProperty = node.rotation
+  override lazy val color: ColorProperty = sceneNode.color
+  override lazy val opacity: OpacityProperty = sceneNode.opacity
 
   private val ellipsoid = new vtkParametricEllipsoid
   private val functionSource = new vtkParametricFunctionSource
@@ -35,36 +34,29 @@ trait LandmarkActor extends ActorColor with ActorOpacity {
   transformFilter.SetInputConnection(functionSource.GetOutputPort())
   transformFilter.SetTransform(transform)
 
-  //override def onRotationChanged(rotation: RotationProperty): Unit = rerender(true)
-
   protected def rerender(geometryChanged: Boolean) = {
     if (geometryChanged) {
       val (xRadius, yRadius, zRadius) = {
-        // FIXME: radiuses
-        //val l = node.radiuses.value
-        val l = Array.fill(3)(3.0f)
-        (l(0), l(1), l(2))
+        val r = sceneNode.uncertainty.value.sigmas.toArray
+        (r(0), r(1), r(2))
       }
 
       transform.Identity()
       transform.PostMultiply()
 
-      //val rotationMatrix: Option[SquareMatrix[_3D]] = node.rotation.value
-      // if a rotation matrix is set, apply it
-      //      rotationMatrix.foreach { m =>
-      //        val matrix = new vtkMatrix4x4
-      //        // vtk uses 4x4 "homogeneous coordinates", so zero out the last row and column...
-      //        matrix.Zero()
-      //        //... , set the very last element to 1....
-      //        matrix.SetElement(3, 3, 1)
-      //        // ... and fill the rest with the actual data.
-      //        for (r <- 0 to 2; c <- 0 to 2) {
-      //          matrix.SetElement(r, c, m(r, c))
-      //        }
-      //        transform.SetMatrix(matrix)
-      //      }
+      val m: SquareMatrix[_3D] = sceneNode.uncertainty.value.rotationMatrix
+      val matrix = new vtkMatrix4x4
+      // vtk uses 4x4 "homogeneous coordinates", so zero out the last row and column...
+      matrix.Zero()
+      //... , set the very last element to 1....
+      matrix.SetElement(3, 3, 1)
+      // ... and fill the rest with the actual data.
+      for (r <- 0 to 2; c <- 0 to 2) {
+        matrix.SetElement(r, c, m(r, c))
+      }
+      transform.SetMatrix(matrix)
 
-      val center = node.transformedSource.point
+      val center = sceneNode.transformedSource.point
       transform.Translate(center(0), center(1), center(2))
 
       ellipsoid.SetXRadius(xRadius)
@@ -75,13 +67,11 @@ trait LandmarkActor extends ActorColor with ActorOpacity {
     actorChanged(geometryChanged)
   }
 
-  listenTo(node)
-
-  //, node.radiuses)
+  listenTo(sceneNode, sceneNode.uncertainty)
 
   reactions += {
     case Transformable.event.GeometryChanged(_) => rerender(true)
-    //case VisualizationProperty.ValueChanged(s) => if (s eq node.radiuses) rerender(true)
+    case NodeProperty.event.PropertyChanged(p) if p == sceneNode.uncertainty => rerender(true)
   }
 
   protected def onInstantiated(): Unit
@@ -91,8 +81,8 @@ trait LandmarkActor extends ActorColor with ActorOpacity {
   rerender(true)
 }
 
-class LandmarkActor2D(override val node: LandmarkNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with LandmarkActor with ActorLineWidth {
-  override def lineWidth: LineWidthProperty = node.lineWidth
+class LandmarkActor2D(override val sceneNode: LandmarkNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with LandmarkActor with ActorLineWidth {
+  override def lineWidth: LineWidthProperty = sceneNode.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(false)
 
@@ -107,7 +97,7 @@ class LandmarkActor2D(override val node: LandmarkNode, viewport: ViewportPanel2D
 
 }
 
-class LandmarkActor3D(override val node: LandmarkNode) extends SinglePolyDataActor with LandmarkActor {
+class LandmarkActor3D(override val sceneNode: LandmarkNode) extends SinglePolyDataActor with LandmarkActor {
   override protected def onInstantiated(): Unit = {
     mapper.SetInputConnection(transformFilter.GetOutputPort())
   }

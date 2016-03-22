@@ -3,7 +3,7 @@ package scalismo.ui.model
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{ Landmark, _3D }
+import scalismo.geometry.{ Point3D, Landmark, _3D }
 import scalismo.io.LandmarkIO
 import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
@@ -43,15 +43,16 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
 
   val nameGenerator = new NameGenerator
 
-  def add(landmark: Landmark[_3D], name: String): LandmarkNode = {
-    val node = new LandmarkNode(this, landmark, name)
+  def add(landmark: Landmark[_3D]): LandmarkNode = {
+    val node = new LandmarkNode(this, landmark)
     add(node)
     node
   }
 
-  // convenience method which uses the name from the landmark
-  def add(landmark: Landmark[_3D]): LandmarkNode = {
-    add(landmark, landmark.id)
+  // convenience method which constructs the landmark on the fly
+  def add(point: Point3D, name: String, uncertainty: Uncertainty): LandmarkNode = {
+    val landmark = new Landmark[_3D](name, point, uncertainty = Some(uncertainty.to3DNormalDistribution))
+    add(landmark)
   }
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.Landmarks
@@ -82,7 +83,7 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
 
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
-      node.transformedSource.copy(id = node.name)
+      node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
     }
     val ok = if (FileUtil.extension(file) == "csv") {
       LandmarkIO.writeLandmarksCsv(landmarks, file)
@@ -93,17 +94,22 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
   }
 }
 
-class LandmarkNode(override val parent: LandmarksNode, override val source: Landmark[_3D], initialName: String) extends Transformable[Landmark[_3D]] with Removeable with Renameable with HasColor with HasOpacity with HasLineWidth {
-  name = initialName
+class LandmarkNode(override val parent: LandmarksNode, override val source: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth {
+  name = source.id
 
   override val color = new ColorProperty(Color.BLUE)
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
+  override val uncertainty = new UncertaintyProperty(source.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty))
 
   override def remove(): Unit = parent.remove(this)
 
   override def transform(untransformed: Landmark[_3D], transformation: PointTransformation): Landmark[_3D] = {
     untransformed.copy(point = transformation(untransformed.point))
+  }
+
+  override def inverseTransform(point: Point3D): Point3D = {
+    source.point
   }
 
   override def group: GroupNode = parent.parent

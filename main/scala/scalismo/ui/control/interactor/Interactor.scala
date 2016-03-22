@@ -45,6 +45,14 @@ object Interactor {
  *
  * The above paragraph was to explain how things work, but also to provide quick links for navigating to the relevant classes :-)
  *
+ *
+ * The UI comes with a couple of predefined recipes, defined in the [[Recipe]] class, as well as traits which combine recipes
+ * into fully-usable "behavior bundles". When mixing in these traits, the order may be important. Roughly speaking, traits
+ * further to the right take effect first. When you call a method on a class with mixins, the method in the trait furthest
+ * to the right is called first. If that method calls super, it invokes the method in the next trait to its left, and so on.
+ *
+ * Mixins are useful, but have to be handled with care. Don't overdo it. If in doubt, manually combine recipes instead.
+ *
  */
 trait Interactor {
   implicit protected def pimpEvent[E <: InputEvent](event: E): PimpedEvent[E] = new PimpedEvent(event)
@@ -91,10 +99,9 @@ trait Interactor {
   def mouseReleased(e: MouseEvent): Verdict = Pass
 
   /* The rendering implementation (VTK) does not
-   * handle scroll events, so there is no need
-   * for a return value here -- nothing is being
-   * intercepted anyway.
+   * handle scroll events, but we still want a
+   * return value in the case of delegations
    */
-  def mouseWheelMoved(e: MouseWheelEvent): Unit = {}
+  def mouseWheelMoved(e: MouseWheelEvent): Verdict = Pass
 
 }

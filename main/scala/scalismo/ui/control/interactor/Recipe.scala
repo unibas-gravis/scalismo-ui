@@ -7,7 +7,8 @@ import scalismo.geometry.{ Landmark, _3D }
 import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
 import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
 import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
-import scalismo.ui.model.{ ImageNode, SceneNode, StatusMessage }
+import scalismo.ui.model.properties.Uncertainty
+import scalismo.ui.model.{ LandmarkNode, ImageNode, SceneNode, StatusMessage }
 import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.view.ViewportPanel2D
 
@@ -51,13 +52,13 @@ object Recipe {
   object HighlightOutlineOfPickableObject {
     var highlighted: Option[SceneNode] = None
 
-    def mouseMoved(e: MouseEvent): Verdict = {
+    def mouseMoved(e: MouseEvent, approve: SceneNode => Boolean): Verdict = {
       e.viewport match {
         case _2d: ViewportPanel2D =>
           val state = _2d.rendererState
 
           val newHighlighted = state.pointAndNodeAtPosition(e.getPoint).nodeOption match {
-            case Some(node) if state.isHighlightable(node) => Some(node)
+            case Some(node) if state.isHighlightable(node) && approve(node) => Some(node)
             case _ => None
           }
 
@@ -82,18 +83,20 @@ object Recipe {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
       pointAndNode.nodeOption.foreach { node =>
         node match {
+          case skip: LandmarkNode => None
           case ok: Grouped with InverseTransformation =>
             val name = ok.group.landmarks.nameGenerator.nextName()
-            val lm = new Landmark[_3D](name, ok.inverseTransform(pointAndNode.pointOption.get))
-            ok.group.landmarks.add(lm)
+            val point = ok.inverseTransform(pointAndNode.pointOption.get)
+            ok.group.landmarks.add(point, name, Uncertainty.DefaultUncertainty)
           case ok: ImageNode =>
             val name = ok.group.landmarks.nameGenerator.nextName()
             // images don't support transformations
             val lm = new Landmark[_3D](name, pointAndNode.pointOption.get)
             ok.group.landmarks.add(lm)
+          case _ =>
         }
       }
-      Block
+      Pass
     }
   }
 
@@ -105,13 +108,14 @@ object Recipe {
    */
   object Scroll2D {
 
-    def mouseWheelMoved(e: MouseWheelEvent): Unit = {
+    def mouseWheelMoved(e: MouseWheelEvent): Verdict = {
       e.viewport match {
         case _2d: ViewportPanel2D =>
           val button = if (e.getWheelRotation > 0) _2d.positionMinusButton else _2d.positionPlusButton
           button.action.apply()
         case _ =>
       }
+      Pass
     }
 
   }
