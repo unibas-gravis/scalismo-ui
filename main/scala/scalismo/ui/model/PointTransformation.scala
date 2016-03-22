@@ -31,8 +31,12 @@ object PointTransformation {
     def apply(gp: LowRankGaussianProcess[_3D, _3D]): LowRankGpPointTransformation = apply(gp, DenseVector.zeros[Float](gp.rank))
   }
 
-  class DiscreteLowRankGpPointTransformation protected (val dgp: DiscreteLowRankGaussianProcess[_3D, _3D], coefficients: DenseVector[Float]) extends LowRankGpPointTransformation(dgp.interpolateNearestNeighbor, coefficients) {
-    override def copy(coefficients: DenseVector[Float]): DiscreteLowRankGpPointTransformation = new DiscreteLowRankGpPointTransformation(dgp, coefficients)
+  class DiscreteLowRankGpPointTransformation private (val dgp: DiscreteLowRankGaussianProcess[_3D, _3D], gp: LowRankGaussianProcess[_3D, _3D], coefficients: DenseVector[Float]) extends LowRankGpPointTransformation(gp, coefficients) {
+
+    protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, _3D], coefficients: DenseVector[Float]) = this(dgp, dgp.interpolateNearestNeighbor, coefficients)
+
+    // no need to re-interpolate if the gp didn't change
+    override def copy(coefficients: DenseVector[Float]): DiscreteLowRankGpPointTransformation = new DiscreteLowRankGpPointTransformation(dgp, gp, coefficients)
   }
 
   object DiscreteLowRankGpPointTransformation {
