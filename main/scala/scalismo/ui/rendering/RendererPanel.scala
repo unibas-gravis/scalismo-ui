@@ -9,6 +9,7 @@ import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
 import scalismo.ui.rendering.RendererPanel.Cameras
 import scalismo.ui.rendering.actor._
+import scalismo.ui.rendering.actor.mixin.IsImageActor
 import scalismo.ui.rendering.internal.RenderingComponent
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }

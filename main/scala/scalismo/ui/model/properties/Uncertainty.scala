@@ -4,7 +4,7 @@ import scalismo.geometry.{ SquareMatrix, Vector, _3D, Vector3D }
 import scalismo.statisticalmodel.NDimensionalNormalDistribution
 
 object Uncertainty {
-  var DefaultSigmas: List[Float] = List(10, 20, 30)
+  var DefaultSigmas: List[Float] = List(30, 20, 10)
   var DefaultUncertainty: Uncertainty = Uncertainty(List(Vector3D(1, 0, 0), Vector3D(0, 1, 0), Vector3D(0, 0, 1)), DefaultSigmas)
 
   def apply(distribution: NDimensionalNormalDistribution[_3D]): Uncertainty = {

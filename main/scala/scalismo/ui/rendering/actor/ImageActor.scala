@@ -6,7 +6,7 @@ import scalismo.ui.model.properties.NodeProperty
 import scalismo.ui.model.{ Axis, BoundingBox, ImageNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.ImageActor2D.InstanceData
-import scalismo.ui.rendering.actor.mixin.{ ActorOpacity, ActorSceneNode }
+import scalismo.ui.rendering.actor.mixin.{ IsImageActor, ActorOpacity, ActorSceneNode }
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.ImageConversion

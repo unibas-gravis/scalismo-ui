@@ -1,4 +1,4 @@
-package scalismo.ui.rendering.actor
+package scalismo.ui.rendering.actor.mixin
 
 import vtk.vtkActor
 

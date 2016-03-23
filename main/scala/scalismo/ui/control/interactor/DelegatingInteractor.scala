@@ -6,22 +6,65 @@ import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.view.ScalismoFrame
 
-trait DelegatedInteractor[P <: DelegatingInteractor[P]] extends Interactor {
-  def parent: DelegatingInteractor[P]
+//trait Parent[P <: Parent[P]] {
+//  def children: List[Child[P]] = ???
+//  def parentMethod(): Unit = println("parent")
+//}
+//
+//trait Child[P <: Parent[P]] {
+//  def parent: P = ???
+//  def doParentThings(): Unit = parent.parentMethod()
+//}
+//
+//trait SubParent[P <: SubParent[P]] extends Parent[SubParent[P]] {
+//  def subParentMethod(): Unit = println("subparent")
+//}
+//
+//trait SubChild[P <: SubParent[P]] extends Child[SubParent[P]] {
+//  def subParent: P = ???
+//  def doSubParentThings(): Unit = subParent.subParentMethod()
+//}
+//
+//trait SubSubParent[P <: SubSubParent[P]] extends SubParent[SubSubParent[P]] {
+//  def subSubParentMethod(): Unit = println("subsubparent")
+//  def x: Unit = {
+//    val c = children
+//  }
+//}
+//
+//trait SubSubChild[P <: SubSubParent[P]] extends SubChild[SubSubParent[P]] {
+//  def subSubParent: P = ???
+//  def doSubSubParentThings(): Unit = subSubParent.subSubParentMethod()
+//  def doThings(): Unit = {
+//    doParentThings()
+//    doSubSubParentThings()
+//    doSubSubParentThings()
+//  }
+//}
 
+trait DelegatedInteractor[InteractorType <: DelegatingInteractor[InteractorType]] extends Interactor {
+  def parent: DelegatingInteractor[InteractorType]
 }
 
-trait DelegatingInteractor[P <: DelegatingInteractor[P]] extends Interactor { self =>
+object DelegatingInteractor {
+  import scala.language.implicitConversions
+
+  implicit def asInteractorType[InteractorType <: DelegatingInteractor[InteractorType]](interactor: DelegatingInteractor[InteractorType]): InteractorType = {
+    interactor.asInstanceOf[InteractorType]
+  }
+}
+
+trait DelegatingInteractor[InteractorType <: DelegatingInteractor[InteractorType]] extends Interactor { self =>
   def frame: ScalismoFrame
 
-  type Delegate <: DelegatedInteractor[P]
+  private var _delegate: DelegatedInteractor[InteractorType] = initialDelegate
 
-  var _delegate: Delegate = initialDelegate
+  protected def initialDelegate: DelegatedInteractor[InteractorType]
 
-  protected def initialDelegate: Delegate
+  // honestly, I've had enough of all the type fiddling. If somebody requests it as a subtype, they'll know it's correctly typed.
+  protected def delegate[D <: DelegatedInteractor[InteractorType]]: D = _delegate.asInstanceOf[D]
 
-  def delegate: Delegate = _delegate
-  def delegate_=(newDelegate: Delegate): Unit = {
+  protected def delegate_=(newDelegate: DelegatedInteractor[InteractorType]): Unit = {
     if (newDelegate != _delegate) {
       _delegate.onDeactivated(frame)
       _delegate = newDelegate

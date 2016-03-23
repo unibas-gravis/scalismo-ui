@@ -19,7 +19,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
     // This is needed so that 2D sliced actors can also be picked.
     // (At the default tolerance of 1e-6, it's virtually impossible to
     // hit a 2D line). This might need a bit more tweaking.
-    SetTolerance(.005)
+    SetTolerance(.008)
   }
 
   lazy val axis: Option[Axis] = viewport match {
