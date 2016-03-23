@@ -91,8 +91,8 @@ object Recipe {
           case ok: ImageNode =>
             val name = ok.group.landmarks.nameGenerator.nextName()
             // images don't support transformations
-            val lm = new Landmark[_3D](name, pointAndNode.pointOption.get)
-            ok.group.landmarks.add(lm)
+            val point = pointAndNode.pointOption.get
+            ok.group.landmarks.add(point, name, Uncertainty.DefaultUncertainty)
           case _ =>
         }
       }
