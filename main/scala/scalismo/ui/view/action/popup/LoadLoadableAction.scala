@@ -12,6 +12,6 @@ object LoadLoadableAction extends PopupAction.Factory {
   }
 }
 
-class LoadLoadableAction(l: Loadable)(implicit val frame: ScalismoFrame) extends PopupAction(s"Load ${l.loadMetadata.description} ...", BundledIcon.Load) {
+class LoadLoadableAction(l: Loadable)(implicit val frame: ScalismoFrame) extends PopupAction(s"Load ${l.loadMetadata.description} ...", BundledIcon.Load) with GroupDelegatingAction {
   override def apply(): Unit = new LoadAction(l.load, l.loadMetadata, title).apply()
 }

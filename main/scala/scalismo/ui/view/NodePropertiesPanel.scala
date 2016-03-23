@@ -33,6 +33,7 @@ object NodePropertiesPanel {
     List(
       SlicingPositionPanel,
       GaussianProcessCoefficientsPanel,
+      RigidTransformationPropertyPanel,
       appearancePanel
     )
   }

@@ -19,6 +19,7 @@ object BundledIcon {
   lazy val Question = FontIcon.load(FontAwesome.QUESTION_CIRCLE, color = Color.BLUE.darker())
 
   // toolbar, menu, or other general-purpose icons
+  lazy val Center = FontIcon.load(FontAwesome.DOT_CIRCLE_O)
   lazy val Smiley = FontIcon.load(FontAwesome.SMILE_O)
   lazy val Reset = FontIcon.load(FontAwesome.UNDO)
   lazy val Screenshot = FontIcon.load(FontAwesome.CAMERA)

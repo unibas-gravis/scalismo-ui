@@ -10,7 +10,9 @@ import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussi
  * "a function that can transform 3D points to other 3D points".
  */
 object PointTransformation {
-  val Identity: RigidTransformation[_3D] = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
+  val RigidIdentity: RigidTransformation[_3D] = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
+
+  val Identity: PointTransformation = { p => p }
 
   // This used to be a case class, but since it is extended by the discrete version, it can no longer be.
   // Therefore, the copy methods have to be defined manually.

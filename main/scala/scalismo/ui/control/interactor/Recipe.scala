@@ -150,6 +150,11 @@ object Recipe {
       updateSlicePosition(e)
     }
 
+    def mouseExited(e: MouseEvent): Verdict = {
+      active = false
+      Pass
+    }
+
     private def updateSlicePosition(e: InputEvent): Verdict = {
       if (active) {
         e.viewport.rendererState.pointAndNodeAtPosition(point).pointOption match {
@@ -174,6 +179,11 @@ object Recipe {
     def mouseMoved(e: MouseEvent): Verdict = {
       point = e.getPoint
       showInformation(e)
+    }
+
+    def mouseExited(e: MouseEvent): Verdict = {
+      active = false
+      Pass
     }
 
     private def showInformation(e: InputEvent): Verdict = {

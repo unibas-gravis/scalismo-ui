@@ -21,9 +21,11 @@ object PopupAction {
   val BuiltinFactories: List[Factory] = List(
     // the order here also defines the order in the popup menu, so arrange entries as needed
     VisibilityAction,
+    CenterOnLandmarkAction,
     AddGroupAction,
+    AddRigidTransformationAction,
     LoadStatisticalShapeModelAction,
-    GroupDelegatingLoadLoadableAction,
+    GroupDelegatingAction,
     LoadLoadableAction,
     SaveSaveableAction,
     SaveLandmarksAction,
