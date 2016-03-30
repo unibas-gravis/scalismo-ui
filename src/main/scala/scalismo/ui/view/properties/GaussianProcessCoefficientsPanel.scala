@@ -5,8 +5,7 @@ import javax.swing.JSlider
 
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.Gaussian
-import scalismo.ui.model.PointTransformation.LowRankGpPointTransformation
-import scalismo.ui.model.{ PointTransformation, SceneNode, TransformationNode }
+import scalismo.ui.model.{LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 
@@ -114,7 +113,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
     }
   }
 
-  private var node: Option[TransformationNode[PointTransformation.LowRankGpPointTransformation]] = None
+  private var node: Option[TransformationNode[LowRankGpPointTransformation]] = None
 
   def labelFormat(value: Float) = f"$value%1.1f"
 

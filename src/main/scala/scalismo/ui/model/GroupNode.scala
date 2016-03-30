@@ -31,7 +31,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, val isGhos
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
   def addStatisticalMeshModel(model: StatisticalMeshModel, initialName: String): Unit = {
     triangleMeshes.add(model.referenceMesh, initialName)
-    transformations.add(PointTransformation.DiscreteLowRankGpPointTransformation(model.gp), initialName)
+    transformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
 
   }
 

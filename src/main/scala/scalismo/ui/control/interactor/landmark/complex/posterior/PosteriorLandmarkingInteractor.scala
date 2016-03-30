@@ -14,9 +14,9 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
   def previewNode: TriangleMeshNode
 
-  def sourceGpNode: TransformationNode[PointTransformation.DiscreteLowRankGpPointTransformation]
+  def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation]
 
-  def previewGpNode: TransformationNode[PointTransformation.DiscreteLowRankGpPointTransformation]
+  def previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation]
 
   def targetGroup: GroupNode
 
