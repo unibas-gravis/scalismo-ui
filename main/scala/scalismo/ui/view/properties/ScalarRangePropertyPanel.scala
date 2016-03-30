@@ -1,5 +1,6 @@
 package scalismo.ui.view.properties
 
+import java.awt.Color
 import javax.swing.border.TitledBorder
 
 import scalismo.ui.model.SceneNode
@@ -29,6 +30,8 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     max = 100
     value = 0
 
+    valueLabel.foreground = Color.RED.darker()
+
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
   }
 
@@ -36,6 +39,8 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     min = 0
     max = 100
     value = 100
+
+    valueLabel.foreground = Color.BLUE.darker()
 
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
   }

@@ -36,6 +36,11 @@ trait DefaultInteractor extends Interactor {
     Recipe.RequestFocusOnEnter.mouseEntered(e)
   }
 
+  override def mouseExited(e: MouseEvent): Verdict = {
+    Recipe.ShiftKeySetsSlicePosition.mouseExited(e)
+    Recipe.ControlKeyShowsImageInformation.mouseExited(e)
+  }
+
   override def mouseWheelMoved(e: MouseWheelEvent): Verdict = {
     Recipe.Scroll2D.mouseWheelMoved(e)
   }
