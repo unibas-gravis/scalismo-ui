@@ -79,7 +79,7 @@ object ScalismoUiBuild extends Build {
   )
 
   lazy val scalismo_ui = Project(
-    "scalismo-ui-ng",
+    "scalismo-ui",
     file("."),
     settings = buildSettings ++ Seq(
       libraryDependencies ++= commonDeps,
