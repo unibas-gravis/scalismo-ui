@@ -10,7 +10,7 @@ import scalismo.ui.model.{ LandmarkNode, SceneNode }
 
 object ReadyForEditing {
   def enter[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]]: StateTransition[InteractorType, DelegateType] = new StateTransition[InteractorType, DelegateType] {
-    override def apply()(implicit parent: ComplexLandmarkingInteractor[InteractorType]): Delegate[InteractorType] = new ReadyForEditing[InteractorType]()
+    override def apply()(implicit parent: InteractorType): Delegate[InteractorType] = new ReadyForEditing[InteractorType]()
   }
 }
 

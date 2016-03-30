@@ -47,6 +47,7 @@ trait DelegatedInteractor[InteractorType <: DelegatingInteractor[InteractorType]
 }
 
 object DelegatingInteractor {
+
   import scala.language.implicitConversions
 
   implicit def asInteractorType[InteractorType <: DelegatingInteractor[InteractorType]](interactor: DelegatingInteractor[InteractorType]): InteractorType = {
@@ -54,7 +55,8 @@ object DelegatingInteractor {
   }
 }
 
-trait DelegatingInteractor[InteractorType <: DelegatingInteractor[InteractorType]] extends Interactor { self =>
+trait DelegatingInteractor[InteractorType <: DelegatingInteractor[InteractorType]] extends Interactor {
+  self =>
   def frame: ScalismoFrame
 
   private var _delegate: DelegatedInteractor[InteractorType] = initialDelegate

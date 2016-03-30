@@ -33,12 +33,13 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh, initialName: String) extends Transformable[TriangleMesh] with InverseTransformation with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh, initialName: String) extends Transformable[TriangleMesh] with InverseTransformation with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth with HasPickable {
   name = initialName
 
   override val color = new ColorProperty()
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
+  override val pickable = new PickableProperty()
 
   override def inverseTransform(point: Point3D): Point3D = {
     val id = transformedSource.findClosestPoint(point).id

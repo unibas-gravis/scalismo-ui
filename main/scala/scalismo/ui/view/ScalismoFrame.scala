@@ -5,11 +5,9 @@ import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.control.SceneControl
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
-import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 
 //import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
-import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
+import scalismo.ui.control.interactor.Interactor
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.rendering.Rendering
@@ -167,15 +165,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     }
   }
 
-  //  private var _interactor: Interactor = new PosteriorLandmarkingInteractor(this)
-  private var _interactor: Interactor = new ComplexLandmarkingInteractor.Example(this)
-
-  //  private var _interactor: Interactor = new DefaultInteractor with ComplexLandmarkingInteractor {
-  //    override def frame: ScalismoFrame = ScalismoFrame.this
-  //  }
-
-  //    private var _interactor: Interactor = new DefaultInteractor with SimpleLandmarkingInteractor {
-  //    }
+  private var _interactor: Interactor = new ComplexLandmarkingInteractor.Instance(this)
 
   def interactor: Interactor = _interactor
 

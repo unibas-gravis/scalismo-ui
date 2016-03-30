@@ -1,6 +1,6 @@
 package scalismo.ui.view.action.popup
 
-import scalismo.ui.model.{ LandmarkNode, Scene, SceneNode }
+import scalismo.ui.model.{ LandmarkNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 

@@ -14,7 +14,7 @@ object AddGroupAction extends PopupAction.Factory {
 
 class AddGroupAction(node: Scene)(implicit val frame: ScalismoFrame) extends PopupAction("Add Group ...", BundledIcon.Group) {
   def callback(newName: Option[String]): Unit = {
-    newName.foreach(node.groups.add)
+    newName.foreach(n => node.groups.add(n))
   }
 
   override def apply(): Unit = {

@@ -8,6 +8,7 @@ import scalismo.io.ImageIO
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+
 import scala.util.{ Failure, Success, Try }
 
 class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[ImageNode] with Loadable {

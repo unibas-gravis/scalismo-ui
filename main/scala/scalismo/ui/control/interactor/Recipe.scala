@@ -3,12 +3,11 @@ package scalismo.ui.control.interactor
 import java.awt.Point
 import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
 
-import scalismo.geometry.{ Landmark, _3D }
 import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
 import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
 import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
 import scalismo.ui.model.properties.Uncertainty
-import scalismo.ui.model.{ LandmarkNode, ImageNode, SceneNode, StatusMessage }
+import scalismo.ui.model.{ ImageNode, LandmarkNode, SceneNode, StatusMessage }
 import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.view.ViewportPanel2D
 

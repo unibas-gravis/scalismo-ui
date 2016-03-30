@@ -1,23 +1,21 @@
 package scalismo.ui.control.interactor.landmark.complex
 
-import java.awt.event.{ MouseWheelEvent, MouseEvent }
+import java.awt.event.{ MouseEvent, MouseWheelEvent }
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ StateTransition, Delegate }
-import scalismo.ui.model.LandmarkNode
+import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
+import scalismo.ui.model.{ LandmarkNode, StatusMessage }
 
 object Editing {
   def enter[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode): StateTransition[IT, DT] = editAxis(lm, 0)
 
   def editAxis[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode, axisIndex: Int): StateTransition[IT, DT] = new StateTransition[IT, DT] {
-    override def apply()(implicit parent: ComplexLandmarkingInteractor[IT]): Delegate[IT] = new Editing[IT](lm, axisIndex)
+    override def apply()(implicit parent: IT): Delegate[IT] = new Editing[IT](lm, axisIndex)
   }
 }
 
 class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode, axisIndex: Int)(implicit override val parent: ComplexLandmarkingInteractor[IT]) extends ComplexLandmarkingInteractor.Delegate[IT] {
-  println(s"editing axis: $axisIndex")
-
   override def onLandmarkCreationToggled(): Unit = cancel()
 
   override def mouseExited(e: MouseEvent): Verdict = {
@@ -58,7 +56,10 @@ class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode
   }
 
   def cancel(): Unit = {
-    println("Canceled landmark editing")
+    endEditing()
+  }
+
+  def endEditing(): Unit = {
     if (parent.isLandmarkCreationEnabled) {
       transitionToReadyForCreating()
     } else {
@@ -67,14 +68,27 @@ class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode
   }
 
   def transitionToReadyForCreating(): Unit = {
+    clearStatus()
     parent.transitionTo(ReadyForCreating.enter)
   }
 
   def transitionToReadyForEditing(): Unit = {
+    clearStatus()
     parent.transitionTo(ReadyForEditing.enter)
   }
 
   def transitionToEditAxis(node: LandmarkNode, axisIndex: Int): Unit = {
     parent.transitionTo(Editing.editAxis(landmarkNode, axisIndex))
   }
+
+  def showStatus(): Unit = {
+    parent.frame.status.set(StatusMessage(s"You are editing axis ${axisIndex + 1} of landmark ${landmarkNode.name}", kind = StatusMessage.Information, highPriority = true, log = false))
+  }
+
+  def clearStatus(): Unit = {
+    parent.frame.status.clear()
+  }
+
+  // constructor
+  showStatus()
 }

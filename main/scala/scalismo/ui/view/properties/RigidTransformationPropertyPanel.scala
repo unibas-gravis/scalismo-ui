@@ -4,21 +4,13 @@ import javax.swing.border.TitledBorder
 
 import breeze.linalg.DenseVector
 import scalismo.geometry._3D
-import scalismo.registration.{ RigidTransformationSpace, RigidTransformation }
-import scalismo.ui.model.PointTransformation.LowRankGpPointTransformation
+import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.ui.model._
-import scalismo.ui.model.properties.HasRadius
-import scalismo.ui.model.properties.NodeProperty
-import scalismo.ui.model.properties.{ HasRadius, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.FloatSlider
-import scalismo.ui.view.util.FloatSlider
 
 import scala.swing.GridBagPanel.Fill
 import scala.swing._
-import scala.swing.event.ValueChanged
-import scala.util.{ Success, Failure, Try }
+import scala.util.{ Failure, Success, Try }
 
 object RigidTransformationPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {
@@ -76,7 +68,9 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
         else Failure[Seq[T]](fs.head.exception) // Only keep the first failure
       }
 
-      val valuesTry = flatten(textFields.map(f => Try { java.lang.Float.parseFloat(f.text) }).toList)
+      val valuesTry = flatten(textFields.map(f => Try {
+        java.lang.Float.parseFloat(f.text)
+      }).toList)
       valuesTry match {
         case Success(values) =>
           val params = DenseVector(values.toArray)

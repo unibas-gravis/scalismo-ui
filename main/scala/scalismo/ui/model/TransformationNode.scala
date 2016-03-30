@@ -1,7 +1,7 @@
 package scalismo.ui.model
 
 import scalismo.ui.event.Event
-import scalismo.ui.model.capabilities.Removeable
+import scalismo.ui.model.capabilities.{ Grouped, Removeable }
 
 object TransformationsNode {
 
@@ -58,7 +58,7 @@ object TransformationNode {
 
 }
 
-class TransformationNode[T <: PointTransformation](override val parent: TransformationsNode, initialTransformation: T, override val name: String) extends SceneNode with Removeable {
+class TransformationNode[T <: PointTransformation](override val parent: TransformationsNode, initialTransformation: T, override val name: String) extends SceneNode with Grouped with Removeable {
   private var _transformation: T = initialTransformation
 
   def transformation: T = _transformation
@@ -69,4 +69,6 @@ class TransformationNode[T <: PointTransformation](override val parent: Transfor
   }
 
   override def remove(): Unit = parent.remove(this)
+
+  override def group: GroupNode = parent.parent
 }

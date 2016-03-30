@@ -2,9 +2,9 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry.{ SquareMatrix, _3D }
 import scalismo.ui.model.capabilities.Transformable
-import scalismo.ui.model.properties.{ NodeProperty, ColorProperty, LineWidthProperty, OpacityProperty }
+import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, NodeProperty, OpacityProperty }
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }
-import scalismo.ui.rendering.actor.mixin.{ ActorSceneNode, ActorColor, ActorLineWidth, ActorOpacity }
+import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorSceneNode }
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk._

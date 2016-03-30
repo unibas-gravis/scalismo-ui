@@ -2,7 +2,7 @@ package scalismo.ui.rendering.actor
 
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.ui.model.capabilities.Transformable
-import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, OpacityProperty, ScalarRangeProperty }
+import scalismo.ui.model.properties._
 import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
@@ -99,6 +99,18 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
   }
 
   protected def onInstantiated(): Unit = {}
+
+  //FIXME: pick control -- this should probably go into a trait or something.
+  renderable.node match {
+    case p: HasPickable =>
+      SetPickable(if (p.pickable.value) 1 else 0)
+      listenTo(p.pickable)
+      reactions += {
+        case NodeProperty.event.PropertyChanged(s) if s == p.pickable =>
+          SetPickable(if (p.pickable.value) 1 else 0)
+      }
+    case _ =>
+  }
 
   onInstantiated()
 

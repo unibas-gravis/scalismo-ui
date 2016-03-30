@@ -2,9 +2,7 @@ package plugin
 
 import java.io.File
 
-import scalismo.common.ScalarArray
 import scalismo.io.StatismoIO
-import scalismo.mesh.ScalarMeshField
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
