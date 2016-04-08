@@ -24,7 +24,7 @@ class TransformationsNode(override val parent: GroupNode) extends SceneNodeColle
 
   override protected def add(child: TransformationNode[_]): Unit = {
     listenTo(child)
-    super.add(child)
+    super.addToFront(child)
     publishEvent(TransformationsNode.event.TransformationsChanged(this))
   }
 
@@ -36,7 +36,7 @@ class TransformationsNode(override val parent: GroupNode) extends SceneNodeColle
 
   def combinedTransformation: PointTransformation = {
     val transforms = children.map(_.transformation.asInstanceOf[PointTransformation])
-    transforms.foldLeft(PointTransformation.Identity: PointTransformation) { case (first, second) => first andThen second }
+    transforms.foldLeft(PointTransformation.Identity: PointTransformation) { case (first, second) => first compose second }
   }
 
   reactions += {
