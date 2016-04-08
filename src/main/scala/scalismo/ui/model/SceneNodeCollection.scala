@@ -22,6 +22,13 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
     publishEvent(SceneNode.event.ChildrenChanged(this))
   }
 
+  protected def addToFront(child: ChildNode): Unit = {
+    require(child.parent == this)
+    _items.prepend(child)
+    publishEvent(SceneNode.event.ChildrenChanged(this))
+  }
+
+
   def remove(child: ChildNode): Unit = {
     require(_items.contains(child))
     _items -= child
