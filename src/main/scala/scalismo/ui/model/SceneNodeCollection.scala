@@ -20,12 +20,14 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
     require(child.parent == this)
     _items += child
     publishEvent(SceneNode.event.ChildrenChanged(this))
+    publishEvent(SceneNode.event.ChildAdded(child))
   }
 
   protected def addToFront(child: ChildNode): Unit = {
     require(child.parent == this)
     _items.prepend(child)
     publishEvent(SceneNode.event.ChildrenChanged(this))
+    publishEvent(SceneNode.event.ChildAdded(child))
   }
 
 
@@ -33,6 +35,7 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
     require(_items.contains(child))
     _items -= child
     publishEvent(SceneNode.event.ChildrenChanged(this))
+    publishEvent(SceneNode.event.ChildRemoved(child))
   }
 
   // a collection is hidden in the tree view if it contains less than 2 items.
