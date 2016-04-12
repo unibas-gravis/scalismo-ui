@@ -1,12 +1,15 @@
 package scalismo.ui.api
 
+import scalismo.ui.control.interactor.Interactor
 import scalismo.ui.model._
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.{ScalismoFrame}
 import scala.swing.{Component}
 
 
-trait SimpleAPI { self : ScalismoFrame =>
+trait SimpleAPI {
+
+  protected[api] def scene : Scene
 
   def createGroup(groupName : String) : Group = Group(scene.groups.add(groupName))
 
@@ -40,16 +43,7 @@ trait SimpleAPI { self : ScalismoFrame =>
     HandleCallback[A].registerOnRemove(g, f)
   }
 
-  def message(message : String) = {
-    this.status.set(StatusMessage(message))
-  }
 
-  def message(message : StatusMessage) = {
-    this.status.set(StatusMessage(message.text, message.kind))
-  }
-
-
-  def addToToolbar(panel : Component) : Unit = { EdtUtil.onEdt { self.toolbar.add(panel) ;}}
 
 
   private def defaultGroup : Group = {

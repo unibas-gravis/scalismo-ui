@@ -48,6 +48,7 @@ case class TriangleMeshView(override val peer : TriangleMeshNode) extends Object
   def color_= (c : Color) : Unit = {peer.color.value = c}
 
   def triangleMesh : TriangleMesh = peer.source
+  def transformedTriangleMesh : TriangleMesh  = peer.transformedSource
 }
 
 object TriangleMeshView {
@@ -91,6 +92,7 @@ case class LandmarkView(override val peer : LandmarkNode) extends ObjectView {
   def color_= (c : Color) : Unit = peer.color.value = c
 
   def landmark : Landmark[_3D] = peer.source
+  def transformedLandmark : Landmark[_3D] = peer.transformedSource
 }
 
 object LandmarkView {
@@ -130,6 +132,7 @@ case class ScalarMeshFieldView(override val peer : ScalarMeshFieldNode) extends 
   type PeerType = ScalarMeshFieldNode
 
   def scalarMeshField : ScalarMeshField[Float] = peer.source
+  def transformedScalarMeshField = peer.transformedSource
 }
 
 
@@ -186,12 +189,13 @@ case class StatisticalMeshModelView(private val meshNode : TriangleMeshNode,
                                     private val shapeTransNode : TransformationNode[DiscreteLowRankGpPointTransformation],
                                     private val poseTransNode : TransformationNode[RigidTransformation[_3D]]) {
 
-  def referenceMesh = TriangleMeshView(meshNode)
-  def shapeTransformation = DiscreteLowRankGPTransformationView(shapeTransNode)
-  def poseTransformation = RigidTransformationView(poseTransNode)
 
-  // FIXME, do we need to take care of the transformation?
-  def statisticalMeshModel : StatisticalMeshModel = StatisticalMeshModel(meshNode.source, shapeTransNode.transformation.dgp)
+  def meshView = TriangleMeshView(meshNode)
+  def shapeTransformationView = DiscreteLowRankGPTransformationView(shapeTransNode)
+  def poseTransformationView = RigidTransformationView(poseTransNode)
+
+
+  def statisticalMeshModel : StatisticalMeshModel = StatisticalMeshModel(meshView.triangleMesh, shapeTransNode.transformation.dgp)
 }
 
 
@@ -272,6 +276,13 @@ case class DiscreteLowRankGPTransformationView(override val peer : Transformatio
   def coefficients : DenseVector[Float] = peer.transformation.coefficients
   def coefficients_=(coefficients : DenseVector[Float]) : Unit = {
     {peer.transformation = peer.transformation.copy(coefficients)}
+  }
+
+  val transformation : Point[_3D] => Point[_3D] =  peer.transformation
+
+  def discreteLowRankGaussianProcess = peer.transformation.dgp
+  def discreteLowRankGaussianProcess_=(dgp : DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
+    peer.transformation = (DiscreteLowRankGpPointTransformation(dgp))
   }
 }
 
