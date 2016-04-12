@@ -4,7 +4,6 @@ import java.awt.Color
 import java.io.File
 
 import plugin.TestPluginAPI
-import plugin.asmfittingplugin.{NamedActiveShapeModel, ASMFittingPlugin}
 import scalismo.geometry.{Point, _3D}
 import scalismo.io.{ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO}
 import scalismo.ui.control.interactor.Interactor.Verdict
@@ -46,8 +45,8 @@ object ScalismoUITest {
 
 
     val ui = ScalismoUI()
-//    val asm = ActiveShapeModelIO.readActiveShapeModel(new File("/tmp/asm.h5")).get
-//    val image = ImageIO.read3DScalarImageAsType[Float](new File("/tmp/image.nii")).get
+    val asm = ActiveShapeModelIO.readActiveShapeModel(new File("/tmp/asm.h5")).get
+    val image = ImageIO.read3DScalarImageAsType[Float](new File("/tmp/image.nii")).get
 //    val asmPlugin = new ASMFittingPlugin(ui, models = List(NamedActiveShapeModel(asm, "asm")), image)
 //    asmPlugin.activate
 //
