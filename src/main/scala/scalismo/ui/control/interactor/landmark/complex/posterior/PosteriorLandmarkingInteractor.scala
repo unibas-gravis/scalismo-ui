@@ -18,7 +18,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
   def previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation]
 
-  def targetGroup: GroupNode
+  def targetGroupNode: GroupNode
 
   override protected def initialDelegate: Delegate[PosteriorLandmarkingInteractor] = {
     PosteriorReadyForCreating.enter()
@@ -88,3 +88,4 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     hidePreview()
   }
 }
+
