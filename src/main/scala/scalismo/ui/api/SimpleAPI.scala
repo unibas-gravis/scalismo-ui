@@ -41,11 +41,11 @@ trait SimpleAPI { self : ScalismoFrame =>
   }
 
   def message(message : String) = {
-    StatusMessage(message)
+    this.status.set(StatusMessage(message))
   }
 
   def message(message : StatusMessage) = {
-    StatusMessage(message.text, message.kind)
+    this.status.set(StatusMessage(message.text, message.kind))
   }
 
 

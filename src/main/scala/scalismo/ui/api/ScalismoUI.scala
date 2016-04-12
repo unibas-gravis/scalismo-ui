@@ -4,7 +4,7 @@ import java.awt.Color
 import java.io.File
 
 import scalismo.geometry.{Point, _3D}
-import scalismo.io.{StatismoIO, MeshIO}
+import scalismo.io.{ImageIO, StatismoIO, MeshIO}
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ScalismoFrame
 
@@ -16,6 +16,8 @@ class ScalismoUI extends ScalismoFrame() with SimpleAPI {
   override def setup(args: Array[String]): Unit = {
     super.setup(args)
   }
+
+
 }
 
 object ScalismoUI {
@@ -43,13 +45,12 @@ object ScalismoUITest {
     val ui = ScalismoUI()
 
     val meshGroup = ui.createGroup("group1")
-
-    ui.onNodeAdded(meshGroup, (v : TriangleMeshView) => v.color = Color.BLUE)
+    ui.onNodeAdded(meshGroup, (v : LandmarkView) => v.color = Color.GREEN)
 
     val mesh = MeshIO.readMesh(new File("/tmp/mesh.stl")).get
     ui.show(mesh, "abc", meshGroup)
-
-    ui.addTransformation(meshGroup, (p : Point[_3D]) => p + scalismo.geometry.Vector(1f, 20f, 30f), name = "tmy trans")
+//
+//    ui.addTransformation(meshGroup, (p : Point[_3D]) => p + scalismo.geometry.Vector(1f, 20f, 30f), name = "tmy trans")
 
 //    val meshView = ui.show(mesh, name = "abc", group = meshGroup)
 //    meshView.color = Color.RED

@@ -4,6 +4,7 @@ import java.awt.Color
 
 import breeze.linalg.DenseVector
 import scalismo.geometry.{Landmark, Point, _3D}
+import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ScalarMeshField, TriangleMesh}
 import scalismo.registration.{RigidTransformationSpace, RigidTransformation}
 import scalismo.statisticalmodel.{StatisticalMeshModel, DiscreteLowRankGaussianProcess, LowRankGaussianProcess}
@@ -98,6 +99,30 @@ object LandmarkView {
       if (s.isInstanceOf[LandmarkNode]) Some(LandmarkView(s.asInstanceOf[LandmarkNode])) else None
     }
   }
+
+
+  implicit object CallbackLandmarkView extends HandleCallback[LandmarkView] {
+
+    override def registerOnAdd[R](g: Group, f: LandmarkView => R): Unit = {
+      g.peer.listenTo(g.peer.landmarks)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode) => {
+          val tmv = LandmarkView(newNode.asInstanceOf[LandmarkNode])
+          f(tmv)
+        }
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: LandmarkView => R): Unit = {
+      g.peer.listenTo(g.peer.landmarks)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode) => {
+          val tmv = LandmarkView(removedNode.asInstanceOf[LandmarkNode])
+          f(tmv)
+        }
+      }
+    }
+  }
 }
 
 
@@ -117,11 +142,51 @@ object ScalarMeshFieldView {
 
 }
 
+case class ImageView(override val peer : ImageNode) extends ObjectView {
+  type PeerType = ImageNode
+
+  def image : DiscreteScalarImage[_3D, Float] = peer.source
+}
+
+object ImageView {
+  implicit object FindImage extends FindInScene[ImageView] {
+    override def createView(s: SceneNode): Option[ImageView] = {
+      if (s.isInstanceOf[ImageView]) Some(ImageView(s.asInstanceOf[ImageNode])) else None
+    }
+  }
+
+  implicit object CallbackLandmarkView extends HandleCallback[ImageView] {
+
+    override def registerOnAdd[R](g: Group, f: ImageView => R): Unit = {
+      g.peer.listenTo(g.peer.images)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode) => {
+          val imv = ImageView(newNode.asInstanceOf[ImageNode])
+          f(imv)
+        }
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: ImageView => R): Unit = {
+      g.peer.listenTo(g.peer.images)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode) => {
+          val tmv = ImageView(removedNode.asInstanceOf[ImageNode])
+          f(tmv)
+        }
+      }
+    }
+  }
+
+}
+
+
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
 case class StatisticalMeshModelView(private val meshNode : TriangleMeshNode,
                                     private val shapeTransNode : TransformationNode[DiscreteLowRankGpPointTransformation],
                                     private val poseTransNode : TransformationNode[RigidTransformation[_3D]]) {
 
+  def referenceMesh = TriangleMeshView(meshNode)
   def shapeTransformation = DiscreteLowRankGPTransformationView(shapeTransNode)
   def poseTransformation = RigidTransformationView(poseTransNode)
 

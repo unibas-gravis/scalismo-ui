@@ -2,6 +2,7 @@ package scalismo.ui.api
 
 import scalismo.common.{DiscreteScalarField, Scalar}
 import scalismo.geometry.{Point, Landmark, _3D}
+import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ScalarMeshField, TriangleMesh}
 import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
 import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
@@ -44,6 +45,19 @@ object ShowInScene {
       ScalarMeshFieldView(group.peer.scalarMeshFields.add(smfAsFloat, name))
     }
   }
+
+
+
+  implicit def ShowImage[S : Scalar : ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+    override type View = ImageView
+
+    override def showInScene(image : DiscreteScalarImage[_3D, S], name : String, group : Group) : ImageView = {
+      val scalarConv = implicitly[Scalar[S]]
+      val floatImage = image.map(x => scalarConv.toFloat(x))
+      ImageView(group.peer.images.add(floatImage, name))
+    }
+  }
+
 
   implicit object ShowInSceneLandmark$ extends ShowInScene[Landmark[_3D]] {
     override type View = LandmarkView
