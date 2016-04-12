@@ -7,10 +7,14 @@ class ToolBar extends Component with Orientable.Wrapper {
 
   def add(c: Component) = {
     peer.add(c.peer)
+    peer.repaint()
+    peer.revalidate()
   }
 
   def remove(c: Component) = {
     peer.remove(c.peer)
+    peer.repaint()
+    peer.revalidate()
   }
 
   /**
