@@ -56,7 +56,7 @@ class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[Interactor
   override def mouseClicked(e: MouseEvent): Verdict = {
     if (e.getButton == MouseEvent.BUTTON1) {
       parent.getLandmarkForClick(e) match {
-        case Some((lm, group)) if group == interactor.targetGroup =>
+        case Some((lm, group)) if group == interactor.targetGroupNode =>
           group.landmarks.add(lm.copy(id = landmarkNode.name))
           endEditing()
         case _ =>
