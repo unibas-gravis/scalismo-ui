@@ -1,5 +1,7 @@
 package scalismo.ui.api
 
+import java.awt.Color
+
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
@@ -21,6 +23,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelView: Stati
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, modelView.meshView.triangleMesh, "previewMesh").peer
     previewNode.visible = false
+    previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
     override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = modelView.shapeTransformationView.peer

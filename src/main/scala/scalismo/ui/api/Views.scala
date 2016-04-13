@@ -3,11 +3,13 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
+import scalismo.common.UnstructuredPointsDomain
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.{ RigidTransformationSpace, RigidTransformation }
 import scalismo.statisticalmodel.{ StatisticalMeshModel, DiscreteLowRankGaussianProcess, LowRankGaussianProcess }
+import scalismo.ui.api.TriangleMeshView
 import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
@@ -34,6 +36,50 @@ trait ObjectView {
     else findBelongingGroup(node.parent)
   }
 }
+
+case class PointCloudView(override val peer: PointCloudNode) extends ObjectView {
+  type PeerType = PointCloudNode
+  def color = peer.color.value
+  def color_=(c: Color): Unit = { peer.color.value = c }
+  def radius = peer.radius.value
+  def radius_=(r : Float) : Unit = {peer.radius.value = r}
+}
+
+object PointCloudView {
+  implicit object FindInScenePointCloud extends FindInScene[PointCloudView] {
+    override def createView(s: SceneNode): Option[PointCloudView] = {
+      if (s.isInstanceOf[PointCloudNode]) Some(PointCloudView(s.asInstanceOf[PointCloudNode])) else None
+    }
+  }
+
+
+
+  implicit def callbackPointCloudView = new HandleCallback[PointCloudView] {
+
+    override def registerOnAdd[R](g: Group, f: PointCloudView => R): Unit = {
+      g.peer.listenTo(g.peer.pointClouds)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode) => {
+          val tmv = PointCloudView(newNode.asInstanceOf[PointCloudNode])
+          f(tmv)
+        }
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: PointCloudView => R): Unit = {
+      g.peer.listenTo(g.peer.pointClouds)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode) => {
+          val tmv = PointCloudView(removedNode.asInstanceOf[PointCloudNode])
+          f(tmv)
+        }
+      }
+    }
+  }
+}
+
+
+
 
 case class TriangleMeshView(override val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode

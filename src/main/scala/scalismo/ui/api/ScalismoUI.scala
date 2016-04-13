@@ -3,7 +3,7 @@ package scalismo.ui.api
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry.{Point3D, Point, _3D}
 import scalismo.io.{ ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO }
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.{ Interactor, DefaultInteractor }
@@ -39,8 +39,21 @@ object ScalismoUITest {
   def main(args: Array[String]): Unit = {
 
     val ui = ScalismoUI()
-    val asm = ActiveShapeModelIO.readActiveShapeModel(new File("/tmp/asm.h5")).get
-    val image = ImageIO.read3DScalarImageAsType[Float](new File("/tmp/image.nii")).get
+    val group = ui.createGroup("abc")
+    ui.onNodeAdded(group,(s : PointCloudView) => {s.color = Color.YELLOW})
+    val pcView = ui.show(group, IndexedSeq(Point(0f,0f,0f), Point(1f,1f,1f)), name = "abc")
+
+
+    pcView.radius = 1
+
+//    val pcView2 = ui.find[PointCloudView]((p : PointCloudView) => p.radius ==1).get
+//    pcView2.color = Color.GREEN
+
+//    val asm = ActiveShapeModelIO.readActiveShapeModel(new File("/tmp/asm.h5")).get
+//    val image = ImageIO.read3DScalarImageAsType[Float](new File("/tmp/image.nii")).get
+
+
+
     //    val asmPlugin = new ASMFittingPlugin(ui, models = List(NamedActiveShapeModel(asm, "asm")), image)
     //    asmPlugin.activate
     //

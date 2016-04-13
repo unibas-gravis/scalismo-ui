@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{ DiscreteScalarField, Scalar }
+import scalismo.common.{UnstructuredPointsDomain, DiscreteScalarField, Scalar}
 import scalismo.geometry.{ Point, Landmark, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -32,6 +32,17 @@ object ShowInScene {
     }
 
   }
+
+  implicit object ShowInScenePointCloud extends ShowInScene[IndexedSeq[Point[_3D]]] {
+    override type View = PointCloudView
+
+    override def showInScene(pointCloud : IndexedSeq[Point[_3D]], name: String, group: Group): PointCloudView = {
+      val groupNode = group.peer
+      PointCloudView(groupNode.pointClouds.add(pointCloud, name))
+    }
+
+  }
+
 
   implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
