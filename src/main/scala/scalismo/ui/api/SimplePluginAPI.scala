@@ -14,15 +14,15 @@ trait SimplePluginAPI {
 
   def ui : ScalismoUI
 
-  def interactor : Interactor
+  def interactor : SimpleInteractor
 
   def activate(): Unit = {
-    ui.frame.interactor = interactor
-    interactor.onActivated(ui.frame)
+    ui.frame.interactor = interactor.peer
+    interactor.peer.onActivated(ui.frame)
     onActivated()
   }
   def deactivate() : Unit = {
-    interactor.onDeactivated(ui.frame)
+    interactor.peer.onDeactivated(ui.frame)
     onDeactivated()
   }
 
