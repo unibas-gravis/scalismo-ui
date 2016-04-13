@@ -3,7 +3,6 @@ package scalismo.ui.api
 import java.awt.Color
 import java.io.File
 
-import plugin.TestPluginAPI
 import scalismo.geometry.{Point, _3D}
 import scalismo.io.{ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO}
 import scalismo.ui.control.interactor.Interactor.Verdict
