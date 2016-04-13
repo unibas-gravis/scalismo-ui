@@ -42,7 +42,7 @@ case class PointCloudView(override val peer: PointCloudNode) extends ObjectView 
   def color = peer.color.value
   def color_=(c: Color): Unit = { peer.color.value = c }
   def radius = peer.radius.value
-  def radius_=(r : Float) : Unit = {peer.radius.value = r}
+  def radius_=(r: Float): Unit = { peer.radius.value = r }
 }
 
 object PointCloudView {
@@ -51,8 +51,6 @@ object PointCloudView {
       if (s.isInstanceOf[PointCloudNode]) Some(PointCloudView(s.asInstanceOf[PointCloudNode])) else None
     }
   }
-
-
 
   implicit def callbackPointCloudView = new HandleCallback[PointCloudView] {
 
@@ -77,9 +75,6 @@ object PointCloudView {
     }
   }
 }
-
-
-
 
 case class TriangleMeshView(override val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
@@ -272,7 +267,7 @@ case class RigidTransformationView(override val peer: TransformationNode[RigidTr
 
   def transformation: RigidTransformation[_3D] = peer.transformation
   def transformation_=(transformation: RigidTransformation[_3D]): Unit = {
-    peer.transformation.copy(transformation)
+    peer.transformation = transformation
   }
 }
 
