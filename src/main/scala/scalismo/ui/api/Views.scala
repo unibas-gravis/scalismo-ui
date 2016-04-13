@@ -3,52 +3,45 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.geometry.{Landmark, Point, _3D}
+import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh}
-import scalismo.registration.{RigidTransformationSpace, RigidTransformation}
-import scalismo.statisticalmodel.{StatisticalMeshModel, DiscreteLowRankGaussianProcess, LowRankGaussianProcess}
-import scalismo.ui.model.SceneNode.event.{ChildRemoved, ChildAdded}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.registration.{ RigidTransformationSpace, RigidTransformation }
+import scalismo.statisticalmodel.{ StatisticalMeshModel, DiscreteLowRankGaussianProcess, LowRankGaussianProcess }
+import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 
 import scala.concurrent.Future
 
-
-
-
 /**
-  * Created by luetma00 on 08.04.16.
-  */
+ * Created by luetma00 on 08.04.16.
+ */
 trait ObjectView {
   type PeerType <: SceneNode with Removeable
 
-  protected[api] def peer : PeerType
+  protected[api] def peer: PeerType
 
-  def name : String = peer.name
+  def name: String = peer.name
 
-  def inGroup : Group = {
+  def inGroup: Group = {
     Group(findBelongingGroup(peer))
   }
-  def remove() : Unit = peer.remove()
+  def remove(): Unit = peer.remove()
 
-
-
-  private def findBelongingGroup(node : SceneNode) : GroupNode = {
+  private def findBelongingGroup(node: SceneNode): GroupNode = {
     if (node.isInstanceOf[Group]) this.asInstanceOf[GroupNode]
     else findBelongingGroup(node.parent)
   }
 }
 
-
-
-case class TriangleMeshView(override val peer : TriangleMeshNode) extends ObjectView {
+case class TriangleMeshView(override val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
   def color = peer.color.value
-  def color_= (c : Color) : Unit = {peer.color.value = c}
+  def color_=(c: Color): Unit = { peer.color.value = c }
 
-  def triangleMesh : TriangleMesh = peer.source
-  def transformedTriangleMesh : TriangleMesh  = peer.transformedSource
+  def triangleMesh: TriangleMesh = peer.source
+  def transformedTriangleMesh: TriangleMesh = peer.transformedSource
 }
 
 object TriangleMeshView {
@@ -61,20 +54,20 @@ object TriangleMeshView {
 
   implicit def callbackTriangleMeshView = new HandleCallback[TriangleMeshView] {
 
-    override def registerOnAdd[R](g : Group, f: TriangleMeshView => R) : Unit = {
+    override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode)  => {
+        case ChildAdded(collection, newNode) => {
           val tmv = TriangleMeshView(newNode.asInstanceOf[TriangleMeshNode])
           f(tmv)
         }
       }
     }
 
-    override def registerOnRemove[R](g : Group, f: TriangleMeshView => R) : Unit = {
+    override def registerOnRemove[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode)  => {
+        case ChildRemoved(collection, removedNode) => {
           val tmv = TriangleMeshView(removedNode.asInstanceOf[TriangleMeshNode])
           f(tmv)
         }
@@ -85,14 +78,13 @@ object TriangleMeshView {
 
 }
 
-
-case class LandmarkView(override val peer : LandmarkNode) extends ObjectView {
+case class LandmarkView(override val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
   def color = peer.color.value
-  def color_= (c : Color) : Unit = peer.color.value = c
+  def color_=(c: Color): Unit = peer.color.value = c
 
-  def landmark : Landmark[_3D] = peer.source
-  def transformedLandmark : Landmark[_3D] = peer.transformedSource
+  def landmark: Landmark[_3D] = peer.source
+  def transformedLandmark: Landmark[_3D] = peer.transformedSource
 }
 
 object LandmarkView {
@@ -101,7 +93,6 @@ object LandmarkView {
       if (s.isInstanceOf[LandmarkNode]) Some(LandmarkView(s.asInstanceOf[LandmarkNode])) else None
     }
   }
-
 
   implicit object CallbackLandmarkView extends HandleCallback[LandmarkView] {
 
@@ -127,14 +118,12 @@ object LandmarkView {
   }
 }
 
-
-case class ScalarMeshFieldView(override val peer : ScalarMeshFieldNode) extends ObjectView {
+case class ScalarMeshFieldView(override val peer: ScalarMeshFieldNode) extends ObjectView {
   type PeerType = ScalarMeshFieldNode
 
-  def scalarMeshField : ScalarMeshField[Float] = peer.source
+  def scalarMeshField: ScalarMeshField[Float] = peer.source
   def transformedScalarMeshField = peer.transformedSource
 }
-
 
 object ScalarMeshFieldView {
   implicit object FindInSceneScalarMeshFiled$ extends FindInScene[ScalarMeshFieldView] {
@@ -145,10 +134,10 @@ object ScalarMeshFieldView {
 
 }
 
-case class ImageView(override val peer : ImageNode) extends ObjectView {
+case class ImageView(override val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
-  def image : DiscreteScalarImage[_3D, Float] = peer.source
+  def image: DiscreteScalarImage[_3D, Float] = peer.source
 }
 
 object ImageView {
@@ -183,25 +172,19 @@ object ImageView {
 
 }
 
-
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class StatisticalMeshModelView(private val meshNode : TriangleMeshNode,
-                                    private val shapeTransNode : TransformationNode[DiscreteLowRankGpPointTransformation],
-                                    private val poseTransNode : TransformationNode[RigidTransformation[_3D]]) {
-
+case class StatisticalMeshModelView(private val meshNode: TriangleMeshNode,
+    private val shapeTransNode: TransformationNode[DiscreteLowRankGpPointTransformation],
+    private val poseTransNode: TransformationNode[RigidTransformation[_3D]]) {
 
   def meshView = TriangleMeshView(meshNode)
   def shapeTransformationView = DiscreteLowRankGPTransformationView(shapeTransNode)
   def poseTransformationView = RigidTransformationView(poseTransNode)
 
-
-  def statisticalMeshModel : StatisticalMeshModel = StatisticalMeshModel(meshView.triangleMesh, shapeTransNode.transformation.dgp)
+  def statisticalMeshModel: StatisticalMeshModel = StatisticalMeshModel(meshView.triangleMesh, shapeTransNode.transformation.dgp)
 }
 
-
-
-
-case class Group(override protected[api] val peer : GroupNode) extends ObjectView {
+case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   type PeerType = GroupNode
 }
@@ -215,39 +198,34 @@ object Group {
 
 }
 
-
-case class TransformationView(override val peer : TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
-  def transformation : Point[_3D] => Point[_3D] = peer.transformation
-  def transformation_=(t : Point[_3D] => Point[_3D]) : Unit = {peer.transformation= t}
+case class TransformationView(override val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
+  def transformation: Point[_3D] => Point[_3D] = peer.transformation
+  def transformation_=(t: Point[_3D] => Point[_3D]): Unit = { peer.transformation = t }
 
   override type PeerType = TransformationNode[Point[_3D] => Point[_3D]]
-
 
 }
 
 object TransformationView {
   implicit object FindInSceneGenericTransformation$ extends FindInScene[TransformationView] {
-    override def createView(s : SceneNode) : Option[TransformationView] = {
+    override def createView(s: SceneNode): Option[TransformationView] = {
 
       type PointToPointTransformation = Point[_3D] => Point[_3D]
       // here we need a two step process due to type erasure to find the right type.
       if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[PointToPointTransformation]
-      ) {
+        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[PointToPointTransformation]) {
         Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation]]))
-      }
-      else None
+      } else None
     }
   }
 }
 
-
-case class RigidTransformationView(override val peer : TransformationNode[RigidTransformation[_3D]]) extends ObjectView  {
+case class RigidTransformationView(override val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
 
   override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
-  def transformation : RigidTransformation[_3D] = peer.transformation
-  def transformation_=(transformation : RigidTransformation[_3D]) : Unit = {
+  def transformation: RigidTransformation[_3D] = peer.transformation
+  def transformation_=(transformation: RigidTransformation[_3D]): Unit = {
     peer.transformation.copy(transformation)
   }
 }
@@ -255,59 +233,55 @@ case class RigidTransformationView(override val peer : TransformationNode[RigidT
 object RigidTransformationView {
 
   implicit object FindInSceneRigidTransformation$ extends FindInScene[RigidTransformationView] {
-    override def createView(s : SceneNode) : Option[RigidTransformationView] = {
+    override def createView(s: SceneNode): Option[RigidTransformationView] = {
 
       // here we need a two step process due to type erasure to find the right type.
       if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[RigidTransformation[_]]
-      ) {
+        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[RigidTransformation[_]]) {
         Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
-      }
-      else None
+      } else None
     }
   }
 
 }
 
-case class DiscreteLowRankGPTransformationView(override val peer : TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
+case class DiscreteLowRankGPTransformationView(override val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
 
   override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
-  def coefficients : DenseVector[Float] = peer.transformation.coefficients
-  def coefficients_=(coefficients : DenseVector[Float]) : Unit = {
-    {peer.transformation = peer.transformation.copy(coefficients)}
+  def coefficients: DenseVector[Float] = peer.transformation.coefficients
+  def coefficients_=(coefficients: DenseVector[Float]): Unit = {
+    { peer.transformation = peer.transformation.copy(coefficients) }
   }
 
-  val transformation : Point[_3D] => Point[_3D] =  peer.transformation
+  val transformation: Point[_3D] => Point[_3D] = peer.transformation
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
-  def discreteLowRankGaussianProcess_=(dgp : DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
+  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
     peer.transformation = (DiscreteLowRankGpPointTransformation(dgp))
   }
 }
 
 object DiscreteLowRankGPTransformationView {
   implicit object FindInSceneDiscreteGPTransformation$ extends FindInScene[DiscreteLowRankGPTransformationView] {
-    override def createView(s : SceneNode) : Option[DiscreteLowRankGPTransformationView] = {
+    override def createView(s: SceneNode): Option[DiscreteLowRankGPTransformationView] = {
 
       // here we need a two step process due to type erasure to find the right type.
       if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]
-      ) {
+        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
         Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
-      }
-      else None
+      } else None
     }
   }
 
 }
 
-case class LowRankGPTransformationView(override val peer : TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
+case class LowRankGPTransformationView(override val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
 
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
-  def coefficients : DenseVector[Float] = peer.transformation.coefficients
-  def coefficients_=(coefficients : DenseVector[Float]) : Unit = {
-    {peer.transformation = peer.transformation.copy(coefficients)}
+  def coefficients: DenseVector[Float] = peer.transformation.coefficients
+  def coefficients_=(coefficients: DenseVector[Float]): Unit = {
+    { peer.transformation = peer.transformation.copy(coefficients) }
   }
 }

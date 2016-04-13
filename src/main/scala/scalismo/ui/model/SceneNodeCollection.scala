@@ -30,7 +30,6 @@ trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with Collaps
     publishEvent(SceneNode.event.ChildrenChanged(this))
   }
 
-
   def remove(child: ChildNode): Unit = {
     require(_items.contains(child))
     _items -= child

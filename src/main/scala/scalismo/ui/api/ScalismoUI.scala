@@ -3,16 +3,15 @@ package scalismo.ui.api
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{Point, _3D}
-import scalismo.io.{ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO}
+import scalismo.geometry.{ Point, _3D }
+import scalismo.io.{ ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO }
 import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.{Interactor, DefaultInteractor}
+import scalismo.ui.control.interactor.{ Interactor, DefaultInteractor }
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ScalismoFrame
 
-import scala.swing.{Component, Button}
-
+import scala.swing.{ Component, Button }
 
 class ScalismoUI() extends SimpleAPI {
 
@@ -28,58 +27,53 @@ class ScalismoUI() extends SimpleAPI {
 
 }
 
-
 object ScalismoUI {
 
-  def apply(interactor : Interactor = new DefaultInteractor {}): ScalismoUI = {
+  def apply(interactor: Interactor = new DefaultInteractor {}): ScalismoUI = {
     scalismo.initialize()
     new ScalismoUI()
   }
 }
 
-
-
 object ScalismoUITest {
   def main(args: Array[String]): Unit = {
-
 
     val ui = ScalismoUI()
     val asm = ActiveShapeModelIO.readActiveShapeModel(new File("/tmp/asm.h5")).get
     val image = ImageIO.read3DScalarImageAsType[Float](new File("/tmp/image.nii")).get
-//    val asmPlugin = new ASMFittingPlugin(ui, models = List(NamedActiveShapeModel(asm, "asm")), image)
-//    asmPlugin.activate
-//
-////    Thread.sleep(5000)
-//    plugin.deactivate()
+    //    val asmPlugin = new ASMFittingPlugin(ui, models = List(NamedActiveShapeModel(asm, "asm")), image)
+    //    asmPlugin.activate
+    //
+    ////    Thread.sleep(5000)
+    //    plugin.deactivate()
 
-//    val meshGroup = ui.createGroup("group1")
-//    ui.onNodeAdded(meshGroup, (v : LandmarkView) => v.color = Color.GREEN)
-//
-//    val mesh = MeshIO.readMesh(new File("/tmp/mesh.stl")).get
-//    ui.show(mesh, "abc", meshGroup)
-//
-//    ui.addTransformation(meshGroup, (p : Point[_3D]) => p + scalismo.geometry.Vector(1f, 20f, 30f), name = "tmy trans")
+    //    val meshGroup = ui.createGroup("group1")
+    //    ui.onNodeAdded(meshGroup, (v : LandmarkView) => v.color = Color.GREEN)
+    //
+    //    val mesh = MeshIO.readMesh(new File("/tmp/mesh.stl")).get
+    //    ui.show(mesh, "abc", meshGroup)
+    //
+    //    ui.addTransformation(meshGroup, (p : Point[_3D]) => p + scalismo.geometry.Vector(1f, 20f, 30f), name = "tmy trans")
 
-//    val meshView = ui.show(mesh, name = "abc", group = meshGroup)
-//    meshView.color = Color.RED
-//
-//    val modelGroup = ui.createGroup("modelGroup")
-//    val model = StatismoIO.readStatismoMeshModel(new File("/tmp/model.h5")).get
-//    val smView = ui.show(model, "abc", modelGroup)
-//
-//    smView.shapeTransformation.coefficients = smView.shapeTransformation.coefficients + 1.0f
-//
-//    val mesh2 = ui.find((p : TriangleMeshView) => p.color == Color.RED).get
-//    mesh2.remove()
+    //    val meshView = ui.show(mesh, name = "abc", group = meshGroup)
+    //    meshView.color = Color.RED
+    //
+    //    val modelGroup = ui.createGroup("modelGroup")
+    //    val model = StatismoIO.readStatismoMeshModel(new File("/tmp/model.h5")).get
+    //    val smView = ui.show(model, "abc", modelGroup)
+    //
+    //    smView.shapeTransformation.coefficients = smView.shapeTransformation.coefficients + 1.0f
+    //
+    //    val mesh2 = ui.find((p : TriangleMeshView) => p.color == Color.RED).get
+    //    mesh2.remove()
 
-
-//
-//    ui.onNodeRemoved(meshGroup, (v : TriangleMeshView) => println(s"node with name ${v.name} removed"))
-//
-//    val meshView2 = ui.show(mesh, "cde", meshGroup)
-//
-//    meshView2.remove()
-//
+    //
+    //    ui.onNodeRemoved(meshGroup, (v : TriangleMeshView) => println(s"node with name ${v.name} removed"))
+    //
+    //    val meshView2 = ui.show(mesh, "cde", meshGroup)
+    //
+    //    meshView2.remove()
+    //
 
     //    val meshView = ui.show(mesh, "a mesh", meshGroup)
     //    meshView.color= Color.RED
@@ -97,10 +91,8 @@ object ScalismoUITest {
     //
     //ui.addTransformation(meshGroup, (p : Point[_3D]) => p + p.toVector * 0.1, "add")
 
-
     //    val model = StatismoIO.readStatismoMeshModel(new File("/tmp/model.h5")).get
     //    val smView = ui.show(model, "abc", modelGroup)
-
 
     //
 
@@ -111,7 +103,6 @@ object ScalismoUITest {
 
     //    val tview = ui.addTransformation(group, t)
     //    tview.coefficients =
-
 
     //    val scalarArrayData = mesh.points.map(p => if 1(p.x < 0) 1.toShort else 0.toShort).toArray
     //    val smf = ScalarMeshField(mesh, ScalarArray[Short](scalarArrayData))
