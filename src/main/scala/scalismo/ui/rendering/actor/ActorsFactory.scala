@@ -14,7 +14,7 @@ import scala.reflect.ClassTag
  *
  */
 object ActorsFactory {
-  val BuiltinFactories: List[ActorsFactory] = List(BoundingBoxActor, TriangleMeshActor, ScalarMeshFieldActor, PointCloudActor, LandmarkActor, ImageActor)
+  val BuiltinFactories: List[ActorsFactory] = List(BoundingBoxActor, TriangleMeshActor, ScalarMeshFieldActor, PointCloudActor, LandmarkActor, ImageActor, VectorFieldActor)
 
   var _factories: Map[Class[_ <: Renderable], ActorsFactory] = Map.empty
 
