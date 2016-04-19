@@ -8,7 +8,11 @@ import scalismo.ui.model._
  * Created by luetma00 on 08.04.16.
  */
 
-trait FindInScene[V] {
+/**
+  * This typeclass needs to be implemented for a type V (a view) if the user should be
+  * able to search for a view
+  */
+protected[api] trait FindInScene[V] {
   def createView(s: SceneNode): Option[V]
 
 }

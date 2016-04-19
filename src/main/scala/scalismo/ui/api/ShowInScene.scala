@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{UnstructuredPointsDomain, DiscreteScalarField, Scalar}
+import scalismo.common.{DiscreteVectorField, UnstructuredPointsDomain, DiscreteScalarField, Scalar}
 import scalismo.geometry.{ Point, Landmark, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -72,6 +72,38 @@ object ShowInScene {
     }
 
   }
+
+  implicit object ShowInSceneLandmarks extends ShowInScene[Seq[Landmark[_3D]]] {
+    override type View = Seq[LandmarkView]
+
+    override def showInScene(lms: Seq[Landmark[_3D]], name: String, group: Group): Seq[LandmarkView] = {
+      val landmarkViews = for (lm <- lms) yield {
+        LandmarkView(group.peer.landmarks.add(lm))
+      }
+      landmarkViews
+    }
+
+  }
+
+
+
+  implicit def showInSceneScalarField[A : Scalar : ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
+    override type View = ScalarFieldView
+
+    override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
+      ScalarFieldView(group.peer.scalarFields.add(sf, name))
+    }
+  }
+
+
+  implicit object ShowInSceneVectorField extends ShowInScene[DiscreteVectorField[_3D, _3D]] {
+    override type View = VectorFieldView
+
+    override def showInScene(sf: DiscreteVectorField[_3D, _3D], name: String, group: Group): VectorFieldView = {
+      VectorFieldView(group.peer.vectorFields.add(sf, name))
+    }
+  }
+
 
   implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {
     type View = StatisticalMeshModelView
