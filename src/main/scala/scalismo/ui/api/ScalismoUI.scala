@@ -3,8 +3,8 @@ package scalismo.ui.api
 import java.awt.Color
 import java.io.File
 
-import scalismo.common.{DiscreteVectorField, UnstructuredPointsDomain, ScalarArray, DiscreteScalarField}
-import scalismo.geometry.{Landmark, Point3D, Point, _3D}
+import scalismo.common.{ DiscreteVectorField, UnstructuredPointsDomain, ScalarArray, DiscreteScalarField }
+import scalismo.geometry.{ Landmark, Point3D, Point, _3D }
 import scalismo.io.{ ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO }
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.{ Interactor, DefaultInteractor }

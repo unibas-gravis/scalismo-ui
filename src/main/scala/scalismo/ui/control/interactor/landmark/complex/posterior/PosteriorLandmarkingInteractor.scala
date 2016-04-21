@@ -59,7 +59,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     def flatten(v: IndexedSeq[Vector[_3D]]) = DenseVector(v.flatten(_.toArray).toArray)
 
     val lmPointAndId = {
-      previewNode.source.findClosestPoint(landmark.source.point)
+      previewNode.source.pointSet.findClosestPoint(landmark.source.point)
     }
 
     val mvec = flatten(IndexedSeq(sourceGpNode.transformation.dgp.mean(lmPointAndId.id)))

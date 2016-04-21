@@ -1,5 +1,6 @@
 package scalismo.ui.rendering.actor
 
+import scalismo.geometry._3D
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
@@ -39,7 +40,7 @@ object MeshActor {
 
     def lineWidth: LineWidthProperty
 
-    def mesh: TriangleMesh
+    def mesh: TriangleMesh[_3D]
 
     def node: SceneNode
   }
@@ -49,7 +50,7 @@ object MeshActor {
     class TriangleMeshRenderable(override val node: TriangleMeshNode) extends MeshRenderable {
       override def opacity: OpacityProperty = node.opacity
 
-      override def mesh: TriangleMesh = node.transformedSource
+      override def mesh: TriangleMesh[_3D] = node.transformedSource
 
       override def lineWidth: LineWidthProperty = node.lineWidth
 
@@ -61,7 +62,7 @@ object MeshActor {
 
       override def lineWidth: LineWidthProperty = node.lineWidth
 
-      override def mesh: TriangleMesh = field.mesh
+      override def mesh: TriangleMesh[_3D] = field.mesh
 
       def scalarRange: ScalarRangeProperty = node.scalarRange
 

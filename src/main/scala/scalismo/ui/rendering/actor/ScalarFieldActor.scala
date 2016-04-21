@@ -1,16 +1,18 @@
 package scalismo.ui.rendering.actor
 
-import scalismo.mesh.{ScalarMeshField, TriangleCell, TriangleMesh}
+import scalismo.common.UnstructuredPointsDomain
+import scalismo.geometry._3D
+import scalismo.mesh._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{BoundingBox, PointCloudNode, ScalarFieldNode, ScalarMeshFieldNode}
+import scalismo.ui.model.{ BoundingBox, PointCloudNode, ScalarFieldNode, ScalarMeshFieldNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
-import vtk.{vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource}
+import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 
 object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {
   override def actorsFor(renderable: ScalarFieldNode, viewport: ViewportPanel): Option[Actors] = {
@@ -42,7 +44,8 @@ trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     // Hack alert! We create a triangle mesh with empty cells and built from it a scalarMeshData.
     // In this way we can use the conversion utilities and have colors for free
 
-    val mesh = TriangleMesh(sceneNode.source.domain.points.toIndexedSeq, IndexedSeq[TriangleCell]())
+    val meshDomain = UnstructuredPointsDomain[_3D](sceneNode.source.domain.points.toIndexedSeq)
+    val mesh = TriangleMesh3D(meshDomain, TriangleList(IndexedSeq[TriangleCell]()))
     val smf = ScalarMeshField(mesh, sceneNode.source.data)
     MeshConversion.scalarMeshFieldToVtkPolyData(smf)
   }
@@ -75,8 +78,6 @@ trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
   rerender(true)
 
 }
-
-
 
 class ScalarFieldActor2D(override val sceneNode: ScalarFieldNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with ScalarFieldActor with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth

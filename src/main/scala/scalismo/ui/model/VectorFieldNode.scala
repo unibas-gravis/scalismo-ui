@@ -1,7 +1,7 @@
 package scalismo.ui.model
 
 import scalismo.common.DiscreteVectorField
-import scalismo.geometry.{Point3D, _3D}
+import scalismo.geometry.{ Point3D, _3D }
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 
@@ -16,9 +16,8 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 }
 
 class VectorFieldNode(override val parent: VectorFieldsNode, val source: DiscreteVectorField[_3D, _3D], initialName: String)
-  extends RenderableSceneNode with Removeable with Renameable with Grouped
-    with HasOpacity with HasLineWidth with HasScalarRange
-{
+    extends RenderableSceneNode with Removeable with Renameable with Grouped
+    with HasOpacity with HasLineWidth with HasScalarRange {
 
   name = initialName
 
@@ -29,7 +28,7 @@ class VectorFieldNode(override val parent: VectorFieldsNode, val source: Discret
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
   override val scalarRange: ScalarRangeProperty = {
-    val (min, max) = {val norms = vectors.map(_.norm); (norms.min.toFloat, norms.max.toFloat) }
+    val (min, max) = { val norms = vectors.map(_.norm); (norms.min.toFloat, norms.max.toFloat) }
     new ScalarRangeProperty(ScalarRange(min, max, min, max))
   }
 

@@ -3,13 +3,13 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteVectorField, DiscreteScalarField}
-import scalismo.geometry.{Dim, Landmark, Point, _3D}
+import scalismo.common.{ DiscreteVectorField, DiscreteScalarField }
+import scalismo.geometry.{ Dim, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
-import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
@@ -35,7 +35,6 @@ sealed trait ObjectView {
   }
 }
 
-
 case class PointCloudView(override protected[api] val peer: PointCloudNode) extends ObjectView {
   type PeerType = PointCloudNode
   def color = peer.color.value
@@ -43,7 +42,7 @@ case class PointCloudView(override protected[api] val peer: PointCloudNode) exte
   def radius = peer.radius.value
   def radius_=(r: Float): Unit = { peer.radius.value = r }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 }
 
 object PointCloudView {
@@ -82,11 +81,10 @@ case class TriangleMeshView(override protected[api] val peer: TriangleMeshNode) 
   def color = peer.color.value
   def color_=(c: Color): Unit = { peer.color.value = c }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 
-
-  def triangleMesh: TriangleMesh = peer.source
-  def transformedTriangleMesh: TriangleMesh = peer.transformedSource
+  def triangleMesh: TriangleMesh[_3D] = peer.source
+  def transformedTriangleMesh: TriangleMesh[_3D] = peer.transformedSource
 }
 
 object TriangleMeshView {
@@ -122,14 +120,13 @@ object TriangleMeshView {
   }
 }
 
-
 case class LandmarkView(override protected[api] val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
 
   def color = peer.color.value
   def color_=(c: Color): Unit = { peer.color.value = c }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
   def landmark: Landmark[_3D] = peer.source
   def transformedLandmark: Landmark[_3D] = peer.transformedSource
 }
@@ -168,15 +165,14 @@ object LandmarkView {
 case class ScalarMeshFieldView(override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
   type PeerType = ScalarMeshFieldNode
 
-  def scalarRange : ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s : ScalarRange) : Unit = {peer.scalarRange.value = s}
+  def scalarRange: ScalarRange = peer.scalarRange.value
+  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
   def transformedScalarMeshField = peer.transformedSource
 }
-
 
 object ScalarMeshFieldView {
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarMeshFieldView] {
@@ -209,17 +205,15 @@ object ScalarMeshFieldView {
   }
 }
 
-
-
 case class ScalarFieldView(override protected[api] val peer: ScalarFieldNode) extends ObjectView {
   type PeerType = ScalarFieldNode
 
-  def scalarRange : ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s : ScalarRange) : Unit = {peer.scalarRange.value = s}
+  def scalarRange: ScalarRange = peer.scalarRange.value
+  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
   def radius = peer.radius.value
   def radius_=(r: Float): Unit = { peer.radius.value = r }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 
   def scalarField: DiscreteScalarField[_3D, Float] = peer.source
   def transformedScalarField = peer.transformedSource
@@ -257,16 +251,13 @@ object ScalarFieldView {
   }
 }
 
-
-
 case class VectorFieldView(override protected[api] val peer: VectorFieldNode) extends ObjectView {
   type PeerType = VectorFieldNode
 
-  def scalarRange : ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s : ScalarRange) : Unit = {peer.scalarRange.value = s}
+  def scalarRange: ScalarRange = peer.scalarRange.value
+  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
-
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 
   def vectorField[A]: DiscreteVectorField[_3D, _3D] = peer.source
 }
@@ -303,14 +294,11 @@ object VectorFieldView {
   }
 }
 
-
-
 case class ImageView(override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
-
   def opacity = peer.opacity.value
-  def opacity_=(o : Float) : Unit = {peer.opacity.value = o }
+  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
 
   def image: DiscreteScalarImage[_3D, Float] = peer.source
 }

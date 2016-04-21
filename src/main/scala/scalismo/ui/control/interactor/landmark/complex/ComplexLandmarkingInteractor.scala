@@ -111,7 +111,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
   }
 
   def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[Vector3D], List[Float])] = {
-    val meshOption: Option[TriangleMesh] = node match {
+    val meshOption: Option[TriangleMesh[_3D]] = node match {
       case m: TriangleMeshNode => Some(m.source)
       case m: ScalarMeshFieldNode => Some(m.source.mesh)
       case _ => None
@@ -123,22 +123,22 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
           val (planeNormal, meshNormal, meshTangential) = _2d.axis match {
             case Axis.Z =>
               val v1 = Vector3D(0, 0, 1)
-              val v2: Vector3D = mesh.normalAtPoint(point).copy(z = 0)
+              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(z = 0)
               (v1, v2, Vector3D(-v2.y, v2.x, 0))
             case Axis.Y =>
               val v1 = Vector3D(0, 1, 0)
-              val v2: Vector3D = mesh.normalAtPoint(point).copy(y = 0)
+              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(y = 0)
               (v1, v2, Vector3D(-v2.z, 0, v2.x))
             case Axis.X =>
               val v1 = Vector3D(1, 0, 0)
-              val v2: Vector3D = mesh.normalAtPoint(point).copy(x = 0)
+              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(x = 0)
               (v1, v2, Vector3D(0, -v2.z, v2.y))
           }
           val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): Vector3D }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
         case _3d: ViewportPanel3D =>
-          val meshNormal = mesh.normalAtPoint(point)
+          val meshNormal = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id)
           val firstPerp = {
             /* There is an infinite number of perpendicular vectors, any one will do.
              * To find any perpendicular vector, just take the cross product with any other, non-parallel vector.

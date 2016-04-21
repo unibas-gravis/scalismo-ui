@@ -2,10 +2,10 @@ package scalismo.ui.rendering.actor
 
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{BoundingBox, PointCloudNode, VectorFieldNode}
+import scalismo.ui.model.{ BoundingBox, PointCloudNode, VectorFieldNode }
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk._
 
 object VectorFieldActor extends SimpleActorsFactory[VectorFieldNode] {
@@ -24,7 +24,6 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
 
   override def scalarRange: ScalarRangeProperty = sceneNode.scalarRange
 
-
   protected def onInstantiated(): Unit
 
   lazy val arrow = new vtkArrowSource
@@ -40,13 +39,11 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
       SetNumberOfComponents(1)
     }
 
-
-    for (((point , vector), i) <- sceneNode.source.pointsWithValues.zipWithIndex) {
+    for (((point, vector), i) <- sceneNode.source.pointsWithValues.zipWithIndex) {
       points.InsertNextPoint(point(0), point(1), point(2))
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
       scalars.InsertNextValue(vector.norm)
     }
-
 
     new vtkPolyData {
       SetPoints(points)
@@ -54,7 +51,6 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
       GetPointData().SetScalars(scalars)
     }
   }
-
 
   lazy val polydata = setupPolyData()
 
@@ -70,7 +66,6 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
 
   mapper.SetInputConnection(glyph.GetOutputPort)
   mapper.ScalarVisibilityOn()
-
 
   def rerender(geometryChanged: Boolean) = {
     arrow.Modified()
@@ -100,7 +95,6 @@ class VectorFieldActor3D(override val sceneNode: VectorFieldNode) extends Vector
 
 }
 
-
 class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with VectorFieldActor with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth
 
@@ -113,5 +107,4 @@ class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: View
   override protected def sourceBoundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(polydata.GetBounds())
 
 }
-
 

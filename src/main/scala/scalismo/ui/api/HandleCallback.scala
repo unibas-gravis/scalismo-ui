@@ -10,8 +10,8 @@ import scala.swing.event.Event
  */
 
 /**
-  * This typeclass needs to be implemented if callbacks should be allowed for a view V
-  */
+ * This typeclass needs to be implemented if callbacks should be allowed for a view V
+ */
 protected[api] trait HandleCallback[V] {
   // calls function f if a node with type A has been added to the group g
   def registerOnAdd[R](g: Group, f: V => R)

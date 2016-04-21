@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{DiscreteVectorField, UnstructuredPointsDomain, DiscreteScalarField, Scalar}
+import scalismo.common.{ DiscreteVectorField, UnstructuredPointsDomain, DiscreteScalarField, Scalar }
 import scalismo.geometry.{ Point, Landmark, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -23,10 +23,10 @@ object ShowInScene {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit object ShowInSceneMesh$ extends ShowInScene[TriangleMesh] {
+  implicit object ShowInSceneMesh$ extends ShowInScene[TriangleMesh[_3D]] {
     override type View = TriangleMeshView
 
-    override def showInScene(mesh: TriangleMesh, name: String, group: Group): TriangleMeshView = {
+    override def showInScene(mesh: TriangleMesh[_3D], name: String, group: Group): TriangleMeshView = {
       val groupNode = group.peer
       TriangleMeshView(groupNode.triangleMeshes.add(mesh, name))
     }
@@ -36,13 +36,12 @@ object ShowInScene {
   implicit object ShowInScenePointCloud extends ShowInScene[IndexedSeq[Point[_3D]]] {
     override type View = PointCloudView
 
-    override def showInScene(pointCloud : IndexedSeq[Point[_3D]], name: String, group: Group): PointCloudView = {
+    override def showInScene(pointCloud: IndexedSeq[Point[_3D]], name: String, group: Group): PointCloudView = {
       val groupNode = group.peer
       PointCloudView(groupNode.pointClouds.add(pointCloud, name))
     }
 
   }
-
 
   implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
@@ -85,16 +84,13 @@ object ShowInScene {
 
   }
 
-
-
-  implicit def showInSceneScalarField[A : Scalar : ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
+  implicit def showInSceneScalarField[A: Scalar: ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
     override type View = ScalarFieldView
 
     override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
       ScalarFieldView(group.peer.scalarFields.add(sf, name))
     }
   }
-
 
   implicit object ShowInSceneVectorField extends ShowInScene[DiscreteVectorField[_3D, _3D]] {
     override type View = VectorFieldView
@@ -103,7 +99,6 @@ object ShowInScene {
       VectorFieldView(group.peer.vectorFields.add(sf, name))
     }
   }
-
 
   implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {
     type View = StatisticalMeshModelView

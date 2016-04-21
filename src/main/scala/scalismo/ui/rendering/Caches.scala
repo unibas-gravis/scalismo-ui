@@ -8,7 +8,7 @@ import scalismo.ui.util.Cache
 import vtk.{ vtkPolyData, vtkStructuredPoints }
 
 object Caches {
-  final val TriangleMeshCache = new Cache[TriangleMesh, vtkPolyData]
+  final val TriangleMeshCache = new Cache[TriangleMesh[_3D], vtkPolyData]
   final val ImageCache = new Cache[DiscreteScalarImage[_3D, _], vtkStructuredPoints]
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
   final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, Float], vtkPolyData]

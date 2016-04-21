@@ -36,8 +36,8 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override va
   override def remove(): Unit = parent.remove(this)
 
   override def inverseTransform(point: Point3D): Point3D = {
-    val id = transformedSource.mesh.findClosestPoint(point).id
-    source.mesh.point(id)
+    val id = transformedSource.mesh.pointSet.findClosestPoint(point).id
+    source.mesh.pointSet.point(id)
   }
 
   override def transform(untransformed: ScalarMeshField[Float], transformation: PointTransformation): ScalarMeshField[Float] = {

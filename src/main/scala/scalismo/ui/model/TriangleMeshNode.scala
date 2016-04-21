@@ -2,7 +2,7 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.Point3D
+import scalismo.geometry.{ Point3D, _3D }
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities._
@@ -26,14 +26,14 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
     }
   }
 
-  def add(mesh: TriangleMesh, name: String): TriangleMeshNode = {
+  def add(mesh: TriangleMesh[_3D], name: String): TriangleMeshNode = {
     val node = new TriangleMeshNode(this, mesh, name)
     add(node)
     node
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh, initialName: String) extends Transformable[TriangleMesh] with InverseTransformation with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth with HasPickable {
+class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh[_3D], initialName: String) extends Transformable[TriangleMesh[_3D]] with InverseTransformation with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth with HasPickable {
   name = initialName
 
   override val color = new ColorProperty()
@@ -42,13 +42,13 @@ class TriangleMeshNode(override val parent: TriangleMeshesNode, override val sou
   override val pickable = new PickableProperty()
 
   override def inverseTransform(point: Point3D): Point3D = {
-    val id = transformedSource.findClosestPoint(point).id
-    source.point(id)
+    val id = transformedSource.pointSet.findClosestPoint(point).id
+    source.pointSet.point(id)
   }
 
   override def group: GroupNode = parent.parent
 
-  override def transform(untransformed: TriangleMesh, transformation: PointTransformation): TriangleMesh = {
+  override def transform(untransformed: TriangleMesh[_3D], transformation: PointTransformation): TriangleMesh[_3D] = {
     untransformed.transform(transformation)
   }
 

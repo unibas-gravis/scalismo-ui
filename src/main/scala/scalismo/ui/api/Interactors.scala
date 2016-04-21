@@ -8,7 +8,6 @@ import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandma
 import scalismo.ui.model.{ TriangleMeshNode, GroupNode, DiscreteLowRankGpPointTransformation, TransformationNode }
 import scalismo.ui.view.ScalismoFrame
 
-
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
   protected[api] def peer: ConcreteInteractor
