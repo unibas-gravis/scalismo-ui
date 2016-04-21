@@ -8,8 +8,8 @@ object SceneNode {
   object event {
 
     case class ChildrenChanged(nodeCollection: SceneNode) extends Event
-    case class ChildAdded(nodeCollection : SceneNode, addedNode : SceneNode) extends Event
-    case class ChildRemoved(nodeCollection : SceneNode, removedNode : SceneNode) extends Event
+    case class ChildAdded(nodeCollection: SceneNode, addedNode: SceneNode) extends Event
+    case class ChildRemoved(nodeCollection: SceneNode, removedNode: SceneNode) extends Event
   }
 
 }

@@ -72,3 +72,4 @@ class TransformationNode[T <: PointTransformation](override val parent: Transfor
 
   override def group: GroupNode = parent.parent
 }
+
