@@ -70,7 +70,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       }
       slider.min = Math.floor(min).toInt
       slider.max = Math.ceil(max).toInt
-      slider.value = Math.round(value)
+      slider.value = Math.round(value).toInt
     }
 
   }

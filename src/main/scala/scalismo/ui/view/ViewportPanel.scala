@@ -153,7 +153,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
       case Axis.Z => p.z
     }
     deafTo(positionSlider)
-    positionSlider.value = Math.round(v)
+    positionSlider.value = Math.round(v).toInt
     listenTo(positionSlider)
   }
 

@@ -5,16 +5,16 @@ import scalismo.statisticalmodel.NDimensionalNormalDistribution
 
 object Uncertainty {
   val DefaultAxes = List(Vector3D(1, 0, 0), Vector3D(0, 1, 0), Vector3D(0, 0, 1))
-  var DefaultSigmas: List[Float] = List(1, 1, 1)
+  var DefaultSigmas: List[Double] = List(1, 1, 1)
   var DefaultUncertainty: Uncertainty = Uncertainty(DefaultAxes, DefaultSigmas)
 
   def apply(distribution: NDimensionalNormalDistribution[_3D]): Uncertainty = {
-    val (axes, sigmas) = distribution.principalComponents.toList.map { case (a, v) => (a: Vector3D, Math.sqrt(v).toFloat) }.unzip
+    val (axes, sigmas) = distribution.principalComponents.toList.map { case (a, v) => (a: Vector3D, Math.sqrt(v)) }.unzip
     Uncertainty(axes, sigmas)
   }
 }
 
-case class Uncertainty(axes: List[Vector3D], sigmas: List[Float]) {
+case class Uncertainty(axes: List[Vector3D], sigmas: List[Double]) {
   require(axes.length == 3 && sigmas.length == 3)
 
   // FIXME: require that axes are perpendicular and have a norm of 1

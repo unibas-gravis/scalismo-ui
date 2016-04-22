@@ -115,15 +115,15 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private var node: Option[TransformationNode[LowRankGpPointTransformation]] = None
 
-  def labelFormat(value: Float) = f"$value%1.1f"
+  def labelFormat(value: Double) = f"$value%1.1f"
 
   def resetValues() = {
     node.foreach { n =>
-      n.transformation = n.transformation.copy(coefficients = DenseVector.zeros[Float](n.transformation.gp.rank))
+      n.transformation = n.transformation.copy(coefficients = DenseVector.zeros[Double](n.transformation.gp.rank))
     }
   }
 
-  private def setCoefficient(index: Int, value: Float) = {
+  private def setCoefficient(index: Int, value: Double) = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       if (coeffs(index) != value) {

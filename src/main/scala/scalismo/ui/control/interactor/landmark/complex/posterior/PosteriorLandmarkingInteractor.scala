@@ -24,7 +24,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     PosteriorReadyForCreating.enter()
   }
 
-  private def genericRegressionComputations(gp: LowRankGaussianProcess[_3D, _3D], trainingData: IndexedSeq[Point3D], landmark: LandmarkNode): DenseMatrix[Float] = {
+  private def genericRegressionComputations(gp: LowRankGaussianProcess[_3D, _3D], trainingData: IndexedSeq[Point3D], landmark: LandmarkNode): DenseMatrix[Double] = {
 
     val dim = 3 //implicitly[NDSpace[DO]].dimensionality
 
@@ -51,7 +51,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     val M = QtL * Q + DenseMatrix.eye[Double](gp.klBasis.size)
     val Minv = breeze.linalg.pinv(M)
 
-    (Minv * QtL).map(_.toFloat)
+    (Minv * QtL)
   }
 
   def updatePreview(landmark: LandmarkNode, mousePosition: Point3D): Unit = {

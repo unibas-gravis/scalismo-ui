@@ -9,17 +9,17 @@ import scalismo.geometry.{ Point, _3D }
  *
  */
 sealed trait BoundingBox {
-  def xMin: Float
+  def xMin: Double
 
-  def xMax: Float
+  def xMax: Double
 
-  def yMin: Float
+  def yMin: Double
 
-  def yMax: Float
+  def yMax: Double
 
-  def zMin: Float
+  def zMin: Double
 
-  def zMax: Float
+  def zMax: Double
 
   def union(that: BoundingBox): BoundingBox
 
@@ -50,7 +50,7 @@ object BoundingBox {
     override def union(that: BoundingBox): BoundingBox = that
   }
 
-  case class Valid private[BoundingBox] (xMin: Float, xMax: Float, yMin: Float, yMax: Float, zMin: Float, zMax: Float) extends BoundingBox {
+  case class Valid private[BoundingBox] (xMin: Double, xMax: Double, yMin: Double, yMax: Double, zMin: Double, zMax: Double) extends BoundingBox {
 
     override def union(that: BoundingBox): BoundingBox = {
       if (that == Invalid) this
@@ -70,7 +70,7 @@ object BoundingBox {
     }
   }
 
-  def apply(xMin: Float, xMax: Float, yMin: Float, yMax: Float, zMin: Float, zMax: Float): BoundingBox = {
+  def apply(xMin: Double, xMax: Double, yMin: Double, yMax: Double, zMin: Double, zMax: Double): BoundingBox = {
     if (xMin > xMax || yMin > yMax && zMin > zMax) Invalid else Valid(xMin, xMax, yMin, yMax, zMin, zMax)
   }
 }
