@@ -69,7 +69,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
       }
 
       val valuesTry = flatten(textFields.map(f => Try {
-        java.lang.Float.parseFloat(f.text)
+        java.lang.Double.parseDouble(f.text)
       }).toList)
       valuesTry match {
         case Success(values) =>

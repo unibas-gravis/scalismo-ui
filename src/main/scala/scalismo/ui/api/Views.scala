@@ -412,8 +412,8 @@ case class DiscreteLowRankGPTransformationView(override protected[api] val peer:
 
   override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
-  def coefficients: DenseVector[Float] = peer.transformation.coefficients
-  def coefficients_=(coefficients: DenseVector[Float]): Unit = {
+  def coefficients: DenseVector[Double] = peer.transformation.coefficients
+  def coefficients_=(coefficients: DenseVector[Double]): Unit = {
     { peer.transformation = peer.transformation.copy(coefficients) }
   }
 
@@ -443,8 +443,8 @@ case class LowRankGPTransformationView(override protected[api] val peer: Transfo
 
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
-  def coefficients: DenseVector[Float] = peer.transformation.coefficients
-  def coefficients_=(coefficients: DenseVector[Float]): Unit = {
+  def coefficients: DenseVector[Double] = peer.transformation.coefficients
+  def coefficients_=(coefficients: DenseVector[Double]): Unit = {
     { peer.transformation = peer.transformation.copy(coefficients) }
   }
 }

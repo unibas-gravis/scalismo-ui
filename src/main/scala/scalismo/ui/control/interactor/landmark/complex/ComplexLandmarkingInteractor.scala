@@ -110,7 +110,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     }
   }
 
-  def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[Vector3D], List[Float])] = {
+  def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[Vector3D], List[Double])] = {
     val meshOption: Option[TriangleMesh[_3D]] = node match {
       case m: TriangleMeshNode => Some(m.source)
       case m: ScalarMeshFieldNode => Some(m.source.mesh)
@@ -155,7 +155,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     }
   }
 
-  def sigmasForLandmarkUncertainty(group: GroupNode): List[Float] = {
+  def sigmasForLandmarkUncertainty(group: GroupNode): List[Double] = {
     Uncertainty.DefaultSigmas
   }
 

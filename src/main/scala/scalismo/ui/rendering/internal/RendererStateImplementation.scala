@@ -77,14 +77,14 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
       // simple case
       val prop = cellPicker.GetProp3D()
       val array = cellPicker.GetPickPosition()
-      val point: Option[Point3D] = if (array == null) None else Some(scalismo.geometry.Point[_3D](array.map(_.toFloat)))
+      val point: Option[Point3D] = if (array == null) None else Some(scalismo.geometry.Point[_3D](array))
       PointAndProp(point, Option(prop))
     } else {
       // complicated case
       val coord = new vtkCoordinate
       coord.SetValue(vtkPoint.x, vtkPoint.y, 0.0)
       coord.SetCoordinateSystemToDisplay()
-      val array = coord.GetComputedWorldValue(renderer).map(_.toFloat)
+      val array = coord.GetComputedWorldValue(renderer)
 
       // these coordinates are necessarily inaccurate, because no object was hit, so
       // it's unclear where in space the point is located (in terms of "depth", i.e., how far away).

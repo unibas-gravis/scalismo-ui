@@ -152,7 +152,7 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 
 // this class draws the intersection line for a particular axis in a BoundingBoxActor2D
 class BoundingBoxIntersectionActor(axis: Axis) extends PolyDataActor {
-  def update(bb: BoundingBox, point: Point3D, overrideIndex: Int, overrideValue: Float) = {
+  def update(bb: BoundingBox, point: Point3D, overrideIndex: Int, overrideValue: Double) = {
     val min = Array(bb.xMin, bb.yMin, bb.zMin)
     val max = Array(bb.xMax, bb.yMax, bb.zMax)
 
