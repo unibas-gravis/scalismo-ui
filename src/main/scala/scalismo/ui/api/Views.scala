@@ -3,7 +3,7 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ DiscreteVectorField, DiscreteScalarField }
+import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
 import scalismo.geometry.{ Dim, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -27,6 +27,7 @@ sealed trait ObjectView {
   def inGroup: Group = {
     Group(findBelongingGroup(peer))
   }
+
   def remove(): Unit = peer.remove()
 
   private def findBelongingGroup(node: SceneNode): GroupNode = {
@@ -37,15 +38,28 @@ sealed trait ObjectView {
 
 case class PointCloudView(override protected[api] val peer: PointCloudNode) extends ObjectView {
   type PeerType = PointCloudNode
+
   def color = peer.color.value
-  def color_=(c: Color): Unit = { peer.color.value = c }
+
+  def color_=(c: Color): Unit = {
+    peer.color.value = c
+  }
+
   def radius = peer.radius.value
-  def radius_=(r: Float): Unit = { peer.radius.value = r }
+
+  def radius_=(r: Float): Unit = {
+    peer.radius.value = r
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 }
 
 object PointCloudView {
+
   implicit object FindInScenePointCloud extends FindInScene[PointCloudView] {
     override def createView(s: SceneNode): Option[PointCloudView] = {
       if (s.isInstanceOf[PointCloudNode]) Some(PointCloudView(s.asInstanceOf[PointCloudNode])) else None
@@ -78,12 +92,21 @@ object PointCloudView {
 
 case class TriangleMeshView(override protected[api] val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
+
   def color = peer.color.value
-  def color_=(c: Color): Unit = { peer.color.value = c }
+
+  def color_=(c: Color): Unit = {
+    peer.color.value = c
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 
   def triangleMesh: TriangleMesh[_3D] = peer.source
+
   def transformedTriangleMesh: TriangleMesh[_3D] = peer.transformedSource
 }
 
@@ -124,14 +147,24 @@ case class LandmarkView(override protected[api] val peer: LandmarkNode) extends 
   type PeerType = LandmarkNode
 
   def color = peer.color.value
-  def color_=(c: Color): Unit = { peer.color.value = c }
+
+  def color_=(c: Color): Unit = {
+    peer.color.value = c
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
+
   def landmark: Landmark[_3D] = peer.source
+
   def transformedLandmark: Landmark[_3D] = peer.transformedSource
 }
 
 object LandmarkView {
+
   implicit object FindInSceneLandmarkView$ extends FindInScene[LandmarkView] {
     override def createView(s: SceneNode): Option[LandmarkView] = {
       if (s.isInstanceOf[LandmarkNode]) Some(LandmarkView(s.asInstanceOf[LandmarkNode])) else None
@@ -160,21 +193,31 @@ object LandmarkView {
       }
     }
   }
+
 }
 
 case class ScalarMeshFieldView(override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
   type PeerType = ScalarMeshFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
+
+  def scalarRange_=(s: ScalarRange): Unit = {
+    peer.scalarRange.value = s
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
+
   def transformedScalarMeshField = peer.transformedSource
 }
 
 object ScalarMeshFieldView {
+
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarMeshFieldView] {
     override def createView(s: SceneNode): Option[ScalarMeshFieldView] = {
       if (s.isInstanceOf[ScalarMeshFieldNode]) Some(ScalarMeshFieldView(s.asInstanceOf[ScalarMeshFieldNode])) else None
@@ -203,19 +246,32 @@ object ScalarMeshFieldView {
       }
     }
   }
+
 }
 
 case class ScalarFieldView(override protected[api] val peer: ScalarFieldNode) extends ObjectView {
   type PeerType = ScalarFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
+
+  def scalarRange_=(s: ScalarRange): Unit = {
+    peer.scalarRange.value = s
+  }
+
   def radius = peer.radius.value
-  def radius_=(r: Float): Unit = { peer.radius.value = r }
+
+  def radius_=(r: Float): Unit = {
+    peer.radius.value = r
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 
   def scalarField: DiscreteScalarField[_3D, Float] = peer.source
+
   def transformedScalarField = peer.transformedSource
 }
 
@@ -249,15 +305,23 @@ object ScalarFieldView {
       }
     }
   }
+
 }
 
 case class VectorFieldView(override protected[api] val peer: VectorFieldNode) extends ObjectView {
   type PeerType = VectorFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
-  def scalarRange_=(s: ScalarRange): Unit = { peer.scalarRange.value = s }
+
+  def scalarRange_=(s: ScalarRange): Unit = {
+    peer.scalarRange.value = s
+  }
+
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 
   def vectorField[A]: DiscreteVectorField[_3D, _3D] = peer.source
 }
@@ -292,18 +356,23 @@ object VectorFieldView {
       }
     }
   }
+
 }
 
 case class ImageView(override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
   def opacity = peer.opacity.value
-  def opacity_=(o: Float): Unit = { peer.opacity.value = o }
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
 
   def image: DiscreteScalarImage[_3D, Float] = peer.source
 }
 
 object ImageView {
+
   implicit object FindImage extends FindInScene[ImageView] {
     override def createView(s: SceneNode): Option[ImageView] = {
       if (s.isInstanceOf[ImageView]) Some(ImageView(s.asInstanceOf[ImageNode])) else None
@@ -341,7 +410,9 @@ case class StatisticalMeshModelView(private val meshNode: TriangleMeshNode,
     private val poseTransNode: TransformationNode[RigidTransformation[_3D]]) {
 
   def meshView = TriangleMeshView(meshNode)
+
   def shapeTransformationView = DiscreteLowRankGPTransformationView(shapeTransNode)
+
   def poseTransformationView = RigidTransformationView(poseTransNode)
 
   def statisticalMeshModel: StatisticalMeshModel = StatisticalMeshModel(meshView.triangleMesh, shapeTransNode.transformation.dgp)
@@ -353,6 +424,7 @@ case class Group(override protected[api] val peer: GroupNode) extends ObjectView
 }
 
 object Group {
+
   implicit object FindInSceneGroup$ extends FindInScene[Group] {
     override def createView(s: SceneNode): Option[Group] = {
       if (s.isInstanceOf[GroupNode]) Some(Group(s.asInstanceOf[GroupNode])) else None
@@ -363,13 +435,17 @@ object Group {
 
 case class TransformationView(override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
   def transformation: Point[_3D] => Point[_3D] = peer.transformation
-  def transformation_=(t: Point[_3D] => Point[_3D]): Unit = { peer.transformation = t }
+
+  def transformation_=(t: Point[_3D] => Point[_3D]): Unit = {
+    peer.transformation = t
+  }
 
   override type PeerType = TransformationNode[Point[_3D] => Point[_3D]]
 
 }
 
 object TransformationView {
+
   implicit object FindInSceneGenericTransformation$ extends FindInScene[TransformationView] {
     override def createView(s: SceneNode): Option[TransformationView] = {
 
@@ -381,6 +457,7 @@ object TransformationView {
       } else None
     }
   }
+
 }
 
 case class RigidTransformationView(override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
@@ -388,6 +465,7 @@ case class RigidTransformationView(override protected[api] val peer: Transformat
   override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
   def transformation: RigidTransformation[_3D] = peer.transformation
+
   def transformation_=(transformation: RigidTransformation[_3D]): Unit = {
     peer.transformation = transformation
   }
@@ -413,19 +491,24 @@ case class DiscreteLowRankGPTransformationView(override protected[api] val peer:
   override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
   def coefficients: DenseVector[Double] = peer.transformation.coefficients
+
   def coefficients_=(coefficients: DenseVector[Double]): Unit = {
-    { peer.transformation = peer.transformation.copy(coefficients) }
+    {
+      peer.transformation = peer.transformation.copy(coefficients)
+    }
   }
 
   val transformation: Point[_3D] => Point[_3D] = peer.transformation
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
+
   def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
     peer.transformation = (DiscreteLowRankGpPointTransformation(dgp))
   }
 }
 
 object DiscreteLowRankGPTransformationView {
+
   implicit object FindInSceneDiscreteGPTransformation$ extends FindInScene[DiscreteLowRankGPTransformationView] {
     override def createView(s: SceneNode): Option[DiscreteLowRankGPTransformationView] = {
 
@@ -444,7 +527,10 @@ case class LowRankGPTransformationView(override protected[api] val peer: Transfo
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
   def coefficients: DenseVector[Double] = peer.transformation.coefficients
+
   def coefficients_=(coefficients: DenseVector[Double]): Unit = {
-    { peer.transformation = peer.transformation.copy(coefficients) }
+    {
+      peer.transformation = peer.transformation.copy(coefficients)
+    }
   }
 }

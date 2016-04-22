@@ -2,7 +2,7 @@ package scalismo.ui.rendering.actor
 
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{ BoundingBox, PointCloudNode, VectorFieldNode }
+import scalismo.ui.model.{ BoundingBox, VectorFieldNode }
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }

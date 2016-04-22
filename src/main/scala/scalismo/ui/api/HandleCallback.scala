@@ -1,10 +1,5 @@
 package scalismo.ui.api
 
-import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded, ChildrenChanged }
-import scalismo.ui.model.{ SceneNode, GroupNode, TriangleMeshNode, TriangleMeshesNode }
-
-import scala.swing.event.Event
-
 /**
  * Created by marcel on 09.04.16.
  */

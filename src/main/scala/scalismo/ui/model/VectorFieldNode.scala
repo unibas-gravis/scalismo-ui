@@ -1,7 +1,7 @@
 package scalismo.ui.model
 
 import scalismo.common.DiscreteVectorField
-import scalismo.geometry.{ Point3D, _3D }
+import scalismo.geometry._3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 
@@ -28,7 +28,9 @@ class VectorFieldNode(override val parent: VectorFieldsNode, val source: Discret
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
   override val scalarRange: ScalarRangeProperty = {
-    val (min, max) = { val norms = vectors.map(_.norm); (norms.min.toFloat, norms.max.toFloat) }
+    val (min, max) = {
+      val norms = vectors.map(_.norm); (norms.min.toFloat, norms.max.toFloat)
+    }
     new ScalarRangeProperty(ScalarRange(min, max, min, max))
   }
 

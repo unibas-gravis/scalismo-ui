@@ -3,7 +3,6 @@ package plugin
 import java.io.File
 
 import scalismo.io.StatismoIO
-import scalismo.ui.model.StatusMessage
 import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
