@@ -32,7 +32,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
     val Q = DenseMatrix.zeros[Double](trainingData.size * dim, gp.klBasis.size)
     for ((x_i, i) <- xs.zipWithIndex; (Eigenpair(lambda_j, phi_j), j) <- gp.klBasis.zipWithIndex) {
-      Q(i * dim until i * dim + dim, j) := phi_j(x_i).toBreezeVector.map(_.toDouble) * math.sqrt(lambda_j)
+      Q(i * dim until i * dim + dim, j) := phi_j(x_i).toBreezeVector * math.sqrt(lambda_j)
     }
 
     //val errorDistributions = IndexedSeq(NDimensionalNormalDistribution(scalismo.geometry.Vector.zeros[D], SquareMatrix.eye[D]))
@@ -51,7 +51,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     val M = QtL * Q + DenseMatrix.eye[Double](gp.klBasis.size)
     val Minv = breeze.linalg.pinv(M)
 
-    (Minv * QtL)
+    Minv * QtL
   }
 
   def updatePreview(landmark: LandmarkNode, mousePosition: Point3D): Unit = {

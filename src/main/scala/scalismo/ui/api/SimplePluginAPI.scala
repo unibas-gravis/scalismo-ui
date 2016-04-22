@@ -5,9 +5,6 @@ import scalismo.ui.util.EdtUtil
 
 import scala.swing.Component
 
-/**
- * Created by luetma00 on 12.04.16.
- */
 trait SimplePluginAPI {
 
   def ui: ScalismoUI
@@ -35,7 +32,7 @@ trait SimplePluginAPI {
 
   def addToToolbar(panel: Component): Unit = {
     EdtUtil.onEdt {
-      ui.frame.toolbar.add(panel);
+      ui.frame.toolbar.add(panel)
     }
   }
 

@@ -29,7 +29,8 @@ class VectorFieldNode(override val parent: VectorFieldsNode, val source: Discret
   override val lineWidth = new LineWidthProperty()
   override val scalarRange: ScalarRangeProperty = {
     val (min, max) = {
-      val norms = vectors.map(_.norm); (norms.min.toFloat, norms.max.toFloat)
+      val norms = vectors.map(_.norm)
+      (norms.min.toFloat, norms.max.toFloat)
     }
     new ScalarRangeProperty(ScalarRange(min, max, min, max))
   }

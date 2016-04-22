@@ -8,11 +8,11 @@ import vtk.{ vtkCutter, vtkPlane }
 abstract class SlicingActor(val viewport: ViewportPanel2D) extends SinglePolyDataActor with ActorEvents {
 
   private def slicingPositionChanged(slicingPosition: SlicingPosition): Unit = {
-    val newValue = (viewport.axis match {
+    val newValue = viewport.axis match {
       case Axis.X => slicingPosition.x
       case Axis.Y => slicingPosition.y
       case Axis.Z => slicingPosition.z
-    }).toDouble
+    }
 
     if (planeCutter.GetValue(0) != newValue) {
       planeCutter.SetValue(0, newValue)

@@ -32,12 +32,10 @@ class ReadyForEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorT
   override def mouseClicked(e: MouseEvent): Verdict = {
     if (e.getButton == MouseEvent.BUTTON1) {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
-      pointAndNode.nodeOption.foreach { node =>
-        node match {
-          case lm: LandmarkNode =>
-            transitionToEditing(lm)
-          case _ =>
-        }
+      pointAndNode.nodeOption.foreach {
+        case lm: LandmarkNode =>
+          transitionToEditing(lm)
+        case _ =>
       }
     }
     // always prevent clicks from propagating

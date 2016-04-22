@@ -14,9 +14,6 @@ import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
 
-/**
- * Created by luetma00 on 08.04.16.
- */
 sealed trait ObjectView {
   type PeerType <: SceneNode with Removeable
 
@@ -62,7 +59,10 @@ object PointCloudView {
 
   implicit object FindInScenePointCloud extends FindInScene[PointCloudView] {
     override def createView(s: SceneNode): Option[PointCloudView] = {
-      if (s.isInstanceOf[PointCloudNode]) Some(PointCloudView(s.asInstanceOf[PointCloudNode])) else None
+      s match {
+        case node: PointCloudNode => Some(PointCloudView(node))
+        case _ => None
+      }
     }
   }
 
@@ -71,20 +71,18 @@ object PointCloudView {
     override def registerOnAdd[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = PointCloudView(newNode.asInstanceOf[PointCloudNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = PointCloudView(removedNode.asInstanceOf[PointCloudNode])
           f(tmv)
-        }
       }
     }
   }
@@ -114,7 +112,10 @@ object TriangleMeshView {
 
   implicit object FindInSceneTriangleMeshView$ extends FindInScene[TriangleMeshView] {
     override def createView(s: SceneNode): Option[TriangleMeshView] = {
-      if (s.isInstanceOf[TriangleMeshNode]) Some(TriangleMeshView(s.asInstanceOf[TriangleMeshNode])) else None
+      s match {
+        case peer: TriangleMeshNode => Some(TriangleMeshView(peer))
+        case _ => None
+      }
     }
   }
 
@@ -123,20 +124,18 @@ object TriangleMeshView {
     override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = TriangleMeshView(newNode.asInstanceOf[TriangleMeshNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = TriangleMeshView(removedNode.asInstanceOf[TriangleMeshNode])
           f(tmv)
-        }
       }
     }
 
@@ -167,7 +166,10 @@ object LandmarkView {
 
   implicit object FindInSceneLandmarkView$ extends FindInScene[LandmarkView] {
     override def createView(s: SceneNode): Option[LandmarkView] = {
-      if (s.isInstanceOf[LandmarkNode]) Some(LandmarkView(s.asInstanceOf[LandmarkNode])) else None
+      s match {
+        case peer: LandmarkNode => Some(LandmarkView(peer))
+        case _ => None
+      }
     }
   }
 
@@ -176,20 +178,18 @@ object LandmarkView {
     override def registerOnAdd[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = LandmarkView(newNode.asInstanceOf[LandmarkNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = LandmarkView(removedNode.asInstanceOf[LandmarkNode])
           f(tmv)
-        }
       }
     }
   }
@@ -220,7 +220,10 @@ object ScalarMeshFieldView {
 
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarMeshFieldView] {
     override def createView(s: SceneNode): Option[ScalarMeshFieldView] = {
-      if (s.isInstanceOf[ScalarMeshFieldNode]) Some(ScalarMeshFieldView(s.asInstanceOf[ScalarMeshFieldNode])) else None
+      s match {
+        case node: ScalarMeshFieldNode => Some(ScalarMeshFieldView(node))
+        case _ => None
+      }
     }
   }
 
@@ -229,20 +232,18 @@ object ScalarMeshFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = ScalarMeshFieldView(newNode.asInstanceOf[ScalarMeshFieldNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = ScalarMeshFieldView(removedNode.asInstanceOf[ScalarMeshFieldNode])
           f(tmv)
-        }
       }
     }
   }
@@ -279,7 +280,10 @@ object ScalarFieldView {
 
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarFieldView] {
     override def createView(s: SceneNode): Option[ScalarFieldView] = {
-      if (s.isInstanceOf[ScalarFieldNode]) Some(ScalarFieldView(s.asInstanceOf[ScalarFieldNode])) else None
+      s match {
+        case node: ScalarFieldNode => Some(ScalarFieldView(node))
+        case _ => None
+      }
     }
   }
 
@@ -288,20 +292,18 @@ object ScalarFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = ScalarFieldView(newNode.asInstanceOf[ScalarFieldNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = ScalarFieldView(removedNode.asInstanceOf[ScalarFieldNode])
           f(tmv)
-        }
       }
     }
   }
@@ -330,7 +332,10 @@ object VectorFieldView {
 
   implicit object FindInSceneScalarMeshField extends FindInScene[VectorFieldView] {
     override def createView(s: SceneNode): Option[VectorFieldView] = {
-      if (s.isInstanceOf[VectorFieldNode]) Some(VectorFieldView(s.asInstanceOf[VectorFieldNode])) else None
+      s match {
+        case node: VectorFieldNode => Some(VectorFieldView(node))
+        case _ => None
+      }
     }
   }
 
@@ -339,20 +344,18 @@ object VectorFieldView {
     override def registerOnAdd[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val tmv = VectorFieldView(newNode.asInstanceOf[VectorFieldNode])
           f(tmv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = VectorFieldView(removedNode.asInstanceOf[VectorFieldNode])
           f(tmv)
-        }
       }
     }
   }
@@ -384,20 +387,18 @@ object ImageView {
     override def registerOnAdd[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) => {
+        case ChildAdded(collection, newNode) =>
           val imv = ImageView(newNode.asInstanceOf[ImageNode])
           f(imv)
-        }
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) => {
+        case ChildRemoved(collection, removedNode) =>
           val tmv = ImageView(removedNode.asInstanceOf[ImageNode])
           f(tmv)
-        }
       }
     }
   }
@@ -427,7 +428,10 @@ object Group {
 
   implicit object FindInSceneGroup$ extends FindInScene[Group] {
     override def createView(s: SceneNode): Option[Group] = {
-      if (s.isInstanceOf[GroupNode]) Some(Group(s.asInstanceOf[GroupNode])) else None
+      s match {
+        case node: GroupNode => Some(Group(node))
+        case _ => None
+      }
     }
   }
 
@@ -451,10 +455,11 @@ object TransformationView {
 
       type PointToPointTransformation[D <: Dim] = Point[D] => Point[D]
       // here we need a two step process due to type erasure to find the right type.
-      if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[PointToPointTransformation[_]]) {
-        Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]]))
-      } else None
+      s match {
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_]] =>
+          Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]]))
+        case _ => None
+      }
     }
   }
 
@@ -477,10 +482,11 @@ object RigidTransformationView {
     override def createView(s: SceneNode): Option[RigidTransformationView] = {
 
       // here we need a two step process due to type erasure to find the right type.
-      if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[RigidTransformation[_]]) {
-        Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
-      } else None
+      s match {
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] =>
+          Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
+        case _ => None
+      }
     }
   }
 
@@ -503,7 +509,7 @@ case class DiscreteLowRankGPTransformationView(override protected[api] val peer:
   def discreteLowRankGaussianProcess = peer.transformation.dgp
 
   def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
-    peer.transformation = (DiscreteLowRankGpPointTransformation(dgp))
+    peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }
 
@@ -513,10 +519,11 @@ object DiscreteLowRankGPTransformationView {
     override def createView(s: SceneNode): Option[DiscreteLowRankGPTransformationView] = {
 
       // here we need a two step process due to type erasure to find the right type.
-      if (s.isInstanceOf[TransformationNode[_]]
-        && s.asInstanceOf[TransformationNode[_]].transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-        Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
-      } else None
+      s match {
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
+          Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
+        case _ => None
+      }
     }
   }
 

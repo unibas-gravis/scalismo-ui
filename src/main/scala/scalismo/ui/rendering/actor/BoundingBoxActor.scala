@@ -177,8 +177,8 @@ class BoundingBoxIntersectionActor(axis: Axis) extends PolyDataActor {
     // left, which is what we want.
 
     val points = new vtkPoints()
-    points.InsertNextPoint(min.map(_.toDouble))
-    points.InsertNextPoint(max.map(_.toDouble))
+    points.InsertNextPoint(min)
+    points.InsertNextPoint(max)
 
     val line = new vtkLine()
     line.GetPointIds().SetId(0, 0)

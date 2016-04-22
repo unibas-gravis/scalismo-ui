@@ -1,10 +1,6 @@
 package scalismo.ui.api
 
 /**
- * Created by marcel on 09.04.16.
- */
-
-/**
  * This typeclass needs to be implemented if callbacks should be allowed for a view V
  */
 protected[api] trait HandleCallback[V] {
