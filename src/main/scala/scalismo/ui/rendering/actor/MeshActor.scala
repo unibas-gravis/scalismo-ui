@@ -6,6 +6,7 @@ import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
 import scalismo.ui.rendering.Caches
+import scalismo.ui.rendering.Caches.FastCachingTriangleMesh
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
@@ -131,7 +132,8 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
   override def color: ColorProperty = renderable.color
 
   override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
-    Caches.TriangleMeshCache.getOrCreate(renderable.mesh, MeshConversion.meshToVtkPolyData(renderable.mesh, template))
+
+    Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh), MeshConversion.meshToVtkPolyData(renderable.mesh, template))
   }
 
 }
