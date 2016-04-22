@@ -1,7 +1,7 @@
 package scalismo.ui.view.dialog
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Cursor, Font }
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Font}
 import java.net.URI
 import javax.swing._
 
@@ -10,24 +10,24 @@ import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.AboutDialog._
 import scalismo.ui.view.dialog.AboutDialog.scaled._
-import scalismo.ui.view.util.{ LinkLabel, MultiLineLabel, ScalableUI }
+import scalismo.ui.view.util.{LinkLabel, MultiLineLabel, ScalableUI}
 
-import scala.swing.GridBagPanel.Anchor
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
-import scala.swing.{ Action, _ }
+import scala.swing.{Action, _}
 import scala.util.Try
 
 object AboutDialog {
 
   /**
-   * This is essentially a workaround for IntelliJ Idea not liking
-   * auto-generated sources. (I.e. Idea continues to bitch about
-   * not finding scalismo.ui.BuildInfo, thus making it impossible
-   * to compile or start the program from the UI).
-   *
-   * Using runtime reflection avoids this.
-   */
+    * This is essentially a workaround for IntelliJ Idea not liking
+    * auto-generated sources. (I.e. Idea continues to bitch about
+    * not finding scalismo.ui.BuildInfo, thus making it impossible
+    * to compile or start the program from the UI).
+    *
+    * Using runtime reflection avoids this.
+    */
   object BuildInfo {
 
     import scala.reflect.runtime.universe
@@ -139,19 +139,32 @@ object AboutDialog {
   class ThirdPartyPanel(frame: ScalismoFrame) extends BorderPanel {
     val description = "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
 
-    val north = new MultiLineLabel(description)
+    val descriptionBorder = BorderFactory.createEmptyBorder(s_10, 0, s_10, 0)
+    val thanksBorder = BorderFactory.createEmptyBorder(s_10, 0, 0, 0)
+    val listBorder = BorderFactory.createEmptyBorder(s_3, s_10, s_3, s_10)
+    val scrollBorder = BorderFactory.createEmptyBorder(0, 0, 0, s_10)
+
+    val north = new MultiLineLabel(description) {
+      border = descriptionBorder
+    }
 
     val center = new BorderPanel {
-      // if this becomes too long, it will have to be wrapped in a scroll pane.
-      layout(new ThirdPartyListPanel(frame)) = BorderPanel.Position.West
+      val list = new ThirdPartyListPanel(frame) {
+        border = listBorder
+      }
+      val scroll = new ScrollPane(list) {
+        horizontalScrollBarPolicy = ScrollPane.BarPolicy.AsNeeded
+        verticalScrollBarPolicy = ScrollPane.BarPolicy.AsNeeded
+      }
+      scroll.border = BorderFactory.createCompoundBorder(scrollBorder, scroll.border)
+      layout(scroll) = BorderPanel.Position.Center
     }
     layout(north) = BorderPanel.Position.North
     layout(center) = BorderPanel.Position.Center
 
     // very swiss, but it doesn't harm, and I bet it will be appreciated.
     layout(new BoldLabel("Thank you!", alignment = Alignment.Left) {
-      val hv = s_10
-      peer.setBorder(BorderFactory.createEmptyBorder(hv, hv, hv, hv))
+      border = thanksBorder
     }) = BorderPanel.Position.South
   }
 
@@ -159,6 +172,8 @@ object AboutDialog {
     private var x = 0
     private var y = 0
     val columns = List("Name", "Author(s)", "License")
+    val lastColumnIndex = columns.length - 1
+    val lastRowIndex = ThirdPartyResource.All.length + 1 // accounts for header and footer
 
     def constraints() = new Constraints {
       this.gridx = x
@@ -166,6 +181,23 @@ object AboutDialog {
       this.anchor = Anchor.NorthWest
       this.ipadx = s_20
       this.ipady = s_3
+
+      this.weightx = x match {
+        case c if c == lastColumnIndex => 1
+        case _ => 0
+      }
+
+      this.weighty = y match {
+        case r if r == lastRowIndex => 1
+        case _ => 0
+      }
+
+      this.fill = (x, y) match {
+        case (h, v) if h == lastColumnIndex && v == lastRowIndex => Fill.Both
+        case (h, _) if h == lastColumnIndex => Fill.Horizontal
+        case (_, v) if v == lastRowIndex => Fill.Vertical
+        case (_, _) => Fill.None
+      }
 
       // update state for next add()
       x += 1
@@ -175,8 +207,9 @@ object AboutDialog {
       }
     }
 
-    def add(component: Component): Unit = {
-      add(component, constraints())
+    def add(label: Label): Unit = {
+      label.horizontalAlignment = Alignment.Left
+      add(label, constraints())
     }
 
     // table headers
@@ -206,6 +239,9 @@ object AboutDialog {
       add(author)
       add(license)
     }
+
+    // table footer (dummy row to fill space on resize)
+    (0 to lastColumnIndex).foreach { _ => add(new Label("")) }
   }
 
   def popupLicense(frame: ScalismoFrame, productName: String, licenseText: String): Unit = {

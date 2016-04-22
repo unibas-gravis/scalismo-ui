@@ -50,7 +50,7 @@ object Dependencies {
   val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
   val jIconFont = "com.github.jiconfont" % "jiconfont-swing" % "1.0.1"
   val jIconFontAwesome = "com.github.jiconfont" % "jiconfont-font_awesome" % "4.5.0.3"
-  val jIconFontGoogleMaterial = "com.github.jiconfont" % "jiconfont-google_material_design_icons" % "2.2.0.1"
+  //val jIconFontGoogleMaterial = "com.github.jiconfont" % "jiconfont-google_material_design_icons" % "2.2.0.1"
   val jIconFontElusive = "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2"
   val jIconFontEntypo = "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
 }
@@ -74,8 +74,8 @@ object ScalismoUiBuild extends Build {
     jIconFont,
     jIconFontAwesome,
     jIconFontElusive,
-    jIconFontEntypo,
-    jIconFontGoogleMaterial
+    jIconFontEntypo
+    //1jIconFontGoogleMaterial
   )
 
   lazy val scalismo_ui = Project(
