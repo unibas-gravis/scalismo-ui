@@ -1,7 +1,7 @@
 package scalismo.ui.view
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Component => AComponent, Cursor, Font }
+import java.awt.{ Color, Cursor, Font, Component => AComponent }
 import java.text.SimpleDateFormat
 import javax.swing._
 

@@ -1,10 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.ui.control.interactor.Interactor
 import scalismo.ui.model._
-import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.{ ScalismoFrame }
-import scala.swing.{ Component }
 
 trait SimpleAPI {
 
@@ -13,6 +9,7 @@ trait SimpleAPI {
   def createGroup(groupName: String): Group = Group(scene.groups.add(groupName))
 
   def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup)
+
   def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, group)
 
   def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View = {

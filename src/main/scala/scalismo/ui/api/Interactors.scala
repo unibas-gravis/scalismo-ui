@@ -2,14 +2,15 @@ package scalismo.ui.api
 
 import java.awt.Color
 
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
-import scalismo.ui.model.{ TriangleMeshNode, GroupNode, DiscreteLowRankGpPointTransformation, TransformationNode }
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
+import scalismo.ui.model.{ DiscreteLowRankGpPointTransformation, GroupNode, TransformationNode, TriangleMeshNode }
 import scalismo.ui.view.ScalismoFrame
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
+
   protected[api] def peer: ConcreteInteractor
 }
 

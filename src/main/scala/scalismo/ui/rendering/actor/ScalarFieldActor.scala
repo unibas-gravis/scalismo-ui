@@ -5,14 +5,12 @@ import scalismo.geometry._3D
 import scalismo.mesh._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{ BoundingBox, PointCloudNode, ScalarFieldNode, ScalarMeshFieldNode }
-import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
+import scalismo.ui.model.{ BoundingBox, ScalarFieldNode }
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
-import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
+import vtk.{ vtkGlyph3D, vtkPoints, vtkSphereSource }
 
 object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {
   override def actorsFor(renderable: ScalarFieldNode, viewport: ViewportPanel): Option[Actors] = {

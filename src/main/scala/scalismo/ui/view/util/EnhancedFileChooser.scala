@@ -1,7 +1,7 @@
 package scalismo.ui.view.util
 
 import java.awt.event.{ MouseAdapter, MouseEvent, MouseMotionAdapter }
-import java.awt.{ BorderLayout, Color, Component => AComponent, Point }
+import java.awt.{ BorderLayout, Color, Point, Component => AComponent }
 import java.io.File
 import javax.swing._
 

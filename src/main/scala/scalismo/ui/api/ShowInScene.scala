@@ -1,7 +1,7 @@
 package scalismo.ui.api
 
-import scalismo.common.{ DiscreteVectorField, UnstructuredPointsDomain, DiscreteScalarField, Scalar }
-import scalismo.geometry.{ Point, Landmark, _3D }
+import scalismo.common.{ DiscreteScalarField, DiscreteVectorField, Scalar }
+import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }

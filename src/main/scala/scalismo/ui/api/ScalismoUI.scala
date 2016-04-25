@@ -1,18 +1,8 @@
 package scalismo.ui.api
 
-import java.awt.Color
-import java.io.File
-
-import scalismo.common.{ DiscreteVectorField, UnstructuredPointsDomain, ScalarArray, DiscreteScalarField }
-import scalismo.geometry.{ Landmark, Point3D, Point, _3D }
-import scalismo.io.{ ActiveShapeModelIO, ImageIO, StatismoIO, MeshIO }
-import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.{ Interactor, DefaultInteractor }
-import scalismo.ui.model.StatusMessage
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ScalismoFrame
-
-import scala.swing.{ Component, Button }
 
 class ScalismoUI() extends SimpleAPI {
 

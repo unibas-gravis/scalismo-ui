@@ -1,7 +1,7 @@
 package scalismo.ui.view.util
 
 import java.awt
-import java.awt.{ CardLayout, Component => AComponent, Dimension, Insets }
+import java.awt.{ CardLayout, Dimension, Insets, Component => AComponent }
 import java.util.UUID
 
 import scalismo.ui.view.util.CardPanel.{ ComponentWithUniqueId, CustomCardLayout }

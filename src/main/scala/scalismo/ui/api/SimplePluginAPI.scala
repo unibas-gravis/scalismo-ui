@@ -1,14 +1,10 @@
 package scalismo.ui.api
 
-import scalismo.ui.control.interactor.Interactor
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.EdtUtil
 
 import scala.swing.Component
 
-/**
- * Created by luetma00 on 12.04.16.
- */
 trait SimplePluginAPI {
 
   def ui: ScalismoUI
@@ -20,6 +16,7 @@ trait SimplePluginAPI {
     interactor.peer.onActivated(ui.frame)
     onActivated()
   }
+
   def deactivate(): Unit = {
     interactor.peer.onDeactivated(ui.frame)
     onDeactivated()
@@ -33,10 +30,20 @@ trait SimplePluginAPI {
     ui.frame.status.set(StatusMessage(message.text, message.kind))
   }
 
-  def addToToolbar(panel: Component): Unit = { EdtUtil.onEdt { ui.frame.toolbar.add(panel); } }
-  def removeFromToolbar(panel: Component): Unit = { EdtUtil.onEdt { ui.frame.toolbar.remove(panel) } }
+  def addToToolbar(panel: Component): Unit = {
+    EdtUtil.onEdt {
+      ui.frame.toolbar.add(panel)
+    }
+  }
+
+  def removeFromToolbar(panel: Component): Unit = {
+    EdtUtil.onEdt {
+      ui.frame.toolbar.remove(panel)
+    }
+  }
 
   def onActivated(): Unit
+
   def onDeactivated(): Unit
 
 }

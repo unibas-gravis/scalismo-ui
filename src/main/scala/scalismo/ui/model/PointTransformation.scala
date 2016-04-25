@@ -1,9 +1,7 @@
 package scalismo.ui.model
 
-import breeze.linalg.DenseVector
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry._3D
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess }
 
 /**
  * The general PointTransformation type is simply an alias / another name for
