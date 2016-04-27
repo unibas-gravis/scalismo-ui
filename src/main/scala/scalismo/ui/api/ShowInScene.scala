@@ -19,9 +19,21 @@ trait ShowInScene[-A] {
 
 }
 
-object ShowInScene {
+trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
+
+  implicit def showInSceneScalarField[A: Scalar: ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
+    override type View = ScalarFieldView
+
+    override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
+      ScalarFieldView(group.peer.scalarFields.add(sf, name))
+    }
+  }
+
+}
+
+object ShowInScene extends LowPriorityImplicits {
 
   implicit object ShowInSceneMesh$ extends ShowInScene[TriangleMesh[_3D]] {
     override type View = TriangleMeshView
@@ -82,14 +94,6 @@ object ShowInScene {
       landmarkViews
     }
 
-  }
-
-  implicit def showInSceneScalarField[A: Scalar: ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
-    override type View = ScalarFieldView
-
-    override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
-      ScalarFieldView(group.peer.scalarFields.add(sf, name))
-    }
   }
 
   implicit object ShowInSceneVectorField extends ShowInScene[DiscreteVectorField[_3D, _3D]] {
