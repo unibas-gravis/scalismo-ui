@@ -28,7 +28,7 @@ sealed trait ObjectView {
   def remove(): Unit = peer.remove()
 
   private def findBelongingGroup(node: SceneNode): GroupNode = {
-    if (node.isInstanceOf[Group]) this.asInstanceOf[GroupNode]
+    if (node.isInstanceOf[GroupNode]) node.asInstanceOf[GroupNode]
     else findBelongingGroup(node.parent)
   }
 }
