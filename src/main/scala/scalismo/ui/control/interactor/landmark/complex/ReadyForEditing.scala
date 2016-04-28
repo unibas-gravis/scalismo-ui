@@ -42,6 +42,8 @@ class ReadyForEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorT
     Block
   }
 
+  override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
+
   // transitions
 
   def transitionToReadyForCreating(): Unit = {
