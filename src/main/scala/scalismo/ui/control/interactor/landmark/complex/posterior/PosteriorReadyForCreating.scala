@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
+import scalismo.ui.control.interactor.Recipe
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
 import scalismo.ui.control.interactor.landmark.complex.{ ComplexLandmarkingInteractor, ReadyForCreating }
 import scalismo.ui.model.LandmarkNode
@@ -37,4 +38,5 @@ class PosteriorReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[I
     Block
   }
 
+  override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
 }
