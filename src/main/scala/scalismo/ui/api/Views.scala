@@ -33,7 +33,7 @@ sealed trait ObjectView {
   }
 }
 
-case class PointCloudView(override protected[api] val peer: PointCloudNode) extends ObjectView {
+case class PointCloudView private[ui] (override protected[api] val peer: PointCloudNode) extends ObjectView {
   type PeerType = PointCloudNode
 
   def color = peer.color.value
@@ -88,7 +88,7 @@ object PointCloudView {
   }
 }
 
-case class TriangleMeshView(override protected[api] val peer: TriangleMeshNode) extends ObjectView {
+case class TriangleMeshView private[ui] (override protected[api] val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
 
   def color = peer.color.value
@@ -142,7 +142,7 @@ object TriangleMeshView {
   }
 }
 
-case class LandmarkView(override protected[api] val peer: LandmarkNode) extends ObjectView {
+case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
 
   def color = peer.color.value
@@ -196,7 +196,7 @@ object LandmarkView {
 
 }
 
-case class ScalarMeshFieldView(override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
+case class ScalarMeshFieldView private[ui] (override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
   type PeerType = ScalarMeshFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -250,7 +250,7 @@ object ScalarMeshFieldView {
 
 }
 
-case class ScalarFieldView(override protected[api] val peer: ScalarFieldNode) extends ObjectView {
+case class ScalarFieldView private[ui] (override protected[api] val peer: ScalarFieldNode) extends ObjectView {
   type PeerType = ScalarFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -310,7 +310,7 @@ object ScalarFieldView {
 
 }
 
-case class VectorFieldView(override protected[api] val peer: VectorFieldNode) extends ObjectView {
+case class VectorFieldView private[ui] (override protected[api] val peer: VectorFieldNode) extends ObjectView {
   type PeerType = VectorFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -362,7 +362,7 @@ object VectorFieldView {
 
 }
 
-case class ImageView(override protected[api] val peer: ImageNode) extends ObjectView {
+case class ImageView private[ui] (override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
   def opacity = peer.opacity.value
@@ -406,7 +406,7 @@ object ImageView {
 }
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class StatisticalMeshModelViewControls(private val meshNode: TriangleMeshNode,
+case class StatisticalMeshModelViewControls private[ui] (private val meshNode: TriangleMeshNode,
     private val shapeTransNode: TransformationNode[DiscreteLowRankGpPointTransformation],
     private val poseTransNode: TransformationNode[RigidTransformation[_3D]]) {
 
@@ -437,7 +437,7 @@ object Group {
 
 }
 
-case class TransformationView(override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
+case class TransformationView private[ui] (override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
   def transformation: Point[_3D] => Point[_3D] = peer.transformation
 
   def transformation_=(t: Point[_3D] => Point[_3D]): Unit = {
@@ -465,7 +465,7 @@ object TransformationView {
 
 }
 
-case class RigidTransformationView(override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
+case class RigidTransformationView private[ui] (override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
 
   override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
@@ -492,7 +492,7 @@ object RigidTransformationView {
 
 }
 
-case class DiscreteLowRankGPTransformationView(override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
+case class DiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
 
   override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
@@ -529,7 +529,7 @@ object DiscreteLowRankGPTransformationView {
 
 }
 
-case class LowRankGPTransformationView(override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
+case class LowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
 
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
