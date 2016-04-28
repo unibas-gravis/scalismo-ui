@@ -105,15 +105,15 @@ object ShowInScene extends LowPriorityImplicits {
   }
 
   implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {
-    type View = StatisticalMeshModelView
+    type View = StatisticalMeshModelViewControls
 
-    override def showInScene(model: StatisticalMeshModel, name: String, group: Group): StatisticalMeshModelView = {
+    override def showInScene(model: StatisticalMeshModel, name: String, group: Group): StatisticalMeshModelViewControls = {
       val groupNode = group.peer
       val tmnode = groupNode.triangleMeshes.add(model.referenceMesh, name)
       val transNode = groupNode.transformations.add(DiscreteLowRankGpPointTransformation(model.gp), s"$name-shape")
       val r = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
       val poseTrans = groupNode.transformations.add(r, s"$name-pose")
-      StatisticalMeshModelView(tmnode, transNode, poseTrans)
+      StatisticalMeshModelViewControls(tmnode, transNode, poseTrans)
     }
   }
 

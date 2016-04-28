@@ -1,7 +1,7 @@
 package scalismo.ui.view.dialog
 
-import java.awt.event.{MouseAdapter, MouseEvent}
-import java.awt.{Color, Cursor, Font}
+import java.awt.event.{ MouseAdapter, MouseEvent }
+import java.awt.{ Color, Cursor, Font }
 import java.net.URI
 import javax.swing._
 
@@ -10,24 +10,24 @@ import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.AboutDialog._
 import scalismo.ui.view.dialog.AboutDialog.scaled._
-import scalismo.ui.view.util.{LinkLabel, MultiLineLabel, ScalableUI}
+import scalismo.ui.view.util.{ LinkLabel, MultiLineLabel, ScalableUI }
 
-import scala.swing.GridBagPanel.{Anchor, Fill}
+import scala.swing.GridBagPanel.{ Anchor, Fill }
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
-import scala.swing.{Action, _}
+import scala.swing.{ Action, _ }
 import scala.util.Try
 
 object AboutDialog {
 
   /**
-    * This is essentially a workaround for IntelliJ Idea not liking
-    * auto-generated sources. (I.e. Idea continues to bitch about
-    * not finding scalismo.ui.BuildInfo, thus making it impossible
-    * to compile or start the program from the UI).
-    *
-    * Using runtime reflection avoids this.
-    */
+   * This is essentially a workaround for IntelliJ Idea not liking
+   * auto-generated sources. (I.e. Idea continues to bitch about
+   * not finding scalismo.ui.BuildInfo, thus making it impossible
+   * to compile or start the program from the UI).
+   *
+   * Using runtime reflection avoids this.
+   */
   object BuildInfo {
 
     import scala.reflect.runtime.universe

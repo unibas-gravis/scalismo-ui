@@ -14,7 +14,7 @@ private[api] sealed trait SimpleInteractor {
   protected[api] def peer: ConcreteInteractor
 }
 
-case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelView: StatisticalMeshModelView, targetGroup: Group) extends SimpleInteractor {
+case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelView: StatisticalMeshModelViewControls, targetGroup: Group) extends SimpleInteractor {
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
