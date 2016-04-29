@@ -527,6 +527,27 @@ object DiscreteLowRankGPTransformationView {
     }
   }
 
+  implicit object CallbackDiscreteGPTransformation extends HandleCallback[DiscreteLowRankGPTransformationView] {
+
+    override def registerOnAdd[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode) =>
+          val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode) =>
+          val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+          f(tmv)
+      }
+    }
+  }
+
 }
 
 case class LowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
