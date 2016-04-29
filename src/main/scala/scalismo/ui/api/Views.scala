@@ -71,8 +71,8 @@ object PointCloudView {
     override def registerOnAdd[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = PointCloudView(newNode.asInstanceOf[PointCloudNode])
+        case ChildAdded(collection, newNode: PointCloudNode) =>
+          val tmv = PointCloudView(newNode)
           f(tmv)
       }
     }
@@ -80,8 +80,8 @@ object PointCloudView {
     override def registerOnRemove[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = PointCloudView(removedNode.asInstanceOf[PointCloudNode])
+        case ChildRemoved(collection, removedNode: PointCloudNode) =>
+          val tmv = PointCloudView(removedNode)
           f(tmv)
       }
     }
@@ -124,8 +124,8 @@ object TriangleMeshView {
     override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = TriangleMeshView(newNode.asInstanceOf[TriangleMeshNode])
+        case ChildAdded(collection, newNode: TriangleMeshNode) =>
+          val tmv = TriangleMeshView(newNode)
           f(tmv)
       }
     }
@@ -133,8 +133,8 @@ object TriangleMeshView {
     override def registerOnRemove[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = TriangleMeshView(removedNode.asInstanceOf[TriangleMeshNode])
+        case ChildRemoved(collection, removedNode: TriangleMeshNode) =>
+          val tmv = TriangleMeshView(removedNode)
           f(tmv)
       }
     }
@@ -178,8 +178,8 @@ object LandmarkView {
     override def registerOnAdd[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = LandmarkView(newNode.asInstanceOf[LandmarkNode])
+        case ChildAdded(collection, newNode: LandmarkNode) =>
+          val tmv = LandmarkView(newNode)
           f(tmv)
       }
     }
@@ -187,8 +187,8 @@ object LandmarkView {
     override def registerOnRemove[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = LandmarkView(removedNode.asInstanceOf[LandmarkNode])
+        case ChildRemoved(collection, removedNode: LandmarkNode) =>
+          val tmv = LandmarkView(removedNode)
           f(tmv)
       }
     }
@@ -232,8 +232,8 @@ object ScalarMeshFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = ScalarMeshFieldView(newNode.asInstanceOf[ScalarMeshFieldNode])
+        case ChildAdded(collection, newNode: ScalarMeshFieldNode) =>
+          val tmv = ScalarMeshFieldView(newNode)
           f(tmv)
       }
     }
@@ -241,8 +241,8 @@ object ScalarMeshFieldView {
     override def registerOnRemove[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = ScalarMeshFieldView(removedNode.asInstanceOf[ScalarMeshFieldNode])
+        case ChildRemoved(collection, removedNode: ScalarMeshFieldNode) =>
+          val tmv = ScalarMeshFieldView(removedNode)
           f(tmv)
       }
     }
@@ -292,8 +292,8 @@ object ScalarFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = ScalarFieldView(newNode.asInstanceOf[ScalarFieldNode])
+        case ChildAdded(collection, newNode: ScalarFieldNode) =>
+          val tmv = ScalarFieldView(newNode)
           f(tmv)
       }
     }
@@ -301,8 +301,8 @@ object ScalarFieldView {
     override def registerOnRemove[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = ScalarFieldView(removedNode.asInstanceOf[ScalarFieldNode])
+        case ChildRemoved(collection, removedNode: ScalarFieldNode) =>
+          val tmv = ScalarFieldView(removedNode)
           f(tmv)
       }
     }
@@ -344,8 +344,8 @@ object VectorFieldView {
     override def registerOnAdd[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val tmv = VectorFieldView(newNode.asInstanceOf[VectorFieldNode])
+        case ChildAdded(collection, newNode: VectorFieldNode) =>
+          val tmv = VectorFieldView(newNode)
           f(tmv)
       }
     }
@@ -353,8 +353,8 @@ object VectorFieldView {
     override def registerOnRemove[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = VectorFieldView(removedNode.asInstanceOf[VectorFieldNode])
+        case ChildRemoved(collection, removedNode: VectorFieldNode) =>
+          val tmv = VectorFieldView(removedNode)
           f(tmv)
       }
     }
@@ -387,8 +387,8 @@ object ImageView {
     override def registerOnAdd[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode) =>
-          val imv = ImageView(newNode.asInstanceOf[ImageNode])
+        case ChildAdded(collection, newNode: ImageNode) =>
+          val imv = ImageView(newNode)
           f(imv)
       }
     }
@@ -396,8 +396,8 @@ object ImageView {
     override def registerOnRemove[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode) =>
-          val tmv = ImageView(removedNode.asInstanceOf[ImageNode])
+        case ChildRemoved(collection, removedNode: ImageNode) =>
+          val tmv = ImageView(removedNode)
           f(tmv)
       }
     }
@@ -523,6 +523,27 @@ object DiscreteLowRankGPTransformationView {
         case value: TransformationNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
           Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
         case _ => None
+      }
+    }
+  }
+
+  implicit object CallbackDiscreteGPTransformation extends HandleCallback[DiscreteLowRankGPTransformationView] {
+
+    override def registerOnAdd[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: TransformationNode[DiscreteLowRankGpPointTransformation]) =>
+          val tmv = DiscreteLowRankGPTransformationView(newNode)
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: TransformationNode[DiscreteLowRankGpPointTransformation]) =>
+          val tmv = DiscreteLowRankGPTransformationView(removedNode)
+          f(tmv)
       }
     }
   }
