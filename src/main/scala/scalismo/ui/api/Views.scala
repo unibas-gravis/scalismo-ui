@@ -532,18 +532,24 @@ object DiscreteLowRankGPTransformationView {
     override def registerOnAdd[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.transformations)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TransformationNode[DiscreteLowRankGpPointTransformation]) =>
-          val tmv = DiscreteLowRankGPTransformationView(newNode)
-          f(tmv)
+        case ChildAdded(collection, newNode: TransformationNode[_]) =>
+
+          if (newNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
+            val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+            f(tmv)
+          }
+
       }
     }
 
     override def registerOnRemove[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.transformations)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TransformationNode[DiscreteLowRankGpPointTransformation]) =>
-          val tmv = DiscreteLowRankGPTransformationView(removedNode)
-          f(tmv)
+        case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
+          if (removedNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
+            val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+            f(tmv)
+          }
       }
     }
   }
