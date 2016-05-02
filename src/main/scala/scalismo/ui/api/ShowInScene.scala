@@ -1,11 +1,11 @@
 package scalismo.ui.api
 
-import scalismo.common.{ DiscreteScalarField, DiscreteVectorField, Scalar }
-import scalismo.geometry.{ Landmark, Point, _3D }
+import scalismo.common.{DiscreteScalarField, DiscreteVectorField, Scalar}
+import scalismo.geometry.{Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.mesh.{ScalarMeshField, TriangleMesh}
+import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -23,11 +23,19 @@ trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit def showInSceneScalarField[A: Scalar: ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
+  implicit def showInSceneScalarField[A: Scalar : ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
     override type View = ScalarFieldView
 
     override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
       ScalarFieldView(group.peer.scalarFields.add(sf, name))
+    }
+  }
+
+  implicit object CreateGenericTransformation extends ShowInScene[Point[_3D] => Point[_3D]] {
+    override type View = TransformationView
+
+    override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
+      TransformationView(group.peer.transformations.add(t, name))
     }
   }
 
@@ -55,7 +63,7 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
+  implicit def ShowScalarField[S: Scalar : ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
@@ -65,7 +73,7 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar : ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {
@@ -114,14 +122,6 @@ object ShowInScene extends LowPriorityImplicits {
       val r = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
       val poseTrans = groupNode.transformations.add(r, s"$name-pose")
       StatisticalMeshModelViewControls(tmnode, transNode, poseTrans)
-    }
-  }
-
-  implicit object CreateGenericTransformation extends ShowInScene[Point[_3D] => Point[_3D]] {
-    override type View = TransformationView
-
-    override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
-      TransformationView(group.peer.transformations.add(t, name))
     }
   }
 
