@@ -94,13 +94,16 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
   }
 }
 
-class LandmarkNode(override val parent: LandmarksNode, override val source: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth {
-  name = source.id
+class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth {
+  name = sourceLm.id
 
   override val color = new ColorProperty(Color.BLUE)
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
   override val uncertainty = new UncertaintyProperty(source.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty))
+
+  // when requesting the source, we make sure that the returned id is the current name (in case it was renamed)
+  override def source = sourceLm.copy(id = name)
 
   override def remove(): Unit = parent.remove(this)
 
