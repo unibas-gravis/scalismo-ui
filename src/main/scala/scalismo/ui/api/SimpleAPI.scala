@@ -1,5 +1,7 @@
 package scalismo.ui.api
 
+import scalismo.ui.api.HandleCallback
+import scalismo.ui.model.SceneNode.event.{ChildRemoved, ChildAdded}
 import scalismo.ui.model._
 
 trait SimpleAPI {
@@ -16,26 +18,46 @@ trait SimpleAPI {
     showInScene.showInScene(t, name, g)
   }
 
-  def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V] = {
+  def filter[V <: ObjectView : FindInScene](pred: V => Boolean): Seq[V] = {
     filterSceneNodes[V](scene, pred)
   }
 
-  def filter[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Seq[V] = {
+  def filter[V <: ObjectView : FindInScene](group: Group, pred: V => Boolean): Seq[V] = {
     filterSceneNodes[V](group.peer, pred)
   }
 
-  def find[V <: ObjectView: FindInScene](pred: V => Boolean): Option[V] =
+  def find[V <: ObjectView : FindInScene](pred: V => Boolean): Option[V] =
     filter[V](pred).headOption
 
-  def find[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Option[V] =
+  def find[V <: ObjectView : FindInScene](group: Group, pred: V => Boolean): Option[V] =
     filter[V](pred).headOption
 
-  def onNodeAdded[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
+  def onNodeAdded[A <: ObjectView : HandleCallback, R](g: Group, f: A => R): Unit = {
     HandleCallback[A].registerOnAdd(g, f)
   }
 
-  def onNodeRemoved[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
+  def onNodeRemoved[A <: ObjectView : HandleCallback, R](g: Group, f: A => R): Unit = {
     HandleCallback[A].registerOnRemove(g, f)
+  }
+
+  def onGroupAdded[R](f: Group => R): Unit = {
+    scene.listenTo(scene.groups)
+
+    scene.reactions += {
+      case ChildAdded(collection, newNode: GroupNode) =>
+        val gv = Group(newNode)
+        f(gv)
+    }
+  }
+
+  def onGroupRemoved[R](f: Group => R): Unit = {
+    scene.listenTo(scene.groups)
+
+    scene.reactions += {
+      case ChildRemoved(collection, newNode: GroupNode) =>
+        val gv = Group(newNode)
+        f(gv)
+    }
   }
 
   private def defaultGroup: Group = {
@@ -44,7 +66,7 @@ trait SimpleAPI {
     Group(groupNode)
   }
 
-  private def filterSceneNodes[V <: ObjectView: FindInScene](node: SceneNode, pred: V => Boolean): Seq[V] = {
+  private def filterSceneNodes[V <: ObjectView : FindInScene](node: SceneNode, pred: V => Boolean): Seq[V] = {
 
     val resFromSubNodes = node.children.flatMap(child => filterSceneNodes(child, pred))
 
