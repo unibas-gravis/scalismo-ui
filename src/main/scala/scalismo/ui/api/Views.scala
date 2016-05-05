@@ -378,7 +378,10 @@ object ImageView {
 
   implicit object FindImage extends FindInScene[ImageView] {
     override def createView(s: SceneNode): Option[ImageView] = {
-      if (s.isInstanceOf[ImageView]) Some(ImageView(s.asInstanceOf[ImageNode])) else None
+      s match {
+        case imageNode: ImageNode => Some(ImageView(imageNode))
+        case _ => None
+      }
     }
   }
 
