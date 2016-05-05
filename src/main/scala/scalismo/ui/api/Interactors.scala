@@ -10,15 +10,20 @@ import scalismo.ui.view.ScalismoFrame
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
+  val ui: ScalismoUI
 
   protected[api] def peer: ConcreteInteractor
+
+  ui.frame.interactor = peer
+  peer.onActivated(ui.frame)
+
 }
 
 case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelView: StatisticalMeshModelViewControls, targetGroup: Group) extends SimpleInteractor {
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
-  override protected[api] val peer = new PosteriorLandmarkingInteractor {
+  override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
 
@@ -45,6 +50,6 @@ case class SimpleLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor 
 
   private[api] class Instance(override val frame: ScalismoFrame) extends DefaultInteractor with ComplexLandmarkingInteractor[Instance] {}
 
-  override protected[api] val peer: Instance = new Instance(ui.frame)
+  override protected[api] lazy val peer: Instance = new Instance(ui.frame)
 }
 
