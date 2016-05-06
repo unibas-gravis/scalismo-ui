@@ -9,6 +9,7 @@ import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.ui.api.DiscreteLowRankGPTransformationView
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
@@ -489,6 +490,33 @@ object RigidTransformationView {
         case value: TransformationNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] =>
           Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
         case _ => None
+      }
+    }
+  }
+
+  implicit object CallbackRigidTransformation extends HandleCallback[RigidTransformationView] {
+
+    override def registerOnAdd[R](g: Group, f: RigidTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: TransformationNode[_]) =>
+
+          if (newNode.transformation.isInstanceOf[RigidTransformation[_]]) {
+            val tmv = RigidTransformationView(newNode.asInstanceOf[TransformationNode[RigidTransformation[_3D]]])
+            f(tmv)
+          }
+
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: RigidTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.transformations)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
+          if (removedNode.transformation.isInstanceOf[RigidTransformation[_]]) {
+            val tmv = RigidTransformationView(removedNode.asInstanceOf[TransformationNode[RigidTransformation[_3D]]])
+            f(tmv)
+          }
       }
     }
   }
