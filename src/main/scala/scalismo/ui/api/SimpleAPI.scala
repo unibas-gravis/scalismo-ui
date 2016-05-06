@@ -30,7 +30,7 @@ trait SimpleAPI {
     filter[V](pred).headOption
 
   def find[V <: ObjectView : FindInScene](group: Group, pred: V => Boolean): Option[V] =
-    filter[V](pred).headOption
+    filter[V](group, pred).headOption
 
   def onNodeAdded[A <: ObjectView : HandleCallback, R](g: Group, f: A => R): Unit = {
     HandleCallback[A].registerOnAdd(g, f)
