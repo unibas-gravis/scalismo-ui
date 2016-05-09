@@ -14,25 +14,28 @@ private[api] sealed trait SimpleInteractor {
   protected[api] def peer: ConcreteInteractor
 }
 
-case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelView: StatisticalMeshModelViewControls, targetGroup: Group) extends SimpleInteractor {
+case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Group, targetGroup: Group) extends SimpleInteractor {
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
   override protected[api] val peer = new PosteriorLandmarkingInteractor {
 
+    val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
+    val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
+
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
 
-    override val previewNode: TriangleMeshNode = ui.show(previewGroup, modelView.meshView.triangleMesh, "previewMesh").peer
+    override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
     previewNode.visible = false
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
-    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = modelView.shapeTransformationView.peer
+    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = shapeTransformationView.peer
 
     override def targetGroupNode: GroupNode = targetGroup.peer
 
     override val previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = {
-      ui.show(previewGroup, modelView.shapeTransformationView.discreteLowRankGaussianProcess, "preview-gp").peer
+      ui.show(previewGroup, shapeTransformationView.discreteLowRankGaussianProcess, "preview-gp").peer
     }
 
     override def frame: ScalismoFrame = ui.frame
