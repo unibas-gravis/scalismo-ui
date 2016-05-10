@@ -1,6 +1,8 @@
 package scalismo.ui.model
 
 import scalismo.statisticalmodel.StatisticalMeshModel
+import scalismo.ui.event.ScalismoPublisher
+import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.capabilities.{ Removeable, Renameable }
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
@@ -16,8 +18,15 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
   override def isViewCollapsed: Boolean = true
 }
 
-class GroupNode(override val parent: GroupsNode, initialName: String, val isGhost: Boolean) extends SceneNode with Renameable with Removeable {
+class GroupNode(override val parent: GroupsNode, initialName: String,  private var _isGhost: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
   name = initialName
+
+
+  def isGhost_=(b : Boolean): Unit = {
+    _isGhost = b
+    scene.publishEvent(SceneChanged(scene))
+  }
+  def isGhost = _isGhost
 
   val transformations = new TransformationsNode(this)
   val landmarks = new LandmarksNode(this)
@@ -36,6 +45,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, val isGhos
     transformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
 
   }
+
 
   override def remove(): Unit = parent.remove(this)
 }
