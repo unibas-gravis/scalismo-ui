@@ -425,12 +425,11 @@ case class StatisticalMeshModelViewControls private[ui] (private val meshNode: T
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
-  def hidden_=(b : Boolean) : Unit = {
+  def hidden_=(b: Boolean): Unit = {
     peer.isGhost = b
   }
 
-  def hidden  = peer.isGhost
-
+  def hidden = peer.isGhost
 
   type PeerType = GroupNode
 }

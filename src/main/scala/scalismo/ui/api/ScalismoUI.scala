@@ -4,7 +4,7 @@ import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.ScalismoFrame
 
-class ScalismoUI(title : String) extends SimpleAPI {
+class ScalismoUI(title: String) extends SimpleAPI {
 
   private[ui] val frame = EdtUtil.onEdtWait {
     val frame = new ScalismoFrame()
@@ -23,7 +23,7 @@ class ScalismoUI(title : String) extends SimpleAPI {
 
 object ScalismoUI {
 
-  def apply(title : String = ""): ScalismoUI = {
+  def apply(title: String = ""): ScalismoUI = {
     scalismo.initialize()
     new ScalismoUI(title)
   }

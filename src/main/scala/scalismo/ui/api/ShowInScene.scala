@@ -1,11 +1,11 @@
 package scalismo.ui.api
 
-import scalismo.common.{DiscreteScalarField, DiscreteVectorField, Scalar}
-import scalismo.geometry.{Landmark, Point, _3D}
+import scalismo.common.{ DiscreteScalarField, DiscreteVectorField, Scalar }
+import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh}
-import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
+import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -23,7 +23,7 @@ trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit def showInSceneScalarField[A: Scalar : ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
+  implicit def showInSceneScalarField[A: Scalar: ClassTag] = new ShowInScene[DiscreteScalarField[_3D, A]] {
     override type View = ScalarFieldView
 
     override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group): ScalarFieldView = {
@@ -63,7 +63,7 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit def ShowScalarField[S: Scalar : ClassTag] = new ShowInScene[ScalarMeshField[S]] {
+  implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
@@ -73,7 +73,7 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowImage[S: Scalar : ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {

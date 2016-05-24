@@ -18,11 +18,10 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
   override def isViewCollapsed: Boolean = true
 }
 
-class GroupNode(override val parent: GroupsNode, initialName: String,  private var _isGhost: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
+class GroupNode(override val parent: GroupsNode, initialName: String, private var _isGhost: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
   name = initialName
 
-
-  def isGhost_=(b : Boolean): Unit = {
+  def isGhost_=(b: Boolean): Unit = {
     _isGhost = b
     scene.publishEvent(SceneChanged(scene))
   }
@@ -45,7 +44,6 @@ class GroupNode(override val parent: GroupsNode, initialName: String,  private v
     transformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
 
   }
-
 
   override def remove(): Unit = parent.remove(this)
 }
