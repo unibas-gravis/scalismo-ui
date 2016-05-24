@@ -5,7 +5,7 @@ import sbtbuildinfo.Plugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "develop-SNAPSHOT"
+  val buildVersion = "0.8.0-RC1"
   val buildScalaVersion = "2.11.8"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
@@ -40,7 +40,7 @@ object Creds {
 }
 
 object Dependencies {
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.12.0-RC1"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "3.0.+"
   val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
   // the following two dependencies are transitively obtained through other dependencies
