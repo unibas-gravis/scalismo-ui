@@ -32,6 +32,7 @@ class PosteriorReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[I
         case Some((lm, group)) if group == interactor.sourceGpNode.group =>
           val modelLm = group.landmarks.add(lm.copy(id = group.landmarks.nameGenerator.nextName()))
           val targetLm = interactor.targetUncertaintyGroup.landmarks.add(lm.copy(id = modelLm.name))
+          targetLm.pickable.value = false
           transitionToEditing(modelLm, targetLm)
         case _ =>
       }
