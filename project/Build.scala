@@ -5,7 +5,7 @@ import sbtbuildinfo.Plugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "0.8.0-RC1"
+  val buildVersion = "0.8.0-RC2"
   val buildScalaVersion = "2.11.8"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
@@ -32,7 +32,8 @@ object Resolvers {
   private val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
   private val twitter = "twitter" at "http://maven.twttr.com/"
   private val scalismoPrivate = "Scalismo (private)" at "https://statismo.cs.unibas.ch/repository/private"
-  val stkResolvers = Seq(scalismoPrivate, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
+  private val scalismoPublic = "Scalismo (public)" at "https://statismo.cs.unibas.ch/repository/public"
+  val stkResolvers = Seq(scalismoPrivate, scalismoPublic, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
 }
 
 object Creds {

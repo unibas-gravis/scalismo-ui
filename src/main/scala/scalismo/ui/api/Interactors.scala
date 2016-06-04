@@ -35,6 +35,9 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
+    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true)).peer
+    targetUncertaintyGroup
+
     override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = shapeTransformationView.peer
 
     override def targetGroupNode: GroupNode = targetGroup.peer

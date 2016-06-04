@@ -2,7 +2,7 @@ package scalismo.ui.control.interactor.landmark.complex.posterior
 
 import breeze.linalg.{ DenseMatrix, DenseVector }
 import scalismo.geometry._
-import scalismo.statisticalmodel.LowRankGaussianProcess
+import scalismo.statisticalmodel.{ NDimensionalNormalDistribution, LowRankGaussianProcess }
 import scalismo.statisticalmodel.LowRankGaussianProcess.Eigenpair
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.Delegate
@@ -18,13 +18,15 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
   def previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation]
 
+  def targetUncertaintyGroup: GroupNode
+
   def targetGroupNode: GroupNode
 
   override protected def initialDelegate: Delegate[PosteriorLandmarkingInteractor] = {
     PosteriorReadyForCreating.enter()
   }
 
-  private def genericRegressionComputations(gp: LowRankGaussianProcess[_3D, _3D], trainingData: IndexedSeq[Point3D], landmark: LandmarkNode): DenseMatrix[Double] = {
+  private def genericRegressionComputations(gp: LowRankGaussianProcess[_3D, _3D], trainingData: IndexedSeq[Point3D], modelLm: LandmarkNode, targetLm: LandmarkNode): DenseMatrix[Double] = {
 
     val dim = 3 //implicitly[NDSpace[DO]].dimensionality
 
@@ -35,8 +37,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
       Q(i * dim until i * dim + dim, j) := phi_j(x_i).toBreezeVector * math.sqrt(lambda_j)
     }
 
-    //val errorDistributions = IndexedSeq(NDimensionalNormalDistribution(scalismo.geometry.Vector.zeros[D], SquareMatrix.eye[D]))
-    val errorDistributions = IndexedSeq(landmark.uncertainty.value.to3DNormalDistribution)
+    val errorDistributions = IndexedSeq(NDimensionalNormalDistribution(scalismo.geometry.Vector(0f, 0f, 0f), modelLm.uncertainty.value.to3DNormalDistribution.cov + targetLm.uncertainty.value.to3DNormalDistribution.cov))
     // What we are actually computing here is the following:
     // L would be a block diagonal matrix, which contains on the diagonal the blocks that describes the uncertainty
     // for each point (a d x d) block. We then would compute Q.t * L. For efficiency reasons (L could be large but is sparse)
@@ -54,16 +55,19 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     Minv * QtL
   }
 
-  def updatePreview(landmark: LandmarkNode, mousePosition: Point3D): Unit = {
+  def updatePreview(modelLm: LandmarkNode, targetLm: LandmarkNode, mousePosition: Point3D): Unit = {
+
+    targetUncertaintyGroup.transformations.foreach(_.remove())
+    targetUncertaintyGroup.transformations.add((p: Point[_3D]) => mousePosition, "mousePosition")
 
     def flatten(v: IndexedSeq[Vector[_3D]]) = DenseVector(v.flatten(_.toArray).toArray)
 
     val lmPointAndId = {
-      previewNode.source.pointSet.findClosestPoint(landmark.source.point)
+      previewNode.source.pointSet.findClosestPoint(modelLm.source.point)
     }
 
     val mvec = flatten(IndexedSeq(sourceGpNode.transformation.dgp.mean(lmPointAndId.id)))
-    val M = genericRegressionComputations(sourceGpNode.transformation.gp, IndexedSeq(lmPointAndId.point), landmark)
+    val M = genericRegressionComputations(sourceGpNode.transformation.gp, IndexedSeq(lmPointAndId.point), modelLm, targetLm)
 
     val yvec = {
       val ys = IndexedSeq(lmPointAndId.id).map(id => mousePosition - lmPointAndId.point)

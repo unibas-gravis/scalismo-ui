@@ -16,8 +16,8 @@ class PosteriorReadyForEditing[InteractorType <: ComplexLandmarkingInteractor[In
     parent.transitionTo(PosteriorReadyForCreating.enter)
   }
 
-  override def transitionToEditing(lm: LandmarkNode): Unit = {
-    parent.transitionTo(PosteriorEditing.enter(lm))
+  def transitionToEditing(modelLm: LandmarkNode, targetLm: LandmarkNode): Unit = {
+    parent.transitionTo(PosteriorEditing.enter(modelLm, targetLm))
   }
 }
 

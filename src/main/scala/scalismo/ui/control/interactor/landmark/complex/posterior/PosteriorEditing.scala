@@ -8,26 +8,27 @@ import scalismo.ui.control.interactor.landmark.complex.{ ComplexLandmarkingInter
 import scalismo.ui.model.LandmarkNode
 
 object PosteriorEditing {
-  def enter[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode): StateTransition[IT, DT] = editAxis(lm, 0)
+  def enter[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](modelLm: LandmarkNode, targetLm: LandmarkNode): StateTransition[IT, DT] = editAxis(modelLm, targetLm, 0)
 
-  def editAxis[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode, axisIndex: Int): StateTransition[IT, DT] = new StateTransition[IT, DT] {
-    override def apply()(implicit parent: IT): Delegate[IT] = new PosteriorEditing[IT](lm, axisIndex)
+  def editAxis[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](modelLm: LandmarkNode, targetLm: LandmarkNode, axisIndex: Int): StateTransition[IT, DT] = new StateTransition[IT, DT] {
+    override def apply()(implicit parent: IT): Delegate[IT] = new PosteriorEditing[IT](modelLm, targetLm, axisIndex)
   }
 }
 
-class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](landmarkNode: LandmarkNode, axisIndex: Int)(implicit parent: InteractorType) extends Editing[InteractorType](landmarkNode, axisIndex) {
+class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](modelLm: LandmarkNode, targetLm: LandmarkNode, axisIndex: Int)(implicit parent: InteractorType) extends Editing[InteractorType](targetLm, axisIndex) {
 
   def interactor: PosteriorLandmarkingInteractor = parent.asInstanceOf[PosteriorLandmarkingInteractor]
 
   override def cancel(): Unit = {
     if (parent.isLandmarkCreationEnabled) {
-      landmarkNode.remove()
+      modelLm.remove()
+      targetLm.remove()
     }
     super.cancel()
   }
 
-  override def transitionToEditAxis(node: LandmarkNode, axisIndex: Int): Unit = {
-    parent.transitionTo(PosteriorEditing.editAxis(node, axisIndex))
+  override def transitionToEditAxis(targetLm: LandmarkNode, axisIndex: Int): Unit = {
+    parent.transitionTo(PosteriorEditing.editAxis(modelLm, targetLm, axisIndex))
   }
 
   override def transitionToReadyForCreating(): Unit = {
@@ -44,7 +45,7 @@ class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[Interactor
 
   override def mouseMoved(e: MouseEvent): Verdict = {
     e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint).pointOption match {
-      case Some(point) => interactor.updatePreview(landmarkNode, point)
+      case Some(point) => interactor.updatePreview(modelLm, targetLm, point)
       case None =>
     }
     super.mouseMoved(e)
@@ -57,7 +58,8 @@ class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[Interactor
     if (e.getButton == MouseEvent.BUTTON1) {
       parent.getLandmarkForClick(e) match {
         case Some((lm, group)) if group == interactor.targetGroupNode =>
-          group.landmarks.add(lm.copy(id = landmarkNode.name))
+          group.landmarks.add(lm.copy(id = targetLm.name, uncertainty = Some(targetLm.uncertainty.value.to3DNormalDistribution)))
+          interactor.targetUncertaintyGroup.landmarks.head.remove()
           endEditing()
         case _ =>
       }
