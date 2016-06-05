@@ -23,10 +23,11 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
   def targetGroupNode: GroupNode
 
+  def inversePoseTransform: PointTransformation
+
   override protected def initialDelegate: Delegate[PosteriorLandmarkingInteractor] = {
     PosteriorReadyForCreating.enter()
   }
-
 
   def updatePreview(modelLm: LandmarkNode, targetLm: LandmarkNode, mousePosition: Point3D): Unit = {
 
@@ -39,7 +40,8 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
     val error = NDimensionalNormalDistribution(scalismo.geometry.Vector(0f, 0f, 0f), modelLm.uncertainty.value.to3DNormalDistribution.cov + targetLm.uncertainty.value.to3DNormalDistribution.cov)
 
-    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, mousePosition - lmPointAndId.point, error)))
+    // Here, we need to (inverse) transform the mouse position in order to feed an non-rotated deformation vector to the regression
+    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, error)))
     previewGpNode.transformation = sourceGpNode.transformation.copy(coeffs)
   }
 
