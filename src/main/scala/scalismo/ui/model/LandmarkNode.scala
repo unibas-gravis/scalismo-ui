@@ -94,12 +94,13 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
   }
 }
 
-class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth {
+class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth with HasPickable {
   name = sourceLm.id
 
   override val color = new ColorProperty(Color.BLUE)
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
+  override val pickable = new PickableProperty()
 
   // lazy is needed here since traits such as Transformable call source() which need uncertainty, all this at *construction time*
   override lazy val uncertainty = new UncertaintyProperty(sourceLm.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty))

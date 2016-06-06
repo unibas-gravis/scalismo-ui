@@ -1,8 +1,9 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry.{ SquareMatrix, _3D }
+import scalismo.ui.control.SlicingPosition.renderable
 import scalismo.ui.model.capabilities.Transformable
-import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, NodeProperty, OpacityProperty }
+import scalismo.ui.model.properties._
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }
 import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorSceneNode }
 import scalismo.ui.rendering.util.VtkUtil
@@ -33,6 +34,18 @@ trait LandmarkActor extends ActorColor with ActorOpacity with ActorSceneNode {
   functionSource.SetParametricFunction(ellipsoid)
   transformFilter.SetInputConnection(functionSource.GetOutputPort())
   transformFilter.SetTransform(transform)
+
+  //FIXME: pick control -- this should probably go into a trait or something.
+  sceneNode match {
+    case p: HasPickable =>
+      SetPickable(if (p.pickable.value) 1 else 0)
+      listenTo(p.pickable)
+      reactions += {
+        case NodeProperty.event.PropertyChanged(s) if s == p.pickable =>
+          SetPickable(if (p.pickable.value) 1 else 0)
+      }
+    case _ =>
+  }
 
   protected def rerender(geometryChanged: Boolean) = {
     if (geometryChanged) {

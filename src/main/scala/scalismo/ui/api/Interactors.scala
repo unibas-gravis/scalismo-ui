@@ -5,8 +5,9 @@ import java.awt.Color
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
-import scalismo.ui.model.{ DiscreteLowRankGpPointTransformation, GroupNode, TransformationNode, TriangleMeshNode }
+import scalismo.ui.model._
 import scalismo.ui.view.ScalismoFrame
+import scalismo.geometry._
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
@@ -30,20 +31,35 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
 
+    // we start by copying all transformations of the modelGroup into the previewGroup. The order is important
+    modelGroup.peer.transformations.reverse.foreach { transNode =>
+      previewGroup.peer.transformations.add(transNode.transformation.asInstanceOf[PointTransformation], transNode.name)
+    }
+
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
     previewNode.visible = false
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
-    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = shapeTransformationView.peer
+    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true)).peer
+    targetUncertaintyGroup
+
+    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] =
+      ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get.peer
 
     override def targetGroupNode: GroupNode = targetGroup.peer
 
     override val previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = {
-      ui.show(previewGroup, shapeTransformationView.discreteLowRankGaussianProcess, "preview-gp").peer
+      ui.find[DiscreteLowRankGPTransformationView](previewGroup, (tv: DiscreteLowRankGPTransformationView) => true).get.peer
     }
 
     override def frame: ScalismoFrame = ui.frame
+
+    override val inversePoseTransform = ui.filter[RigidTransformationView](modelGroup, (rv: RigidTransformationView) => true).reverse.foldLeft((p: Point[_3D]) => p) {
+      case (a, b) =>
+        (p: Point[_3D]) => a(b.transformation.inverse(p))
+    }
+
   }
 }
 

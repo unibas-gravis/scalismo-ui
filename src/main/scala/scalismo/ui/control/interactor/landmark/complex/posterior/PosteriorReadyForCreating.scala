@@ -22,16 +22,18 @@ class PosteriorReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[I
     parent.transitionTo(PosteriorReadyForEditing.enter)
   }
 
-  override def transitionToEditing(lm: LandmarkNode): Unit = {
-    parent.transitionTo(PosteriorEditing.enter(lm))
+  def transitionToEditing(modelLm: LandmarkNode, targetLm: LandmarkNode): Unit = {
+    parent.transitionTo(PosteriorEditing.enter(modelLm, targetLm))
   }
 
   override def mouseClicked(e: MouseEvent): Verdict = {
     if (e.getButton == MouseEvent.BUTTON1) {
       parent.getLandmarkForClick(e) match {
         case Some((lm, group)) if group == interactor.sourceGpNode.group =>
-          val node = group.landmarks.add(lm.copy(id = group.landmarks.nameGenerator.nextName()))
-          transitionToEditing(node)
+          val modelLm = group.landmarks.add(lm.copy(id = group.landmarks.nameGenerator.nextName()))
+          val targetLm = interactor.targetUncertaintyGroup.landmarks.add(lm.copy(id = modelLm.name))
+          targetLm.pickable.value = false
+          transitionToEditing(modelLm, targetLm)
         case _ =>
       }
     }
