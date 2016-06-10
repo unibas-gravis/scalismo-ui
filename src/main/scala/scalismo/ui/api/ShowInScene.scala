@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{ DiscreteScalarField, DiscreteVectorField, Scalar }
+import scalismo.common.{UnstructuredPointsDomain, DiscreteScalarField, DiscreteVectorField, Scalar}
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -10,6 +10,7 @@ import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
+
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -40,6 +41,7 @@ trait LowPriorityImplicits {
   }
 
 }
+
 
 object ShowInScene extends LowPriorityImplicits {
 
@@ -125,6 +127,15 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
+  implicit object ShowInSceneTransformationGlypth extends ShowInScene[TransformationGlyph] {
+    override type View = VectorFieldView
+
+    override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group): ShowInSceneTransformationGlypth.View = {
+      VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name))
+    }
+  }
+
+
   implicit object CreateRigidTransformation extends ShowInScene[RigidTransformation[_3D]] {
     override type View = RigidTransformationView
 
@@ -150,5 +161,7 @@ object ShowInScene extends LowPriorityImplicits {
       DiscreteLowRankGPTransformationView(gpNode)
     }
   }
+
+
 
 }
