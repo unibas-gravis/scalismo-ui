@@ -1,8 +1,9 @@
 package scalismo.ui.rendering.actor
 
+import scalismo.ui.control.SlicingPosition.renderable
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{ BoundingBox, VectorFieldNode }
+import scalismo.ui.model.{TransformationGlyphNode, BoundingBox, VectorFieldNode}
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
@@ -59,6 +60,9 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     SetInputData(polydata)
     //    ScalingOn()
     OrientOn()
+
+
+
     SetScaleModeToScaleByVector()
     SetVectorModeToUseVector()
     SetColorModeToColorByScalar()
@@ -79,7 +83,7 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
 
   reactions += {
     case Transformable.event.GeometryChanged(_) => rerender(true)
-    case NodeProperty.event.PropertyChanged(p) => rerender(true)
+    case NodeProperty.event.PropertyChanged(p) => rerender(false)
   }
 
   onInstantiated()
@@ -95,6 +99,8 @@ class VectorFieldActor3D(override val sceneNode: VectorFieldNode) extends Vector
 
 }
 
+
+
 class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with VectorFieldActor with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth
 
@@ -107,4 +113,3 @@ class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: View
   override protected def sourceBoundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(polydata.GetBounds())
 
 }
-
