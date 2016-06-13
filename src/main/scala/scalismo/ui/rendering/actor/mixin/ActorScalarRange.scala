@@ -1,15 +1,15 @@
 package scalismo.ui.rendering.actor.mixin
 
-import scalismo.ui.model.properties.{ScalarRange, ScalarRangeProperty, HasScalarRange, NodeProperty}
+import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
 import scalismo.ui.rendering.actor.{ ActorEvents, SinglePolyDataActor }
 
-trait ActorScalarRange extends SinglePolyDataActor with ActorEvents { self : ActorScalarRange =>
+trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
   def scalarRange: ScalarRangeProperty
 
-  listenTo(self.scalarRange)
+  listenTo(scalarRange)
 
   reactions += {
-    case NodeProperty.event.PropertyChanged(v) if v.isInstanceOf[ScalarRangeProperty] => setAppearance()
+    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
   }
 
   private def setAppearance() = {

@@ -33,7 +33,7 @@ class VectorFieldNode(override val parent: VectorFieldsNode, val source: Discret
 
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
-  override def scalarRange: ScalarRangeProperty = {
+  override lazy val scalarRange: ScalarRangeProperty = {
     val (min, max) = {
       val norms = vectors.map(_.norm)
       (norms.min.toFloat, norms.max.toFloat)

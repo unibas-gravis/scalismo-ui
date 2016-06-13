@@ -31,17 +31,25 @@ trait TransformationGlyphActor extends VectorFieldActor {
       SetNumberOfComponents(3)
     }
 
+    var maxNorm = 0.0;
+    var minNorm = Double.MaxValue
+
     for ((vector, i) <- sceneNode.transformedSource.values.zipWithIndex) {
+      val norm = vector.norm
         vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
-        scalars.InsertNextValue(vector.norm)
+        scalars.InsertNextValue(norm)
+      if (norm > maxNorm) maxNorm = norm
+      if (norm < minNorm) minNorm = norm
     }
 
     polydata.GetPointData().SetVectors(vectors)
     polydata.GetPointData().SetScalars(scalars)
 
 
-    if (geometryChanged)
+    if (geometryChanged) {
+      scalarRange.value = ScalarRange(minNorm.toFloat, maxNorm.toFloat, minNorm.toFloat, maxNorm.toFloat)
       publishEvent(PropertyChanged(scalarRange))
+    }
 
     arrow.Modified()
     glyph.Update()

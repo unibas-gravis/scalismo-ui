@@ -16,14 +16,5 @@ class TransformationGlyphNode(override val parent: VectorFieldsNode, val points:
   }
 
 
-  override def scalarRange: ScalarRangeProperty = {
-    val (min, max) = {
-      val norms = transformedSource.values.toIndexedSeq.map(_.norm)
-      (norms.min.toFloat, norms.max.toFloat)
-    }
-    new ScalarRangeProperty(ScalarRange(min, max, min, max))
-  }
-
-
-  override def inverseTransform(point: Point3D): Point3D = ???
+  override def inverseTransform(point: Point3D): Point3D = point
 }
