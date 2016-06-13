@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{ DiscreteScalarField, DiscreteVectorField, Scalar }
+import scalismo.common._
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -53,7 +53,7 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit object ShowInScenePointCloud extends ShowInScene[IndexedSeq[Point[_3D]]] {
+  implicit object ShowInScenePointCloudFromIndexedSeq extends ShowInScene[IndexedSeq[Point[_3D]]] {
     override type View = PointCloudView
 
     override def showInScene(pointCloud: IndexedSeq[Point[_3D]], name: String, group: Group): PointCloudView = {
@@ -62,6 +62,15 @@ object ShowInScene extends LowPriorityImplicits {
     }
 
   }
+
+  implicit object ShowInScenePointCloudFromDomain extends ShowInScene[UnstructuredPointsDomain[_3D]] {
+    override type View = PointCloudView
+
+    override def showInScene(domain: UnstructuredPointsDomain[_3D], name: String, group: Group): PointCloudView = {
+      ShowInScenePointCloudFromIndexedSeq.showInScene(domain.pointSequence, name, group)
+    }
+  }
+
 
   implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
