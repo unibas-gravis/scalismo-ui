@@ -19,14 +19,12 @@ object Editing {
 class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode, axisIndex: Int)(implicit override val parent: ComplexLandmarkingInteractor[IT]) extends ComplexLandmarkingInteractor.Delegate[IT] {
   override def onLandmarkCreationToggled(): Unit = cancel()
 
-
   override def mouseExited(e: MouseEvent): Verdict = {
     cancel()
     super.mouseExited(e)
   }
 
-
-  val cursorList = List(Cursor.E_RESIZE_CURSOR, Cursor.N_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR )
+  val cursorList = List(Cursor.E_RESIZE_CURSOR, Cursor.N_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR)
 
   override def mouseClicked(e: MouseEvent): Verdict = {
 
