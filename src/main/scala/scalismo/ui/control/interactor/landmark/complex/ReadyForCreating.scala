@@ -1,5 +1,6 @@
 package scalismo.ui.control.interactor.landmark.complex
 
+import java.awt.Cursor
 import java.awt.event.MouseEvent
 
 import scalismo.ui.control.interactor.Interactor.Verdict
@@ -34,6 +35,7 @@ class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[Interactor
       parent.getLandmarkForClick(e) match {
         case Some((lm, group)) =>
           val node = group.landmarks.add(lm.copy(id = group.landmarks.nameGenerator.nextName()))
+          e.canvas.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR))
           transitionToEditing(node)
         case _ =>
       }
