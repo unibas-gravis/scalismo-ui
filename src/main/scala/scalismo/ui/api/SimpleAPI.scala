@@ -1,6 +1,5 @@
 package scalismo.ui.api
 
-import scalismo.ui.api.HandleCallback
 import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded }
 import scalismo.ui.model._
 

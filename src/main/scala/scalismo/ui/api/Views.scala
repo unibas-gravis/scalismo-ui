@@ -9,7 +9,6 @@ import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
-import scalismo.ui.api.DiscreteLowRankGPTransformationView
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
@@ -54,6 +53,10 @@ case class PointCloudView private[ui] (override protected[api] val peer: PointCl
   def opacity_=(o: Float): Unit = {
     peer.opacity.value = o
   }
+
+  def points: IndexedSeq[Point[_3D]] = peer.source
+
+  def transformedPoints: IndexedSeq[Point[_3D]] = peer.transformedSource
 }
 
 object PointCloudView {
@@ -120,7 +123,7 @@ object TriangleMeshView {
     }
   }
 
-  implicit def callbackTriangleMeshView = new HandleCallback[TriangleMeshView] {
+  implicit def callbackTriangleMeshView(): Unit = new HandleCallback[TriangleMeshView] {
 
     override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
