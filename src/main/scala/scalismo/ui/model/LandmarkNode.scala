@@ -78,12 +78,15 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     saveNodes(children, file)
   }
 
-  def saveNodes(nodes: List[LandmarkNode], file: File): Try[Unit] = {
+  def saveNodes(nodes: List[LandmarkNode], file: File, transformedFlag : Boolean = true): Try[Unit] = {
     require(nodes.forall(_.parent == this))
 
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
-      node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+      if(transformedFlag)
+        node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+      else
+        node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
     }
     val ok = if (FileUtil.extension(file) == "csv") {
       LandmarkIO.writeLandmarksCsv(landmarks, file)
