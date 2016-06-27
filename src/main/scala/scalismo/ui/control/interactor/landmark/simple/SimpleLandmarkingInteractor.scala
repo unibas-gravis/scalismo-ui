@@ -2,6 +2,7 @@ package scalismo.ui.control.interactor.landmark.simple
 
 import java.awt.event.MouseEvent
 import java.awt.{ Color, Cursor }
+import javax.swing.SwingUtilities
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
@@ -13,7 +14,7 @@ import scalismo.ui.view.ScalismoFrame
 import scala.swing.ToggleButton
 import scala.swing.event.ButtonClicked
 
-trait SimpleLandmarkingInteractor extends Interactor {
+trait SimpleLandmarkingInteractorTrait extends Interactor {
   val landmarkingButton = new ToggleButton {
     val myIcon = BundledIcon.Landmark
 
@@ -41,7 +42,7 @@ trait SimpleLandmarkingInteractor extends Interactor {
 
   override def mouseClicked(e: MouseEvent): Verdict = {
 
-    if (landmarkingButton.selected) {
+    if (landmarkingButton.selected && SwingUtilities.isLeftMouseButton(e)) {
       Recipe.AddLandmarkOnClick.mouseClicked(e)
     } else {
       Pass
