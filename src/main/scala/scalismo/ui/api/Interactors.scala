@@ -1,11 +1,15 @@
 package scalismo.ui.api
 
 import java.awt.Color
+import java.awt.event.MouseEvent
 
+import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
+import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractorTrait
+import scalismo.ui.control.interactor.{Recipe, DefaultInteractor, Interactor}
 import scalismo.ui.model._
+import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame
 import scalismo.geometry._
 
@@ -69,5 +73,22 @@ case class SimpleLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor 
   private[api] class Instance(override val frame: ScalismoFrame) extends DefaultInteractor with ComplexLandmarkingInteractor[Instance] {}
 
   override protected[api] lazy val peer: Instance = new Instance(ui.frame)
+}
+
+/**
+ * This landmarking interactor does not edit uncertainties of landmarks.
+ **/
+case class OneClickLandmarkingInteractor(ui: ScalismoUI, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty) extends SimpleInteractor {
+
+  override type ConcreteInteractor = Instance
+
+  private[api] class Instance() extends SimpleLandmarkingInteractorTrait {
+
+    override val defaultUncertainty = uncertainty
+
+    override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
+  }
+
+  override protected[api] lazy val peer: Instance = new Instance()
 }
 
