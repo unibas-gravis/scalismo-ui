@@ -78,19 +78,19 @@ object Recipe {
   }
 
   object AddLandmarkOnClick {
-    def mouseClicked(e: MouseEvent): Verdict = {
+    def mouseClicked(e: MouseEvent, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty): Verdict = {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
       pointAndNode.nodeOption.foreach {
         case skip: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           val name = ok.group.landmarks.nameGenerator.nextName()
           val point = ok.inverseTransform(pointAndNode.pointOption.get)
-          ok.group.landmarks.add(point, name, Uncertainty.DefaultUncertainty)
+          ok.group.landmarks.add(point, name, uncertainty)
         case ok: ImageNode =>
           val name = ok.group.landmarks.nameGenerator.nextName()
           // images don't support transformations
           val point = pointAndNode.pointOption.get
-          ok.group.landmarks.add(point, name, Uncertainty.DefaultUncertainty)
+          ok.group.landmarks.add(point, name, uncertainty)
         case _ =>
       }
       Pass

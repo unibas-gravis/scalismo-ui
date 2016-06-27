@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
 import scalismo.ui.control.interactor.{ Interactor, Recipe }
+import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.model.{ LandmarkNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
@@ -15,6 +16,9 @@ import scala.swing.ToggleButton
 import scala.swing.event.ButtonClicked
 
 trait SimpleLandmarkingInteractorTrait extends Interactor {
+
+  def defaultUncertainty : Uncertainty
+
   val landmarkingButton = new ToggleButton {
     val myIcon = BundledIcon.Landmark
 
@@ -43,7 +47,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
   override def mouseClicked(e: MouseEvent): Verdict = {
 
     if (landmarkingButton.selected && SwingUtilities.isLeftMouseButton(e)) {
-      Recipe.AddLandmarkOnClick.mouseClicked(e)
+      Recipe.AddLandmarkOnClick.mouseClicked(e, defaultUncertainty)
     } else {
       Pass
     }

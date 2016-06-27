@@ -9,6 +9,7 @@ import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandma
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractorTrait
 import scalismo.ui.control.interactor.{Recipe, DefaultInteractor, Interactor}
 import scalismo.ui.model._
+import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame
 import scalismo.geometry._
 
@@ -77,11 +78,13 @@ case class SimpleLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor 
 /**
  * This landmarking interactor does not edit uncertainties of landmarks.
  **/
-case class CertainLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor {
+case class OneClickLandmarkingInteractor(ui: ScalismoUI, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty) extends SimpleInteractor {
 
   override type ConcreteInteractor = Instance
 
   private[api] class Instance() extends SimpleLandmarkingInteractorTrait {
+
+    override val defaultUncertainty = uncertainty
 
     override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
   }
