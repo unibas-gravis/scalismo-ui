@@ -42,8 +42,8 @@ object RendererPanel {
 
     def cameraChangeForAxis(axis: Axis): CameraChangeFromDefault = {
       axis match {
-        case Axis.Y => CameraChangeFromDefault(Some(90), None, None)
-        case Axis.X => CameraChangeFromDefault(None, None, Some(90))
+        case Axis.Y => CameraChangeFromDefault(Some(90), Some(180), None)
+        case Axis.X => CameraChangeFromDefault(None,Some(-90), Some(90))
         case Axis.Z => CameraChangeFromDefault(None, None, None)
       }
     }

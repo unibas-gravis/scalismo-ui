@@ -1,5 +1,6 @@
 package scalismo.ui.control.interactor.landmark.complex
 
+import java.awt.Cursor
 import java.awt.event.{ MouseEvent, MouseWheelEvent }
 
 import scalismo.ui.control.interactor.Interactor.Verdict
@@ -23,11 +24,17 @@ class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode
     super.mouseExited(e)
   }
 
+  val cursorList = List(Cursor.E_RESIZE_CURSOR, Cursor.N_RESIZE_CURSOR, Cursor.W_RESIZE_CURSOR)
+
   override def mouseClicked(e: MouseEvent): Verdict = {
+
     if (e.getButton == MouseEvent.BUTTON2) {
       val nextAxisIndex = (axisIndex + 1) % 3
+      e.canvas.setCursor(Cursor.getPredefinedCursor(cursorList(nextAxisIndex)))
       transitionToEditAxis(landmarkNode, nextAxisIndex)
     } else if (e.getButton == MouseEvent.BUTTON3) {
+      val cursor = if (parent.isLandmarkCreationEnabled) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+      e.canvas.setCursor(cursor)
       cancel()
     }
 

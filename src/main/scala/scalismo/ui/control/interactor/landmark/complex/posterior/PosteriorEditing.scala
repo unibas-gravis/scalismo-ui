@@ -1,5 +1,6 @@
 package scalismo.ui.control.interactor.landmark.complex.posterior
 
+import java.awt.Cursor
 import java.awt.event.MouseEvent
 
 import scalismo.ui.control.interactor.Interactor.Verdict
@@ -60,6 +61,8 @@ class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[Interactor
         case Some((lm, group)) if group == interactor.targetGroupNode =>
           group.landmarks.add(lm.copy(id = targetLm.name, uncertainty = Some(targetLm.uncertainty.value.to3DNormalDistribution)))
           interactor.targetUncertaintyGroup.landmarks.head.remove()
+          val cursor = if (parent.isLandmarkCreationEnabled) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
+          e.canvas.setCursor(cursor)
           endEditing()
         case _ =>
       }

@@ -9,6 +9,7 @@ import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.view.action.popup.SaveLandmarksAction
 
 import scala.util.{ Failure, Success, Try }
 
@@ -38,7 +39,7 @@ object LandmarksNode {
 
 }
 
-class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] with Loadable with Saveable {
+class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[LandmarkNode] with Loadable {
   override val name: String = "Landmarks"
 
   val nameGenerator = new NameGenerator
@@ -57,7 +58,6 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.Landmarks
 
-  override def saveMetadata: FileIoMetadata = FileIoMetadata.Landmarks
 
   override def load(file: File): Try[Unit] = {
     val read = if (FileUtil.extension(file) == "csv") {
@@ -74,16 +74,15 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     }
   }
 
-  override def save(file: File): Try[Unit] = {
-    saveNodes(children, file)
-  }
-
-  def saveNodes(nodes: List[LandmarkNode], file: File): Try[Unit] = {
+  def saveNodes(nodes: List[LandmarkNode], file: File, transformedFlag : Boolean = true): Try[Unit] = {
     require(nodes.forall(_.parent == this))
 
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
-      node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+      if(transformedFlag)
+        node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+      else
+        node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
     }
     val ok = if (FileUtil.extension(file) == "csv") {
       LandmarkIO.writeLandmarksCsv(landmarks, file)
