@@ -71,7 +71,6 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-
   implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
@@ -131,6 +130,14 @@ object ShowInScene extends LowPriorityImplicits {
       val r = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
       val poseTrans = groupNode.transformations.add(r, s"$name-pose")
       StatisticalMeshModelViewControls(tmnode, transNode, poseTrans)
+    }
+  }
+
+  implicit object ShowInSceneTransformationGlypth extends ShowInScene[TransformationGlyph] {
+    override type View = VectorFieldView
+
+    override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group): ShowInSceneTransformationGlypth.View = {
+      VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name))
     }
   }
 

@@ -13,6 +13,12 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
     add(node)
     node
   }
+
+  def addTransformationGlyph(pointCloud: PointCloud, name: String): TransformationGlyphNode = {
+    val node = new TransformationGlyphNode(this, pointCloud, name)
+    add(node)
+    node
+  }
 }
 
 class VectorFieldNode(override val parent: VectorFieldsNode, val source: DiscreteVectorField[_3D, _3D], initialName: String)
@@ -23,11 +29,11 @@ class VectorFieldNode(override val parent: VectorFieldsNode, val source: Discret
 
   // we store the vectors as a sequence, as values are defined by iterators, which we cannot
   // traverse twice
-  val vectors = source.values.toIndexedSeq
+  lazy val vectors = source.values.toIndexedSeq
 
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
-  override val scalarRange: ScalarRangeProperty = {
+  override lazy val scalarRange: ScalarRangeProperty = {
     val (min, max) = {
       val norms = vectors.map(_.norm)
       (norms.min.toFloat, norms.max.toFloat)
