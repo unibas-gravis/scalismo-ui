@@ -7,7 +7,6 @@ object ScalarRangeProperty {
 class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[ScalarRange](initialValue) {
   def this() = this(ScalarRangeProperty.DefaultValue)
 
-
   override protected def sanitize(newValue: ScalarRange): ScalarRange = {
     if (newValue.absoluteMaximum < newValue.absoluteMinimum) {
       sanitize(newValue.copy(absoluteMaximum = newValue.absoluteMinimum))

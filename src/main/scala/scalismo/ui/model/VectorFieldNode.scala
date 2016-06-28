@@ -14,7 +14,7 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
     node
   }
 
-  def addTransformationGlyph(pointCloud : PointCloud, name : String) : TransformationGlyphNode = {
+  def addTransformationGlyph(pointCloud: PointCloud, name: String): TransformationGlyphNode = {
     val node = new TransformationGlyphNode(this, pointCloud, name)
     add(node)
     node

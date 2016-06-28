@@ -3,7 +3,7 @@ package scalismo.ui.rendering.actor
 import scalismo.ui.control.SlicingPosition.renderable
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{TransformationGlyphNode, BoundingBox, VectorFieldNode}
+import scalismo.ui.model.{ TransformationGlyphNode, BoundingBox, VectorFieldNode }
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
@@ -61,8 +61,6 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     //    ScalingOn()
     OrientOn()
 
-
-
     SetScaleModeToScaleByVector()
     SetVectorModeToUseVector()
     SetColorModeToColorByScalar()
@@ -98,8 +96,6 @@ class VectorFieldActor3D(override val sceneNode: VectorFieldNode) extends Vector
   }
 
 }
-
-
 
 class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with VectorFieldActor with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth

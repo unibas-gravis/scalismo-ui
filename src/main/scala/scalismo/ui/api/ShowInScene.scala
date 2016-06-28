@@ -1,6 +1,6 @@
 package scalismo.ui.api
 
-import scalismo.common.{UnstructuredPointsDomain, DiscreteScalarField, DiscreteVectorField, Scalar}
+import scalismo.common._
 import scalismo.geometry.{ Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
@@ -10,7 +10,6 @@ import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
-
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -42,7 +41,6 @@ trait LowPriorityImplicits {
 
 }
 
-
 object ShowInScene extends LowPriorityImplicits {
 
   implicit object ShowInSceneMesh$ extends ShowInScene[TriangleMesh[_3D]] {
@@ -55,7 +53,7 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit object ShowInScenePointCloud extends ShowInScene[IndexedSeq[Point[_3D]]] {
+  implicit object ShowInScenePointCloudFromIndexedSeq extends ShowInScene[IndexedSeq[Point[_3D]]] {
     override type View = PointCloudView
 
     override def showInScene(pointCloud: IndexedSeq[Point[_3D]], name: String, group: Group): PointCloudView = {
@@ -63,6 +61,14 @@ object ShowInScene extends LowPriorityImplicits {
       PointCloudView(groupNode.pointClouds.add(pointCloud, name))
     }
 
+  }
+
+  implicit object ShowInScenePointCloudFromDomain extends ShowInScene[UnstructuredPointsDomain[_3D]] {
+    override type View = PointCloudView
+
+    override def showInScene(domain: UnstructuredPointsDomain[_3D], name: String, group: Group): PointCloudView = {
+      ShowInScenePointCloudFromIndexedSeq.showInScene(domain.pointSequence, name, group)
+    }
   }
 
   implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
@@ -135,7 +141,6 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-
   implicit object CreateRigidTransformation extends ShowInScene[RigidTransformation[_3D]] {
     override type View = RigidTransformationView
 
@@ -161,7 +166,5 @@ object ShowInScene extends LowPriorityImplicits {
       DiscreteLowRankGPTransformationView(gpNode)
     }
   }
-
-
 
 }
