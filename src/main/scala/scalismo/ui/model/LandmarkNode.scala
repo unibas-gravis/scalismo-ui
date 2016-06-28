@@ -58,7 +58,6 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.Landmarks
 
-
   override def load(file: File): Try[Unit] = {
     val read = if (FileUtil.extension(file) == "csv") {
       LandmarkIO.readLandmarksCsv[_3D] _
@@ -74,12 +73,12 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     }
   }
 
-  def saveNodes(nodes: List[LandmarkNode], file: File, transformedFlag : Boolean = true): Try[Unit] = {
+  def saveNodes(nodes: List[LandmarkNode], file: File, transformedFlag: Boolean = true): Try[Unit] = {
     require(nodes.forall(_.parent == this))
 
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
-      if(transformedFlag)
+      if (transformedFlag)
         node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
       else
         node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))

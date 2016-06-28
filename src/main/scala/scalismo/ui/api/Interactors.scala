@@ -7,7 +7,7 @@ import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractorTrait
-import scalismo.ui.control.interactor.{Recipe, DefaultInteractor, Interactor}
+import scalismo.ui.control.interactor.{ Recipe, DefaultInteractor, Interactor }
 import scalismo.ui.model._
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame
@@ -77,7 +77,7 @@ case class SimpleLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor 
 
 /**
  * This landmarking interactor does not edit uncertainties of landmarks.
- **/
+ */
 case class OneClickLandmarkingInteractor(ui: ScalismoUI, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty) extends SimpleInteractor {
 
   override type ConcreteInteractor = Instance

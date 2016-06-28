@@ -17,7 +17,7 @@ import scala.swing.event.ButtonClicked
 
 trait SimpleLandmarkingInteractorTrait extends Interactor {
 
-  def defaultUncertainty : Uncertainty
+  def defaultUncertainty: Uncertainty
 
   val landmarkingButton = new ToggleButton {
     val myIcon = BundledIcon.Landmark

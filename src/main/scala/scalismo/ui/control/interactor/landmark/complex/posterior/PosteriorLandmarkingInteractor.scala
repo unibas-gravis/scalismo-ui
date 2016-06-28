@@ -3,7 +3,7 @@ package scalismo.ui.control.interactor.landmark.complex.posterior
 import breeze.linalg.{ DenseMatrix, DenseVector }
 import scalismo.common.DiscreteVectorField
 import scalismo.geometry._
-import scalismo.statisticalmodel.{ LowRankGaussianProcess, NDimensionalNormalDistribution }
+import scalismo.statisticalmodel.{ MultivariateNormalDistribution, LowRankGaussianProcess, NDimensionalNormalDistribution }
 import scalismo.statisticalmodel.LowRankGaussianProcess.Eigenpair
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.Delegate
@@ -38,10 +38,13 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
       previewNode.source.pointSet.findClosestPoint(modelLm.source.point)
     }
 
-    val error = NDimensionalNormalDistribution(scalismo.geometry.Vector(0f, 0f, 0f), modelLm.uncertainty.value.to3DNormalDistribution.cov + targetLm.uncertainty.value.to3DNormalDistribution.cov)
+    val uncertaintyMean = DenseVector(0.0, 0.0, 0.0)
+    val uncertaintyCovModelLm = modelLm.uncertainty.value.toMultivariateNormalDistribution.cov
+    val uncertaintyCovTargetLm =  targetLm.uncertainty.value.toMultivariateNormalDistribution.cov
+    val lmUncertainty = MultivariateNormalDistribution(uncertaintyMean, uncertaintyCovModelLm + uncertaintyCovTargetLm)
 
     // Here, we need to (inverse) transform the mouse position in order to feed an non-rotated deformation vector to the regression
-    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, error)))
+    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, lmUncertainty)))
     previewGpNode.transformation = sourceGpNode.transformation.copy(coeffs)
   }
 

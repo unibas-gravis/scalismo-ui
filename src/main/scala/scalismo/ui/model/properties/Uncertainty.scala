@@ -1,7 +1,7 @@
 package scalismo.ui.model.properties
 
 import scalismo.geometry._
-import scalismo.statisticalmodel.NDimensionalNormalDistribution
+import scalismo.statisticalmodel.{ MultivariateNormalDistribution, NDimensionalNormalDistribution }
 
 object Uncertainty {
   val DefaultAxes = List(Vector3D(1, 0, 0), Vector3D(0, 1, 0), Vector3D(0, 0, 1))
@@ -23,6 +23,11 @@ case class Uncertainty(axes: List[Vector3D], sigmas: List[Double]) {
     val variances = sigmas.map(f => f * f)
     val mean = Vector3D(0, 0, 0)
     NDimensionalNormalDistribution(mean, axes.zip(variances))
+  }
+
+  def toMultivariateNormalDistribution: MultivariateNormalDistribution = {
+    val threeDNormal = to3DNormalDistribution
+    MultivariateNormalDistribution(threeDNormal.mean.toBreezeVector, threeDNormal.cov.toBreezeMatrix)
   }
 
   def rotationMatrix: SquareMatrix[_3D] = {

@@ -4,7 +4,7 @@ import java.awt.Color
 
 import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
-import scalismo.geometry.{ Dim, Landmark, Point, _3D }
+import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
@@ -548,7 +548,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
 
-  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, _3D]): Unit = {
+  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]]): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }

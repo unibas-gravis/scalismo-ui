@@ -1,7 +1,7 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, _3D }
+import scalismo.geometry.{ Landmark, Point, _3D, Vector }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
@@ -149,19 +149,19 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object CreateLowRankGPTransformation extends ShowInScene[LowRankGaussianProcess[_3D, _3D]] {
+  implicit object CreateLowRankGPTransformation extends ShowInScene[LowRankGaussianProcess[_3D, Vector[_3D]]] {
     override type View = LowRankGPTransformationView
 
-    override def showInScene(gp: LowRankGaussianProcess[_3D, _3D], name: String, group: Group): View = {
+    override def showInScene(gp: LowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
       val gpNode = group.peer.transformations.add(LowRankGpPointTransformation(gp), name)
       LowRankGPTransformationView(gpNode)
     }
   }
 
-  implicit object CreateDiscreteLowRankGPTransformation extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, _3D]] {
+  implicit object CreateDiscreteLowRankGPTransformation extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, Vector[_3D]]] {
     override type View = DiscreteLowRankGPTransformationView
 
-    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, _3D], name: String, group: Group): View = {
+    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
       val gpNode = group.peer.transformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)
     }

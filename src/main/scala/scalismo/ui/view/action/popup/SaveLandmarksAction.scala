@@ -2,7 +2,7 @@ package scalismo.ui.view.action.popup
 
 import java.io.File
 
-import scalismo.ui.model.{GroupNode, LandmarksNode, LandmarkNode, SceneNode}
+import scalismo.ui.model.{ GroupNode, LandmarksNode, LandmarkNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
@@ -15,15 +15,13 @@ object SaveLandmarksAction extends PopupAction.Factory {
     val landmarks = allMatch[LandmarkNode](nodes)
     if (landmarks.isEmpty) {
       // could be a landmarkSnode, in which case we should also return save actions
-      val landmarksNodeOpt =   singleMatch[LandmarksNode](nodes)
+      val landmarksNodeOpt = singleMatch[LandmarksNode](nodes)
       if (landmarksNodeOpt.isEmpty) {
         Nil
-      }
-      else {
-        if(landmarksNodeOpt.get.children.length > 0) {
+      } else {
+        if (landmarksNodeOpt.get.children.length > 0) {
           List(new SaveLandmarksAction(landmarksNodeOpt.get.children), new SaveLandmarksAction(landmarksNodeOpt.get.children, false))
-        }
-        else Nil
+        } else Nil
       }
     } else {
       val groups = landmarks.map(_.group).distinct
