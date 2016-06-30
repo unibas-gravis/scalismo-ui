@@ -81,6 +81,16 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
+
+  implicit object ShowInSceneDiscreteFieldOfVectors extends ShowInScene[DiscreteField[_3D, Vector[_3D]]] {
+    override type View = VectorFieldView
+
+    override def showInScene(df: DiscreteField[_3D, Vector[_3D]], name: String, group: Group): VectorFieldView = {
+      val discreteVectorField = DiscreteVectorField(df.domain, df.values.toIndexedSeq)
+      VectorFieldView(group.peer.vectorFields.add(discreteVectorField, name))
+    }
+  }
+
   implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
