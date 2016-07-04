@@ -52,7 +52,7 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
 
   // convenience method which constructs the landmark on the fly
   def add(point: Point3D, name: String, uncertainty: Uncertainty): LandmarkNode = {
-    val landmark = new Landmark[_3D](name, point, uncertainty = Some(uncertainty.to3DNormalDistribution))
+    val landmark = new Landmark[_3D](name, point, uncertainty = Some(uncertainty.toMultivariateNormalDistribution))
     add(landmark)
   }
 
@@ -79,9 +79,9 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
       if (transformedFlag)
-        node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+        node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.toMultivariateNormalDistribution))
       else
-        node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.to3DNormalDistribution))
+        node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.toMultivariateNormalDistribution))
     }
     val ok = if (FileUtil.extension(file) == ".csv") {
       LandmarkIO.writeLandmarksCsv(landmarks, file)
@@ -104,7 +104,7 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) 
   override lazy val uncertainty = new UncertaintyProperty(sourceLm.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty))
 
   // when requesting the source, we make sure that the returned id is the current name (in case it was renamed), same for the uncertainty
-  override def source = Landmark(name, sourceLm.point, sourceLm.description, Some(uncertainty.value.to3DNormalDistribution))
+  override def source = Landmark(name, sourceLm.point, sourceLm.description, Some(uncertainty.value.toMultivariateNormalDistribution))
 
   override def remove(): Unit = parent.remove(this)
 

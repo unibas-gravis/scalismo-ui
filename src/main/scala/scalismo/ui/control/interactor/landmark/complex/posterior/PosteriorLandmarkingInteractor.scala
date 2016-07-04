@@ -40,7 +40,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
     val uncertaintyMean = DenseVector(0.0, 0.0, 0.0)
     val uncertaintyCovModelLm = modelLm.uncertainty.value.toMultivariateNormalDistribution.cov
-    val uncertaintyCovTargetLm =  targetLm.uncertainty.value.toMultivariateNormalDistribution.cov
+    val uncertaintyCovTargetLm = targetLm.uncertainty.value.toMultivariateNormalDistribution.cov
     val lmUncertainty = MultivariateNormalDistribution(uncertaintyMean, uncertaintyCovModelLm + uncertaintyCovTargetLm)
 
     // Here, we need to (inverse) transform the mouse position in order to feed an non-rotated deformation vector to the regression

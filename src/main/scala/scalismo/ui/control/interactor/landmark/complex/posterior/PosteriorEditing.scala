@@ -59,7 +59,7 @@ class PosteriorEditing[InteractorType <: ComplexLandmarkingInteractor[Interactor
     if (e.getButton == MouseEvent.BUTTON1) {
       parent.getLandmarkForClick(e) match {
         case Some((lm, group)) if group == interactor.targetGroupNode =>
-          group.landmarks.add(lm.copy(id = targetLm.name, uncertainty = Some(targetLm.uncertainty.value.to3DNormalDistribution)))
+          group.landmarks.add(lm.copy(id = targetLm.name, uncertainty = Some(targetLm.uncertainty.value.toMultivariateNormalDistribution)))
           interactor.targetUncertaintyGroup.landmarks.head.remove()
           val cursor = if (parent.isLandmarkCreationEnabled) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
           e.canvas.setCursor(cursor)
