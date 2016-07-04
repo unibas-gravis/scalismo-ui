@@ -81,7 +81,6 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-
   implicit object ShowInSceneDiscreteFieldOfVectors extends ShowInScene[DiscreteField[_3D, Vector[_3D]]] {
     override type View = VectorFieldView
 

@@ -1,5 +1,6 @@
 package scalismo.ui.model.properties
 
+import scalismo.geometry.Vector._
 import scalismo.geometry._
 import scalismo.statisticalmodel.{ MultivariateNormalDistribution, NDimensionalNormalDistribution }
 
@@ -8,8 +9,8 @@ object Uncertainty {
   var DefaultSigmas: List[Double] = List(1, 1, 1)
   var DefaultUncertainty: Uncertainty = Uncertainty(DefaultAxes, DefaultSigmas)
 
-  def apply(distribution: NDimensionalNormalDistribution[_3D]): Uncertainty = {
-    val (axes, sigmas) = distribution.principalComponents.toList.map { case (a, v) => (a: Vector3D, Math.sqrt(v)) }.unzip
+  def apply(distribution: MultivariateNormalDistribution): Uncertainty = {
+    val (axes, sigmas) = distribution.principalComponents.toList.map { case (a, v) => (parametricToConcrete3D(Vector[_3D](a.toArray)), Math.sqrt(v)) }.unzip
     Uncertainty(axes, sigmas)
   }
 }
@@ -19,15 +20,11 @@ case class Uncertainty(axes: List[Vector3D], sigmas: List[Double]) {
 
   // FIXME: require that axes are perpendicular and have a norm of 1
 
-  def to3DNormalDistribution: NDimensionalNormalDistribution[_3D] = {
+  def toMultivariateNormalDistribution: MultivariateNormalDistribution = {
     val variances = sigmas.map(f => f * f)
     val mean = Vector3D(0, 0, 0)
-    NDimensionalNormalDistribution(mean, axes.zip(variances))
-  }
+    MultivariateNormalDistribution(mean.toBreezeVector, axes.map(_.toBreezeVector).zip(variances))
 
-  def toMultivariateNormalDistribution: MultivariateNormalDistribution = {
-    val threeDNormal = to3DNormalDistribution
-    MultivariateNormalDistribution(threeDNormal.mean.toBreezeVector, threeDNormal.cov.toBreezeMatrix)
   }
 
   def rotationMatrix: SquareMatrix[_3D] = {
