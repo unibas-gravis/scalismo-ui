@@ -11,8 +11,8 @@ class SimpleViewer extends ScalismoFrame {
     super.setup(args)
 
     val group = scene.groups.add("a group")
-    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
-    group.addStatisticalMeshModel(model, "face")
+    //    val model = StatismoIO.readStatismoMeshModel(new File("/home/langguth/AAA_data/face.h5")).get
+    //    group.addStatisticalMeshModel(model, "face")
 
     //    val meshField = ScalarMeshField(model.referenceMesh, ScalarArray(model.referenceMesh.pointIds.map(_.id.toFloat).toArray))
     //    group.scalarMeshFields.add(meshField, "ptIds")

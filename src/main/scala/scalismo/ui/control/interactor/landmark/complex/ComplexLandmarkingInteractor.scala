@@ -103,7 +103,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
           val axes: List[Vector3D] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
           val sigmas = params.map(_._2).getOrElse(sigmasForLandmarkUncertainty(group))
           val uncertainty = Uncertainty(axes, sigmas)
-          val landmark = new Landmark[_3D]("dummy", point, uncertainty = Some(uncertainty.to3DNormalDistribution))
+          val landmark = new Landmark[_3D]("dummy", point, uncertainty = Some(uncertainty.toMultivariateNormalDistribution))
           Some((landmark, group))
         case _ => None
       }
