@@ -33,6 +33,27 @@ sealed trait ObjectView {
   }
 }
 
+object ObjectView {
+  implicit object FindInSceneObjectView extends FindInScene[ObjectView] {
+    override def createView(s: SceneNode): Option[ObjectView] = {
+
+      s match {
+        case node: GroupNode => None // we ignore all group nodes, as they are not real objects
+        case node: SceneNode with Removeable => {
+          val ov = new ObjectView {
+            override type PeerType = SceneNode with Removeable
+
+            override protected[api] def peer = node
+          }
+          Some(ov)
+        }
+        case _ => None
+      }
+    }
+  }
+
+}
+
 case class PointCloudView private[ui] (override protected[api] val peer: PointCloudNode) extends ObjectView {
   type PeerType = PointCloudNode
 
