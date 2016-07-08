@@ -6,6 +6,7 @@ import breeze.linalg.DenseVector
 import scalismo.geometry.{Point, _3D}
 import scalismo.io.StatismoIO
 import scalismo.registration.RigidTransformationSpace
+import scalismo.ui.api.SimpleAPI
 import scalismo.ui.model.DiscreteLowRankGpPointTransformation
 import scalismo.ui.view.{ScalismoApplication, ScalismoFrame}
 
@@ -26,9 +27,9 @@ class SimpleViewer extends ScalismoFrame {
 
     perspective.resetAllCameras()
 
-   // val smt = ShapeModelTransformation(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1,1,1,1,1,1)), DiscreteLowRankGpPointTransformation(model.gp))
+    // val smt = ShapeModelTransformation(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1,1,1,1,1,1)), DiscreteLowRankGpPointTransformation(model.gp))
 
-    group.shapeModelTransformations.addPoseTransformation(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1,1,1,1,1,1)), "shapemodel rigid")
+    group.shapeModelTransformations.addPoseTransformation(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1, 1, 1, 1, 1, 1)), "shapemodel rigid")
     group.shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp), "shapemmodel GP")
 
 
@@ -38,13 +39,14 @@ class SimpleViewer extends ScalismoFrame {
 
     group.triangleMeshes.add(model.referenceMesh, "ref")
 
-    group.genericTransformations.add(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1,1,1,1,1,1)), "more rigid")
+    group.genericTransformations.add(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1, 1, 1, 1, 1, 1)), "more rigid")
 
     group.genericTransformations.add((pt: Point[_3D]) => model.referenceMesh.pointSet.findClosestPoint(pt).point, "closest Point proj")
 
     val staticGroup = scene.groups.add("static")
     staticGroup.triangleMeshes.add(model.referenceMesh, "a")
-}
+
+  }
 }
 
 object SimpleViewer {
