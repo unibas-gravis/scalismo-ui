@@ -17,6 +17,8 @@ trait SimpleAPI {
     showInScene.showInScene(t, name, g)
   }
 
+  
+
   def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V] = {
     filterSceneNodes[V](scene, pred)
   }

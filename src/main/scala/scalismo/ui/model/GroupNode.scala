@@ -27,7 +27,9 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
   }
   def isGhost = _isGhost
 
-  val transformations = new TransformationsNode(this)
+  val genericTransformations = new GenericTransformationsNode(this)
+  val shapeModelTransformations = new ShapeModelTransformationsNode(this)
+
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
   val scalarMeshFields = new ScalarMeshFieldsNode(this)
@@ -36,12 +38,12 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
   val images = new ImagesNode(this)
   val scalarFields = new ScalarFieldsNode(this)
 
-  override val children: List[SceneNode] = List(transformations, landmarks, triangleMeshes, scalarMeshFields, pointClouds, images, scalarFields, vectorFields)
+  override val children: List[SceneNode] = List(shapeModelTransformations, genericTransformations, landmarks, triangleMeshes, scalarMeshFields, pointClouds, images, scalarFields, vectorFields)
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
   def addStatisticalMeshModel(model: StatisticalMeshModel, initialName: String): Unit = {
     triangleMeshes.add(model.referenceMesh, initialName)
-    transformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
+    genericTransformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
 
   }
 

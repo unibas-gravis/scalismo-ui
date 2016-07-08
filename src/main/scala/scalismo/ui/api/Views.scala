@@ -506,7 +506,7 @@ object RigidTransformationView {
   implicit object CallbackRigidTransformation extends HandleCallback[RigidTransformationView] {
 
     override def registerOnAdd[R](g: Group, f: RigidTransformationView => R): Unit = {
-      g.peer.listenTo(g.peer.transformations)
+      g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: TransformationNode[_]) =>
 
@@ -519,7 +519,7 @@ object RigidTransformationView {
     }
 
     override def registerOnRemove[R](g: Group, f: RigidTransformationView => R): Unit = {
-      g.peer.listenTo(g.peer.transformations)
+      g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[RigidTransformation[_]]) {
@@ -570,7 +570,7 @@ object DiscreteLowRankGPTransformationView {
   implicit object CallbackDiscreteGPTransformation extends HandleCallback[DiscreteLowRankGPTransformationView] {
 
     override def registerOnAdd[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
-      g.peer.listenTo(g.peer.transformations)
+      g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: TransformationNode[_]) =>
 
@@ -583,7 +583,7 @@ object DiscreteLowRankGPTransformationView {
     }
 
     override def registerOnRemove[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
-      g.peer.listenTo(g.peer.transformations)
+      g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
