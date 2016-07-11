@@ -149,8 +149,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
   // in this case remove does not really remove the node from the parent group, but just empties its children
   def remove(): Unit = {
-    removePoseTransformation()
-    removeGaussianProcessTransformation()
+      children.foreach(_.remove())
   }
 
   reactions += {
