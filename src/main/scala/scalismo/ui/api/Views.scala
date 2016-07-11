@@ -415,19 +415,6 @@ object ImageView {
 
 }
 
-// Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class StatisticalMeshModelViewControls private[ui] (private val meshNode: TriangleMeshNode,
-    private val shapeTransNode: TransformationNode[DiscreteLowRankGpPointTransformation],
-    private val poseTransNode: TransformationNode[RigidTransformation[_3D]]) {
-
-  def meshView = TriangleMeshView(meshNode)
-
-  def shapeTransformationView = DiscreteLowRankGPTransformationView(shapeTransNode)
-
-  def poseTransformationView = RigidTransformationView(poseTransNode)
-
-  lazy val statisticalMeshModel: StatisticalMeshModel = StatisticalMeshModel(meshView.triangleMesh, shapeTransNode.transformation.dgp)
-}
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
