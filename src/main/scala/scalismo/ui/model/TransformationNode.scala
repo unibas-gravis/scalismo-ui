@@ -37,10 +37,6 @@ trait TransformationCollectionNode extends SceneNodeCollection[TransformationNod
     super.addToFront(child)
   }
 
-  override def remove(child: TransformationNode[_]): Unit = {
-    deafTo(child)
-    super.remove(child)
-  }
 }
 
 
@@ -75,19 +71,18 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
 }
 
 
-
 class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
-  private [ui] var _poseTransform : Option [ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = None
-  private [ui] var _shapeTransform : Option [ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = None
+  private[ui] var _poseTransform: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = None
+  private[ui] var _shapeTransform: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = None
 
 
   def addPoseTransformation(transformation: RigidTransformation[_3D], name: String): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
 
-    if(_poseTransform.isDefined) {
+    if (_poseTransform.isDefined) {
       Failure(new Exception("The group already contains a rigid transformation as part of the Shape Model Transformation. Remove existing first"))
-    }else {
+    } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
       _poseTransform = Some(node)
       add(node)
@@ -97,9 +92,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
   def addGaussianProcessTransformation(transformation: DiscreteLowRankGpPointTransformation, name: String): Try[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = {
 
-    if(_shapeTransform.isDefined) {
+    if (_shapeTransform.isDefined) {
       Failure(new Exception("The group already contains a GP transformation as part of the Shape Model Transformation. Remove existing first"))
-    }else {
+    } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
       _shapeTransform = Some(node)
       add(node)
@@ -107,18 +102,17 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     }
   }
 
-  def removePoseTransformation(): Unit = {
-    _poseTransform.map(remove)
-    _poseTransform = None
+  private def removePoseTransformation(): Unit = {
+     _poseTransform = None
   }
 
-  def removeGaussianProcessTransformation(): Unit = {
-    _shapeTransform.map(remove)
+  private def removeGaussianProcessTransformation(): Unit = {
     _shapeTransform = None
   }
 
-  def poseTransformation : Option[TransformationNode[RigidTransformation[_3D]]] = _poseTransform
-  def gaussianProcessTransformation : Option[TransformationNode[DiscreteLowRankGpPointTransformation]] = _shapeTransform
+  def poseTransformation: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = _poseTransform
+
+  def gaussianProcessTransformation: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = _shapeTransform
 
   protected def add(child: ShapeModelTransformationComponentNode[_]): Unit = {
     listenTo(child)
@@ -126,21 +120,29 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     publishEvent(ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(this))
   }
 
-  protected def remove(child: ShapeModelTransformationComponentNode[_]): Unit = {
+  def remove(child: ShapeModelTransformationComponentNode[_]): Unit = {
+    if (child.transformation.isInstanceOf[RigidTransformation[_3D]]) {
+      removePoseTransformation()
+    } else {
+      if (child.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
+        removeGaussianProcessTransformation()
+      }
+    }
+
     deafTo(child)
     super.remove(child)
     publishEvent(ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(this))
   }
 
-    def combinedTransformation: Option[PointTransformation] = {
-      val res = for{
-        shapeTrans <- _shapeTransform
-        poseTrans <- _poseTransform
-      } yield {
-        Some(poseTrans.transformation compose shapeTrans.transformation)
-      }
-      res.getOrElse(_poseTransform.map(_.transformation))
+  def combinedTransformation: Option[PointTransformation] = {
+    val res = for {
+      shapeTrans <- _shapeTransform
+      poseTrans <- _poseTransform
+    } yield {
+      Some(poseTrans.transformation compose shapeTrans.transformation)
     }
+    res.getOrElse(_poseTransform.map(_.transformation))
+  }
 
   // in this case remove does not really remove the node from the parent group, but just empties its children
   def remove(): Unit = {
@@ -155,9 +157,10 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 }
 
 
-
 class ShapeModelTransformationComponentNode[T <: PointTransformation] private(override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
-  extends TransformationNode[T](parent, initialTransformation, name)
+  extends TransformationNode[T](parent, initialTransformation, name){
+   override def remove(): Unit = { parent.remove(this)}
+}
 
 
 object ShapeModelTransformationComponentNode {
@@ -165,7 +168,6 @@ object ShapeModelTransformationComponentNode {
 
   def apply(parent: ShapeModelTransformationsNode, initialTransformation: DiscreteLowRankGpPointTransformation, name: String) = new ShapeModelTransformationComponentNode(parent, initialTransformation, name)
 }
-
 
 
 object TransformationNode {
