@@ -135,13 +135,16 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
   }
 
   def combinedTransformation: Option[PointTransformation] = {
-    val res = for {
-      shapeTrans <- _shapeTransform
-      poseTrans <- _poseTransform
-    } yield {
-      Some(poseTrans.transformation compose shapeTrans.transformation)
+    _shapeTransform match {
+      case Some(shapeTrans) => _poseTransform match {
+        case Some(poseTrans) => Some(poseTrans.transformation compose shapeTrans.transformation)
+        case None => Some(shapeTrans.transformation)
+      }
+      case None => _poseTransform match {
+        case Some(poseTrans) => Some(poseTrans.transformation)
+        case None => None
+      }
     }
-    res.getOrElse(_poseTransform.map(_.transformation))
   }
 
   // in this case remove does not really remove the node from the parent group, but just empties its children
