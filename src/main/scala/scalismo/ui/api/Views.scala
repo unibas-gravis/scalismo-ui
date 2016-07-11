@@ -625,4 +625,22 @@ object ShapeModelTransformationView {
       }
     }
   }
+
+  implicit object CallbackShapeModelTransformation extends HandleCallback[ShapeModelTransformationView] {
+
+    override def registerOnAdd[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.shapeModelTransformations)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
+      g.peer.listenTo(g.peer.shapeModelTransformations)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+      }
+    }
+  }
+
 }
