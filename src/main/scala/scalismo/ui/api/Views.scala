@@ -499,6 +499,8 @@ object RigidTransformationView {
 
       // here we need a two step process due to type erasure to find the right type.
       s match {
+        // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
+        case value : ShapeModelTransformationComponentNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] => None
         case value: TransformationNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] =>
           Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
         case _ => None
@@ -563,6 +565,8 @@ object DiscreteLowRankGPTransformationView {
 
       // here we need a two step process due to type erasure to find the right type.
       s match {
+        // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
+        case value : ShapeModelTransformationComponentNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] => None
         case value: TransformationNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
           Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
         case _ => None
