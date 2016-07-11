@@ -14,6 +14,9 @@ import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
 
+
+
+
 sealed trait ObjectView {
   type PeerType <: SceneNode with Removeable
 
@@ -605,6 +608,30 @@ case class LowRankGPTransformationView private[ui] (override protected[api] val 
   def coefficients_=(coefficients: DenseVector[Double]): Unit = {
     {
       peer.transformation = peer.transformation.copy(coefficients)
+    }
+  }
+}
+
+case class ShapeModelTransformation(poseTransformation : RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
+
+case class ShapeModelTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationsNode) extends ObjectView {
+
+  override type PeerType = ShapeModelTransformationsNode
+
+  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_))
+  def poseTransformationView =peer.poseTransformation.map(RigidTransformationView(_))
+
+}
+
+object ShapeModelTransformationView {
+
+  implicit object FindInSceneShapeModelTransformation extends FindInScene[ShapeModelTransformationView] {
+    override def createView(s: SceneNode): Option[ShapeModelTransformationView] = {
+
+      s match {
+        case value: ShapeModelTransformationsNode  => Some(ShapeModelTransformationView(value))
+        case _ => None
+      }
     }
   }
 }

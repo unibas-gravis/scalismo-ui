@@ -1,15 +1,16 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, _3D, Vector }
+import scalismo.geometry.{Landmark, Point, Vector, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.mesh.{ScalarMeshField, TriangleMesh}
+import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
+import scala.util.Try
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -173,6 +174,19 @@ object ShowInScene extends LowPriorityImplicits {
     override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
       val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)
+    }
+  }
+
+
+  implicit object CreateShapeModelTransformation extends ShowInScene[ShapeModelTransformation] {
+    override type View = Try[ShapeModelTransformationView]
+
+    override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
+       for {
+        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation, "model-pose")
+        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation, "model-shape")
+      } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)
+
     }
   }
 

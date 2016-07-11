@@ -76,7 +76,7 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
 
 
 
-class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode {
+class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
   private [ui] var _poseTransform : Option [ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = None
@@ -117,6 +117,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     _shapeTransform = None
   }
 
+  def poseTransformation : Option[TransformationNode[RigidTransformation[_3D]]] = _poseTransform
+  def gaussianProcessTransformation : Option[TransformationNode[DiscreteLowRankGpPointTransformation]] = _shapeTransform
+
   protected def add(child: ShapeModelTransformationComponentNode[_]): Unit = {
     listenTo(child)
     super.addToFront(child)
@@ -138,6 +141,12 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
       }
       res.getOrElse(_poseTransform.map(_.transformation))
     }
+
+  // in this case remove does not really remove the node from the parent group, but just empties its children
+  def remove(): Unit = {
+    removePoseTransformation()
+    removeGaussianProcessTransformation()
+  }
 
   reactions += {
     case TransformationNode.event.TransformationChanged(_) =>

@@ -1,6 +1,8 @@
 package scalismo.ui.api
 
-import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded }
+import scalismo.geometry._3D
+import scalismo.registration.RigidTransformation
+import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
 import scalismo.ui.model._
 
 trait SimpleAPI {
@@ -16,8 +18,6 @@ trait SimpleAPI {
   def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View = {
     showInScene.showInScene(t, name, g)
   }
-
-  
 
   def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V] = {
     filterSceneNodes[V](scene, pred)
