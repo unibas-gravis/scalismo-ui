@@ -473,14 +473,12 @@ sealed trait RigidTransformationViewTrait[T <: TransformationNode[RigidTransform
 
   def transformation: RigidTransformation[_3D] = peer.transformation
 
-  def transformation_=(transformation: RigidTransformation[_3D]): Unit = {
-    peer.transformation = transformation
-
+  def transformation_=(transform: RigidTransformation[_3D]): Unit = {
+    peer.transformation = transform
   }
 }
 
 case class ShapeModelRigidTransformationView private[ui](override protected[api] val peer: ShapeModelTransformationComponentNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]]
-
 case class RigidTransformationView private[ui](override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[TransformationNode[RigidTransformation[_3D]]]
 
 
