@@ -1,7 +1,7 @@
 package scalismo.ui.model.capabilities
 
 import scalismo.ui.event.Event
-import scalismo.ui.model.{ PointTransformation, TransformationsNode }
+import scalismo.ui.model.{GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode}
 
 object Transformable {
 
@@ -16,22 +16,29 @@ object Transformable {
 trait Transformable[T] extends RenderableSceneNode with Grouped {
   def source: T // the untransformed T
 
-  private def transformationsNode: TransformationsNode = group.transformations
+  private def genericTransformationsNode: GenericTransformationsNode = group.genericTransformations
+  private def shapeModelTransformationsNode: ShapeModelTransformationsNode = group.shapeModelTransformations
 
-  private var _transformedSource = transform(source, transformationsNode.combinedTransformation)
+  private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map( smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse{
+    genericTransformationsNode.combinedTransformation
+  }
+
+  private var _transformedSource = transform(source, combinedTransform)
 
   def transformedSource: T = _transformedSource
 
   def transform(untransformed: T, transformation: PointTransformation): T
 
   def updateTransformedSource(): Unit = {
-    _transformedSource = transform(source, transformationsNode.combinedTransformation)
+    _transformedSource = transform(source, combinedTransform)
     publishEvent(Transformable.event.GeometryChanged(this))
   }
 
-  listenTo(transformationsNode)
+  listenTo(genericTransformationsNode)
+  listenTo(shapeModelTransformationsNode)
 
   reactions += {
-    case TransformationsNode.event.TransformationsChanged(_) => updateTransformedSource()
+    case GenericTransformationsNode.event.TransformationsChanged(_) => updateTransformedSource()
+    case ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(_) => updateTransformedSource()
   }
 }

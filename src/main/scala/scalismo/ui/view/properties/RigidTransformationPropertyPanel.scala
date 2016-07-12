@@ -25,6 +25,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
 
   val textFields = Array.fill(6)(new TextField())
   val labels = List("T1", "T2", "T3", "R1", "R2", "R3")
+  val centerLabel = new Label("-")
 
   val panel = new GridBagPanel {
     val constraints = new Constraints()
@@ -55,6 +56,10 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
         add(new Label(l), next)
         add(f, next)
     }
+
+    add(new Label("Rotation center"), next)
+
+    add(centerLabel, next)
   }
 
   val apply = new Button(new Action("Apply") {
@@ -94,6 +99,8 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
         case (f, t) =>
           t.text = f.toString
       }
+      val center = node.transformation.rotation.center
+      centerLabel.text_=(s"(${center(0)}, ${center(1)}, ${center(2)})")
     }
   }
 

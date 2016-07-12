@@ -7,11 +7,12 @@ import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractorTrait
-import scalismo.ui.control.interactor.{ Recipe, DefaultInteractor, Interactor }
+import scalismo.ui.control.interactor.{DefaultInteractor, Interactor, Recipe}
 import scalismo.ui.model._
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame
 import scalismo.geometry._
+import scalismo.registration.RigidTransformationSpace
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
@@ -31,14 +32,13 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
-    val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
+  //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
 
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
 
-    // we start by copying all transformations of the modelGroup into the previewGroup. The order is important
-    modelGroup.peer.transformations.reverse.foreach { transNode =>
-      previewGroup.peer.transformations.add(transNode.transformation.asInstanceOf[PointTransformation], transNode.name)
-    }
+    // we start by copying the shape model transformations of the modelGroup into the previewGroup
+    modelGroup.peer.shapeModelTransformations.poseTransformation.map(p => previewGroup.peer.shapeModelTransformations.addPoseTransformation(p.transformation, "pose"))
+    modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation, "shape"))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
     previewNode.visible = false
@@ -47,21 +47,15 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
     override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true)).peer
 
-    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] =
-      ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get.peer
+    override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.get
 
     override def targetGroupNode: GroupNode = targetGroup.peer
 
-    override val previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = {
-      ui.find[DiscreteLowRankGPTransformationView](previewGroup, (tv: DiscreteLowRankGPTransformationView) => true).get.peer
-    }
+    override val previewGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = previewGroup.peer.shapeModelTransformations.gaussianProcessTransformation.get
 
     override def frame: ScalismoFrame = ui.frame
 
-    override val inversePoseTransform = ui.filter[RigidTransformationView](modelGroup, (rv: RigidTransformationView) => true).reverse.foldLeft((p: Point[_3D]) => p) {
-      case (a, b) =>
-        (p: Point[_3D]) => a(b.transformation.inverse(p))
-    }
+    override val inversePoseTransform =  modelGroup.peer.shapeModelTransformations.poseTransformation.map(_.transformation.inverse).getOrElse(PointTransformation.RigidIdentity)
 
   }
 }
