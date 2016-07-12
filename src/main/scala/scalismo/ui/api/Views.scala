@@ -3,17 +3,16 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteScalarField, DiscreteVectorField}
-import scalismo.geometry.{Dim, Landmark, Point, Vector, _3D}
+import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
+import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
-import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
-
 
 sealed trait ObjectView {
   type PeerType <: SceneNode with Removeable
@@ -34,7 +33,6 @@ sealed trait ObjectView {
   }
 }
 
-<<<<<<< HEAD
 object ObjectView {
   implicit object FindInSceneObjectView extends FindInScene[ObjectView] {
     override def createView(s: SceneNode): Option[ObjectView] = {
@@ -116,7 +114,7 @@ object PointCloudView {
   }
 }
 
-case class TriangleMeshView private[ui](override protected[api] val peer: TriangleMeshNode) extends ObjectView {
+case class TriangleMeshView private[ui] (override protected[api] val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
 
   def color = peer.color.value
@@ -170,7 +168,7 @@ object TriangleMeshView {
   }
 }
 
-case class LandmarkView private[ui](override protected[api] val peer: LandmarkNode) extends ObjectView {
+case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
 
   def color = peer.color.value
@@ -224,7 +222,7 @@ object LandmarkView {
 
 }
 
-case class ScalarMeshFieldView private[ui](override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
+case class ScalarMeshFieldView private[ui] (override protected[api] val peer: ScalarMeshFieldNode) extends ObjectView {
   type PeerType = ScalarMeshFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -278,7 +276,7 @@ object ScalarMeshFieldView {
 
 }
 
-case class ScalarFieldView private[ui](override protected[api] val peer: ScalarFieldNode) extends ObjectView {
+case class ScalarFieldView private[ui] (override protected[api] val peer: ScalarFieldNode) extends ObjectView {
   type PeerType = ScalarFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -338,7 +336,7 @@ object ScalarFieldView {
 
 }
 
-case class VectorFieldView private[ui](override protected[api] val peer: VectorFieldNode) extends ObjectView {
+case class VectorFieldView private[ui] (override protected[api] val peer: VectorFieldNode) extends ObjectView {
   type PeerType = VectorFieldNode
 
   def scalarRange: ScalarRange = peer.scalarRange.value
@@ -390,7 +388,7 @@ object VectorFieldView {
 
 }
 
-case class ImageView private[ui](override protected[api] val peer: ImageNode) extends ObjectView {
+case class ImageView private[ui] (override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
   def opacity = peer.opacity.value
@@ -436,7 +434,6 @@ object ImageView {
 
 }
 
-
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   def hidden_=(b: Boolean): Unit = {
@@ -461,7 +458,7 @@ object Group {
 
 }
 
-case class TransformationView private[ui](override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
+case class TransformationView private[ui] (override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
   def transformation: Point[_3D] => Point[_3D] = peer.transformation
 
   def transformation_=(t: Point[_3D] => Point[_3D]): Unit = {
@@ -489,7 +486,6 @@ object TransformationView {
 
 }
 
-
 sealed trait RigidTransformationViewTrait[T <: TransformationNode[RigidTransformation[_3D]]] extends ObjectView {
 
   override type PeerType = T
@@ -501,9 +497,8 @@ sealed trait RigidTransformationViewTrait[T <: TransformationNode[RigidTransform
   }
 }
 
-case class ShapeModelRigidTransformationView private[ui](override protected[api] val peer: ShapeModelTransformationComponentNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]]
-case class RigidTransformationView private[ui](override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[TransformationNode[RigidTransformation[_3D]]]
-
+case class ShapeModelRigidTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationComponentNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]]
+case class RigidTransformationView private[ui] (override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[TransformationNode[RigidTransformation[_3D]]]
 
 object RigidTransformationView {
 
@@ -571,8 +566,8 @@ trait DiscreteLowRankGPTransformationViewTrait[T <: TransformationNode[DiscreteL
   }
 }
 
-case class ShapeModelDiscreteLowRankGPTransformationView private[ui](override protected[api] val peer: ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]]
-case class DiscreteLowRankGPTransformationView private[ui](override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[TransformationNode[DiscreteLowRankGpPointTransformation]]
+case class ShapeModelDiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]]
+case class DiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[TransformationNode[DiscreteLowRankGpPointTransformation]]
 
 object DiscreteLowRankGPTransformationView {
 
@@ -619,7 +614,7 @@ object DiscreteLowRankGPTransformationView {
 
 }
 
-case class LowRankGPTransformationView private[ui](override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
+case class LowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
 
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
@@ -634,7 +629,7 @@ case class LowRankGPTransformationView private[ui](override protected[api] val p
 
 case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
 
-case class ShapeModelTransformationView private[ui](override protected[api] val peer: ShapeModelTransformationsNode) extends ObjectView {
+case class ShapeModelTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationsNode) extends ObjectView {
 
   override type PeerType = ShapeModelTransformationsNode
 

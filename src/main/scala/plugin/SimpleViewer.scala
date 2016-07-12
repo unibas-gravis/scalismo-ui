@@ -3,12 +3,12 @@ package plugin
 import java.io.File
 
 import breeze.linalg.DenseVector
-import scalismo.geometry.{Point, _3D}
+import scalismo.geometry.{ Point, _3D }
 import scalismo.io.StatismoIO
 import scalismo.registration.RigidTransformationSpace
 import scalismo.ui.api.SimpleAPI
 import scalismo.ui.model.DiscreteLowRankGpPointTransformation
-import scalismo.ui.view.{ScalismoApplication, ScalismoFrame}
+import scalismo.ui.view.{ ScalismoApplication, ScalismoFrame }
 
 class SimpleViewer extends ScalismoFrame {
 
@@ -18,12 +18,10 @@ class SimpleViewer extends ScalismoFrame {
     val group = scene.groups.add("a group")
     val model = StatismoIO.readStatismoMeshModel(new File("/home/bouabene/000/femurMooc.h5")).get
 
-
     //    group.addStatisticalMeshModel(model, "face")
 
     //    val meshField = ScalarMeshField(model.referenceMesh, ScalarArray(model.referenceMesh.pointIds.map(_.id.toFloat).toArray))
     //    group.scalarMeshFields.add(meshField, "ptIds")
-
 
     perspective.resetAllCameras()
 
@@ -32,10 +30,8 @@ class SimpleViewer extends ScalismoFrame {
     group.shapeModelTransformations.addPoseTransformation(RigidTransformationSpace[_3D].transformForParameters(DenseVector(1, 1, 1, 1, 1, 1)), "shapemodel rigid")
     group.shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp), "shapemmodel GP")
 
-
     // try to add the transform again
     group.shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp), "shapemmodel GP")
-
 
     group.triangleMeshes.add(model.referenceMesh, "ref")
 

@@ -1,11 +1,11 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{Landmark, Point, Vector, _3D}
+import scalismo.geometry.{ Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh}
-import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
+import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -136,7 +136,7 @@ object ShowInScene extends LowPriorityImplicits {
     override def showInScene(model: StatisticalMeshModel, name: String, group: Group): View = {
 
       val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
-      CreateShapeModelTransformation.showInScene(shapeModelTransform, "Statistical Mesh Model", group).map{ smV =>
+      CreateShapeModelTransformation.showInScene(shapeModelTransform, "Statistical Mesh Model", group).map { smV =>
         val tmV = ShowInSceneMesh$.showInScene(model.referenceMesh, name, group)
         (tmV, smV)
       }
@@ -177,12 +177,11 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-
   implicit object CreateShapeModelTransformation extends ShowInScene[ShapeModelTransformation] {
     override type View = Try[ShapeModelTransformationView]
 
     override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
-       for {
+      for {
         pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation, "model-pose")
         shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation, "model-shape")
       } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)

@@ -1,7 +1,7 @@
 package scalismo.ui.model.capabilities
 
 import scalismo.ui.event.Event
-import scalismo.ui.model.{GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode}
+import scalismo.ui.model.{ GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode }
 
 object Transformable {
 
@@ -19,7 +19,7 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
   private def genericTransformationsNode: GenericTransformationsNode = group.genericTransformations
   private def shapeModelTransformationsNode: ShapeModelTransformationsNode = group.shapeModelTransformations
 
-  private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map( smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse{
+  private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map(smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse {
     genericTransformationsNode.combinedTransformation
   }
 

@@ -3,9 +3,9 @@ package scalismo.ui.model
 import scalismo.geometry._3D
 import scalismo.registration.RigidTransformation
 import scalismo.ui.event.Event
-import scalismo.ui.model.capabilities.{Grouped, Removeable}
+import scalismo.ui.model.capabilities.{ Grouped, Removeable }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object GenericTransformationsNode {
 
@@ -16,7 +16,6 @@ object GenericTransformationsNode {
   }
 
 }
-
 
 object ShapeModelTransformationsNode {
 
@@ -38,7 +37,6 @@ trait TransformationCollectionNode extends SceneNodeCollection[TransformationNod
   }
 
 }
-
 
 class GenericTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode {
   override val name: String = "Generic transformations"
@@ -70,13 +68,11 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
   }
 }
 
-
 class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
   private[ui] var _poseTransform: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = None
   private[ui] var _shapeTransform: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = None
-
 
   def addPoseTransformation(transformation: RigidTransformation[_3D], name: String): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
 
@@ -103,7 +99,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
   }
 
   private def removePoseTransformation(): Unit = {
-     _poseTransform = None
+    _poseTransform = None
   }
 
   private def removeGaussianProcessTransformation(): Unit = {
@@ -149,7 +145,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
   // in this case remove does not really remove the node from the parent group, but just empties its children
   def remove(): Unit = {
-      children.foreach(_.remove())
+    children.foreach(_.remove())
   }
 
   reactions += {
@@ -158,19 +154,16 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
   }
 }
 
-
-class ShapeModelTransformationComponentNode[T <: PointTransformation] private(override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
-  extends TransformationNode[T](parent, initialTransformation, name){
-   override def remove(): Unit = { parent.remove(this)}
+class ShapeModelTransformationComponentNode[T <: PointTransformation] private (override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
+    extends TransformationNode[T](parent, initialTransformation, name) {
+  override def remove(): Unit = { parent.remove(this) }
 }
-
 
 object ShapeModelTransformationComponentNode {
   def apply(parent: ShapeModelTransformationsNode, initialTransformation: RigidTransformation[_3D], name: String) = new ShapeModelTransformationComponentNode(parent, initialTransformation, name)
 
   def apply(parent: ShapeModelTransformationsNode, initialTransformation: DiscreteLowRankGpPointTransformation, name: String) = new ShapeModelTransformationComponentNode(parent, initialTransformation, name)
 }
-
 
 object TransformationNode {
   def apply[T <: PointTransformation](parent: TransformationCollectionNode, transformation: T, name: String): TransformationNode[T] = {

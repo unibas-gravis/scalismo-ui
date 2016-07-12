@@ -7,7 +7,7 @@ import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractorTrait
-import scalismo.ui.control.interactor.{DefaultInteractor, Interactor, Recipe}
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
 import scalismo.ui.model._
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame
@@ -32,7 +32,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
-  //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
+    //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
 
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
 
@@ -55,7 +55,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
     override def frame: ScalismoFrame = ui.frame
 
-    override val inversePoseTransform =  modelGroup.peer.shapeModelTransformations.poseTransformation.map(_.transformation.inverse).getOrElse(PointTransformation.RigidIdentity)
+    override val inversePoseTransform = modelGroup.peer.shapeModelTransformations.poseTransformation.map(_.transformation.inverse).getOrElse(PointTransformation.RigidIdentity)
 
   }
 }
