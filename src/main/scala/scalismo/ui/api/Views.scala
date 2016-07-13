@@ -486,19 +486,17 @@ object TransformationView {
 
 }
 
-sealed trait RigidTransformationViewTrait[T <: TransformationNode[RigidTransformation[_3D]]] extends ObjectView {
+case class RigidTransformationView private[ui] (override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
 
-  override type PeerType = T
+  override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
-  def transformation: RigidTransformation[_3D] = peer.transformation
+  def transformation : RigidTransformation[_3D] = peer.transformation
 
   def transformation_=(transform: RigidTransformation[_3D]): Unit = {
     peer.transformation = transform
   }
 }
 
-case class ShapeModelRigidTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationComponentNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]]
-case class RigidTransformationView private[ui] (override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends RigidTransformationViewTrait[TransformationNode[RigidTransformation[_3D]]]
 
 object RigidTransformationView {
 
@@ -545,9 +543,9 @@ object RigidTransformationView {
 
 }
 
-trait DiscreteLowRankGPTransformationViewTrait[T <: TransformationNode[DiscreteLowRankGpPointTransformation]] extends ObjectView {
+case class DiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
 
-  override type PeerType = T
+  override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
   def coefficients: DenseVector[Double] = peer.transformation.coefficients
 
@@ -565,9 +563,6 @@ trait DiscreteLowRankGPTransformationViewTrait[T <: TransformationNode[DiscreteL
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }
-
-case class ShapeModelDiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]]
-case class DiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends DiscreteLowRankGPTransformationViewTrait[TransformationNode[DiscreteLowRankGpPointTransformation]]
 
 object DiscreteLowRankGPTransformationView {
 
@@ -633,9 +628,9 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
 
   override type PeerType = ShapeModelTransformationsNode
 
-  def shapeTransformationView = peer.gaussianProcessTransformation.map(ShapeModelDiscreteLowRankGPTransformationView(_))
+  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_))
 
-  def poseTransformationView = peer.poseTransformation.map(ShapeModelRigidTransformationView(_))
+  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_))
 
 }
 
