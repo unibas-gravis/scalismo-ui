@@ -71,16 +71,19 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
 class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
-  private[ui] var _poseTransform: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = None
-  private[ui] var _shapeTransform: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = None
+  private def isPoseDefined() : Boolean = {
+    children.exists(tr => tr.transformation.isInstanceOf[RigidTransformation[_3D]])
+  }
+  private def isShapeDefined() : Boolean = {
+    children.exists(tr => tr.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation])
+  }
 
   def addPoseTransformation(transformation: RigidTransformation[_3D], name: String): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
 
-    if (_poseTransform.isDefined) {
+    if (isPoseDefined) {
       Failure(new Exception("The group already contains a rigid transformation as part of the Shape Model Transformation. Remove existing first"))
     } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
-      _poseTransform = Some(node)
       add(node)
       Success(node)
     }
@@ -88,27 +91,20 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
   def addGaussianProcessTransformation(transformation: DiscreteLowRankGpPointTransformation, name: String): Try[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = {
 
-    if (_shapeTransform.isDefined) {
+    if (isShapeDefined()) {
       Failure(new Exception("The group already contains a GP transformation as part of the Shape Model Transformation. Remove existing first"))
     } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
-      _shapeTransform = Some(node)
       add(node)
       Success(node)
     }
   }
 
-  private def removePoseTransformation(): Unit = {
-    _poseTransform = None
-  }
+  def poseTransformation: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] =
+    children.find(_.transformation.isInstanceOf[RigidTransformation[_3D]]).map(_.asInstanceOf[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]])
 
-  private def removeGaussianProcessTransformation(): Unit = {
-    _shapeTransform = None
-  }
-
-  def poseTransformation: Option[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = _poseTransform
-
-  def gaussianProcessTransformation: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = _shapeTransform
+  def gaussianProcessTransformation: Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] =
+    children.find(_.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]).map(_.asInstanceOf[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]])
 
   protected def add(child: ShapeModelTransformationComponentNode[_]): Unit = {
     listenTo(child)
@@ -116,27 +112,19 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     publishEvent(ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(this))
   }
 
-  def remove(child: ShapeModelTransformationComponentNode[_]): Unit = {
-    if (child.transformation.isInstanceOf[RigidTransformation[_3D]]) {
-      removePoseTransformation()
-    } else {
-      if (child.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-        removeGaussianProcessTransformation()
-      }
-    }
-
+  override def remove(child: TransformationNode[_]): Unit = {
     deafTo(child)
     super.remove(child)
     publishEvent(ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(this))
   }
 
   def combinedTransformation: Option[PointTransformation] = {
-    _shapeTransform match {
-      case Some(shapeTrans) => _poseTransform match {
+    gaussianProcessTransformation match {
+      case Some(shapeTrans) => poseTransformation match {
         case Some(poseTrans) => Some(poseTrans.transformation compose shapeTrans.transformation)
         case None => Some(shapeTrans.transformation)
       }
-      case None => _poseTransform match {
+      case None => poseTransformation match {
         case Some(poseTrans) => Some(poseTrans.transformation)
         case None => None
       }
