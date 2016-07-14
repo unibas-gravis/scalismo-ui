@@ -490,13 +490,12 @@ case class RigidTransformationView private[ui] (override protected[api] val peer
 
   override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
-  def transformation : RigidTransformation[_3D] = peer.transformation
+  def transformation: RigidTransformation[_3D] = peer.transformation
 
   def transformation_=(transform: RigidTransformation[_3D]): Unit = {
     peer.transformation = transform
   }
 }
-
 
 object RigidTransformationView {
 

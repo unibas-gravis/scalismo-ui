@@ -71,10 +71,10 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
 class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
-  private def isPoseDefined() : Boolean = {
+  private def isPoseDefined(): Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[RigidTransformation[_3D]])
   }
-  private def isShapeDefined() : Boolean = {
+  private def isShapeDefined(): Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation])
   }
 
