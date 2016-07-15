@@ -630,9 +630,18 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
 
   override type PeerType = ShapeModelTransformationsNode
 
-  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_))
+  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
+    case Some(sv) => sv
+    case None => throw new Exception("There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView.")
+  }
 
-  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_))
+  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
+    case Some(sv) => sv
+    case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
+  }
+
+  def hasShapeTransformation(): Boolean = peer.gaussianProcessTransformation.isDefined
+  def hasPoseTransformation(): Boolean = peer.poseTransformation.isDefined
 
 }
 
