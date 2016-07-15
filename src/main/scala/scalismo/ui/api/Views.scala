@@ -434,6 +434,9 @@ object ImageView {
 
 }
 
+// Note this class does not extend Object view, as there is not really a corresponding node to this concept
+case class StatisticalMeshModelViewControls private[ui] (val meshView: TriangleMeshView, val shapeModelTransformationView: ShapeModelTransformationView)
+
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   def hidden_=(b: Boolean): Unit = {
