@@ -1,6 +1,8 @@
 package scalismo.ui.api
 
-import scalismo.ui.model.SceneNode.event.{ ChildRemoved, ChildAdded }
+import scalismo.geometry._3D
+import scalismo.registration.RigidTransformation
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 
 trait SimpleAPI {

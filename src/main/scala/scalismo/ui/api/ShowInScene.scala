@@ -1,7 +1,7 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, _3D, Vector }
+import scalismo.geometry.{ Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
@@ -10,6 +10,7 @@ import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
+import scala.util.Try
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -35,7 +36,7 @@ trait LowPriorityImplicits {
     override type View = TransformationView
 
     override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
-      TransformationView(group.peer.transformations.add(t, name))
+      TransformationView(group.peer.genericTransformations.add(t, name))
     }
   }
 
@@ -132,13 +133,13 @@ object ShowInScene extends LowPriorityImplicits {
   implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {
     type View = StatisticalMeshModelViewControls
 
-    override def showInScene(model: StatisticalMeshModel, name: String, group: Group): StatisticalMeshModelViewControls = {
-      val groupNode = group.peer
-      val tmnode = groupNode.triangleMeshes.add(model.referenceMesh, name)
-      val transNode = groupNode.transformations.add(DiscreteLowRankGpPointTransformation(model.gp), s"$name-shape")
-      val r = RigidTransformationSpace[_3D]().transformForParameters(RigidTransformationSpace[_3D]().identityTransformParameters)
-      val poseTrans = groupNode.transformations.add(r, s"$name-pose")
-      StatisticalMeshModelViewControls(tmnode, transNode, poseTrans)
+    override def showInScene(model: StatisticalMeshModel, name: String, group: Group): View = {
+
+      val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, "Statistical Mesh Model", group)
+      val tmV = ShowInSceneMesh$.showInScene(model.referenceMesh, name, group)
+      StatisticalMeshModelViewControls(tmV, smV)
+
     }
   }
 
@@ -154,7 +155,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = RigidTransformationView
 
     override def showInScene(t: RigidTransformation[_3D], name: String, group: Group): View = {
-      RigidTransformationView(group.peer.transformations.add(t, name))
+      RigidTransformationView(group.peer.genericTransformations.add(t, name))
     }
   }
 
@@ -162,7 +163,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = LowRankGPTransformationView
 
     override def showInScene(gp: LowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
-      val gpNode = group.peer.transformations.add(LowRankGpPointTransformation(gp), name)
+      val gpNode = group.peer.genericTransformations.add(LowRankGpPointTransformation(gp), name)
       LowRankGPTransformationView(gpNode)
     }
   }
@@ -171,8 +172,20 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = DiscreteLowRankGPTransformationView
 
     override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
-      val gpNode = group.peer.transformations.add(DiscreteLowRankGpPointTransformation(gp), name)
+      val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)
+    }
+  }
+
+  implicit object CreateShapeModelTransformation extends ShowInScene[ShapeModelTransformation] {
+    override type View = ShapeModelTransformationView
+
+    override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
+      val t = for {
+        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation, "model-pose")
+        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation, "model-shape")
+      } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)
+      t.get
     }
   }
 

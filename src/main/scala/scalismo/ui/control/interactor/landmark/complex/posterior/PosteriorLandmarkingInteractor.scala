@@ -31,8 +31,8 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
 
   def updatePreview(modelLm: LandmarkNode, targetLm: LandmarkNode, mousePosition: Point3D): Unit = {
 
-    targetUncertaintyGroup.transformations.foreach(_.remove())
-    targetUncertaintyGroup.transformations.add((p: Point[_3D]) => mousePosition, "mousePosition")
+    targetUncertaintyGroup.genericTransformations.foreach(_.remove())
+    targetUncertaintyGroup.genericTransformations.add((p: Point[_3D]) => mousePosition, "mousePosition")
 
     val lmPointAndId = {
       previewNode.source.pointSet.findClosestPoint(modelLm.source.point)
