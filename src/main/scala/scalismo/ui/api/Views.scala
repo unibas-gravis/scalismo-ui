@@ -626,6 +626,12 @@ case class LowRankGPTransformationView private[ui] (override protected[api] val 
 
 case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
 
+object ShapeModelTransformation {
+  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]]): ShapeModelTransformation = {
+    ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gp))
+  }
+}
+
 case class ShapeModelTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationsNode) extends ObjectView {
 
   override type PeerType = ShapeModelTransformationsNode
