@@ -557,7 +557,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
     }
   }
 
-  val transformation: Point[_3D] => Point[_3D] = peer.transformation
+  val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
 
