@@ -10,11 +10,9 @@ class SimpleViewer extends ScalismoFrame {
   override def setup(args: Array[String]): Unit = {
     super.setup(args)
 
-
     //    val meshField = ScalarMeshField(model.referenceMesh, ScalarArray(model.referenceMesh.pointIds.map(_.id.toFloat).toArray))
     //    group.scalarMeshFields.add(meshField, "ptIds")
     perspective.resetAllCameras()
-
 
     val staticGroup = scene.groups.add("static")
 
