@@ -95,7 +95,8 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
 
   def updateUi() = {
     targets.headOption.foreach { node =>
-      node.transformation.parameters.toArray.zip(textFields).foreach {
+      val params = node.transformation.translation.parameters.toArray ++ node.transformation.rotation.parameters.toArray
+      params.zip(textFields).foreach {
         case (f, t) =>
           t.text = f.toString
       }
