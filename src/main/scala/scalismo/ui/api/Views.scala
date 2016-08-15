@@ -66,13 +66,13 @@ case class PointCloudView private[ui] (override protected[api] val peer: PointCl
 
   def radius = peer.radius.value
 
-  def radius_=(r: Float): Unit = {
+  def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -125,7 +125,7 @@ case class TriangleMeshView private[ui] (override protected[api] val peer: Trian
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -248,7 +248,7 @@ case class LandmarkView private[ui] (override protected[api] val peer: LandmarkN
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -302,7 +302,7 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -363,13 +363,13 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
 
   def radius = peer.radius.value
 
-  def radius_=(r: Float): Unit = {
+  def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -423,7 +423,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
@@ -469,7 +469,7 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
 
   def opacity = peer.opacity.value
 
-  def opacity_=(o: Float): Unit = {
+  def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 

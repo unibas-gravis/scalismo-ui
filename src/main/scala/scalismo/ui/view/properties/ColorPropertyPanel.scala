@@ -42,9 +42,9 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
       }
     }
 
-    def setColor(color: Color, opacity: Float) = {
+    def setColor(color: Color, opacity: Double) = {
       val comp = color.getColorComponents(null)
-      val c = new Color(comp(0), comp(1), comp(2), opacity)
+      val c = new Color(comp(0), comp(1), comp(2), opacity.toFloat)
       peer.setBackground(c)
       peer.setForeground(c)
       revalidate()
@@ -117,7 +117,7 @@ class ColorPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel 
     targets.headOption.foreach { t =>
       val c = t.color.value
       colorChooser.setColor(c)
-      colorDisplayer.setColor(c, targetOpacityOption().map(_.value).getOrElse(1.0f))
+      colorDisplayer.setColor(c, targetOpacityOption().map(_.value).getOrElse(1.0))
     }
   }
 
