@@ -6,7 +6,7 @@ import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
 import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh}
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
@@ -129,6 +129,14 @@ case class TriangleMeshView private[ui] (override protected[api] val peer: Trian
     peer.opacity.value = o
   }
 
+
+  def lineWidth = peer.lineWidth.value
+
+  def lineWidth_=(width : Int) : Unit = {
+    peer.lineWidth.value = width
+  }
+
+
   def triangleMesh: TriangleMesh[_3D] = peer.source
 
   def transformedTriangleMesh: TriangleMesh[_3D] = peer.transformedSource
@@ -145,7 +153,7 @@ object TriangleMeshView {
     }
   }
 
-  implicit def callbackTriangleMeshView(): Unit = new HandleCallback[TriangleMeshView] {
+  implicit object callbacksTriangleMeshView extends HandleCallback[TriangleMeshView] {
 
     override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
@@ -167,6 +175,67 @@ object TriangleMeshView {
 
   }
 }
+
+
+case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
+  type PeerType = LineMeshNode
+
+  def color = peer.color.value
+
+  def color_=(c: Color): Unit = {
+    peer.color.value = c
+  }
+
+  def opacity = peer.opacity.value
+
+  def opacity_=(o: Float): Unit = {
+    peer.opacity.value = o
+  }
+
+  def lineWidth = peer.lineWidth.value
+  def lineWidth_=(width : Int) : Unit = {
+    peer.lineWidth.value = width
+  }
+
+  def lineMesh: LineMesh[_3D] = peer.source
+
+  def transformedLineMesh: LineMesh[_3D] = peer.transformedSource
+}
+
+object LineMeshView {
+
+  implicit object FindInSceneLineMeshView extends FindInScene[LineMeshView] {
+    override def createView(s: SceneNode): Option[LineMeshView] = {
+      s match {
+        case peer: LineMeshNode => Some(LineMeshView(peer))
+        case _ => None
+      }
+    }
+  }
+
+  implicit object callbackLineMeshView extends HandleCallback[LineMeshView] {
+
+    override def registerOnAdd[R](g: Group, f: LineMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.lineMeshes)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: LineMeshNode) =>
+          val lmv = LineMeshView(newNode)
+          f(lmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: LineMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.lineMeshes)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: LineMeshNode) =>
+          val lmv = LineMeshView(removedNode)
+          f(lmv)
+      }
+    }
+
+  }
+}
+
 
 case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
@@ -236,6 +305,13 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
   def opacity_=(o: Float): Unit = {
     peer.opacity.value = o
   }
+
+
+  def lineWidth = peer.lineWidth.value
+  def lineWidth_=(width : Int) : Unit = {
+    peer.lineWidth.value = width
+  }
+
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
 
