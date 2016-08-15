@@ -47,7 +47,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   def updateUi() = {
     deafToOwnEvents()
-    targets.headOption.foreach(t => slider.floatValue = t.radius.value)
+    targets.headOption.foreach(t => slider.floatValue = t.radius.value.toFloat)
     listenToOwnEvents()
   }
 
@@ -69,7 +69,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.radius.value = slider.floatValue)
+    case ValueChanged(c) => targets.foreach(_.radius.value = slider.floatValue.toFloat)
   }
 
 }

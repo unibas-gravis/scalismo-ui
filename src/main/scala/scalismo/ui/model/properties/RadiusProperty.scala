@@ -1,14 +1,14 @@
 package scalismo.ui.model.properties
 
 object RadiusProperty {
-  val DefaultValue: Float = 5.0f
+  val DefaultValue: Double = 5.0
 
 }
 
-class RadiusProperty(initialValue: Float) extends NodeProperty[Float](initialValue) {
+class RadiusProperty(initialValue: Double) extends NodeProperty[Double](initialValue) {
   def this() = this(RadiusProperty.DefaultValue)
 
-  override protected def sanitize(possiblyNotSane: Float): Float = {
+  override protected def sanitize(possiblyNotSane: Double): Double = {
     Math.max(0, possiblyNotSane)
   }
 }
