@@ -1,10 +1,10 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{ BoundingBox, ScalarMeshFieldNode, SceneNode, TriangleMeshNode }
+import scalismo.ui.model._
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.Caches.FastCachingTriangleMesh
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
@@ -34,14 +34,26 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
   }
 }
 
+object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
+  override def actorsFor(renderable: LineMeshNode, viewport: ViewportPanel): Option[Actors] = {
+    viewport match {
+      case _3d: ViewportPanel3D => Some(new LineMeshActor3D(renderable))
+      case _2d: ViewportPanel2D => Some(new LineMeshActor2D(renderable, _2d))
+    }
+  }
+}
+
 object MeshActor {
 
   trait MeshRenderable {
+
+    type MeshType
+
     def opacity: OpacityProperty
 
     def lineWidth: LineWidthProperty
 
-    def mesh: TriangleMesh[_3D]
+    def mesh: MeshType
 
     def node: SceneNode
   }
@@ -49,6 +61,9 @@ object MeshActor {
   private[actor] object MeshRenderable {
 
     class TriangleMeshRenderable(override val node: TriangleMeshNode) extends MeshRenderable {
+
+      type MeshType = TriangleMesh[_3D]
+
       override def opacity: OpacityProperty = node.opacity
 
       override def mesh: TriangleMesh[_3D] = node.transformedSource
@@ -59,6 +74,9 @@ object MeshActor {
     }
 
     class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
+
+      type MeshType = TriangleMesh[_3D]
+
       override def opacity: OpacityProperty = node.opacity
 
       override def lineWidth: LineWidthProperty = node.lineWidth
@@ -70,9 +88,24 @@ object MeshActor {
       def field: ScalarMeshField[Float] = node.transformedSource
     }
 
+    class LineMeshRenderable(override val node: LineMeshNode) extends MeshRenderable {
+      type MeshType = LineMesh[_3D]
+
+      override def opacity: OpacityProperty = node.opacity
+
+      override def lineWidth: LineWidthProperty = node.lineWidth
+
+      override def mesh: LineMesh[_3D] = node.transformedSource
+
+      def color: ColorProperty = node.color
+
+    }
+
     def apply(source: TriangleMeshNode): TriangleMeshRenderable = new TriangleMeshRenderable(source)
 
     def apply(source: ScalarMeshFieldNode): ScalarMeshFieldRenderable = new ScalarMeshFieldRenderable(source)
+
+    def apply(source: LineMeshNode): LineMeshRenderable = new LineMeshRenderable(source)
 
   }
 
@@ -97,6 +130,7 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
       polydata = meshToPolyData(Some(polydata))
       onGeometryChanged()
     }
+
     actorChanged(geometryChanged)
   }
 
@@ -135,6 +169,20 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
 
     Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh), MeshConversion.meshToVtkPolyData(renderable.mesh, template))
   }
+
+}
+
+trait LineMeshActor extends MeshActor[MeshRenderable.LineMeshRenderable] with ActorColor with ActorLineWidth {
+  override def renderable: MeshRenderable.LineMeshRenderable
+
+  override def color: ColorProperty = renderable.color
+
+  override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
+
+    MeshConversion.lineMeshToVTKPolyData(renderable.mesh, template)
+  }
+
+  override def lineWidth = renderable.lineWidth
 
 }
 
@@ -190,3 +238,7 @@ class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) ext
 class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(MeshRenderable(node)) with ScalarMeshFieldActor
 
 class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with ScalarMeshFieldActor
+
+class LineMeshActor3D(node: LineMeshNode) extends MeshActor3D(MeshRenderable(node)) with LineMeshActor
+
+class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with LineMeshActor

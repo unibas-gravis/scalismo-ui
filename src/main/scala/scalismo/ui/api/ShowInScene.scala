@@ -3,7 +3,7 @@ package scalismo.ui.api
 import scalismo.common._
 import scalismo.geometry.{ Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh}
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
@@ -53,6 +53,17 @@ object ShowInScene extends LowPriorityImplicits {
     }
 
   }
+
+  implicit object ShowInSceneLineMesh extends ShowInScene[LineMesh[_3D]] {
+    override type View = LineMeshView
+
+    override def showInScene(mesh: LineMesh[_3D], name: String, group: Group): LineMeshView = {
+      val groupNode = group.peer
+      LineMeshView(groupNode.lineMeshes.add(mesh, name))
+    }
+
+  }
+
 
   implicit object ShowInScenePointCloudFromIndexedSeq extends ShowInScene[IndexedSeq[Point[_3D]]] {
     override type View = PointCloudView
