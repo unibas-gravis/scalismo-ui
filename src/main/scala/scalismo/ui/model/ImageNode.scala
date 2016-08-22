@@ -49,8 +49,8 @@ class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage
 
   override val windowLevel: WindowLevelProperty = {
     val range = maximumValue - minimumValue
-    val window = range / 4
-    val level = minimumValue + range / 2
+    val window = range * 0.75f
+    val level =  minimumValue + range / 2.0f
     new WindowLevelProperty(WindowLevel(window, level))
   }
 
