@@ -473,6 +473,17 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
     peer.opacity.value = o
   }
 
+  def window : Double = peer.windowLevel.value.window
+  def window_=(w : Double) : Unit = {
+    peer.windowLevel.value = peer.windowLevel.value.copy(window = w)
+  }
+
+  def level = peer.windowLevel.value.level
+  def level_=(w : Double) : Unit = {
+    peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
+  }
+
+
   def image: DiscreteScalarImage[_3D, Float] = peer.source
 }
 
