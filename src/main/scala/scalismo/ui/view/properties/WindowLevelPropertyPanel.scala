@@ -119,8 +119,8 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
 
     val wl = targets.head.windowLevel.value
 
-    windowSlider.value = Math.round(wl.window)
-    levelSlider.value = Math.round(wl.level)
+    windowSlider.value = Math.round(wl.window).toInt
+    levelSlider.value = Math.round(wl.level).toInt
 
     updateImage()
 
