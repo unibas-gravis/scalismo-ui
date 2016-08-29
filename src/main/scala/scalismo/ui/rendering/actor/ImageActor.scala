@@ -78,10 +78,20 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
       case Axis.Y => (data.min, data.max, p.y, data.eymax)
       case Axis.Z => (data.min, data.max, p.z, data.ezmax)
     }
-    val idx = if (fval < fmin || fval > fmax) ImageActor2D.OutOfBounds
+    val idx : Int = if (fval < fmin || fval > fmax) ImageActor2D.OutOfBounds
     else {
       val (nval, nmax) = (fval - fmin, fmax - fmin)
-      Math.floor(nval * tmax / nmax).toInt
+      val continuousIndex = Math.floor(nval * tmax / nmax)
+
+      // The mechanism employed here to slice through the image (using the vtkImageDataToGeometry)
+      // can only slide at the grid positions. Therefore we need to round the slicing position.
+      // In this process we need to make sure that we are taking the slice that is further away from
+      // the camera, as otherwise the slice could cover other datasets, which are sliced exactly.
+      axis match {
+        case Axis.X => Math.ceil(continuousIndex).toInt
+        case Axis.Y => Math.floor(continuousIndex).toInt
+        case Axis.Z => Math.floor(continuousIndex).toInt
+      }
     }
     idx
   }
