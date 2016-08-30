@@ -10,7 +10,7 @@ import scalismo.ui.rendering.actor.mixin.{ ActorOpacity, ActorSceneNode, IsImage
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.ImageConversion
-import vtk.{ vtkImageDataGeometryFilter, vtkImageMapToWindowLevelColors, vtkStructuredPoints }
+import vtk._
 
 object ImageActor extends SimpleActorsFactory[ImageNode] {
   override def actorsFor(renderable: ImageNode, viewport: ViewportPanel): Option[Actors] = {
@@ -60,6 +60,15 @@ object ImageActor2D {
     slice.SetExtent(0, 0, 0, 0, 0, 0)
     slice.Update()
 
+    // Transform used to correct image slice, such that
+    // it coincides with the slicing position (which is in general not the case as the slicer slices only
+    // at the grid position).
+    val slicePositionCorrector = new vtkTransformPolyDataFilter()
+    val sliceCorrectionTransform = new vtkTransform()
+    sliceCorrectionTransform.Translate(0,0,0)
+    slicePositionCorrector.SetTransform(sliceCorrectionTransform)
+    slicePositionCorrector.SetInputConnection(slice.GetOutputPort())
+
   }
 
 }
@@ -70,49 +79,68 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
 
   val data = new InstanceData(sceneNode, axis)
 
-  var currentIndex = ImageActor2D.NotInitialized
 
-  def point3DToExtent(p: Point3D, axis: Axis) = {
+  // This method computes the closest into the image for the given slicing position (point) for a given axis.
+  def point3DToSliceIndex(p: Point3D, axis: Axis) : (Int)= {
     val (fmin, fmax, fval, tmax) = axis match {
       case Axis.X => (data.min, data.max, p.x, data.exmax)
       case Axis.Y => (data.min, data.max, p.y, data.eymax)
       case Axis.Z => (data.min, data.max, p.z, data.ezmax)
     }
-    val idx : Int = if (fval < fmin || fval > fmax) ImageActor2D.OutOfBounds
+
+    if (fval < fmin || fval > fmax) ImageActor2D.OutOfBounds
     else {
       val (nval, nmax) = (fval - fmin, fmax - fmin)
-      val continuousIndex = Math.floor(nval * tmax / nmax)
-
-      // The mechanism employed here to slice through the image (using the vtkImageDataToGeometry)
-      // can only slide at the grid positions. Therefore we need to round the slicing position.
-      // In this process we need to make sure that we are taking the slice that is further away from
-      // the camera, as otherwise the slice could cover other datasets, which are sliced exactly.
-      axis match {
-        case Axis.X => Math.ceil(continuousIndex).toInt
-        case Axis.Y => Math.floor(continuousIndex).toInt
-        case Axis.Z => Math.floor(continuousIndex).toInt
-      }
+      val idx = Math.round(nval * tmax / nmax).toInt
+      idx
     }
-    idx
+
   }
 
-  def update(point: Point3D, geometryChanged: Boolean): Unit = {
-    val i = point3DToExtent(point, axis)
-    if (i != currentIndex) {
-      currentIndex = i
-      if (i == ImageActor2D.OutOfBounds) {
-        SetVisibility(0)
-      } else {
-        SetVisibility(1)
-        axis match {
-          case Axis.X => data.slice.SetExtent(i, i, 0, data.eymax, 0, data.ezmax)
-          case Axis.Y => data.slice.SetExtent(0, data.exmax, i, i, 0, data.ezmax)
-          case Axis.Z => data.slice.SetExtent(0, data.exmax, 0, data.eymax, i, i)
-        }
-        data.slice.Modified()
+  def update(slicingPoint: Point3D, geometryChanged: Boolean): Unit = {
+    val sliceIndex = point3DToSliceIndex(slicingPoint, axis)
+
+    if (sliceIndex == ImageActor2D.OutOfBounds) {
+      SetVisibility(0)
+    } else {
+      SetVisibility(1)
+
+      // since the vtkImageDataGeometryFilter that is currently used for slicing does only
+      // support slicing at grid position, the slicing position is in general different from the
+      // indicated slicing position. We correct this by computing an additional translation.
+      val (origin, spacing) = (data.points.GetOrigin(), data.points.GetSpacing())
+      data.sliceCorrectionTransform.Identity()
+
+      def computeOffset(component: Int): Double = {
+        val pointComponentForIndex = (origin(component) + sliceIndex * spacing(component))
+        val offset = (slicingPoint(component) - pointComponentForIndex)
+        offset
       }
-      actorChanged(geometryChanged)
+
+      axis match {
+        case Axis.X => {
+          data.slice.SetExtent(sliceIndex, sliceIndex, 0, data.eymax, 0, data.ezmax)
+          val offset = computeOffset(0)
+          data.sliceCorrectionTransform.Translate(+offset, 0, 0)
+        }
+        case Axis.Y => {
+          data.slice.SetExtent(0, data.exmax, sliceIndex, sliceIndex, 0, data.ezmax)
+          val offset = computeOffset(1)
+          data.sliceCorrectionTransform.Translate(0, +offset, 0)
+        }
+        case Axis.Z => {
+          data.slice.SetExtent(0, data.exmax, 0, data.eymax, sliceIndex, sliceIndex)
+          val offset = computeOffset(2)
+          data.sliceCorrectionTransform.Translate(0, 0, +offset)
+        }
+      }
+      data.sliceCorrectionTransform.Modified()
+      data.slicePositionCorrector.Modified()
+      data.slice.Modified()
+      mapper.Modified()
     }
+    actorChanged(geometryChanged)
+
   }
 
   def updateWindowLevel(): Unit = {
@@ -127,8 +155,7 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
 
   listenTo(frame.sceneControl.slicingPosition, sceneNode.windowLevel)
 
-  mapper.SetInputConnection(data.slice.GetOutputPort())
-  currentIndex = ImageActor2D.NotInitialized
+  mapper.SetInputConnection(data.slicePositionCorrector.GetOutputPort())
   update(frame.sceneControl.slicingPosition.point, geometryChanged = true)
 
   reactions += {

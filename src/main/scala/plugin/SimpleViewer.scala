@@ -17,6 +17,7 @@ class SimpleViewer extends ScalismoFrame {
   override def setup(args: Array[String]): Unit = {
     super.setup(args)
 
+
     def spiral(t: Double): Point[_3D] = {
       val R = 5;
       val a = 1;
@@ -36,8 +37,6 @@ class SimpleViewer extends ScalismoFrame {
     val lineMesh = LineMesh(domain, topology)
 
     group.lineMeshes.add(lineMesh, "abc")
-    //    val meshField = ScalarMeshField(model.referenceMesh, ScalarArray(model.referenceMesh.pointIds.map(_.id.toFloat).toArray))
-    //    group.scalarMeshFields.add(meshField, "ptIds")
 
     perspective.resetAllCameras()
 
