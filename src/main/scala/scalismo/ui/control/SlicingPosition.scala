@@ -113,6 +113,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
       case (bb, vp) =>
         bb.union(vp.currentBoundingBox)
     })
+    publishEvent(event.BoundingBoxChanged(this))
   }
 
   private def perspectiveChanged(): Unit = {
