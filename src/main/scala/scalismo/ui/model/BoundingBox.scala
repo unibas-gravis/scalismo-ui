@@ -71,7 +71,7 @@ object BoundingBox {
   }
 
   def apply(xMin: Double, xMax: Double, yMin: Double, yMax: Double, zMin: Double, zMax: Double): BoundingBox = {
-    if (xMin > xMax || yMin > yMax && zMin > zMax) Invalid else Valid(xMin, xMax, yMin, yMax, zMin, zMax)
+    if (xMin > xMax || yMin > yMax || zMin > zMax) Invalid else Valid(xMin, xMax, yMin, yMax, zMin, zMax)
   }
 }
 
