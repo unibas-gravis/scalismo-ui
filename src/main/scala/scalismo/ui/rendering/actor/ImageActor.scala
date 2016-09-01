@@ -65,7 +65,7 @@ object ImageActor2D {
     // at the grid position).
     val slicePositionCorrector = new vtkTransformPolyDataFilter()
     val sliceCorrectionTransform = new vtkTransform()
-    sliceCorrectionTransform.Translate(0,0,0)
+    sliceCorrectionTransform.Translate(0, 0, 0)
     slicePositionCorrector.SetTransform(sliceCorrectionTransform)
     slicePositionCorrector.SetInputConnection(slice.GetOutputPort())
 
@@ -79,9 +79,8 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
 
   val data = new InstanceData(sceneNode, axis)
 
-
   // This method computes the closest into the image for the given slicing position (point) for a given axis.
-  def point3DToSliceIndex(p: Point3D, axis: Axis) : (Int)= {
+  def point3DToSliceIndex(p: Point3D, axis: Axis): (Int) = {
     val (fmin, fmax, fval, tmax) = axis match {
       case Axis.X => (data.min, data.max, p.x, data.exmax)
       case Axis.Y => (data.min, data.max, p.y, data.eymax)
