@@ -9,6 +9,7 @@ import scalismo.ui.model.{ Axis, BoundingBox, Scene }
 import scalismo.ui.rendering.{ RendererPanel, RendererState }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.view.PerspectivePanel.event.PerspectiveChanged
 import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 
@@ -181,6 +182,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
   reactions += {
     case SlicingPosition.event.PointChanged(_, _, current) => updateSliderValue(current)
     case SlicingPosition.event.BoundingBoxChanged(s) => updateSliderMinMax(s.boundingBox)
+    case SlicingPosition.event.PerspectiveChanged(s) => {updateSliderMinMax(s.boundingBox); updateSliderValue(s.point)}
     case ValueChanged(s) if s eq positionSlider => sliderValueChanged()
   }
 }

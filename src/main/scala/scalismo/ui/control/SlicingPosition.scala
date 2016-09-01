@@ -18,6 +18,8 @@ object SlicingPosition {
 
     case class BoundingBoxChanged(source: SlicingPosition) extends Event
 
+    case class PerspectiveChanged(source: SlicingPosition) extends Event
+
   }
 
   object renderable {
@@ -100,6 +102,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     if (_boundingBox != nb) {
       val wasInvalid = _boundingBox == BoundingBox.Invalid
       _boundingBox = nb
+
       publishEvent(event.BoundingBoxChanged(this))
       if (wasInvalid) center()
       sanitizePoint()
@@ -113,12 +116,12 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
       case (bb, vp) =>
         bb.union(vp.currentBoundingBox)
     })
-    publishEvent(event.BoundingBoxChanged(this))
   }
 
   private def perspectiveChanged(): Unit = {
     viewports.foreach(vp => listenTo(vp))
     updateBoundingBox()
+    publishEvent(event.PerspectiveChanged(this))
   }
 
   def center(): Unit = {
