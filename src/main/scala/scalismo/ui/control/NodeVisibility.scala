@@ -53,34 +53,11 @@ object NodeVisibility {
   }
 
   class RenderableNodeWithVisibility(node: RenderableSceneNode)(implicit frame: ScalismoFrame) {
-    def visible: Visibility = new Visibility(node)
+    def visible: Unit = ()
 
     def visible_=(show: Boolean) = frame.sceneControl.nodeVisibility.setVisibility(node, frame.perspective.viewports, show)
   }
 
-  class Visibility(node: RenderableSceneNode)(implicit frame: ScalismoFrame) {
-    private def control = frame.sceneControl.nodeVisibility
-
-    def update(viewports: List[ViewportPanel], show: Boolean): Unit = control.setVisibility(node, viewports, show)
-
-    def update(viewport: ViewportPanel, show: Boolean): Unit = control.setVisibility(node, viewport, show)
-
-    def apply(viewport: ViewportPanel): State = control.getVisibilityState(node, viewport)
-
-    def apply(viewports: List[ViewportPanel]): State = control.getVisibilityState(node, viewports)
-
-    def apply(): State = control.getVisibilityState(node, frame.perspective.viewports)
-  }
-
-  object Visibility {
-    implicit def asState(visibility: Visibility)(implicit frame: ScalismoFrame): State = {
-      visibility.apply(frame.perspective.viewports)
-    }
-
-    implicit def asBoolean(visibility: Visibility)(implicit frame: ScalismoFrame): Boolean = {
-      asState(visibility) == Visible
-    }
-  }
 
 }
 
