@@ -29,6 +29,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
+  private val nodeVisibility = ui.frame.sceneControl.nodeVisibility
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
@@ -41,7 +42,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation, "shape"))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
-    previewNode.visible = false
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 

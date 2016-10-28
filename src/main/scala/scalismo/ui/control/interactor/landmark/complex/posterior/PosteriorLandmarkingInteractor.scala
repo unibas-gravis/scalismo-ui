@@ -12,6 +12,7 @@ import scalismo.ui.model._
 trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[PosteriorLandmarkingInteractor] {
 
   implicit val theFrame = frame
+  private val nodeVisibility = frame.sceneControl.nodeVisibility
 
   def previewNode: TriangleMeshNode
 
@@ -49,11 +50,11 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
   }
 
   def showPreview(): Unit = {
-    previewNode.visible = true
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, true)
   }
 
   def hidePreview(): Unit = {
-    previewNode.visible = false
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
   }
 
   def initialize(): Unit = {

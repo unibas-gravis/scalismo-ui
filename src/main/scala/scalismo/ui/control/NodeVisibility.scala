@@ -13,22 +13,6 @@ import scala.language.implicitConversions
 /**
  * This class controls the visibility of nodes in the various viewports of a frame.
  *
- * There are a couple of convenient implicits defined, so code like the following works without
- * any additional imports:
- *
- * val allViews = frame.perspective.viewports
- * val oneView = allViews.head
- *
- * node.visible(oneView) = false
- * node.visible(allViews) = false
- * // global visibility
- * node.visible = false
- *
- * // as a boolean
- * if (node.visible) {}
- * // as a state
- * if (node.visible() == NodeVisibility.Invisible) {}
- *
  */
 object NodeVisibility {
 
@@ -51,13 +35,6 @@ object NodeVisibility {
     case class NodeVisibilityChanged(node: SceneNode, viewport: ViewportPanel) extends Event
 
   }
-
-  class RenderableNodeWithVisibility(node: RenderableSceneNode)(implicit frame: ScalismoFrame) {
-    def visible: Unit = ()
-
-    def visible_=(show: Boolean) = frame.sceneControl.nodeVisibility.setVisibility(node, frame.perspective.viewports, show)
-  }
-
 
 }
 
