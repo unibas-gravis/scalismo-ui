@@ -39,7 +39,7 @@ sealed trait ObjectView {
 
 object ObjectView {
   implicit object FindInSceneObjectView extends FindInScene[ObjectView] {
-    override def createView(s: SceneNode , _frame: ScalismoFrame): Option[ObjectView] = {
+    override def createView(s: SceneNode, _frame: ScalismoFrame): Option[ObjectView] = {
 
       s match {
         case node: GroupNode => None // we ignore all group nodes, as they are not real objects
@@ -56,23 +56,6 @@ object ObjectView {
       }
     }
   }
-}
-
-sealed trait SimpleVisibility {
-  self: ObjectView =>
-
-  private def setVisible(isVisible: Boolean, viewportName: String): Unit = {
-    implicit val fr = self.frame
-    val viewPort = peer.scene.control.frame.perspective.viewports.filter(_.name == viewportName).head
-    val visib = peer.scene.control.nodeVisibility
-    visib.setVisibility(peer.asInstanceOf[RenderableSceneNode], viewPort, isVisible)
-  }
-
-  def visible3D(isVisible: Boolean) = setVisible(isVisible, "3D")
-  def visibleX(isVisible: Boolean) = setVisible(isVisible, "X")
-  def visibleY(isVisible: Boolean) = setVisible(isVisible, "Y")
-  def visibleZ(isVisible: Boolean) = setVisible(isVisible, "Z")
-
 }
 
 case class PointCloudView private[ui] (override protected[api] val peer: PointCloudNode, frame: ScalismoFrame) extends ObjectView with SimpleVisibility {
@@ -107,7 +90,7 @@ object PointCloudView {
   implicit object FindInScenePointCloud extends FindInScene[PointCloudView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[PointCloudView] = {
       s match {
-        case node: PointCloudNode => Some(PointCloudView(node,frame))
+        case node: PointCloudNode => Some(PointCloudView(node, frame))
         case _ => None
       }
     }
@@ -119,7 +102,7 @@ object PointCloudView {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: PointCloudNode) =>
-          val tmv = PointCloudView(newNode,frame)
+          val tmv = PointCloudView(newNode, frame)
           f(tmv)
       }
     }
@@ -128,7 +111,7 @@ object PointCloudView {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: PointCloudNode) =>
-          val tmv = PointCloudView(removedNode,frame)
+          val tmv = PointCloudView(removedNode, frame)
           f(tmv)
       }
     }
@@ -166,7 +149,7 @@ object TriangleMeshView {
   implicit object FindInSceneTriangleMeshView$ extends FindInScene[TriangleMeshView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[TriangleMeshView] = {
       s match {
-        case peer: TriangleMeshNode => Some(TriangleMeshView(peer,frame))
+        case peer: TriangleMeshNode => Some(TriangleMeshView(peer, frame))
         case _ => None
       }
     }
@@ -178,7 +161,7 @@ object TriangleMeshView {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: TriangleMeshNode) =>
-          val tmv = TriangleMeshView(newNode,frame)
+          val tmv = TriangleMeshView(newNode, frame)
           f(tmv)
       }
     }
@@ -187,7 +170,7 @@ object TriangleMeshView {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: TriangleMeshNode) =>
-          val tmv = TriangleMeshView(removedNode,frame)
+          val tmv = TriangleMeshView(removedNode, frame)
           f(tmv)
       }
     }
@@ -225,7 +208,7 @@ object LineMeshView {
   implicit object FindInSceneLineMeshView extends FindInScene[LineMeshView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[LineMeshView] = {
       s match {
-        case peer: LineMeshNode => Some(LineMeshView(peer,frame))
+        case peer: LineMeshNode => Some(LineMeshView(peer, frame))
         case _ => None
       }
     }
@@ -237,7 +220,7 @@ object LineMeshView {
       g.peer.listenTo(g.peer.lineMeshes)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: LineMeshNode) =>
-          val lmv = LineMeshView(newNode,frame)
+          val lmv = LineMeshView(newNode, frame)
           f(lmv)
       }
     }
@@ -246,7 +229,7 @@ object LineMeshView {
       g.peer.listenTo(g.peer.lineMeshes)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: LineMeshNode) =>
-          val lmv = LineMeshView(removedNode,frame)
+          val lmv = LineMeshView(removedNode, frame)
           f(lmv)
       }
     }
@@ -279,7 +262,7 @@ object LandmarkView {
   implicit object FindInSceneLandmarkView$ extends FindInScene[LandmarkView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[LandmarkView] = {
       s match {
-        case peer: LandmarkNode => Some(LandmarkView(peer,frame))
+        case peer: LandmarkNode => Some(LandmarkView(peer, frame))
         case _ => None
       }
     }
@@ -338,7 +321,7 @@ object ScalarMeshFieldView {
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarMeshFieldView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[ScalarMeshFieldView] = {
       s match {
-        case node: ScalarMeshFieldNode => Some(ScalarMeshFieldView(node,frame))
+        case node: ScalarMeshFieldNode => Some(ScalarMeshFieldView(node, frame))
         case _ => None
       }
     }
@@ -350,7 +333,7 @@ object ScalarMeshFieldView {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: ScalarMeshFieldNode) =>
-          val tmv = ScalarMeshFieldView(newNode,frame)
+          val tmv = ScalarMeshFieldView(newNode, frame)
           f(tmv)
       }
     }
@@ -359,7 +342,7 @@ object ScalarMeshFieldView {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: ScalarMeshFieldNode) =>
-          val tmv = ScalarMeshFieldView(removedNode,frame)
+          val tmv = ScalarMeshFieldView(removedNode, frame)
           f(tmv)
       }
     }
@@ -398,7 +381,7 @@ object ScalarFieldView {
   implicit object FindInSceneScalarMeshField extends FindInScene[ScalarFieldView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[ScalarFieldView] = {
       s match {
-        case node: ScalarFieldNode => Some(ScalarFieldView(node,frame))
+        case node: ScalarFieldNode => Some(ScalarFieldView(node, frame))
         case _ => None
       }
     }
@@ -410,7 +393,7 @@ object ScalarFieldView {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
         case ChildAdded(collection, newNode: ScalarFieldNode) =>
-          val tmv = ScalarFieldView(newNode,frame)
+          val tmv = ScalarFieldView(newNode, frame)
           f(tmv)
       }
     }
@@ -419,7 +402,7 @@ object ScalarFieldView {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: ScalarFieldNode) =>
-          val tmv = ScalarFieldView(removedNode,frame)
+          val tmv = ScalarFieldView(removedNode, frame)
           f(tmv)
       }
     }
@@ -450,7 +433,7 @@ object VectorFieldView {
   implicit object FindInSceneScalarMeshField extends FindInScene[VectorFieldView] {
     override def createView(s: SceneNode, frame: ScalismoFrame): Option[VectorFieldView] = {
       s match {
-        case node: VectorFieldNode => Some(VectorFieldView(node,frame))
+        case node: VectorFieldNode => Some(VectorFieldView(node, frame))
         case _ => None
       }
     }
@@ -471,7 +454,7 @@ object VectorFieldView {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: VectorFieldNode) =>
-          val tmv = VectorFieldView(removedNode,frame)
+          val tmv = VectorFieldView(removedNode, frame)
           f(tmv)
       }
     }
@@ -582,7 +565,7 @@ object TransformationView {
       // here we need a two step process due to type erasure to find the right type.
       s match {
         case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_]] =>
-          Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]],frame))
+          Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]], frame))
         case _ => None
       }
     }
@@ -677,7 +660,7 @@ object DiscreteLowRankGPTransformationView {
         // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
         case value: ShapeModelTransformationComponentNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] => None
         case value: TransformationNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
-          Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]],frame))
+          Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]], frame))
         case _ => None
       }
     }
@@ -691,7 +674,7 @@ object DiscreteLowRankGPTransformationView {
         case ChildAdded(collection, newNode: TransformationNode[_]) =>
 
           if (newNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-            val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]],frame)
+            val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]], frame)
             f(tmv)
           }
 
@@ -703,7 +686,7 @@ object DiscreteLowRankGPTransformationView {
       g.peer.reactions += {
         case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-            val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]],frame)
+            val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]], frame)
             f(tmv)
           }
       }
@@ -742,7 +725,7 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
     case None => throw new Exception("There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView.")
   }
 
-  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_,frame)) match {
+  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_, frame)) match {
     case Some(sv) => sv
     case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
   }
@@ -769,14 +752,14 @@ object ShapeModelTransformationView {
     override def registerOnAdd[R](g: Group, f: ShapeModelTransformationView => R, frame: ScalismoFrame): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations,frame))
+        case ChildAdded(collection, newNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations, frame))
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ShapeModelTransformationView => R, frame: ScalismoFrame): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations,frame))
+        case ChildRemoved(collection, removedNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations, frame))
       }
     }
   }

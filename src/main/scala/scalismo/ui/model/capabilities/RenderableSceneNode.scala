@@ -2,7 +2,6 @@ package scalismo.ui.model.capabilities
 
 import scalismo.ui.model.{ Renderable, SceneNode }
 
-
 /**
  * A renderable node is -- by design -- a leaf node,
  * i.e., it has no further children.

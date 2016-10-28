@@ -67,7 +67,7 @@ trait SimpleAPI {
   private def defaultGroup: Group = {
     val groupNode = scene.groups.find(g => g.name == "group")
       .getOrElse(scene.groups.add("group"))
-    Group(groupNode,frame)
+    Group(groupNode, frame)
   }
 
   private def filterSceneNodes[V <: ObjectView: FindInScene](node: SceneNode, pred: V => Boolean): Seq[V] = {

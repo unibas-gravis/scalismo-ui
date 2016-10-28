@@ -6,7 +6,7 @@ import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
 
 class ScalismoUI(title: String) extends SimpleAPI {
 
-  private [ui] val fr = EdtUtil.onEdtWait {
+  private[ui] val fr = EdtUtil.onEdtWait {
     val frame = new ScalismoFrame()
 
     frame.setup(Array[String]())

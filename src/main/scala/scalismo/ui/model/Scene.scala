@@ -37,10 +37,4 @@ class Scene extends SceneNode {
     case ChildrenChanged(node) => publishEvent(SceneChanged(this))
   }
 
-  def control(implicit frame: ScalismoFrame): SceneControl = {
-    val result = frame.sceneControl
-    require(result.scene == this)
-    result
-  }
-
 }

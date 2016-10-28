@@ -29,7 +29,7 @@ trait LowPriorityImplicits {
     override type View = ScalarFieldView
 
     override def showInScene(sf: DiscreteScalarField[_3D, A], name: String, group: Group, frame: ScalismoFrame): ScalarFieldView = {
-      ScalarFieldView(group.peer.scalarFields.add(sf, name),frame)
+      ScalarFieldView(group.peer.scalarFields.add(sf, name), frame)
     }
   }
 
@@ -37,7 +37,7 @@ trait LowPriorityImplicits {
     override type View = TransformationView
 
     override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group, frame: ScalismoFrame): View = {
-      TransformationView(group.peer.genericTransformations.add(t, name),frame)
+      TransformationView(group.peer.genericTransformations.add(t, name), frame)
     }
   }
 
@@ -50,7 +50,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(mesh: TriangleMesh[_3D], name: String, group: Group, frame: ScalismoFrame): TriangleMeshView = {
       val groupNode = group.peer
-      TriangleMeshView(groupNode.triangleMeshes.add(mesh, name),frame)
+      TriangleMeshView(groupNode.triangleMeshes.add(mesh, name), frame)
     }
 
   }
@@ -60,7 +60,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(mesh: LineMesh[_3D], name: String, group: Group, frame: ScalismoFrame): LineMeshView = {
       val groupNode = group.peer
-      LineMeshView(groupNode.lineMeshes.add(mesh, name),frame)
+      LineMeshView(groupNode.lineMeshes.add(mesh, name), frame)
     }
 
   }
@@ -89,7 +89,7 @@ object ShowInScene extends LowPriorityImplicits {
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group, frame: ScalismoFrame): ScalarMeshFieldView = {
       val scalarConv = implicitly[Scalar[S]]
       val smfAsFloat = scalarMeshField.copy(data = scalarMeshField.data.map[Float](x => scalarConv.toFloat(x)))
-      ScalarMeshFieldView(group.peer.scalarMeshFields.add(smfAsFloat, name),frame)
+      ScalarMeshFieldView(group.peer.scalarMeshFields.add(smfAsFloat, name), frame)
     }
   }
 
@@ -98,7 +98,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(df: DiscreteField[_3D, Vector[_3D]], name: String, group: Group, frame: ScalismoFrame): VectorFieldView = {
       val discreteVectorField = DiscreteVectorField(df.domain, df.values.toIndexedSeq)
-      VectorFieldView(group.peer.vectorFields.add(discreteVectorField, name),frame)
+      VectorFieldView(group.peer.vectorFields.add(discreteVectorField, name), frame)
     }
   }
 
@@ -108,7 +108,7 @@ object ShowInScene extends LowPriorityImplicits {
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group, frame: ScalismoFrame): ImageView = {
       val scalarConv = implicitly[Scalar[S]]
       val floatImage = image.map(x => scalarConv.toFloat(x))
-      ImageView(group.peer.images.add(floatImage, name),frame)
+      ImageView(group.peer.images.add(floatImage, name), frame)
     }
   }
 
@@ -116,7 +116,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = LandmarkView
 
     override def showInScene(lm: Landmark[_3D], name: String, group: Group, frame: ScalismoFrame): LandmarkView = {
-      LandmarkView(group.peer.landmarks.add(lm),frame)
+      LandmarkView(group.peer.landmarks.add(lm), frame)
     }
 
   }
@@ -126,7 +126,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(lms: Seq[Landmark[_3D]], name: String, group: Group, frame: ScalismoFrame): Seq[LandmarkView] = {
       val landmarkViews = for (lm <- lms) yield {
-        LandmarkView(group.peer.landmarks.add(lm),frame)
+        LandmarkView(group.peer.landmarks.add(lm), frame)
       }
       landmarkViews
     }
@@ -137,7 +137,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = VectorFieldView
 
     override def showInScene(sf: DiscreteVectorField[_3D, _3D], name: String, group: Group, frame: ScalismoFrame): VectorFieldView = {
-      VectorFieldView(group.peer.vectorFields.add(sf, name),frame)
+      VectorFieldView(group.peer.vectorFields.add(sf, name), frame)
     }
   }
 
@@ -158,7 +158,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = VectorFieldView
 
     override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group, frame: ScalismoFrame): ShowInSceneTransformationGlypth.View = {
-      VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name),frame)
+      VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name), frame)
     }
   }
 
@@ -166,7 +166,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = RigidTransformationView
 
     override def showInScene(t: RigidTransformation[_3D], name: String, group: Group, frame: ScalismoFrame): View = {
-      RigidTransformationView(group.peer.genericTransformations.add(t, name),frame)
+      RigidTransformationView(group.peer.genericTransformations.add(t, name), frame)
     }
   }
 
@@ -175,7 +175,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(gp: LowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group, frame: ScalismoFrame): View = {
       val gpNode = group.peer.genericTransformations.add(LowRankGpPointTransformation(gp), name)
-      LowRankGPTransformationView(gpNode,frame)
+      LowRankGPTransformationView(gpNode, frame)
     }
   }
 
@@ -184,7 +184,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group, frame: ScalismoFrame): View = {
       val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
-      DiscreteLowRankGPTransformationView(gpNode,frame)
+      DiscreteLowRankGPTransformationView(gpNode, frame)
     }
   }
 
@@ -195,7 +195,7 @@ object ShowInScene extends LowPriorityImplicits {
       val t = for {
         pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation, "model-pose")
         shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation, "model-shape")
-      } yield ShapeModelTransformationView(group.peer.shapeModelTransformations,frame)
+      } yield ShapeModelTransformationView(group.peer.shapeModelTransformations, frame)
       t.get
     }
   }
