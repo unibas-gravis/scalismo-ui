@@ -47,10 +47,6 @@ object Viewport {
   val _3dRight: Seq[Viewport] = Seq(_3DRight)
 }
 
-sealed trait VisibilityConfig {
-  val views: Seq[Viewport]
-}
-
 trait SimpleVisibility {
   self: ObjectView =>
 
@@ -71,11 +67,11 @@ trait SimpleVisibility {
   /**
    * Sets the node visible to all views in the config, and invisible in others
    */
-  def visible_=(config: Seq[Viewport]) = {
-    config.foreach(v => setVisible(true, v.name))
+  def visible_=(visibleViewports: Seq[Viewport]) = {
+    visibleViewports.foreach(v => setVisible(true, v.name))
 
     //set invisible in other viewports
-    val viewsNotInConfig = self.frame.perspective.viewports.filterNot(v => config.exists(_.name == v.name))
+    val viewsNotInConfig = self.frame.perspective.viewports.filterNot(v => visibleViewports.exists(_.name == v.name))
     viewsNotInConfig.foreach(v => setVisible(false, v.name))
   }
 
