@@ -17,7 +17,6 @@ class SimpleViewer extends ScalismoFrame {
   override def setup(args: Array[String]): Unit = {
     super.setup(args)
 
-
     def spiral(t: Double): Point[_3D] = {
       val R = 5;
       val a = 1;

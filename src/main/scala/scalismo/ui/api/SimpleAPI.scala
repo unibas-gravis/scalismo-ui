@@ -4,19 +4,22 @@ import scalismo.geometry._3D
 import scalismo.registration.RigidTransformation
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
+import scalismo.ui.view.ScalismoFrame
 
 trait SimpleAPI {
 
   protected[api] def scene: Scene
 
-  def createGroup(groupName: String): Group = Group(scene.groups.add(groupName))
+  protected[api] val frame: ScalismoFrame
 
-  def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup)
+  def createGroup(groupName: String): Group = Group(scene.groups.add(groupName), frame)
 
-  def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, group)
+  def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup, frame)
+
+  def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, group, frame)
 
   def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View = {
-    showInScene.showInScene(t, name, g)
+    showInScene.showInScene(t, name, g, frame)
   }
 
   def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V] = {
@@ -34,11 +37,11 @@ trait SimpleAPI {
     filter[V](group, pred).headOption
 
   def onNodeAdded[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
-    HandleCallback[A].registerOnAdd(g, f)
+    HandleCallback[A].registerOnAdd(g, f, frame)
   }
 
   def onNodeRemoved[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
-    HandleCallback[A].registerOnRemove(g, f)
+    HandleCallback[A].registerOnRemove(g, f, frame)
   }
 
   def onGroupAdded[R](f: Group => R): Unit = {
@@ -46,7 +49,7 @@ trait SimpleAPI {
 
     scene.reactions += {
       case ChildAdded(collection, newNode: GroupNode) =>
-        val gv = Group(newNode)
+        val gv = Group(newNode, frame)
         f(gv)
     }
   }
@@ -56,7 +59,7 @@ trait SimpleAPI {
 
     scene.reactions += {
       case ChildRemoved(collection, newNode: GroupNode) =>
-        val gv = Group(newNode)
+        val gv = Group(newNode, frame)
         f(gv)
     }
   }
@@ -64,7 +67,7 @@ trait SimpleAPI {
   private def defaultGroup: Group = {
     val groupNode = scene.groups.find(g => g.name == "group")
       .getOrElse(scene.groups.add("group"))
-    Group(groupNode)
+    Group(groupNode, frame)
   }
 
   private def filterSceneNodes[V <: ObjectView: FindInScene](node: SceneNode, pred: V => Boolean): Seq[V] = {
@@ -73,7 +76,7 @@ trait SimpleAPI {
 
     val find = FindInScene[V]
 
-    val head = find.createView(node) match {
+    val head = find.createView(node, frame) match {
       case Some(v) => if (pred(v)) Seq[V](v) else Seq[V]()
       case None => Seq[V]()
     }
