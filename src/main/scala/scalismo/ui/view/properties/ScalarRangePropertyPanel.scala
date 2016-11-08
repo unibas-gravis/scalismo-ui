@@ -30,7 +30,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     max = 100
     value = 0
 
-    valueLabel.foreground = Color.RED.darker()
+    valueLabel.foreground = Color.BLUE.darker()
 
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
   }
@@ -40,7 +40,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     max = 100
     value = 100
 
-    valueLabel.foreground = Color.BLUE.darker()
+    valueLabel.foreground = Color.RED.darker()
 
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
   }
