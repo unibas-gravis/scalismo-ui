@@ -15,7 +15,7 @@ class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[Scalar
     } else if (newValue.cappedMinimum < newValue.absoluteMinimum) {
       sanitize(newValue.copy(cappedMinimum = newValue.absoluteMinimum))
     } else if (newValue.cappedMaximum < newValue.cappedMinimum) {
-      sanitize(newValue.copy(cappedMaximum = newValue.cappedMinimum))
+      sanitize(newValue.copy(cappedMinimum = newValue.cappedMaximum))
     } else newValue
   }
 }
