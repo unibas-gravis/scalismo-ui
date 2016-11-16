@@ -1,12 +1,13 @@
+import com.typesafe.sbt.{GitVersioning, GitBranchPrompt}
 import com.typesafe.sbteclipse.plugin.EclipsePlugin._
 import sbt.Keys._
 import sbt._
 import sbtbuildinfo.Plugin._
+import com.typesafe.sbt.SbtGit.{git, useJGit}
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
  
- val buildVersion = "develop-SNAPSHOT"
 
   val buildScalaVersion = "2.11.8"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
@@ -14,7 +15,6 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
     organization := buildOrganization,
-    version := buildVersion,
     scalaVersion := buildScalaVersion
     //crossScalaVersions := Seq("2.10.5", "2.11.7")
   ) ++ buildInfoSettings ++ Seq(
@@ -89,6 +89,8 @@ object ScalismoUiBuild extends Build {
       resolvers ++= stkResolvers,
       credentials += Creds.scalismoPrivate,
       publishTo := Some(publishURL),
-      EclipseKeys.withSource := true))
+      EclipseKeys.withSource := true,
+      git.useGitDescribe := true,
+      useJGit)).enablePlugins(GitBranchPrompt, GitVersioning)
 
 }
