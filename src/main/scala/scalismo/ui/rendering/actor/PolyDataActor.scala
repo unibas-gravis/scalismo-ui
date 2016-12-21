@@ -1,6 +1,6 @@
 package scalismo.ui.rendering.actor
 
-import vtk.{vtkActor, vtkLookupTable, vtkPolyDataMapper}
+import vtk.{ vtkActor, vtkLookupTable, vtkPolyDataMapper }
 
 class PolyDataActor extends vtkActor {
   val mapper: vtkPolyDataMapper = new vtkPolyDataMapper

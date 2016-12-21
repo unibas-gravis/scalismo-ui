@@ -7,7 +7,7 @@ import com.typesafe.sbt.SbtGit.{git, useJGit}
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
- 
+
 
   val buildScalaVersion = "2.11.8"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
@@ -90,7 +90,8 @@ object ScalismoUiBuild extends Build {
       credentials += Creds.scalismoPrivate,
       publishTo := Some(publishURL),
       EclipseKeys.withSource := true,
-      git.useGitDescribe := true,
+      git.useGitDescribe := false,
+      git.baseVersion := "develop",
       useJGit)).enablePlugins(GitBranchPrompt, GitVersioning)
 
 }
