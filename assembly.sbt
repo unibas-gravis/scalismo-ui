@@ -6,7 +6,7 @@ assemblySettings
 
 jarName in assembly := "scalismo-ui.jar"
 
-mainClass in assembly := Some("scalismo.ui.view.Main")
+mainClass in assembly := Some("scalismo.ui.app.ScalismoViewer")
 
 fork in run := true
 
