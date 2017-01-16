@@ -6,7 +6,7 @@ import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
 import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh}
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
@@ -129,13 +129,11 @@ case class TriangleMeshView private[ui] (override protected[api] val peer: Trian
     peer.opacity.value = o
   }
 
-
   def lineWidth = peer.lineWidth.value
 
-  def lineWidth_=(width : Int) : Unit = {
+  def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
-
 
   def triangleMesh: TriangleMesh[_3D] = peer.source
 
@@ -176,7 +174,6 @@ object TriangleMeshView {
   }
 }
 
-
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
   type PeerType = LineMeshNode
 
@@ -193,7 +190,7 @@ case class LineMeshView private[ui] (override protected[api] val peer: LineMeshN
   }
 
   def lineWidth = peer.lineWidth.value
-  def lineWidth_=(width : Int) : Unit = {
+  def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
 
@@ -235,7 +232,6 @@ object LineMeshView {
 
   }
 }
-
 
 case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
   type PeerType = LandmarkNode
@@ -306,12 +302,10 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
     peer.opacity.value = o
   }
 
-
   def lineWidth = peer.lineWidth.value
-  def lineWidth_=(width : Int) : Unit = {
+  def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
-
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
 
@@ -473,16 +467,15 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
     peer.opacity.value = o
   }
 
-  def window : Double = peer.windowLevel.value.window
-  def window_=(w : Double) : Unit = {
+  def window: Double = peer.windowLevel.value.window
+  def window_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(window = w)
   }
 
   def level = peer.windowLevel.value.level
-  def level_=(w : Double) : Unit = {
+  def level_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
   }
-
 
   def image: DiscreteScalarImage[_3D, Float] = peer.source
 }
