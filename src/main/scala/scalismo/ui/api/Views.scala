@@ -179,6 +179,7 @@ object TriangleMeshView {
 }
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode, frame: ScalismoFrame) extends ObjectView with SimpleVisibility {
+
   type PeerType = LineMeshNode
 
   def color = peer.color.value
@@ -238,6 +239,7 @@ object LineMeshView {
 }
 
 case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode, frame: ScalismoFrame) extends ObjectView with SimpleVisibility {
+
   type PeerType = LandmarkNode
 
   def color = peer.color.value
