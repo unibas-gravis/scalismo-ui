@@ -29,23 +29,24 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
+  private val nodeVisibility = ui.frame.sceneControl.nodeVisibility
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
     //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
 
-    private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
+    private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true), ui.frame)
 
     // we start by copying the shape model transformations of the modelGroup into the previewGroup
     modelGroup.peer.shapeModelTransformations.poseTransformation.map(p => previewGroup.peer.shapeModelTransformations.addPoseTransformation(p.transformation, "pose"))
     modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation, "shape"))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
-    previewNode.visible = false
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
-    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true)).peer
+    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true), ui.frame).peer
 
     override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.get
 

@@ -20,6 +20,9 @@ object ScalismoLookAndFeel {
     Stream(nimbus, system).find { laf => Try(Class.forName(laf)).isSuccess }.getOrElse(UIManager.getCrossPlatformLookAndFeelClassName)
   }
 
+  // this is a hacky way to get an object that can be synchronized on, with a mutable value.
+  private val initialized = Array.fill(1)(false)
+
   /**
    * Initializes the look and feel.
    * This tweaks a few settings of the L&F so that it looks and behaves the way we like it.
@@ -27,20 +30,25 @@ object ScalismoLookAndFeel {
    * @param lookAndFeelClassName class name of the L&F to use.
    */
   def initializeWith(lookAndFeelClassName: String): Unit = {
-    UIManager.setLookAndFeel(lookAndFeelClassName)
+    initialized.synchronized {
+      if (!initialized(0)) {
+        UIManager.setLookAndFeel(lookAndFeelClassName)
 
-    ScalableUI.updateLookAndFeelDefaults()
+        ScalableUI.updateLookAndFeelDefaults()
 
-    ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
+        ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false)
 
-    allDefaults.foreach(_.put("FileChooser.readOnly", true))
-    replaceDialogIcons()
+        allDefaults.foreach(_.put("FileChooser.readOnly", true))
+        replaceDialogIcons()
 
-    val laf = UIManager.getLookAndFeel
-    if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
-      val nimbus = laf.getDefaults
-      nimbus.put("Tree.drawHorizontalLines", true)
-      nimbus.put("Tree.drawVerticalLines", true)
+        val laf = UIManager.getLookAndFeel
+        if (laf.getClass.getSimpleName.startsWith("Nimbus")) {
+          val nimbus = laf.getDefaults
+          nimbus.put("Tree.drawHorizontalLines", true)
+          nimbus.put("Tree.drawVerticalLines", true)
+        }
+        initialized(0) = true
+      }
     }
   }
 
