@@ -18,11 +18,11 @@
 package scalismo.ui.swing.util
 
 import java.awt.Font
-import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
-import javax.swing.{BorderFactory, ImageIcon}
+import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
+import javax.swing.{ BorderFactory, ImageIcon }
 
 import scalismo.ui.resources.icons.IconResources
-import scalismo.ui.swing.{ScalismoFrame, StatusPanel}
+import scalismo.ui.swing.{ ScalismoFrame, StatusPanel }
 
 import scala.swing._
 import scala.swing.event.ValueChanged

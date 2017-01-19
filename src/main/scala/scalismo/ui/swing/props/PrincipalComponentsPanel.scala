@@ -1,19 +1,18 @@
 package scalismo.ui.swing.props
 
-import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.event.{ MouseAdapter, MouseEvent }
 import javax.swing.JSlider
 
 import breeze.stats.distributions.Gaussian
 import scalismo.ui.ShapeModelInstance
 import scalismo.ui.swing.util.EdtSlider
 
-import scala.collection.{immutable, mutable}
-import scala.swing.BorderPanel.Position.{Center, North}
-import scala.swing.GridBagPanel.{Anchor, Fill}
-import scala.swing.event.{ButtonClicked, ValueChanged}
-import scala.swing.{BorderPanel, Button, Component, GridBagPanel, GridPanel, Label, Slider}
+import scala.collection.{ immutable, mutable }
+import scala.swing.BorderPanel.Position.{ Center, North }
+import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.event.{ ButtonClicked, ValueChanged }
+import scala.swing.{ BorderPanel, Button, Component, GridBagPanel, GridPanel, Label, Slider }
 import scalismo.ui.swing.util.ScalableUI.implicits.scalableInt
-
 
 class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float = 3.0f, val granularity: Float = 10.0f) extends BorderPanel with PropertyPanel {
   val description = "Shape Parameters"
@@ -71,7 +70,6 @@ class PrincipalComponentsPanel(val minValue: Float = -3.0f, val maxValue: Float 
       }
       super.add(comp, const)
     }
-
 
     add(new Label("Index"), (0, 0))
     add(new Label("Control"), (1, 0))

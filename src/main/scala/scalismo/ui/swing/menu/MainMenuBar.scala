@@ -8,6 +8,6 @@ class MainMenuBar(implicit app: ScalismoFrame) extends MenuBar {
   val fileMenu = new FileMenu
   val optionsMenu = new OptionsMenu
   val toolsMenu = new ToolsMenu
-  val helpMenu = new HelpMenu
+  val helpMenu = new HelpMenu(app)
   contents ++= Seq(fileMenu, optionsMenu, toolsMenu, helpMenu)
 }
