@@ -17,11 +17,9 @@
 
 package scalismo.ui.control.interactor.landmark.complex.posterior
 
-import breeze.linalg.{ DenseMatrix, DenseVector }
-import scalismo.common.DiscreteVectorField
+import breeze.linalg.DenseVector
 import scalismo.geometry._
-import scalismo.statisticalmodel.{ MultivariateNormalDistribution, LowRankGaussianProcess, NDimensionalNormalDistribution }
-import scalismo.statisticalmodel.LowRankGaussianProcess.Eigenpair
+import scalismo.statisticalmodel.MultivariateNormalDistribution
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.Delegate
 import scalismo.ui.model._
