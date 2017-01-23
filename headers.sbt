@@ -5,8 +5,5 @@ import de.heikoseeberger.sbtheader.CommentStyleMapping._
 
 headers := createFrom(GPLv3, "2016", "University of Basel, Graphics and Vision Research Group ")
 
-lazy val sbtHeaderTest = project.in(file(".")).enablePlugins(AutomateHeaderPlugin)
 
-
-
-
+AutomateHeaderPlugin.automateFor(Compile, Test)
