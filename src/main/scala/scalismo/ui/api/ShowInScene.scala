@@ -114,8 +114,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = VectorFieldView
 
     override def showInScene(df: DiscreteField[_3D, Vector[_3D]], name: String, group: Group, frame: ScalismoFrame): VectorFieldView = {
-      val discreteVectorField = DiscreteVectorField(df.domain, df.values.toIndexedSeq)
-      VectorFieldView(group.peer.vectorFields.add(discreteVectorField, name), frame)
+      VectorFieldView(group.peer.vectorFields.add(df, name), frame)
     }
   }
 
@@ -148,14 +147,6 @@ object ShowInScene extends LowPriorityImplicits {
       landmarkViews
     }
 
-  }
-
-  implicit object ShowInSceneVectorField extends ShowInScene[DiscreteVectorField[_3D, _3D]] {
-    override type View = VectorFieldView
-
-    override def showInScene(sf: DiscreteVectorField[_3D, _3D], name: String, group: Group, frame: ScalismoFrame): VectorFieldView = {
-      VectorFieldView(group.peer.vectorFields.add(sf, name), frame)
-    }
   }
 
   implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {

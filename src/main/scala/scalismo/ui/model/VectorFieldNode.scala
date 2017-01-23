@@ -17,15 +17,15 @@
 
 package scalismo.ui.model
 
-import scalismo.common.DiscreteVectorField
-import scalismo.geometry._3D
+import scalismo.common.DiscreteField
+import scalismo.geometry._
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 
 class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[VectorFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add(vectorField: DiscreteVectorField[_3D, _3D], name: String): VectorFieldNode = {
+  def add(vectorField: DiscreteField[_3D, Vector[_3D]], name: String): VectorFieldNode = {
     val node = new VectorFieldNode(this, vectorField, name)
     add(node)
     node
@@ -38,7 +38,7 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
   }
 }
 
-class VectorFieldNode(override val parent: VectorFieldsNode, val source: DiscreteVectorField[_3D, _3D], initialName: String)
+class VectorFieldNode(override val parent: VectorFieldsNode, val source: DiscreteField[_3D, Vector[_3D]], initialName: String)
     extends RenderableSceneNode with Removeable with Renameable with Grouped
     with HasOpacity with HasLineWidth with HasScalarRange {
 

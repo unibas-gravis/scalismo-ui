@@ -20,7 +20,7 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ DiscreteScalarField, DiscreteVectorField }
+import scalismo.common.{ DiscreteField, DiscreteScalarField }
 import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
@@ -444,7 +444,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.opacity.value = o
   }
 
-  def vectorField[A]: DiscreteVectorField[_3D, _3D] = peer.source
+  def vectorField[A]: DiscreteField[_3D, Vector[_3D]] = peer.source
 }
 
 object VectorFieldView {
