@@ -345,7 +345,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       }
 
       layout(west) = BorderPanel.Position.West
-      layout(new LinkLabel("Copyright (c) 2014-2016 Graphics and Vision Research Group, University of Basel", new URI("http://gravis.cs.unibas.ch/"), alignment = Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
+      layout(new LinkLabel("Copyright (c) Graphics and Vision Research Group, University of Basel", new URI("http://gravis.cs.unibas.ch/"), alignment = Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
         val b = s_10
         border = BorderFactory.createEmptyBorder(b, b, b, b)
       }) = BorderPanel.Position.North

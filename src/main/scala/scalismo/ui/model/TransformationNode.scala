@@ -95,9 +95,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     children.exists(tr => tr.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation])
   }
 
-  def addPoseTransformation(transformation: RigidTransformation[_3D], name: String): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
+  def addPoseTransformation(transformation: RigidTransformation[_3D], name: String = "pose"): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
 
-    if (isPoseDefined) {
+    if (isPoseDefined()) {
       Failure(new Exception("The group already contains a rigid transformation as part of the Shape Model Transformation. Remove existing first"))
     } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
@@ -106,7 +106,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
     }
   }
 
-  def addGaussianProcessTransformation(transformation: DiscreteLowRankGpPointTransformation, name: String): Try[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = {
+  def addGaussianProcessTransformation(transformation: DiscreteLowRankGpPointTransformation, name: String = "shape"): Try[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = {
 
     if (isShapeDefined()) {
       Failure(new Exception("The group already contains a GP transformation as part of the Shape Model Transformation. Remove existing first"))

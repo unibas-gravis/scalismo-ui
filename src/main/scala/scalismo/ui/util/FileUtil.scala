@@ -32,9 +32,14 @@ object FileUtil {
     if (dot > 0) name.substring(0, dot) else name
   }
 
+  /**
+   * Returns the extension of the file, i.e., the portion of the file name after the last dot.
+   * If the file is a hidden file (starts with a single dot) without an extension (e.g., ".csv"), or if the file doesn't contain a dot
+   * at all, then an empty String ("") is returned.
+   */
   def extension(file: File): String = {
     val name = file.getName
     val dot = name.lastIndexOf('.')
-    if (dot > 0) name.substring(dot) else name
+    if (dot > 0) name.substring(dot + 1) else ""
   }
 }

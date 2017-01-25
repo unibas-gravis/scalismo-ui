@@ -62,7 +62,7 @@ trait LowPriorityImplicits {
 
 object ShowInScene extends LowPriorityImplicits {
 
-  implicit object ShowInSceneMesh$ extends ShowInScene[TriangleMesh[_3D]] {
+  implicit object ShowInSceneMesh extends ShowInScene[TriangleMesh[_3D]] {
     override type View = TriangleMeshView
 
     override def showInScene(mesh: TriangleMesh[_3D], name: String, group: Group, frame: ScalismoFrame): TriangleMeshView = {
@@ -128,7 +128,7 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object ShowInSceneLandmark$ extends ShowInScene[Landmark[_3D]] {
+  implicit object ShowInSceneLandmark extends ShowInScene[Landmark[_3D]] {
     override type View = LandmarkView
 
     override def showInScene(lm: Landmark[_3D], name: String, group: Group, frame: ScalismoFrame): LandmarkView = {
@@ -149,23 +149,23 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit object ShowInSceneStatisticalMeshModel$ extends ShowInScene[StatisticalMeshModel] {
+  implicit object ShowInSceneStatisticalMeshModel extends ShowInScene[StatisticalMeshModel] {
     type View = StatisticalMeshModelViewControls
 
     override def showInScene(model: StatisticalMeshModel, name: String, group: Group, frame: ScalismoFrame): View = {
 
       val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
-      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, "Statistical Mesh Model", group, frame)
-      val tmV = ShowInSceneMesh$.showInScene(model.referenceMesh, name, group, frame)
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group, frame)
+      val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group, frame)
       StatisticalMeshModelViewControls(tmV, smV)
 
     }
   }
 
-  implicit object ShowInSceneTransformationGlypth extends ShowInScene[TransformationGlyph] {
+  implicit object ShowInSceneTransformationGlyph extends ShowInScene[TransformationGlyph] {
     override type View = VectorFieldView
 
-    override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group, frame: ScalismoFrame): ShowInSceneTransformationGlypth.View = {
+    override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group, frame: ScalismoFrame): ShowInSceneTransformationGlyph.View = {
       VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name), frame)
     }
   }
@@ -201,8 +201,8 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(transform: ShapeModelTransformation, name: String, group: Group, frame: ScalismoFrame): View = {
       val t = for {
-        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation, "model-pose")
-        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation, "model-shape")
+        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
+        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
       } yield ShapeModelTransformationView(group.peer.shapeModelTransformations, frame)
       t.get
     }

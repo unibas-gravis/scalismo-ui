@@ -17,6 +17,7 @@
 
 package scalismo.ui.model
 
+import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.StatisticalMeshModel
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
@@ -60,8 +61,17 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
   def addStatisticalMeshModel(model: StatisticalMeshModel, initialName: String): Unit = {
+    // FIXME: this method does not check the return values of the shapeModelTransformations.add(*) methods.
+    // If another SSM already exists in the same group, this is very likely to yield unexpected results (but without failing or indicating an error).
+    // This method should either be replaced with a safer implementation, or maybe be removed altogether in favor of a different solution.
+    //
+    // NOTE: the following code:
+    // genericTransformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
+    // is not a satisfactory solution IMO, but (at best) a semi-functional workaround.
+
     triangleMeshes.add(model.referenceMesh, initialName)
-    genericTransformations.add(DiscreteLowRankGpPointTransformation(model.gp), initialName)
+    shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
+    shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
   }
 

@@ -17,7 +17,10 @@
 
 package scalismo.ui.api
 
+import java.awt.Image
+
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
+import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
 
@@ -30,7 +33,8 @@ class ScalismoUI(title: String) extends SimpleAPI {
     frame.pack()
     frame.visible = true
 
-    frame.title = title;
+    frame.title = title
+    frame.iconImage = ScalismoUI.appIcon
     frame
   }
 
@@ -45,5 +49,9 @@ object ScalismoUI {
     ScalismoLookAndFeel.initializeWith(ScalismoLookAndFeel.DefaultLookAndFeelClassName)
     new ScalismoUI(title)
   }
+
+  // App Icon: add a unique icon to the app.
+  // TODO: This should be a better and more distinguishable one, e.g., the logo without the background, or a more "stylized" version
+  private[ScalismoUI] val appIcon: Image = BundledIcon.AppIcon
 }
 

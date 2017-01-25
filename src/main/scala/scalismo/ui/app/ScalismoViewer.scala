@@ -17,13 +17,12 @@
 
 package scalismo.ui.app
 
-import java.io.{ IOException, File }
+import java.io.{ File, IOException }
 
 import scalismo.geometry._3D
-import scalismo.io.{ StatismoIO, LandmarkIO, ImageIO, MeshIO }
-import scalismo.ui.api.{ SimplePluginAPI, ShapeModelTransformationView, ScalismoUI }
-import scalismo.ui.model.StatusMessage
-import scalismo.ui.view.dialog.ErrorDialog
+import scalismo.io.{ ImageIO, LandmarkIO, MeshIO, StatismoIO }
+import scalismo.ui.api.ScalismoUI
+import scalismo.ui.util.FileUtil
 
 import scala.util.{ Failure, Success }
 
@@ -41,63 +40,67 @@ object ScalismoViewer {
   def main(args: Array[String]): Unit = {
     scalismo.initialize()
 
-    val ui = ScalismoUI()
+    val ui = ScalismoUI("Scalismo Viewer")
 
-    val defaultGroup = ui.createGroup("default")
-    for (arg <- args) {
-      val extension = arg.split('.').last
-      extension match {
-        case "h5" => {
-          StatismoIO.readStatismoMeshModel(new File(arg)) match {
-            case Success(model) => {
-              // we create for every model a new group
-              val numModels = ui.filter[ShapeModelTransformationView]((_: ShapeModelTransformationView) => true).size
-              val modelGroup = ui.createGroup(s"statistical-model-${numModels}")
-              ui.show(modelGroup, model, arg)
+    val defaultGroup = ui.createGroup("Default Group")
+
+    for (filename <- args) {
+      val file = new File(filename)
+      if (!file.isFile) {
+        showErrorMessage(file, new IOException(s"name does not identify a valid file."))
+      } else {
+
+        val basename = FileUtil.basename(file)
+        val extension = FileUtil.extension(file).toLowerCase
+
+        extension match {
+          case "h5" =>
+            StatismoIO.readStatismoMeshModel(new File(filename)) match {
+              case Success(model) =>
+                // we create for every model a new group
+                val modelGroup = ui.createGroup(basename)
+                ui.show(modelGroup, model, basename)
+              case Failure(t) => showErrorMessage(file, t)
             }
-            case Failure(t) => { showErrorMessage(new File(arg), t) }
-          }
-        }
-        case "stl" => {
-          MeshIO.readMesh(new File(arg)) match {
-            case Success(mesh) => ui.show(defaultGroup, mesh, arg)
-            case Failure(t) => { showErrorMessage(new File(arg), t) }
-          }
-        }
-        case "vtk" => {
-          MeshIO.readMesh(new File(arg)) match {
-            case Success(mesh) => ui.show(defaultGroup, mesh, arg)
-            case Failure(_) => {
-              ImageIO.read3DScalarImageAsType[Float](new File(arg), resampleOblique = true) match {
-                case Success(image) => ui.show(defaultGroup, image, arg)
-                case Failure(t) => { showErrorMessage(new File(arg), t) }
-              }
+
+          case "stl" =>
+            MeshIO.readMesh(file) match {
+              case Success(mesh) => ui.show(defaultGroup, mesh, basename)
+              case Failure(t) => showErrorMessage(file, t)
             }
-          }
-        }
-        case "nii" => {
-          ImageIO.read3DScalarImageAsType[Float](new File(arg)) match {
-            case Success(image) => ui.show(defaultGroup, image, arg)
-            case Failure(t) => { showErrorMessage(new File(arg), t) }
-          }
-        }
-        case "json" => {
-          LandmarkIO.readLandmarksJson[_3D](new File(arg)) match {
-            case Success(lms) => ui.show(defaultGroup, lms, arg)
-            case Failure(t) => { showErrorMessage(new File(arg), t) }
-          }
-        }
-        case "csv" => {
-          LandmarkIO.readLandmarksCsv[_3D](new File(arg)) match {
-            case Success(lms) => ui.show(defaultGroup, lms, arg)
-            case Failure(t) => { showErrorMessage(new File(arg), t) }
-          }
-        }
-        case _ => {
-          showErrorMessage(new File(arg), new IOException("Unknown file extension " + extension))
+
+          case "vtk" =>
+            MeshIO.readMesh(file) match {
+              case Success(mesh) => ui.show(defaultGroup, mesh, basename)
+              case Failure(_) =>
+                ImageIO.read3DScalarImageAsType[Float](file, resampleOblique = true) match {
+                  case Success(image) => ui.show(defaultGroup, image, basename)
+                  case Failure(t) => showErrorMessage(file, t)
+                }
+            }
+
+          case "nii" =>
+            ImageIO.read3DScalarImageAsType[Float](file) match {
+              case Success(image) => ui.show(defaultGroup, image, basename)
+              case Failure(t) => showErrorMessage(file, t)
+            }
+
+          case "json" =>
+            LandmarkIO.readLandmarksJson[_3D](file) match {
+              case Success(lms) => ui.show(defaultGroup, lms, basename)
+              case Failure(t) => showErrorMessage(file, t)
+            }
+
+          case "csv" =>
+            LandmarkIO.readLandmarksCsv[_3D](file) match {
+              case Success(lms) => ui.show(defaultGroup, lms, basename)
+              case Failure(t) => showErrorMessage(file, t)
+            }
+
+          case _ =>
+            showErrorMessage(file, new IOException("Unknown file extension: " + extension))
         }
       }
     }
   }
-
 }
