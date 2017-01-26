@@ -92,9 +92,12 @@ class CoordinateAdapter {
     val dxScale = width.toDouble / panelWidth
     val dyScale = height.toDouble / panelHeight
 
+    val ixScale = dxScale.toInt
+    val iyScale = dyScale.toInt
+
     // determine if we're in a "simple scale" setting, where x and y are integers and the same
-    if (dxScale.toInt * panelWidth == width && dyScale.toInt * panelHeight == panelHeight) {
-      intScale = dxScale.toInt
+    if (ixScale == iyScale && ixScale * panelWidth == width && iyScale * panelHeight == height) {
+      intScale = ixScale
     } else {
       intScale = 0
       xScale = dxScale.toFloat
@@ -107,14 +110,14 @@ class CoordinateAdapter {
       // Simple case, just scale by an integer (usually 1 or 2)
       val x = awtPoint.x * intScale
       val y = nativeHeight - (awtPoint.y * intScale) - 1
-      new VtkPoint(x, if (y < 0) 0 else y)
+      new VtkPoint(x, y)
     } else {
       // Complex case, scale by an arbitrary number.
       // As using rounding operations (Math.round) is a *massive* performance penalty
       // (at *least* a 10x factor, usually more like 30), we'll live with a 1px inaccuracy.
       val x = (awtPoint.x * xScale).toInt
       val y = nativeHeight - (awtPoint.y * yScale).toInt - 1
-      new VtkPoint(x, if (y < 0) 0 else y)
+      new VtkPoint(x, y)
     }
   }
 }

@@ -44,7 +44,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
     case _ => None
   }
 
-  def setSize(width: Int, height: Int, panel: Component) = {
+  def setSize(width: Int, height: Int, panel: Component): Unit = {
     adapter.setSize(width, height, panel)
   }
 
@@ -63,9 +63,9 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
   def findHighlightable(node: SceneNode): Option[ActorSceneNode with ActorLineWidth] = {
     val actors = renderer.GetActors()
     val count = actors.GetNumberOfItems()
-    if (count > 1) {
+    if (count >= 1) {
       actors.InitTraversal()
-      (0 until count) foreach { actor =>
+      (0 until count) foreach { _ =>
         actors.GetNextActor() match {
           case ok: ActorSceneNode with ActorLineWidth if ok.sceneNode == node => return Some(ok)
           case _ =>
