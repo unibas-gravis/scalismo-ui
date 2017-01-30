@@ -24,6 +24,11 @@ import scalismo.ui.resources.icons.FontIcon.awesome
 import scalismo.ui.resources.icons.png.PngIconResource
 
 object BundledIcon {
+
+  // This is an image (as opposed to an icon), because that's what Java Swing wants.
+  // It's a 128x128 image that should hopefully be scaled according to the platform.
+  lazy val AppIcon = PngIconResource.load("app-icon.png").getImage
+
   lazy val Fallback = FontIcon.load(FontAwesome.BOLT)
 
   // this is relatively heavy, and seldomly needed, so we don't create a val.

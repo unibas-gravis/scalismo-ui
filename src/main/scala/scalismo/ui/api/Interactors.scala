@@ -55,8 +55,8 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true), ui.frame)
 
     // we start by copying the shape model transformations of the modelGroup into the previewGroup
-    modelGroup.peer.shapeModelTransformations.poseTransformation.map(p => previewGroup.peer.shapeModelTransformations.addPoseTransformation(p.transformation, "pose"))
-    modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation, "shape"))
+    modelGroup.peer.shapeModelTransformations.poseTransformation.map(p => previewGroup.peer.shapeModelTransformations.addPoseTransformation(p.transformation))
+    modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
     nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
