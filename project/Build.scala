@@ -15,8 +15,8 @@ object BuildSettings {
   val buildSettings = Defaults.defaultSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
     organization := buildOrganization,
-    scalaVersion := buildScalaVersion
-    //crossScalaVersions := Seq("2.10.5", "2.11.7")
+    scalaVersion := buildScalaVersion,
+    crossScalaVersions := Seq("2.11.8", "2.12.1")
   ) ++ buildInfoSettings ++ Seq(
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") {
@@ -31,11 +31,8 @@ object BuildSettings {
 object Resolvers {
   private val sonatypeSnapshots = "Sonatype SNAPSHOTs" at "https://oss.sonatype.org/content/repositories/snapshots/"
   private val sonatypeRelease = "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
-  private val imagej = "imagej.releases" at "http://maven.imagej.net/content/repositories/releases"
   private val twitter = "twitter" at "http://maven.twttr.com/"
-  private val scalismoPrivate = "Scalismo (private)" at "https://statismo.cs.unibas.ch/repository/private"
-  private val scalismoPublic = "Scalismo (public)" at "https://statismo.cs.unibas.ch/repository/public"
-  val stkResolvers = Seq(scalismoPrivate, scalismoPublic, sonatypeSnapshots, sonatypeRelease, imagej, twitter)
+  val stkResolvers = Seq( Resolver.jcenterRepo, sonatypeSnapshots, sonatypeRelease, twitter)
 }
 
 object Creds {
@@ -43,9 +40,9 @@ object Creds {
 }
 
 object Dependencies {
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "develop-SNAPSHOT"
-  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "3.0.+"
-  val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.15.0-RC1"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0"
+  val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   // the following two dependencies are transitively obtained through other dependencies
   //val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   //val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
