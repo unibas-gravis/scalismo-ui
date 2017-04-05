@@ -14,5 +14,6 @@ playground/
 /target/
 /lib/
 /bin/
+/src-local/
 /statismo-ui.jar
 
