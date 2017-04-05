@@ -10,7 +10,6 @@ object BuildSettings {
 
 
   val buildScalaVersion = "2.11.8"
-  val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
@@ -85,7 +84,6 @@ object ScalismoUiBuild extends Build {
       libraryDependencies ++= commonDeps,
       resolvers ++= stkResolvers,
       credentials += Creds.scalismoPrivate,
-      publishTo := Some(publishURL),
       EclipseKeys.withSource := true,
       git.useGitDescribe := false,
       git.baseVersion := "develop",
