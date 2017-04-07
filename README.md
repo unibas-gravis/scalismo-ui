@@ -10,10 +10,10 @@ Scalismo-ui was developed and is currently maintained by the [Graphics and Visio
 We believe that visualization is a key factor in the development of complex image analysis algorithm and that visual inspection is the most powerful debugging tool. But it is only used if visualization is simple to use. In Scalismo-ui, every object can be visualized by adding only one line of code:
 
 ```scala
-val objectView = ui.show(object, "name of object")
+val objectView = ui.show(group, object, "name of object")
 ```
 
-I is equally simple to change the representation of the object, such as
+It is equally simple to change the representation of the object, such as
 in this example its color
 
 ```scala
