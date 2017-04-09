@@ -55,9 +55,9 @@ The resulting jar file is ```target/scala-2.11/scalismo-ui.jar```
 
 # Documentation
 
-* [Quickstart guide](quickstart.md)
-* [API documentation](api.md)
-* [Plugin API](plugins.md)
+* [Quickstart guide](doc/quickstart.md)
+* [API documentation](doc/api.md)
+* [Plugin API](doc/plugins.md)
 
 
 For questions regarding scalismo-ui or suggestions for improvements, please post to the mailing list [scalismo google group](https://groups.google.com/forum/#!forum/scalismo).

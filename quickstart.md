@@ -1,3 +1,0 @@
-# Quickstart guide
-
-Coming soon 
