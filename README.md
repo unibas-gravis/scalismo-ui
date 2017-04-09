@@ -5,6 +5,9 @@ Further, it can be used as a standalone application for visualizing shape models
 
 Scalismo-ui was developed and is currently maintained by the [Graphics and Vision Research Group](http://gravis.cs.unibas.ch) of the [University of Basel](http://www.unibas.ch).
 
+![Scalismo-ui](scalismo-ui.png)
+
+
 ### Why
 
 We believe that visualization is a key factor in the development of complex image analysis algorithm and that visual inspection is the most powerful debugging tool. But it is only used if visualization is simple to use. In Scalismo-ui, every object can be visualized by adding only one line of code:
@@ -28,9 +31,10 @@ objectView.color = Color.RED
 Add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.11.0-RC1"
 
-resolvers += Resolver.jcenterRepo
+resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
+
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.11.0-RC1"
 ```
 
 The graphical user interface can be called from an application using the command
