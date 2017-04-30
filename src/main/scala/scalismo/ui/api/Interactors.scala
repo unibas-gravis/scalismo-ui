@@ -94,7 +94,6 @@ case class OneClickLandmarkingInteractor(ui: ScalismoUI, uncertainty: Uncertaint
 
   override type ConcreteInteractor = scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor.type
 
-
   override protected[api] lazy val peer = scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
 
 }

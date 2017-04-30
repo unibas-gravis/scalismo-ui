@@ -1,4 +1,4 @@
-# Scalismo-ui
+# Scalismo-ui [![Build Status](https://travis-ci.org/unibas-gravis/scalismo-ui.svg?branch=master)](https://travis-ci.org/unibas-gravis/scalismo-ui)
 
 Scalismo-ui is a library for visualizing statistical shape models and related 3D objects, such as 3D meshes or 3D medical images. It is designed to complement the [Scalismo](https://github.com/unibas-gravis/scalismo) framework and to make it easy to build simple, graphical shape modelling applications and to allow for "visual debugging" of complex image analysis algorithms.
 Further, it can be used as a standalone application for visualizing shape models, 3D meshes and 3D medical images.

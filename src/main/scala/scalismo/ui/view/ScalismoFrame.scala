@@ -19,13 +19,13 @@ package scalismo.ui.view
 
 import java.awt.Dimension
 import java.awt.event.MouseEvent
-import javax.swing.{SwingUtilities, WindowConstants}
+import javax.swing.{ SwingUtilities, WindowConstants }
 
 import scalismo.ui.control.SceneControl
 import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.{DefaultInteractor, Recipe}
+import scalismo.ui.control.interactor.{ DefaultInteractor, Recipe }
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
-import scalismo.ui.control.interactor.landmark.simple.{SimpleLandmarkingInteractor, SimpleLandmarkingInteractorTrait}
+import scalismo.ui.control.interactor.landmark.simple.{ SimpleLandmarkingInteractor, SimpleLandmarkingInteractorTrait }
 import scalismo.ui.model.properties.Uncertainty
 
 //import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
