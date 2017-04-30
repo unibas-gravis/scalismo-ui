@@ -18,14 +18,14 @@
 package scalismo.ui.control.interactor.landmark.simple
 
 import java.awt.event.MouseEvent
-import java.awt.{Color, Cursor}
+import java.awt.{ Color, Cursor }
 import javax.swing.SwingUtilities
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
-import scalismo.ui.control.interactor.{DefaultInteractor, Interactor, Recipe}
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
 import scalismo.ui.model.properties.Uncertainty
-import scalismo.ui.model.{LandmarkNode, SceneNode}
+import scalismo.ui.model.{ LandmarkNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 
@@ -90,8 +90,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
 }
 
-
-object SimpleLandmarkingInteractor  extends SimpleLandmarkingInteractorTrait with DefaultInteractor {
+object SimpleLandmarkingInteractor extends SimpleLandmarkingInteractorTrait with DefaultInteractor {
 
   override val defaultUncertainty = Uncertainty.DefaultUncertainty
 
