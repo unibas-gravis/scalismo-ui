@@ -92,15 +92,9 @@ case class SimpleLandmarkingInteractor(ui: ScalismoUI) extends SimpleInteractor 
  */
 case class OneClickLandmarkingInteractor(ui: ScalismoUI, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty) extends SimpleInteractor {
 
-  override type ConcreteInteractor = Instance
+  override type ConcreteInteractor = scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor.type
 
-  private[api] class Instance() extends SimpleLandmarkingInteractorTrait {
+  override protected[api] lazy val peer = scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
 
-    override val defaultUncertainty = uncertainty
-
-    override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
-  }
-
-  override protected[api] lazy val peer: Instance = new Instance()
 }
 

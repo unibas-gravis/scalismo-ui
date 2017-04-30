@@ -23,7 +23,7 @@ import javax.swing.SwingUtilities
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
-import scalismo.ui.control.interactor.{ Interactor, Recipe }
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.model.{ LandmarkNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
@@ -88,4 +88,11 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
     super.mouseMoved(e)
   }
 
+}
+
+object SimpleLandmarkingInteractor extends SimpleLandmarkingInteractorTrait with DefaultInteractor {
+
+  override val defaultUncertainty = Uncertainty.DefaultUncertainty
+
+  override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
 }
