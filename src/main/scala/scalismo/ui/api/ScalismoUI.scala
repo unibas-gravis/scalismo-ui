@@ -20,11 +20,15 @@ package scalismo.ui.api
 import java.awt.Image
 
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
+import scalismo.ui.model.{ GroupNode, SceneNode }
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
+import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
+import scalismo.ui.view.perspective.Perspective
 import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
 
-class ScalismoUI(title: String) extends SimpleAPI {
+class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 
   private[ui] val fr = EdtUtil.onEdtWait {
     val frame = new ScalismoFrame()
@@ -38,8 +42,26 @@ class ScalismoUI(title: String) extends SimpleAPI {
     frame
   }
 
-  override protected[api] val scene = fr.scene
-  override protected[api] val frame = fr
+  protected[api] val scene = fr.scene
+  protected[api] val frame = fr
+
+  override def visibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]) = {
+
+    def setVisible(isVisible: Boolean, viewportName: String): Unit = {
+      frame.perspective.viewports.filter(_.name == viewportName).headOption.foreach { viewPort =>
+        val visib = frame.sceneControl.nodeVisibility
+        visib.setVisibility(view.peer.asInstanceOf[RenderableSceneNode], viewPort, isVisible)
+      }
+    }
+
+    visibleViewports.foreach(v => setVisible(true, v.name))
+
+    //set invisible in other viewports
+    val viewsNotInConfig = frame.perspective.viewports.filterNot(v => visibleViewports.exists(_.name == v.name))
+    viewsNotInConfig.foreach(v => setVisible(false, v.name))
+
+  }
+
 }
 
 object ScalismoUI {
