@@ -25,7 +25,7 @@ trait SimpleAPI {
 
   def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View
 
-  def visibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit
+  def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit
 
   def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View
 

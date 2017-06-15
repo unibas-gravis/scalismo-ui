@@ -22,6 +22,6 @@ case class ScalismoNullUI() extends SimpleAPI with SimpleAPIDefaultImpl {
 
   override def scene: Scene = new Scene
 
-  override def visibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit = ()
+  override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit = ()
 
 }

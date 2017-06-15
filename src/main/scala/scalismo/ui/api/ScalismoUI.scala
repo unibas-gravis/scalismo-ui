@@ -45,7 +45,7 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
   protected[api] val scene = fr.scene
   protected[api] val frame = fr
 
-  override def visibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]) = {
+  override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]) = {
 
     def setVisible(isVisible: Boolean, viewportName: String): Unit = {
       frame.perspective.viewports.filter(_.name == viewportName).headOption.foreach { viewPort =>
