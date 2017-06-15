@@ -27,7 +27,7 @@ trait SimpleAPI {
 
   protected[api] def scene: Scene
 
-  protected[api] val frame: ScalismoFrame
+  protected[api] def frame: ScalismoFrame
 
   def createGroup(groupName: String): Group = Group(scene.groups.add(groupName), frame)
 

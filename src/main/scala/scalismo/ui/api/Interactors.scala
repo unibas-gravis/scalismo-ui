@@ -33,7 +33,7 @@ import scalismo.registration.RigidTransformationSpace
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
-  val ui: ScalismoUI
+  def ui: ScalismoUI
 
   protected[api] def peer: ConcreteInteractor
 
@@ -46,7 +46,6 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
-  private val nodeVisibility = ui.frame.sceneControl.nodeVisibility
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
@@ -59,7 +58,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
+    frame.sceneControl.nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
