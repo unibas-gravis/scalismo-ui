@@ -83,7 +83,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     //null
   }
 
-  lazy val sceneControl: SceneControl = new SceneControl(this, scene)
+  val sceneControl: SceneControl = new SceneControl(this, scene)
 
   /**
    * Initializes the frame layout and behavior.
