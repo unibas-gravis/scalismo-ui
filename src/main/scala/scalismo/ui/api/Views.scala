@@ -20,16 +20,16 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
-import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
+import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
+import scalismo.geometry.{Dim, Landmark, Point, Vector, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.control.NodeVisibility
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
+import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.{ Removeable, RenderableSceneNode }
+import scalismo.ui.model.capabilities.{Removeable, RenderableSceneNode}
 import scalismo.ui.model.properties.ScalarRange
 import scalismo.ui.view.ScalismoFrame
 
@@ -191,6 +191,62 @@ object TriangleMeshView {
 
   }
 }
+
+case class ColorMeshView private[ui] (override protected[api] val peer: ColorMeshNode) extends ObjectView {
+
+  type PeerType = ColorMeshNode
+
+  def opacity = peer.opacity.value
+
+  def opacity_=(o: Double): Unit = {
+    peer.opacity.value = o
+  }
+
+  def lineWidth = peer.lineWidth.value
+
+  def lineWidth_=(width: Int): Unit = {
+    peer.lineWidth.value = width
+  }
+
+  def colorMesh: VertexColorMesh3D = peer.source
+
+  def transformedTriangleMesh: VertexColorMesh3D = peer.transformedSource
+}
+
+object ColorMeshView {
+
+  implicit object FindInSceneColorMesh extends FindInScene[ColorMeshView] {
+    override def createView(s: SceneNode): Option[ColorMeshView] = {
+      s match {
+        case peer: ColorMeshNode => Some(ColorMeshView(peer))
+        case _ => None
+      }
+    }
+  }
+
+  implicit object callbacksColorMeshView extends HandleCallback[ColorMeshView] {
+
+    override def registerOnAdd[R](g: Group, f: ColorMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.colorMeshes)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: ColorMeshNode) =>
+          val tmv = ColorMeshView(newNode)
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: ColorMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.colorMeshes)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: ColorMeshNode) =>
+          val tmv = ColorMeshView(removedNode)
+          f(tmv)
+      }
+    }
+  }
+}
+
+
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
 

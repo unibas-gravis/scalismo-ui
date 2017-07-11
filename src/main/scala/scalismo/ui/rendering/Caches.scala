@@ -17,12 +17,12 @@
 
 package scalismo.ui.rendering
 
-import scalismo.common.{ DiscreteDomain, DiscreteScalarField }
+import scalismo.common.{DiscreteDomain, DiscreteScalarField}
 import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh3D }
+import scalismo.mesh.{ScalarMeshField, TriangleMesh3D, VertexColorMesh3D}
 import scalismo.ui.util.Cache
-import vtk.{ vtkPolyData, vtkStructuredPoints }
+import vtk.{vtkPolyData, vtkStructuredPoints}
 
 object Caches {
 
@@ -35,8 +35,15 @@ object Caches {
     override lazy val hashCode: Int = (31 + tm.pointSet.hashCode()) * (31 + tm.triangulation.hashCode())
   }
 
+  case class FastCachingColorMesh(mesh : VertexColorMesh3D) {
+    override lazy val hashCode: Int =
+      (31 + mesh.shape.pointSet.hashCode()) * (31 + mesh.shape.triangulation.hashCode() * 31 + mesh.color.hashCode())
+  }
+
   final val TriangleMeshCache = new Cache[FastCachingTriangleMesh, vtkPolyData]
   final val ImageCache = new Cache[DiscreteScalarImage[_3D, _], vtkStructuredPoints]
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
   final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float], vtkPolyData]
+  final val ColorMeshCache = new Cache[FastCachingColorMesh, vtkPolyData]
+
 }

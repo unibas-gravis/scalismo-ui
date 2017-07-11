@@ -50,6 +50,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
 
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
+  val colorMeshes = new ColorMeshesNode(this)
   val scalarMeshFields = new ScalarMeshFieldsNode(this)
   val lineMeshes = new LineMeshesNode(this)
   val vectorFields = new VectorFieldsNode(this)
@@ -57,7 +58,19 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
   val images = new ImagesNode(this)
   val scalarFields = new ScalarFieldsNode(this)
 
-  override val children: List[SceneNode] = List(genericTransformations, shapeModelTransformations, landmarks, triangleMeshes, lineMeshes, scalarMeshFields, pointClouds, images, scalarFields, vectorFields)
+  override val children: List[SceneNode] = List(
+    genericTransformations,
+    shapeModelTransformations,
+    landmarks,
+    triangleMeshes,
+    colorMeshes,
+    lineMeshes,
+    scalarMeshFields,
+    pointClouds,
+    images,
+    scalarFields,
+    vectorFields
+  )
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
   def addStatisticalMeshModel(model: StatisticalMeshModel, initialName: String): Unit = {
