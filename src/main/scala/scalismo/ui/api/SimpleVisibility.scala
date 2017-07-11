@@ -16,7 +16,6 @@
  */
 
 package scalismo.ui.api
-import scalismo.ui.model.capabilities.RenderableSceneNode
 
 /**
  * Trait to be mixed with ObjectView instances in order to provide visibility changing functionality
@@ -62,34 +61,4 @@ object Viewport {
   val _3dOnly: Seq[Viewport] = Seq(_3DMain, _3DRight, _3DLeft)
   val _3dLeft: Seq[Viewport] = Seq(_3DLeft)
   val _3dRight: Seq[Viewport] = Seq(_3DRight)
-}
-
-trait SimpleVisibility {
-  self: ObjectView =>
-
-  private def setVisible(isVisible: Boolean, viewportName: String): Unit = {
-    self.frame.perspective.viewports.filter(_.name == viewportName).headOption.foreach { viewPort =>
-      val visib = self.frame.sceneControl.nodeVisibility
-      visib.setVisibility(peer.asInstanceOf[RenderableSceneNode], viewPort, isVisible)
-    }
-  }
-
-  // mainly needed to be able to have the assignment operator
-  def visible: Seq[Viewport] = {
-    val visib = self.frame.sceneControl.nodeVisibility
-    val visibleViewPortNames = self.frame.perspective.viewports.filter(vp => visib.isVisible(peer.asInstanceOf[RenderableSceneNode], vp)).map(_.name)
-    Viewport.all.filter(p => visibleViewPortNames.contains(p.name))
-  }
-
-  /**
-   * Sets the node visible to all views in the config, and invisible in others
-   */
-  def visible_=(visibleViewports: Seq[Viewport]) = {
-    visibleViewports.foreach(v => setVisible(true, v.name))
-
-    //set invisible in other viewports
-    val viewsNotInConfig = self.frame.perspective.viewports.filterNot(v => visibleViewports.exists(_.name == v.name))
-    viewsNotInConfig.foreach(v => setVisible(false, v.name))
-  }
-
 }

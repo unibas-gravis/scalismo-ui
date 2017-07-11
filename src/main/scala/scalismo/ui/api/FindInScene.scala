@@ -25,7 +25,7 @@ import scalismo.ui.view.ScalismoFrame
  * able to search for a view
  */
 protected[api] trait FindInScene[V] {
-  def createView(s: SceneNode, frame: ScalismoFrame): Option[V]
+  def createView(s: SceneNode): Option[V]
 
 }
 

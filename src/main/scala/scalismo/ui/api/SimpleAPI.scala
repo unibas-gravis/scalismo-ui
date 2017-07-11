@@ -17,89 +17,33 @@
 
 package scalismo.ui.api
 
-import scalismo.geometry._3D
-import scalismo.registration.RigidTransformation
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
-import scalismo.ui.model._
-import scalismo.ui.view.ScalismoFrame
-
 trait SimpleAPI {
 
-  protected[api] def scene: Scene
+  def createGroup(groupName: String): Group
 
-  protected[api] val frame: ScalismoFrame
+  def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View
 
-  def createGroup(groupName: String): Group = Group(scene.groups.add(groupName), frame)
+  def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View
 
-  def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup, frame)
+  def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit
 
-  def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, group, frame)
+  def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View
 
-  def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View = {
-    showInScene.showInScene(t, name, g, frame)
-  }
+  def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V]
 
-  def filter[V <: ObjectView: FindInScene](pred: V => Boolean): Seq[V] = {
-    filterSceneNodes[V](scene, pred)
-  }
+  def filter[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Seq[V]
 
-  def filter[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Seq[V] = {
-    filterSceneNodes[V](group.peer, pred)
-  }
+  def find[V <: ObjectView: FindInScene](pred: V => Boolean): Option[V]
 
-  def find[V <: ObjectView: FindInScene](pred: V => Boolean): Option[V] =
-    filter[V](pred).headOption
+  def find[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Option[V]
 
-  def find[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Option[V] =
-    filter[V](group, pred).headOption
+  def onNodeAdded[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit
 
-  def onNodeAdded[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
-    HandleCallback[A].registerOnAdd(g, f, frame)
-  }
+  def onNodeRemoved[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit
 
-  def onNodeRemoved[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit = {
-    HandleCallback[A].registerOnRemove(g, f, frame)
-  }
+  def onGroupAdded[R](f: Group => R): Unit
 
-  def onGroupAdded[R](f: Group => R): Unit = {
-    scene.listenTo(scene.groups)
-
-    scene.reactions += {
-      case ChildAdded(collection, newNode: GroupNode) =>
-        val gv = Group(newNode, frame)
-        f(gv)
-    }
-  }
-
-  def onGroupRemoved[R](f: Group => R): Unit = {
-    scene.listenTo(scene.groups)
-
-    scene.reactions += {
-      case ChildRemoved(collection, newNode: GroupNode) =>
-        val gv = Group(newNode, frame)
-        f(gv)
-    }
-  }
-
-  private def defaultGroup: Group = {
-    val groupNode = scene.groups.find(g => g.name == "group")
-      .getOrElse(scene.groups.add("group"))
-    Group(groupNode, frame)
-  }
-
-  private def filterSceneNodes[V <: ObjectView: FindInScene](node: SceneNode, pred: V => Boolean): Seq[V] = {
-
-    val resFromSubNodes = node.children.flatMap(child => filterSceneNodes(child, pred))
-
-    val find = FindInScene[V]
-
-    val head = find.createView(node, frame) match {
-      case Some(v) => if (pred(v)) Seq[V](v) else Seq[V]()
-      case None => Seq[V]()
-    }
-
-    head ++ resFromSubNodes
-  }
+  def onGroupRemoved[R](f: Group => R): Unit
 
 }
 
