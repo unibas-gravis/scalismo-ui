@@ -27,7 +27,7 @@ import scalismo.ui.model._
 trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[PosteriorLandmarkingInteractor] {
 
   implicit val theFrame = frame
-  private val nodeVisibility = frame.sceneControl.nodeVisibility
+  private lazy val nodeVisibility = frame.sceneControl.nodeVisibility
 
   def previewNode: TriangleMeshNode
 
