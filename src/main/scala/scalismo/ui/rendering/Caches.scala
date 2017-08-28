@@ -17,7 +17,7 @@
 
 package scalismo.ui.rendering
 
-import scalismo.common.DiscreteScalarField
+import scalismo.common.{ DiscreteDomain, DiscreteScalarField }
 import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ ScalarMeshField, TriangleMesh3D }
@@ -38,5 +38,5 @@ object Caches {
   final val TriangleMeshCache = new Cache[FastCachingTriangleMesh, vtkPolyData]
   final val ImageCache = new Cache[DiscreteScalarImage[_3D, _], vtkStructuredPoints]
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
-  final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, Float], vtkPolyData]
+  final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float], vtkPolyData]
 }
