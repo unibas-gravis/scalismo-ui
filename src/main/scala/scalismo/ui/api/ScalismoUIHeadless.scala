@@ -18,7 +18,7 @@
 package scalismo.ui.api
 import scalismo.ui.model.Scene
 
-case class ScalismoNullUI() extends SimpleAPI with SimpleAPIDefaultImpl {
+case class ScalismoUIHeadless() extends SimpleAPI with SimpleAPIDefaultImpl {
 
   override def scene: Scene = new Scene
 
