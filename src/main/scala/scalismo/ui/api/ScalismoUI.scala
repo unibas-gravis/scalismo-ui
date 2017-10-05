@@ -34,7 +34,6 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
     val frame = new ScalismoFrame()
 
     frame.setup(Array[String]())
-    frame.pack()
     frame.visible = true
 
     frame.title = title
