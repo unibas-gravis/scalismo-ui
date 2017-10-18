@@ -20,7 +20,7 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ DiscreteField, DiscreteScalarField }
+import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
 import scalismo.geometry.{ Dim, Landmark, Point, Vector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
@@ -387,7 +387,7 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
     peer.opacity.value = o
   }
 
-  def scalarField: DiscreteScalarField[_3D, Float] = peer.source
+  def scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.source
 
   def transformedScalarField = peer.transformedSource
 }
@@ -441,7 +441,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.opacity.value = o
   }
 
-  def vectorField[A]: DiscreteField[_3D, Vector[_3D]] = peer.source
+  def vectorField[A]: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]] = peer.source
 }
 
 object VectorFieldView {
@@ -661,7 +661,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
 
-  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]]): Unit = {
+  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]]): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }
@@ -727,7 +727,7 @@ case class LowRankGPTransformationView private[ui] (override protected[api] val 
 case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
 
 object ShapeModelTransformation {
-  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, Vector[_3D]]): ShapeModelTransformation = {
+  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]]): ShapeModelTransformation = {
     ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gp))
   }
 }
