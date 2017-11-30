@@ -61,6 +61,10 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 
   }
 
+  override def close(): Unit = {
+    frame.closeOperation()
+  }
+
 }
 
 object ScalismoUI {

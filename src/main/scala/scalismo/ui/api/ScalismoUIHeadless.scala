@@ -24,4 +24,6 @@ case class ScalismoUIHeadless() extends SimpleAPI with SimpleAPIDefaultImpl {
 
   override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit = ()
 
+  override def close(): Unit = ()
+
 }
