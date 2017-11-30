@@ -37,7 +37,7 @@ trait SimpleAPI {
 
   def find[V <: ObjectView: FindInScene](group: Group, pred: V => Boolean): Option[V]
 
-  def close() : Unit
+  def close(): Unit
 
   def onNodeAdded[A <: ObjectView: HandleCallback, R](g: Group, f: A => R): Unit
 
