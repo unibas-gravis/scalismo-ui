@@ -24,11 +24,14 @@ import scalismo.io.MeshIO
 import scalismo.mesh.ScalarMeshField
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
-import scala.util.Try
+import scala.util.{ Failure, Success, Try }
 
-class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarMeshFieldNode] {
+class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarMeshFieldNode] with Loadable {
+
+  override def loadMetadata: FileIoMetadata = FileIoMetadata.ScalarMeshField
+
   override val name: String = "Scalar Mesh Fields"
 
   def add(scalarMeshField: ScalarMeshField[Float], name: String): ScalarMeshFieldNode = {
@@ -36,6 +39,17 @@ class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeColl
     add(node)
     node
   }
+
+  override def load(file: File): Try[Unit] = {
+    val r = MeshIO.readScalarMeshFieldAsType[Float](file)
+    r match {
+      case Failure(ex) => Failure(ex)
+      case Success(scalarMeshField) =>
+        add(scalarMeshField, FileUtil.basename(file))
+        Success(())
+    }
+  }
+
 }
 
 class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override val source: ScalarMeshField[Float], initialName: String) extends Transformable[ScalarMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {

@@ -40,7 +40,7 @@ object Creds {
 
 object Dependencies {
 
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.16.0-RC1"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.16.0-RC2"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0"
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   val swingPlus = "de.sciss" %% "swingplus" % "0.2.2"
