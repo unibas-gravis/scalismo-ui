@@ -5,8 +5,8 @@ import sbtbuildinfo.Plugin._
 
 object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
-  val buildVersion = "0.6.1-withHighDPI"
-  val buildScalaVersion = "2.10.5"
+  val buildVersion = "0.6.2-withHighDPI"
+  val buildScalaVersion = "2.12.4"
   val publishURL = Resolver.file("file", new File("/export/contrib/statismo/repo/private"))
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
@@ -14,7 +14,7 @@ object BuildSettings {
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := Seq("2.10.5", "2.11.7"),
+    crossScalaVersions := Seq("2.10.5", "2.11.7", "2.12.4"),
     shellPrompt := ShellPrompt.buildShellPrompt) ++ buildInfoSettings ++ Seq(
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion),
@@ -60,12 +60,12 @@ object Creds {
 object Dependencies {
   val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.10.+"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "3.0.+"
-  val scalatest = "org.scalatest" %% "scalatest" % "2.2+" % "test"
+  val scalatest = "org.scalatest" %% "scalatest" % "3.0.+" % "test"
   // the following two dependencies are transitively obtained through other dependencies
   //val scalaReflect = "org.scala-lang" % "scala-reflect" % buildScalaVersion
   //val scalaSwing = "org.scala-lang" % "scala-swing" % buildScalaVersion
   val scalaAsync = "org.scala-lang.modules" %% "scala-async" % "0.9.+"
-  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.7.+"
+  val scalaInterpreterPane = "de.sciss" %% "scalainterpreterpane" % "1.8.+"
 }
 
 object STKBuild extends Build {
