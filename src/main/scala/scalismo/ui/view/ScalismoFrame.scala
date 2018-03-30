@@ -19,22 +19,22 @@ package scalismo.ui.view
 
 import java.awt.Dimension
 
-import javax.swing.{SwingUtilities, WindowConstants}
+import javax.swing.{ SwingUtilities, WindowConstants }
 import scalismo.ui.control.SceneControl
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
 import scalismo.ui.view.menu.ViewMenu.ShowBackgroundColorDialogItem
 
 import scalismo.ui.control.interactor.Interactor
-import scalismo.ui.event.{Event, ScalismoPublisher}
-import scalismo.ui.model.{Scene, SceneNode}
+import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.CloseFrameItem
 import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
-import scalismo.ui.view.menu.ViewMenu.{PerspectiveMenu, ShowDisplayScalingDialogItem}
-import scalismo.ui.view.menu.{FileMenu, HelpMenu, ViewMenu}
+import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowDisplayScalingDialogItem }
+import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
-import scala.swing.{BorderPanel, Component, MainFrame, MenuBar}
+import scala.swing.{ BorderPanel, Component, MainFrame, MenuBar }
 
 object ScalismoFrame {
 

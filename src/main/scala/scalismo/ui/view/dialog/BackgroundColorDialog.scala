@@ -1,25 +1,40 @@
+/*
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package scalismo.ui.view.dialog
 
-import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.image.BufferedImage
-import java.awt.{Color, Dimension, Graphics}
+import java.awt.{ Color, Dimension, Graphics }
 
 import javax.swing._
-import javax.swing.event.{ChangeEvent, ChangeListener}
-import scalismo.ui.event.{Event, ScalismoPublisher}
+import javax.swing.event.{ ChangeEvent, ChangeListener }
+import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.swing.ColorPickerPanel
 import scalismo.ui.view.util.ScalableUI.implicits._
 
-import scala.swing.{Action, Alignment, BorderPanel, Button, Component, Dialog, FlowPanel, GridPanel, Label, TextField}
-
+import scala.swing.{ Action, Alignment, BorderPanel, Button, Component, Dialog, FlowPanel, GridPanel, Label, TextField }
 
 class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(frame) {
 
   private case class ColorSelectedInWheel(color: Color) extends Event
 
   private case class ColorSelected(color: Color) extends Event
-
 
   class BrightnessSelector extends JComponent with ScalismoPublisher {
     private val BarWidth = 20.scaled
@@ -28,7 +43,6 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
 
     // half of the marker height. Total marker height should be this * 2 + 1
     private val MarkerHeightHalf = 1.scaled
-
 
     private var baseColor: Color = Color.WHITE
 
@@ -66,7 +80,6 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
       val hue = hsb(0)
       val saturation = hsb(1)
 
-
       val dim = getSize(null)
 
       val width = Math.max(dim.width, BarWidth) - MarkerWidth
@@ -103,7 +116,6 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
     }
   }
 
-
   class ColorChooser extends Component with ChangeListener with ScalismoPublisher {
     override lazy val peer = new ColorPickerPanel()
     peer.setRGB(255, 255, 255)
@@ -118,11 +130,10 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
     border = new javax.swing.border.EmptyBorder(10, 0, 0, 0)
   }
 
-
   private val presetsPanel = {
     val pixels = 32.scaled
 
-    val predefined: List[(Color, String)] = List(
+    val presets: List[(Color, String)] = List(
       (Color.WHITE, "White"),
       (new Color(230, 230, 230), "Gray 10%"),
       (new Color(192, 192, 192), "Gray 25%"),
@@ -130,23 +141,24 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
       (Color.BLACK, "Black")
     )
 
-    new GridPanel(predefined.length, 1) {
+    new GridPanel(presets.length, 1) {
       border = BorderFactory.createTitledBorder("Presets")
-      predefined.foreach { case (color, description) =>
-        val image = new BufferedImage(pixels, pixels, BufferedImage.TYPE_INT_RGB)
-        val g = image.createGraphics()
-        g.setColor(color)
-        g.fillRect(0, 0, pixels, pixels)
-        g.dispose()
+      presets.foreach {
+        case (color, description) =>
+          val image = new BufferedImage(pixels, pixels, BufferedImage.TYPE_INT_RGB)
+          val g = image.createGraphics()
+          g.setColor(color)
+          g.fillRect(0, 0, pixels, pixels)
+          g.dispose()
 
-        val icon = new ImageIcon(image)
-        val button = new Button(new Action(description) {
-          override def apply(): Unit = setBackgroundColor(color)
-        })
-        button.icon = icon
-        button.horizontalAlignment = Alignment.Left
-        button.iconTextGap = 12.scaled
-        contents += button
+          val icon = new ImageIcon(image)
+          val button = new Button(new Action(description) {
+            override def apply(): Unit = setBackgroundColor(color)
+          })
+          button.icon = icon
+          button.horizontalAlignment = Alignment.Left
+          button.iconTextGap = 12.scaled
+          contents += button
       }
     }
   }
@@ -206,7 +218,7 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
     layout(southPanel) = BorderPanel.Position.South
 
     val b: Int = 5.scaled
-    border = BorderFactory.createEmptyBorder(b,b,b,b)
+    border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
 
   listenTo(colorWheel, brightness)

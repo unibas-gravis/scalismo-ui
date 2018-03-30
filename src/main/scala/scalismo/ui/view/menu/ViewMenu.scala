@@ -19,12 +19,12 @@ package scalismo.ui.view.menu
 
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.action.{ShowBackgroundColorDialogAction, ShowDisplayScalingDialogAction}
+import scalismo.ui.view.action.{ ShowBackgroundColorDialogAction, ShowDisplayScalingDialogAction }
 import scalismo.ui.view.perspective.PerspectiveFactory
-import scalismo.ui.view.{PerspectivePanel, ScalismoFrame}
+import scalismo.ui.view.{ PerspectivePanel, ScalismoFrame }
 
-import scala.swing.event.{ButtonClicked, Key}
-import scala.swing.{Menu, MenuItem, RadioMenuItem}
+import scala.swing.event.{ ButtonClicked, Key }
+import scala.swing.{ Menu, MenuItem, RadioMenuItem }
 
 class ViewMenu extends Menu("View") {
   mnemonic = Key.V
