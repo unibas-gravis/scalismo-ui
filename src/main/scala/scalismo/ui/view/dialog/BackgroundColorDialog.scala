@@ -119,7 +119,7 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
   }
 
 
-  private val predefsPanel = {
+  private val presetsPanel = {
     val pixels = 32.scaled
 
     val predefined: List[(Color, String)] = List(
@@ -131,7 +131,7 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
     )
 
     new GridPanel(predefined.length, 1) {
-      border = BorderFactory.createTitledBorder("Predefined")
+      border = BorderFactory.createTitledBorder("Presets")
       predefined.foreach { case (color, description) =>
         val image = new BufferedImage(pixels, pixels, BufferedImage.TYPE_INT_RGB)
         val g = image.createGraphics()
@@ -201,7 +201,7 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
 
   private val mainPanel = new BorderPanel() {
 
-    layout(predefsPanel) = BorderPanel.Position.West
+    layout(presetsPanel) = BorderPanel.Position.West
     layout(customPanel) = BorderPanel.Position.Center
     layout(southPanel) = BorderPanel.Position.South
 
@@ -217,7 +217,7 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
   }
 
   contents = mainPanel
-  title = "Set background color"
+  title = "Set Background Color"
   modal = true
   pack()
   centerOnScreen()
