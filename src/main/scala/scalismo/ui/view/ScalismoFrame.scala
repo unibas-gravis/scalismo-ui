@@ -18,28 +18,23 @@
 package scalismo.ui.view
 
 import java.awt.Dimension
-import java.awt.event.MouseEvent
-import javax.swing.{ SwingUtilities, WindowConstants }
 
+import javax.swing.{SwingUtilities, WindowConstants}
 import scalismo.ui.control.SceneControl
-import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.{ DefaultInteractor, Recipe }
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
-import scalismo.ui.control.interactor.landmark.simple.{ SimpleLandmarkingInteractor, SimpleLandmarkingInteractorTrait }
-import scalismo.ui.model.properties.Uncertainty
+import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
+import scalismo.ui.view.menu.ViewMenu.ShowBackgroundColorDialogItem
 
-//import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.Interactor
-import scalismo.ui.event.{ Event, ScalismoPublisher }
-import scalismo.ui.model.{ Scene, SceneNode }
+import scalismo.ui.event.{Event, ScalismoPublisher}
+import scalismo.ui.model.{Scene, SceneNode}
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.CloseFrameItem
 import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
-import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowDisplayScalingDialogItem }
-import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
+import scalismo.ui.view.menu.ViewMenu.{PerspectiveMenu, ShowDisplayScalingDialogItem}
+import scalismo.ui.view.menu.{FileMenu, HelpMenu, ViewMenu}
 
-import scala.swing.{ BorderPanel, Component, MainFrame, MenuBar }
+import scala.swing.{BorderPanel, Component, MainFrame, MenuBar}
 
 object ScalismoFrame {
 
@@ -71,7 +66,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   }
 
   // some objects, like menu items or actions, want an implicit reference to a ScalismoFrame
-  implicit val frame = this
+  implicit val frame: ScalismoFrame = this
 
   /* This is the component that is returned as the parent component when creating a dialog.
    * Normally, this should not be null. However, it seems like there is a bug on Linux where
@@ -106,7 +101,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     helpMenu.contents += new ShowAboutDialogItem
 
     val viewMenu = new ViewMenu
-    viewMenu.contents ++= Seq(new PerspectiveMenu, new ShowDisplayScalingDialogItem)
+    viewMenu.contents ++= Seq(new PerspectiveMenu, new ShowDisplayScalingDialogItem, new ShowBackgroundColorDialogItem)
 
     menuBar.contents ++= Seq(fileMenu, viewMenu, helpMenu)
   }
@@ -176,9 +171,9 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   private var _selectedNodes: List[SceneNode] = Nil
 
-  def selectedNodes = _selectedNodes
+  def selectedNodes: List[SceneNode] = _selectedNodes
 
-  def selectedNodes_=(nodes: List[SceneNode]) = {
+  def selectedNodes_=(nodes: List[SceneNode]): Unit = {
     if (_selectedNodes != nodes) {
       _selectedNodes = nodes
       publishEvent(SelectedNodesChanged(this))
@@ -189,7 +184,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
 
   def interactor: Interactor = _interactor
 
-  def interactor_=(newInteractor: Interactor) = {
+  def interactor_=(newInteractor: Interactor): Unit = {
     if (newInteractor != interactor) {
       interactor.onDeactivated(this)
       _interactor = newInteractor

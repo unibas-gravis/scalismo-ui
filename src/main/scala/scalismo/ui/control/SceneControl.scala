@@ -32,6 +32,7 @@ import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 class SceneControl(val frame: ScalismoFrame, val scene: Scene) {
   val slicingPosition = new SlicingPosition(scene, frame)
   val nodeVisibility = new NodeVisibility(frame)
+  val backgroundColor = new BackgroundColor()
 
   def initialize(): Unit = {
     slicingPosition.initialize()
