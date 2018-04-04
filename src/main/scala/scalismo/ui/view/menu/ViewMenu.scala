@@ -19,7 +19,7 @@ package scalismo.ui.view.menu
 
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.action.ShowDisplayScalingDialogAction
+import scalismo.ui.view.action.{ ShowBackgroundColorDialogAction, ShowDisplayScalingDialogAction }
 import scalismo.ui.view.perspective.PerspectiveFactory
 import scalismo.ui.view.{ PerspectivePanel, ScalismoFrame }
 
@@ -36,15 +36,19 @@ object ViewMenu {
     mnemonic = Key.D
   }
 
+  class ShowBackgroundColorDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowBackgroundColorDialogAction) {
+    mnemonic = Key.B
+  }
+
   class PerspectiveMenu(implicit val frame: ScalismoFrame) extends Menu("Perspective") {
     mnemonic = Key.P
     icon = BundledIcon.Perspective.standardSized()
 
-    val panel = frame.perspective
+    private val panel = frame.perspective
 
     private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.perspectiveName) with ScalismoPublisher {
 
-      def updateUi() = {
+      def updateUi(): Unit = {
         selected = panel.perspective == factory
       }
 
