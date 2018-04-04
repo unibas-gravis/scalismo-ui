@@ -19,8 +19,9 @@ package scalismo.ui.rendering
 
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 
+import javax.imageio.ImageIO
+import scalismo.ui.control.BackgroundColor.event.BackgroundColorChanged
 import scalismo.ui.control.{ NodeVisibility, SlicingPosition }
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
@@ -47,7 +48,7 @@ object RendererPanel {
     private var _defaultCameraState: Option[DefaultCameraState] = None
 
     // this will have an effect exactly once, on the very first invocation.
-    def setDefaultCameraState(cam: vtkCamera) = Cameras.synchronized {
+    def setDefaultCameraState(cam: vtkCamera): Unit = Cameras.synchronized {
       if (_defaultCameraState.isEmpty) {
         _defaultCameraState = Some(DefaultCameraState(cam.GetPosition(), cam.GetFocalPoint(), cam.GetViewUp()))
       }
@@ -74,7 +75,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     def vtkActors: List[vtkActor] = actorsOption.map(_.vtkActors).getOrElse(Nil)
   }
 
-  val frame = viewport.frame
+  private val frame = viewport.frame
 
   private val implementation = new RenderingComponent(viewport)
 
@@ -148,6 +149,8 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     if (!updating) EdtUtil.onEdtWait {
       updating = true
       val renderer = implementation.getRenderer
+      renderer.SetBackground(frame.sceneControl.backgroundColor.vtkValue)
+
       val renderables = if (attached) frame.sceneControl.renderablesFor(viewport) else Nil
 
       val wasEmptyBefore = currentBoundingBox == BoundingBox.Invalid
@@ -193,7 +196,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
           val count = actors.GetNumberOfItems()
           if (count > 1) {
             actors.InitTraversal()
-            (0 until count) map { i => actors.GetNextActor() }
+            (0 until count) map { _ => actors.GetNextActor() }
           } else immutable.IndexedSeq()
         }
 
@@ -225,6 +228,11 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       updating = false
 
     }
+  }
+
+  private def updateBackgroundOnly(): Unit = EdtUtil.onEdtWait {
+    implementation.getRenderer.SetBackground(frame.sceneControl.backgroundColor.vtkValue)
+    render()
   }
 
   private def slicingPositionChanged(pc: SlicingPosition.event.PointChanged): Unit = {
@@ -274,10 +282,11 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
     case _ => // nothing
   }
 
-  listenTo(frame.scene, frame.sceneControl.nodeVisibility)
+  listenTo(frame.scene, frame.sceneControl.nodeVisibility, frame.sceneControl.backgroundColor)
 
   reactions += {
     case SceneChanged(_) if attached => updateAllActors()
+    case BackgroundColorChanged(_) if attached => updateBackgroundOnly()
     case ActorEvents.event.ActorChanged(_, actorGeometryChanged) if attached =>
       if (actorGeometryChanged) {
         geometryChanged()
