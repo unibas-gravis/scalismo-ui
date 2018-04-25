@@ -71,13 +71,13 @@ We can also change the visibility of an object, and for example show it only in 
 3D viewport, but not the slice views. This is done by calling
 
 ```scala
-meshView.visible = Viewport._3dOnly
+ui.setVisibility(meshView, Viewport._3dOnly)
 ```
 
 To show it again in all viewports we call
 
 ```scala
-meshView.visible = Viewport.all
+ui.setVisibility(meshView, Viewport.all)
 ```
 
 ## Finding object views
