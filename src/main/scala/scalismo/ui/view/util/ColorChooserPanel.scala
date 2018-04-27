@@ -97,7 +97,7 @@ class ColorChooserPanel extends BorderPanel with ChangeListener with ScalismoPub
 
     // scale UI elements to at least be visible (1px)
     private def scale(px: Int, min: Int = 1): Int = {
-      Math.max(1, px.scaled)
+      Math.max(min, px.scaled)
     }
 
     // width of the color bar
