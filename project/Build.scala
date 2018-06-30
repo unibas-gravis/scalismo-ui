@@ -9,7 +9,7 @@ object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
 
 
-  val buildScalaVersion = "2.11.8"
+  val buildScalaVersion = "2.12.5"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
