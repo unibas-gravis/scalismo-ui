@@ -34,7 +34,7 @@ Add the following dependency to your `build.sbt`:
 
 resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
 
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.11.1"
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.12.1"
 ```
 
 The graphical user interface can be called from an application using the command
@@ -54,7 +54,7 @@ to have the application available as a jar file. This can be built by calling
 sbt assembly
 ```
 
-The resulting jar file is ```target/scala-2.11/scalismo-ui.jar```
+The resulting jar file is ```target/scala-2.12/scalismo-ui.jar```
 
 
 # Documentation
