@@ -15,7 +15,7 @@ object BuildSettings {
     scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
     organization := buildOrganization,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := Seq("2.11.8", "2.12.1")
+    crossScalaVersions := Seq("2.11.12", "2.12.6")
   ) ++ buildInfoSettings ++ Seq(
     sourceGenerators in Compile <+= buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") {
@@ -40,7 +40,7 @@ object Creds {
 
 object Dependencies {
 
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.16.0-RC2"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.16.1"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0"
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   val swingPlus = "de.sciss" %% "swingplus" % "0.2.2"
