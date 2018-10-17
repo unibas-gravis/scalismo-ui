@@ -27,6 +27,7 @@ import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.util.ScalableUI.implicits._
 
 import scala.swing._
 
@@ -86,8 +87,8 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2
-    val lr = 12
+    val tb = 2.scaled
+    val lr = 12.scaled
 
     def currentState = control.getVisibilityState(nodes, viewports)
 

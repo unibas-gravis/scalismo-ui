@@ -26,6 +26,7 @@ import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.util.ScalableUI.implicits._
 
 import scala.swing._
 
@@ -46,7 +47,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Childrens's visibility in") {
+      val menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
           icon = iconFor(control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports))
         }
@@ -71,7 +72,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
       menu.peer
 
     } else {
-      new ViewportVisibilityItem(viewports, "Child's visibility").peer
+      new ViewportVisibilityItem(viewports, "Children visible").peer
     }
   }
 
@@ -85,8 +86,8 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2
-    val lr = 12
+    val tb = 2.scaled
+    val lr = 12.scaled
 
     def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
