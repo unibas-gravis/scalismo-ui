@@ -25,13 +25,26 @@ import scalismo.io.MeshIO
 import scalismo.mesh.VertexColorMesh3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.FileIoMetadata
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 
-class ColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[ColorMeshNode] {
-  override val name: String = "Scalar Mesh Fields"
+class ColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[ColorMeshNode]  with Loadable {
+  override val name: String = "Vertex Colored Triangle Meshes"
+
+  override def loadMetadata: FileIoMetadata = FileIoMetadata.VertexColorMesh
+
+  override def load(file: File): Try[Unit] = {
+    val r = MeshIO.readVertexColorMesh3D(file)
+    r match {
+      case Failure(ex) => Failure(ex)
+      case Success(mesh) =>
+        add(mesh, FileUtil.basename(file))
+        Success(())
+    }
+  }
+
 
   def add(mesh: VertexColorMesh3D, name: String): ColorMeshNode = {
     val node = new ColorMeshNode(this, mesh, name)
@@ -63,7 +76,7 @@ class ColorMeshNode(override val parent: ColorMeshesNode, override val source: V
 
   override def save(file: File): Try[Unit] = MeshIO.writeVertexColorMesh3D(transformedSource, file)
 
-  override def saveMetadata: FileIoMetadata = FileIoMetadata.ColorMesh
+  override def saveMetadata: FileIoMetadata = FileIoMetadata.VertexColorMesh
 
 
 }
