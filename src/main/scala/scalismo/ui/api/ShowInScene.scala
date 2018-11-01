@@ -76,12 +76,12 @@ trait LowPriorityImplicits {
 object ShowInScene extends LowPriorityImplicits {
 
 
-  implicit def ShowColorMesh = new ShowInScene[VertexColorMesh3D] {
-    override type View = ColorMeshView
+  implicit def ShowVertexColorMesh = new ShowInScene[VertexColorMesh3D] {
+    override type View = VertexColorMeshView
 
-    override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): ColorMeshView = {
+    override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
 
-    ColorMeshView(group.peer.colorMeshes.add(mesh, name))
+    VertexColorMeshView(group.peer.colorMeshes.add(mesh, name))
   }
 }
 

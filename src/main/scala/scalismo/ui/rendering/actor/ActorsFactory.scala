@@ -35,7 +35,7 @@ object ActorsFactory {
     BoundingBoxActor,
     TriangleMeshActor,
     ScalarMeshFieldActor,
-    ColorMeshActor,
+    VertexColorMeshActor,
     LineMeshActor,
     PointCloudActor,
     LandmarkActor,

@@ -30,7 +30,7 @@ import scalismo.ui.util.{FileIoMetadata, FileUtil}
 import scala.util.{Failure, Success, Try}
 
 
-class ColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[ColorMeshNode]  with Loadable {
+class VertexColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[VertexColorMeshNode]  with Loadable {
   override val name: String = "Vertex Colored Triangle Meshes"
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.VertexColorMesh
@@ -46,14 +46,14 @@ class ColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollectio
   }
 
 
-  def add(mesh: VertexColorMesh3D, name: String): ColorMeshNode = {
-    val node = new ColorMeshNode(this, mesh, name)
+  def add(mesh: VertexColorMesh3D, name: String): VertexColorMeshNode = {
+    val node = new VertexColorMeshNode(this, mesh, name)
     add(node)
     node
   }
 }
 
-class ColorMeshNode(override val parent: ColorMeshesNode, override val source: VertexColorMesh3D, initialName: String)
+class VertexColorMeshNode(override val parent: VertexColorMeshesNode, override val source: VertexColorMesh3D, initialName: String)
   extends Transformable[VertexColorMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with Saveable {
   name = initialName
 

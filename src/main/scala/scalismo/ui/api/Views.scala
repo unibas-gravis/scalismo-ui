@@ -192,9 +192,9 @@ object TriangleMeshView {
   }
 }
 
-case class ColorMeshView private[ui] (override protected[api] val peer: ColorMeshNode) extends ObjectView {
+case class VertexColorMeshView private[ui](override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
 
-  type PeerType = ColorMeshNode
+  type PeerType = VertexColorMeshNode
 
   def opacity = peer.opacity.value
 
@@ -213,33 +213,33 @@ case class ColorMeshView private[ui] (override protected[api] val peer: ColorMes
   def transformedTriangleMesh: VertexColorMesh3D = peer.transformedSource
 }
 
-object ColorMeshView {
+object VertexColorMeshView {
 
-  implicit object FindInSceneColorMesh extends FindInScene[ColorMeshView] {
-    override def createView(s: SceneNode): Option[ColorMeshView] = {
+  implicit object FindInSceneColorMesh extends FindInScene[VertexColorMeshView] {
+    override def createView(s: SceneNode): Option[VertexColorMeshView] = {
       s match {
-        case peer: ColorMeshNode => Some(ColorMeshView(peer))
+        case peer: VertexColorMeshNode => Some(VertexColorMeshView(peer))
         case _ => None
       }
     }
   }
 
-  implicit object callbacksColorMeshView extends HandleCallback[ColorMeshView] {
+  implicit object callbacksColorMeshView extends HandleCallback[VertexColorMeshView] {
 
-    override def registerOnAdd[R](g: Group, f: ColorMeshView => R): Unit = {
+    override def registerOnAdd[R](g: Group, f: VertexColorMeshView => R): Unit = {
       g.peer.listenTo(g.peer.colorMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: ColorMeshNode) =>
-          val tmv = ColorMeshView(newNode)
+        case ChildAdded(collection, newNode: VertexColorMeshNode) =>
+          val tmv = VertexColorMeshView(newNode)
           f(tmv)
       }
     }
 
-    override def registerOnRemove[R](g: Group, f: ColorMeshView => R): Unit = {
+    override def registerOnRemove[R](g: Group, f: VertexColorMeshView => R): Unit = {
       g.peer.listenTo(g.peer.colorMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: ColorMeshNode) =>
-          val tmv = ColorMeshView(removedNode)
+        case ChildRemoved(collection, removedNode: VertexColorMeshNode) =>
+          val tmv = VertexColorMeshView(removedNode)
           f(tmv)
       }
     }

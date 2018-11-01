@@ -35,7 +35,7 @@ object Caches {
     override lazy val hashCode: Int = (31 + tm.pointSet.hashCode()) * (31 + tm.triangulation.hashCode())
   }
 
-  case class FastCachingColorMesh(mesh : VertexColorMesh3D) {
+  case class FastCachingVertexColorMesh(mesh : VertexColorMesh3D) {
     override lazy val hashCode: Int =
       (31 + mesh.shape.pointSet.hashCode()) * (31 + mesh.shape.triangulation.hashCode() * 31 + mesh.color.hashCode())
   }
@@ -44,6 +44,6 @@ object Caches {
   final val ImageCache = new Cache[DiscreteScalarImage[_3D, _], vtkStructuredPoints]
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
   final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float], vtkPolyData]
-  final val ColorMeshCache = new Cache[FastCachingColorMesh, vtkPolyData]
+  final val VertexColorMeshCache = new Cache[FastCachingVertexColorMesh, vtkPolyData]
 
 }
