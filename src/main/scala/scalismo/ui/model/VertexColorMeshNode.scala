@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,18 +19,17 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{ Point, Point3D, _3D }
 import scalismo.geometry
 import scalismo.io.MeshIO
 import scalismo.mesh.VertexColorMesh3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{FileIoMetadata, FileUtil}
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
-
-class VertexColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[VertexColorMeshNode]  with Loadable {
+class VertexColorMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[VertexColorMeshNode] with Loadable {
   override val name: String = "Vertex Colored Triangle Meshes"
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.VertexColorMesh
@@ -45,7 +44,6 @@ class VertexColorMeshesNode(override val parent: GroupNode) extends SceneNodeCol
     }
   }
 
-
   def add(mesh: VertexColorMesh3D, name: String): VertexColorMeshNode = {
     val node = new VertexColorMeshNode(this, mesh, name)
     add(node)
@@ -54,7 +52,7 @@ class VertexColorMeshesNode(override val parent: GroupNode) extends SceneNodeCol
 }
 
 class VertexColorMeshNode(override val parent: VertexColorMeshesNode, override val source: VertexColorMesh3D, initialName: String)
-  extends Transformable[VertexColorMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with Saveable {
+    extends Transformable[VertexColorMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with Saveable {
   name = initialName
 
   override def group: GroupNode = parent.parent
@@ -77,6 +75,5 @@ class VertexColorMeshNode(override val parent: VertexColorMeshesNode, override v
   override def save(file: File): Try[Unit] = MeshIO.writeVertexColorMesh3D(transformedSource, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.VertexColorMesh
-
 
 }
