@@ -117,7 +117,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
       contextOption.flatMap {
         case (point, group) =>
           val params = uncertaintyParametersFor(node, group, point, e.viewport)
-          val axes: List[Vector3D] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
+          val axes: List[EuclideanVector3D] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
           val sigmas = params.map(_._2).getOrElse(sigmasForLandmarkUncertainty(group))
           val uncertainty = Uncertainty(axes, sigmas)
           val landmark = new Landmark[_3D]("dummy", point, uncertainty = Some(uncertainty.toMultivariateNormalDistribution))
@@ -127,7 +127,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     }
   }
 
-  def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[Vector3D], List[Double])] = {
+  def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[EuclideanVector3D], List[Double])] = {
     val meshOption: Option[TriangleMesh[_3D]] = node match {
       case m: TriangleMeshNode => Some(m.source)
       case m: ScalarMeshFieldNode => Some(m.source.mesh)
@@ -139,19 +139,19 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
         case _2d: ViewportPanel2D =>
           val (planeNormal, meshNormal, meshTangential) = _2d.axis match {
             case Axis.Z =>
-              val v1 = Vector3D(0, 0, 1)
-              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(z = 0)
-              (v1, v2, Vector3D(-v2.y, v2.x, 0))
+              val v1 = EuclideanVector3D(0, 0, 1)
+              val v2: EuclideanVector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(z = 0)
+              (v1, v2, EuclideanVector3D(-v2.y, v2.x, 0))
             case Axis.Y =>
-              val v1 = Vector3D(0, 1, 0)
-              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(y = 0)
-              (v1, v2, Vector3D(-v2.z, 0, v2.x))
+              val v1 = EuclideanVector3D(0, 1, 0)
+              val v2: EuclideanVector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(y = 0)
+              (v1, v2, EuclideanVector3D(-v2.z, 0, v2.x))
             case Axis.X =>
-              val v1 = Vector3D(1, 0, 0)
-              val v2: Vector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(x = 0)
-              (v1, v2, Vector3D(0, -v2.z, v2.y))
+              val v1 = EuclideanVector3D(1, 0, 0)
+              val v2: EuclideanVector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(x = 0)
+              (v1, v2, EuclideanVector3D(0, -v2.z, v2.y))
           }
-          val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): Vector3D }
+          val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): EuclideanVector3D }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
         case _3d: ViewportPanel3D =>
@@ -161,11 +161,11 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
              * To find any perpendicular vector, just take the cross product with any other, non-parallel vector.
              * We try (1,0,0), and if it happened to be parallel, the crossproduct is (0,0,0), and we take another.
              */
-            val candidate = meshNormal.crossproduct(Vector(1, 0, 0))
-            if (candidate.norm2 != 0) candidate else meshNormal.crossproduct(Vector(0, 1, 0))
+            val candidate = meshNormal.crossproduct(EuclideanVector3D(1, 0, 0))
+            if (candidate.norm2 != 0) candidate else meshNormal.crossproduct(EuclideanVector3D(0, 1, 0))
           }
           val secondPerp = meshNormal.crossproduct(firstPerp)
-          val axes = List(meshNormal, firstPerp, secondPerp).map { v => v * (1 / v.norm): Vector3D }
+          val axes = List(meshNormal, firstPerp, secondPerp).map { v => v * (1 / v.norm): EuclideanVector3D }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
       }

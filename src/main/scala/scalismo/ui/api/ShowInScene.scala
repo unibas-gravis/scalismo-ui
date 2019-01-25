@@ -18,7 +18,7 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, Vector, _3D }
+import scalismo.geometry.{ Landmark, Point, EuclideanVector, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
@@ -113,11 +113,11 @@ object ShowInScene extends LowPriorityImplicits {
   }
 
   implicit object ShowInSceneDiscreteFieldOfVectors
-      extends ShowInScene[DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]]] {
+      extends ShowInScene[DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]] {
 
     override type View = VectorFieldView
 
-    override def showInScene(df: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]], name: String, group: Group): VectorFieldView = {
+    override def showInScene(df: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], name: String, group: Group): VectorFieldView = {
       VectorFieldView(group.peer.vectorFields.add(df, name))
     }
   }
@@ -183,22 +183,22 @@ object ShowInScene extends LowPriorityImplicits {
   }
 
   implicit object CreateLowRankGPTransformation
-      extends ShowInScene[LowRankGaussianProcess[_3D, Vector[_3D]]] {
+      extends ShowInScene[LowRankGaussianProcess[_3D, EuclideanVector[_3D]]] {
 
     override type View = LowRankGPTransformationView
 
-    override def showInScene(gp: LowRankGaussianProcess[_3D, Vector[_3D]], name: String, group: Group): View = {
+    override def showInScene(gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], name: String, group: Group): View = {
       val gpNode = group.peer.genericTransformations.add(LowRankGpPointTransformation(gp), name)
       LowRankGPTransformationView(gpNode)
     }
   }
 
   implicit object CreateDiscreteLowRankGPTransformation
-      extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]]] {
+      extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]] {
 
     override type View = DiscreteLowRankGPTransformationView
 
-    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]],
+    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
       name: String,
       group: Group): View = {
 
