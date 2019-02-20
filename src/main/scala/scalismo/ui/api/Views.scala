@@ -21,7 +21,7 @@ import java.awt.Color
 
 import breeze.linalg.DenseVector
 import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
-import scalismo.geometry.{Dim, Landmark, Point, Vector, _3D}
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
@@ -497,7 +497,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.opacity.value = o
   }
 
-  def vectorField[A]: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]] = peer.source
+  def vectorField[A]: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = peer.source
 }
 
 object VectorFieldView {
@@ -633,7 +633,7 @@ object TransformationView {
   implicit object FindInSceneGenericTransformation$ extends FindInScene[TransformationView] {
     override def createView(s: SceneNode): Option[TransformationView] = {
 
-      type PointToPointTransformation[D <: Dim] = Point[D] => Point[D]
+      type PointToPointTransformation[D] = Point[D] => Point[D]
       // here we need a two step process due to type erasure to find the right type.
       s match {
         case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_]] =>
@@ -717,7 +717,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   def discreteLowRankGaussianProcess = peer.transformation.dgp
 
-  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]]): Unit = {
+  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }
@@ -783,7 +783,7 @@ case class LowRankGPTransformationView private[ui] (override protected[api] val 
 case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
 
 object ShapeModelTransformation {
-  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], Vector[_3D]]): ShapeModelTransformation = {
+  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): ShapeModelTransformation = {
     ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gp))
   }
 }

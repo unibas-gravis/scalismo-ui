@@ -25,7 +25,7 @@ import scalismo.ui.model.properties._
 class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[VectorFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add(vectorField: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]], name: String): VectorFieldNode = {
+  def add(vectorField: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], name: String): VectorFieldNode = {
     val node = new VectorFieldNode(this, vectorField, name)
     add(node)
     node
@@ -39,7 +39,7 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 }
 
 class VectorFieldNode(override val parent: VectorFieldsNode,
-  val source: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]],
+  val source: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
   initialName: String)
     extends RenderableSceneNode with Removeable with Renameable with Grouped
     with HasOpacity with HasLineWidth with HasScalarRange {

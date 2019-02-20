@@ -18,15 +18,15 @@
 package scalismo.ui.model
 
 import scalismo.common.{ DiscreteDomain, DiscreteField, UnstructuredPointsDomain }
-import scalismo.geometry.{ Point3D, Vector, Vector3D, _3D }
+import scalismo.geometry.{ Point3D, EuclideanVector, EuclideanVector3D, _3D }
 import scalismo.ui.model.capabilities._
 
 class TransformationGlyphNode(override val parent: VectorFieldsNode, val points: PointCloud, initialName: String)
-    extends VectorFieldNode(parent, DiscreteField(UnstructuredPointsDomain(points), points.map(_ => Vector3D(0, 0, 0))), initialName) with Transformable[DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]]] with InverseTransformation {
+    extends VectorFieldNode(parent, DiscreteField(UnstructuredPointsDomain(points), points.map(_ => EuclideanVector3D(0, 0, 0))), initialName) with Transformable[DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]] with InverseTransformation {
 
   lazy val glyphPoints = points.toIndexedSeq
 
-  override def transform(untransformed: DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]], transformation: PointTransformation): DiscreteField[_3D, DiscreteDomain[_3D], Vector[_3D]] = {
+  override def transform(untransformed: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], transformation: PointTransformation): DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = {
     DiscreteField(untransformed.domain, glyphPoints.map(p => transformation(p) - p))
   }
 
