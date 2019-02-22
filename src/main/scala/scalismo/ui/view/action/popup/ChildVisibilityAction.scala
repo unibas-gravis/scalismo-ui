@@ -49,7 +49,8 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
     if (viewports.length > 1) {
       val menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
-          icon = iconFor(control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports))
+          val state = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
+          icon = iconFor(state)
         }
 
         listenTo(control)
@@ -89,7 +90,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
     val tb = 2.scaled
     val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
+    def currentState = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)

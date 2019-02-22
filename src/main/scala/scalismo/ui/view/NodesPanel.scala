@@ -18,18 +18,18 @@
 package scalismo.ui.view
 
 import java.awt.event._
+
 import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
 import javax.swing.{ Icon, JPopupMenu, JTree }
-
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
 import scalismo.ui.model.properties.ColorProperty
 import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
+import scalismo.ui.view.action.popup.{ ChildVisibilityAction, PopupAction, PopupActionWithOwnMenu }
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable
