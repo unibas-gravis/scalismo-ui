@@ -23,7 +23,7 @@ import breeze.linalg.DenseVector
 import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
 import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh}
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.control.NodeVisibility
@@ -191,6 +191,62 @@ object TriangleMeshView {
 
   }
 }
+
+case class VertexColorMeshView private[ui](override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
+
+  type PeerType = VertexColorMeshNode
+
+  def opacity = peer.opacity.value
+
+  def opacity_=(o: Double): Unit = {
+    peer.opacity.value = o
+  }
+
+  def lineWidth = peer.lineWidth.value
+
+  def lineWidth_=(width: Int): Unit = {
+    peer.lineWidth.value = width
+  }
+
+  def colorMesh: VertexColorMesh3D = peer.source
+
+  def transformedTriangleMesh: VertexColorMesh3D = peer.transformedSource
+}
+
+object VertexColorMeshView {
+
+  implicit object FindInSceneColorMesh extends FindInScene[VertexColorMeshView] {
+    override def createView(s: SceneNode): Option[VertexColorMeshView] = {
+      s match {
+        case peer: VertexColorMeshNode => Some(VertexColorMeshView(peer))
+        case _ => None
+      }
+    }
+  }
+
+  implicit object callbacksColorMeshView extends HandleCallback[VertexColorMeshView] {
+
+    override def registerOnAdd[R](g: Group, f: VertexColorMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.colorMeshes)
+      g.peer.reactions += {
+        case ChildAdded(collection, newNode: VertexColorMeshNode) =>
+          val tmv = VertexColorMeshView(newNode)
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: VertexColorMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.colorMeshes)
+      g.peer.reactions += {
+        case ChildRemoved(collection, removedNode: VertexColorMeshNode) =>
+          val tmv = VertexColorMeshView(removedNode)
+          f(tmv)
+      }
+    }
+  }
+}
+
+
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
 

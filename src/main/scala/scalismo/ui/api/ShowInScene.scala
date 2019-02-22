@@ -20,7 +20,7 @@ package scalismo.ui.api
 import scalismo.common._
 import scalismo.geometry.{ Landmark, Point, EuclideanVector, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh }
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
@@ -60,10 +60,6 @@ trait LowPriorityImplicits {
     }
   }
 
-}
-
-object ShowInScene extends LowPriorityImplicits {
-
   implicit object ShowInSceneMesh extends ShowInScene[TriangleMesh[_3D]] {
     override type View = TriangleMeshView
 
@@ -72,6 +68,19 @@ object ShowInScene extends LowPriorityImplicits {
       TriangleMeshView(groupNode.triangleMeshes.add(mesh, name))
     }
 
+  }
+
+}
+
+object ShowInScene extends LowPriorityImplicits {
+
+  implicit def ShowVertexColorMesh = new ShowInScene[VertexColorMesh3D] {
+    override type View = VertexColorMeshView
+
+    override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
+
+      VertexColorMeshView(group.peer.colorMeshes.add(mesh, name))
+    }
   }
 
   implicit object ShowInSceneLineMesh extends ShowInScene[LineMesh[_3D]] {
