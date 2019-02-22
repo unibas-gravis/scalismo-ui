@@ -19,38 +19,38 @@ package scalismo.ui.view.action.popup
 
 import java.awt.Color
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.{ BorderFactory, Icon, JComponent }
 
+import javax.swing.{ BorderFactory, Icon, JComponent }
 import scalismo.ui.control.NodeVisibility
 import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
-import scalismo.ui.model.SceneNode
-import scalismo.ui.model.capabilities.RenderableSceneNode
+import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 import scalismo.ui.view.util.ScalableUI.implicits._
 
 import scala.swing._
 
-object VisibilityAction extends PopupAction.Factory {
+object ChildVisibilityAction extends PopupAction.Factory {
   override def apply(nodes: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupActionWithOwnMenu] = {
-    val affected = allMatch[RenderableSceneNode](nodes)
+    val affected = allMatch[GroupNode](nodes)
     if (affected.isEmpty) {
       Nil
     } else {
-      List(new VisibilityAction(affected))
+      List(new ChildVisibilityAction(affected))
     }
   }
 }
 
-class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
+class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
   val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Visible in") {
+      val menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
-          icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
+          val state = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
+          icon = iconFor(state)
         }
 
         listenTo(control)
@@ -73,7 +73,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
       menu.peer
 
     } else {
-      new ViewportVisibilityItem(viewports, "Visible").peer
+      new ViewportVisibilityItem(viewports, "Children visible").peer
     }
   }
 
@@ -90,7 +90,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
     val tb = 2.scaled
     val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes, viewports)
+    def currentState = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)
@@ -102,7 +102,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
             case Visible => false
             case _ => true
           }
-          control.setVisibility(nodes, viewports, toggle)
+          control.setVisibility(nodes.flatMap(_.renderables), viewports, toggle)
         }
       }
     })
@@ -111,7 +111,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
 
     reactions += {
       case NodeVisibility.event.NodeVisibilityChanged(node, viewport) =>
-        if (nodes.contains(node) && viewports.contains(viewport)) {
+        if (nodes.flatMap(_.renderables).contains(node) && viewports.contains(viewport)) {
           icon = iconFor(currentState)
           peer.repaint()
         }
