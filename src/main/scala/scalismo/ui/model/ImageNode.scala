@@ -49,7 +49,7 @@ class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[Ima
   }
 }
 
-class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage[_3D, Float], initialName: String) extends RenderableSceneNode with Grouped with Renameable with Removeable with HasWindowLevel with HasOpacity {
+class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage[_3D, Float], initialName: String) extends RenderableSceneNode with Grouped with Renameable with Saveable with Removeable with HasWindowLevel with HasOpacity {
   name = initialName
 
   val (minimumValue, maximumValue) = {
@@ -62,6 +62,18 @@ class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage
       max = Math.max(max, value)
     }
     (min, max)
+  }
+
+  override def saveMetadata: FileIoMetadata = FileIoMetadata.Image
+
+  override def save(file: File): Try[Unit] = {
+    val ext = FileUtil.extension(file)
+    ext match {
+      case "vtk" => ImageIO.writeVTK(source, file)
+      case "nii" => ImageIO.writeNifti(source, file)
+      case _ => Failure(new Exception(s"File $file: unsupported file extension"))
+    }
+
   }
 
   override val windowLevel: WindowLevelProperty = {
