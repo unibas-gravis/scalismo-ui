@@ -32,7 +32,7 @@ import scala.swing._
 
 object ChildVisibilityAction extends PopupAction.Factory {
   override def apply(nodes: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupActionWithOwnMenu] = {
-    val affected = allMatch[GroupNode](nodes)
+    val affected = allMatch[GroupNode](nodes).filterNot(g => g.renderables.find(_ => true).size == 0)
     if (affected.isEmpty) {
       Nil
     } else {
@@ -49,7 +49,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
     if (viewports.length > 1) {
       val menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
-          val state = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
+          val state = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
           icon = iconFor(state)
         }
 
@@ -90,7 +90,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
     val tb = 2.scaled
     val lr = 12.scaled
 
-    def currentState = if (nodes.isEmpty || nodes.flatMap(_.renderables.find(_ => true)).size == 0) Invisible else control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
+    def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)
