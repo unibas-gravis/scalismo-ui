@@ -34,7 +34,7 @@ Add the following dependency to your `build.sbt`:
 
 resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
 
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.12.1"
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.13.0"
 ```
 
 The graphical user interface can be called from an application using the command
@@ -59,10 +59,12 @@ The resulting jar file is ```target/scala-2.12/scalismo-ui.jar```
 
 # Documentation
 
-* [Quickstart guide](doc/quickstart.md)
-* [API documentation](doc/api.md)
-* [Plugin API](doc/plugins.md)
-
+Checkout the [Scalismo-tutorials](https://unibas-gravis.github.io/scalismo-tutorial/) for examples how to use *Scalismo-ui* in your
+programs. 
+ 
+#### Undocumented features
+*Scalismo-ui* features a simple plugin api. We hope to be able to add documentation soon. For the moment, check out
+the source file [SimplePluginAPI.scala](https://github.com/unibas-gravis/scalismo-ui/blob/master/src/main/scala/scalismo/ui/api/SimplePluginAPI.scala)
 
 For questions regarding scalismo-ui or suggestions for improvements, please post to the mailing list [scalismo google group](https://groups.google.com/forum/#!forum/scalismo).
 
