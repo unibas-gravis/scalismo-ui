@@ -29,7 +29,7 @@ import scalismo.ui.model.properties.ColorProperty
 import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.ui.view.action.popup.{ ChildVisibilityAction, PopupAction, PopupActionWithOwnMenu }
+import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
 
 import scala.collection.JavaConversions.enumerationAsScalaIterator
 import scala.collection.immutable

@@ -18,7 +18,6 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry.{ SquareMatrix, _3D }
-import scalismo.ui.control.SlicingPosition.renderable
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }

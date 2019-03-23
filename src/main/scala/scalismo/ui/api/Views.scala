@@ -25,13 +25,11 @@ import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
-import scalismo.ui.control.NodeVisibility
+import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
 import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.{Removeable, RenderableSceneNode}
+import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
-import scalismo.ui.view.ScalismoFrame
 
 sealed trait ObjectView {
   type PeerType <: SceneNode with Removeable

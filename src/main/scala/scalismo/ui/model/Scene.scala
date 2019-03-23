@@ -17,11 +17,9 @@
 
 package scalismo.ui.model
 
-import scalismo.ui.control.SceneControl
 import scalismo.ui.event.Event
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.SceneNode.event.ChildrenChanged
-import scalismo.ui.view.ScalismoFrame
 
 object Scene {
 

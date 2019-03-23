@@ -25,7 +25,7 @@ import scalismo.ui.view._
 import scalismo.ui.view.perspective.Perspective
 
 import scala.collection.mutable
-import scala.language.implicitConversions
+//import scala.language.implicitConversions
 
 /**
  * This class controls the visibility of nodes in the various viewports of a frame.

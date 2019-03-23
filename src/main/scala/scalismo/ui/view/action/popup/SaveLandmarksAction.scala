@@ -19,7 +19,7 @@ package scalismo.ui.view.action.popup
 
 import java.io.File
 
-import scalismo.ui.model.{ GroupNode, LandmarksNode, LandmarkNode, SceneNode }
+import scalismo.ui.model.{ LandmarkNode, LandmarksNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame

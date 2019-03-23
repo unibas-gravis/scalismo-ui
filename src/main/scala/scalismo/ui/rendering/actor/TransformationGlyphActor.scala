@@ -17,10 +17,10 @@
 
 package scalismo.ui.rendering.actor
 
+import scalismo.ui.model.TransformationGlyphNode
 import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
-import scalismo.ui.model.properties.{ ScalarRangeProperty, ScalarRange }
-import scalismo.ui.model.{ VectorFieldNode, TransformationGlyphNode }
-import scalismo.ui.view.{ ViewportPanel2D, ViewportPanel3D, ViewportPanel }
+import scalismo.ui.model.properties.ScalarRange
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk.vtkFloatArray
 
 object TransformationGlyphActor extends SimpleActorsFactory[TransformationGlyphNode] {

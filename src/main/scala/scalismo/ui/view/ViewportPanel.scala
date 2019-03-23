@@ -19,14 +19,12 @@ package scalismo.ui.view
 
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, SwingConstants }
-
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.{ Axis, BoundingBox, Scene }
 import scalismo.ui.rendering.{ RendererPanel, RendererState }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
-import scalismo.ui.view.PerspectivePanel.event.PerspectiveChanged
 import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 

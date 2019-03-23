@@ -19,7 +19,7 @@ package scalismo.ui.model.properties
 
 import scalismo.geometry.EuclideanVector._
 import scalismo.geometry._
-import scalismo.statisticalmodel.{ MultivariateNormalDistribution, NDimensionalNormalDistribution }
+import scalismo.statisticalmodel.MultivariateNormalDistribution
 
 object Uncertainty {
   val DefaultAxes = List(EuclideanVector3D(1, 0, 0), EuclideanVector3D(0, 1, 0), EuclideanVector3D(0, 0, 1))

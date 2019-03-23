@@ -17,8 +17,7 @@
 
 package scalismo.ui.api
 
-import scalismo.ui.model._
-import scalismo.ui.view.ScalismoFrame
+import scalismo.ui.model.SceneNode
 
 /**
  * This typeclass needs to be implemented for a type V (a view) if the user should be

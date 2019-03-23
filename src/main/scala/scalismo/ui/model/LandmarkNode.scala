@@ -26,7 +26,6 @@ import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
-import scalismo.ui.view.action.popup.SaveLandmarksAction
 
 import scala.util.{ Failure, Success, Try }
 

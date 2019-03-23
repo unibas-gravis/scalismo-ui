@@ -18,7 +18,6 @@
 package scalismo.ui.view.action.popup
 
 import java.io.File
-import javax.swing.text.TableView
 
 import scalismo.io.StatismoIO
 import scalismo.io.StatismoIO.{ CatalogEntry, StatismoModelType }
@@ -28,8 +27,7 @@ import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.action.LoadAction
 
-import scala.swing.BorderPanel.Position
-import scala.swing.{ Action, Alignment, BorderPanel, BoxPanel, Button, ComboBox, Dialog, FlowPanel, GridPanel, Label, Orientation, Swing, Table, TextArea, TextField }
+import scala.swing.{ Action, Alignment, BoxPanel, Button, ComboBox, Dialog, FlowPanel, GridPanel, Label, Orientation }
 import scala.util.{ Failure, Success, Try }
 
 object LoadStatisticalShapeModelAction extends PopupAction.Factory {
@@ -74,11 +72,6 @@ class LoadStatisticalShapeModelAction(group: GroupNode)(implicit frame: Scalismo
         } else if (entries.length == 1) {
           Success(entries.head.modelPath)
         } else {
-          val title = "Select shape model to load"
-          val description = "The file contains more that one shape model. Please select the one you wish to load."
-
-          var items = List("Item 1", "Item 2", "Item 3", "Item 4")
-
           val dialog = new ShapeModelSelectionDialog(entries)
           dialog.open()
 

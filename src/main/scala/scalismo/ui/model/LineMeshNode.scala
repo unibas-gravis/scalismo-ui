@@ -17,16 +17,10 @@
 
 package scalismo.ui.model
 
-import java.io.File
-
 import scalismo.geometry.{ Point3D, _3D }
-import scalismo.io.MeshIO
-import scalismo.mesh.{ LineMesh, TriangleMesh }
+import scalismo.mesh.LineMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
-
-import scala.util.{ Failure, Success, Try }
 
 class LineMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[LineMeshNode] {
   override val name: String = "Line Meshes"

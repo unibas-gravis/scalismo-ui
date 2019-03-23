@@ -17,7 +17,6 @@
 
 package scalismo.ui.model
 
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.StatisticalMeshModel
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged

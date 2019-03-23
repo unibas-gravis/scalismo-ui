@@ -19,14 +19,10 @@ package scalismo.ui.api
 
 import java.awt.Image
 
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
-import scalismo.ui.model.{ GroupNode, SceneNode }
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.perspective.Perspective
-import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
+import scalismo.ui.view.{ScalismoFrame, ScalismoLookAndFeel}
 
 class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 

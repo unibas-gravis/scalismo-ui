@@ -18,17 +18,15 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, EuclideanVector, _3D }
+import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
+import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
-import scalismo.ui.view.ScalismoFrame
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
-import scala.util.Try
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
