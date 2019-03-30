@@ -9,7 +9,7 @@ object BuildSettings {
   val buildOrganization = "ch.unibas.cs.gravis"
 
 
-  val buildScalaVersion = "2.12.6"
+  val buildScalaVersion = "2.12.8"
 
   val buildSettings = Defaults.coreDefaultSettings ++ Seq(
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -18,7 +18,7 @@ object BuildSettings {
     }),
     organization := buildOrganization,
     scalaVersion := buildScalaVersion,
-    crossScalaVersions := Seq("2.11.12", "2.12.6")
+    crossScalaVersions := Seq("2.11.12", "2.12.8")
   ) ++ buildInfoSettings ++ Seq(
     sourceGenerators in Compile += buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") {
