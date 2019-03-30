@@ -43,8 +43,10 @@ object LowRankGpPointTransformation {
 
 class DiscreteLowRankGpPointTransformation private (val dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], coefficients: DenseVector[Double]) extends LowRankGpPointTransformation(gp, coefficients) {
 
-  protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
-    coefficients: DenseVector[Double]) = {
+  protected def this(
+    dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    coefficients: DenseVector[Double]
+  ) = {
     this(dgp, dgp.interpolate(NearestNeighborInterpolator[_3D, EuclideanVector[_3D]]()), coefficients)
   }
 

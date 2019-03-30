@@ -21,7 +21,7 @@ import java.awt.Color
 
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
-import scalismo.ui.control.interactor.{DefaultInteractor, Interactor}
+import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
 import scalismo.ui.model._
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.view.ScalismoFrame

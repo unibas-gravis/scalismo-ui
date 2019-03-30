@@ -18,18 +18,18 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.model._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{FastCachingVertexColorMesh, FastCachingTriangleMesh}
+import scalismo.ui.rendering.Caches.{ FastCachingVertexColorMesh, FastCachingTriangleMesh }
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
-import vtk.{vtkPolyData, vtkUnsignedCharArray}
+import vtk.{ vtkPolyData, vtkUnsignedCharArray }
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
@@ -68,7 +68,6 @@ object VertexColorMeshActor extends SimpleActorsFactory[VertexColorMeshNode] {
     }
   }
 }
-
 
 object MeshActor {
 
@@ -112,7 +111,6 @@ object MeshActor {
 
       def colorMesh = node.transformedSource
     }
-
 
     class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
 
@@ -217,28 +215,27 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
 
 trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRenderable] {
 
-    override def renderable: MeshRenderable.VertexColorMeshRenderable
+  override def renderable: MeshRenderable.VertexColorMeshRenderable
 
-    override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
+  override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
 
-      def colorMeshToVtkPd(colorMesh : VertexColorMesh3D) : vtkPolyData = {
+    def colorMeshToVtkPd(colorMesh: VertexColorMesh3D): vtkPolyData = {
 
-        val pd = MeshConversion.meshToVtkPolyData(colorMesh.shape)
-        val vtkColors = new vtkUnsignedCharArray()
-        vtkColors.SetNumberOfComponents(3);
-        vtkColors.SetName("RGB")
+      val pd = MeshConversion.meshToVtkPolyData(colorMesh.shape)
+      val vtkColors = new vtkUnsignedCharArray()
+      vtkColors.SetNumberOfComponents(3);
+      vtkColors.SetName("RGB")
 
-        for (id <- colorMesh.shape.pointSet.pointIds) {
-          val color = colorMesh.color(id)
-          vtkColors.InsertNextTuple3((color.r * 255).toShort, (color.g * 255).toShort, (color.b * 255).toShort)
-        }
-        pd.GetPointData().SetScalars(vtkColors)
-        pd
+      for (id <- colorMesh.shape.pointSet.pointIds) {
+        val color = colorMesh.color(id)
+        vtkColors.InsertNextTuple3((color.r * 255).toShort, (color.g * 255).toShort, (color.b * 255).toShort)
       }
-      Caches.VertexColorMeshCache.getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
+      pd.GetPointData().SetScalars(vtkColors)
+      pd
     }
+    Caches.VertexColorMeshCache.getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
+  }
 }
-
 
 trait LineMeshActor extends MeshActor[MeshRenderable.LineMeshRenderable] with ActorColor with ActorLineWidth {
   override def renderable: MeshRenderable.LineMeshRenderable
@@ -264,9 +261,6 @@ trait ScalarMeshFieldActor extends MeshActor[MeshRenderable.ScalarMeshFieldRende
   }
 
 }
-
-
-
 
 abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) extends MeshActor[R] {
 

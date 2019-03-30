@@ -205,9 +205,11 @@ object ShowInScene extends LowPriorityImplicits {
 
     override type View = DiscreteLowRankGPTransformationView
 
-    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    override def showInScene(
+      gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
       name: String,
-      group: Group): View = {
+      group: Group
+    ): View = {
 
       val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)

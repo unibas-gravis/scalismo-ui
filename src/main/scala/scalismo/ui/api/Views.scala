@@ -20,13 +20,13 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
-import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
+import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
+import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
-import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
@@ -190,7 +190,7 @@ object TriangleMeshView {
   }
 }
 
-case class VertexColorMeshView private[ui](override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
+case class VertexColorMeshView private[ui] (override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
 
   type PeerType = VertexColorMeshNode
 
@@ -243,8 +243,6 @@ object VertexColorMeshView {
     }
   }
 }
-
-
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
 

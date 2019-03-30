@@ -54,7 +54,8 @@ object AboutDialog {
 
     def proxy(fieldName: String): String = Try {
       val moduleSymbol = runtimeMirror.moduleSymbol(
-        Class.forName(objectName))
+        Class.forName(objectName)
+      )
 
       val targetMethod = moduleSymbol.typeSignature
         .members

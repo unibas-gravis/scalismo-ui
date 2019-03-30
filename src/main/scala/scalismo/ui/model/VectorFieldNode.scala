@@ -38,9 +38,11 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
   }
 }
 
-class VectorFieldNode(override val parent: VectorFieldsNode,
+class VectorFieldNode(
+  override val parent: VectorFieldsNode,
   val source: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
-  initialName: String)
+  initialName: String
+)
     extends RenderableSceneNode with Removeable with Renameable with Grouped
     with HasOpacity with HasLineWidth with HasScalarRange {
 
