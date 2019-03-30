@@ -25,7 +25,7 @@ import scalismo.ui.view.ViewportPanel
 import vtk._
 
 /**
- * This is essentially a Scala re-implementation based on [[vtk.rendering.jogl.vtkJoglPanelComponent]].
+ * This is essentially a Scala re-implementation based on `vtk.rendering.jogl.vtkJoglPanelComponent`.
  * It includes a couple of bugfixes and extensions.
  */
 class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkComponent[GLJPanel] {

@@ -51,7 +51,7 @@ object ScalismoFrame {
  * a ScalismoFrame MUST be instantiated on the Swing EDT. The constructor will throw
  * an exception if this is not the case.
  *
- * @param scene a [[Scene]] object representing the model that the view uses.
+ * @param scene a [[scalismo.ui.model.Scene]] object representing the model that the view uses.
  * @see [[ScalismoApplication]]
  */
 class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {

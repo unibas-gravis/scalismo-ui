@@ -22,7 +22,7 @@ import scalismo.ui.util.EdtUtil
 import scala.swing.SimpleSwingApplication
 
 /**
- * A Scalismo application is a [[SimpleSwingApplication]], having a [[ScalismoFrame]] as the top component, and using the [[ScalismoLookAndFeel]].
+ * A Scalismo application is a `scala.swing.SimpleSwingApplication`, having a [[ScalismoFrame]] as the top component, and using the [[ScalismoLookAndFeel]].
  *
  * This class takes care of initializing the Look and Feel, and setting up the frame with the command-line arguments.
  *

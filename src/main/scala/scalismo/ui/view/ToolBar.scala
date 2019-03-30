@@ -35,9 +35,9 @@ class ToolBar extends Component with Orientable.Wrapper {
   }
 
   /**
-   * Convenience method to directly add an [[Action]] to a ToolBar.
+   * Convenience method to directly add a `scala.swing.Action` to a ToolBar.
    *
-   * This method will create a [[Button]] bound to the specified action,
+   * This method will create a `scala.swing.Button` bound to the specified action,
    * add it to the toolbar, and return that button.
    *
    * @param action the action to be added
