@@ -31,7 +31,7 @@ import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
 import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
 
-import scala.collection.JavaConversions.enumerationAsScalaIterator
+import scala.collection.JavaConverters._
 import scala.collection.immutable
 import scala.swing.{ BorderPanel, Component, ScrollPane }
 import scala.util.Try
@@ -220,7 +220,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     def findRecursive(currentNode: ViewNode): Option[ViewNode] = {
       if (currentNode.getUserObject eq node) Some(currentNode)
       else {
-        currentNode.children().foreach { child =>
+        currentNode.children().asScala.foreach { child =>
           findRecursive(child.asInstanceOf[ViewNode]) match {
             case found @ Some(_) => return found
             case _ =>
@@ -286,7 +286,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     // of that node's children.
 
     // don't replace this with a val, it has to be freshly evaluated every time
-    def viewChildren = view.children.map(_.asInstanceOf[ViewNode]).toList
+    def viewChildren = view.children.asScala.map(_.asInstanceOf[ViewNode]).toList
 
     def nodeOrChildrenIfCollapsed(node: SceneNode): Seq[SceneNode] = {
       node match {
