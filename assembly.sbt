@@ -10,7 +10,7 @@ mainClass in assembly := Some("scalismo.ui.app.ScalismoViewer")
 
 fork in run := true
 
-mergeStrategy in assembly <<= (mergeStrategy in assembly) { (old) => {
+mergeStrategy in assembly ~= { _ => {
   case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
   case PathList("META-INF", s) if s.endsWith(".SF") || s.endsWith(".DSA") || s.endsWith(".RSA") || s.endsWith(".txt") => MergeStrategy.discard
   case _ => MergeStrategy.first

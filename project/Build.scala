@@ -11,7 +11,7 @@ object BuildSettings {
 
   val buildScalaVersion = "2.12.6"
 
-  val buildSettings = Defaults.defaultSettings ++ Seq(
+  val buildSettings = Defaults.coreDefaultSettings ++ Seq(
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
       case Some((2,  11)) =>  Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.6")
       case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
@@ -20,7 +20,7 @@ object BuildSettings {
     scalaVersion := buildScalaVersion,
     crossScalaVersions := Seq("2.11.12", "2.12.6")
   ) ++ buildInfoSettings ++ Seq(
-    sourceGenerators in Compile <+= buildInfo,
+    sourceGenerators in Compile += buildInfo,
     buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion, BuildInfoKey.action("buildTime") {
       new java.text.SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z (z)", java.util.Locale.US).format(new java.util.Date)
     }, BuildInfoKey.action("buildTimestamp") {
