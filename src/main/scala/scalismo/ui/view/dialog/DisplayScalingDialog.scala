@@ -19,8 +19,8 @@ package scalismo.ui.view.dialog
 
 import java.awt.Font
 import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
-import javax.swing.BorderFactory
 
+import javax.swing.BorderFactory
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt

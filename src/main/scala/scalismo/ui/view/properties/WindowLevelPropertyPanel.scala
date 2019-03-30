@@ -19,9 +19,9 @@ package scalismo.ui.view.properties
 
 import java.awt.Color
 import java.awt.image.BufferedImage
+
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, JComponent }
-
 import scalismo.ui.model.properties.NodeProperty
 import scalismo.ui.model.{ ImageNode, SceneNode }
 import scalismo.ui.view.ScalismoFrame

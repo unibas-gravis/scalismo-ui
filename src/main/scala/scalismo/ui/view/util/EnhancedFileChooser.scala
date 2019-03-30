@@ -20,8 +20,8 @@ package scalismo.ui.view.util
 import java.awt.event.{ MouseAdapter, MouseEvent, MouseMotionAdapter }
 import java.awt.{ BorderLayout, Color, Point, Component => AComponent }
 import java.io.File
-import javax.swing._
 
+import javax.swing._
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 

@@ -28,6 +28,7 @@ import scalismo.ui.view.ScalismoFrame
 
 private[api] sealed trait SimpleInteractor {
   type ConcreteInteractor <: Interactor
+
   def ui: ScalismoUI
 
   protected[api] def peer: ConcreteInteractor

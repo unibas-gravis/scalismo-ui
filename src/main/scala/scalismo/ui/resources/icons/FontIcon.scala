@@ -20,8 +20,8 @@ package scalismo.ui.resources.icons
 import java.awt._
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
-import javax.swing.ImageIcon
 
+import javax.swing.ImageIcon
 import jiconfont.icons.{ Elusive, Entypo, FontAwesome }
 import jiconfont.{ IconCode, IconFont }
 import scalismo.ui.view.util.Constants
@@ -36,6 +36,7 @@ object FontIcon {
     def createTuple(iconFont: IconFont): (String, Font) = {
       (iconFont.getFontFamily, Font.createFont(Font.TRUETYPE_FONT, iconFont.getFontInputStream))
     }
+
     // this is where a new supported icon font would have to be added.
     val iconFonts = Seq(FontAwesome.getIconFont, Entypo.getIconFont, Elusive.getIconFont)
     iconFonts.map(createTuple).toMap

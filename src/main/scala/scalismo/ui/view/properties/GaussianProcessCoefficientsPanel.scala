@@ -18,10 +18,10 @@
 package scalismo.ui.view.properties
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.JSlider
 
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.Gaussian
+import javax.swing.JSlider
 import scalismo.ui.model.{ LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt

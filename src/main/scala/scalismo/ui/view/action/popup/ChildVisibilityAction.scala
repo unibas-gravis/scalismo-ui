@@ -25,8 +25,8 @@ import scalismo.ui.control.NodeVisibility
 import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 import scalismo.ui.view.util.ScalableUI.implicits._
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 import scala.swing._
 

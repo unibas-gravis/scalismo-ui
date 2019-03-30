@@ -18,8 +18,8 @@
 package scalismo.ui.view.action
 
 import java.io.File
-import javax.swing.filechooser.FileNameExtensionFilter
 
+import javax.swing.filechooser.FileNameExtensionFilter
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
@@ -64,6 +64,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
 
   def verifyThenSave(file: File) = {
     def candidateName = file.getName.toLowerCase
+
     var verified = true
     if (verifyFileExtension) {
       val matching = metadata.fileExtensions.filter {

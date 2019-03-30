@@ -18,6 +18,7 @@
 package scalismo.ui.view.util
 
 import java.awt.Color
+
 import javax.swing.{ BorderFactory, UIManager }
 
 import scala.swing.TextArea

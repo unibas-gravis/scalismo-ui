@@ -91,6 +91,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
   private def isPoseDefined(): Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[RigidTransformation[_3D]])
   }
+
   private def isShapeDefined(): Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation])
   }
@@ -161,7 +162,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
 class ShapeModelTransformationComponentNode[T <: PointTransformation] private (override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
     extends TransformationNode[T](parent, initialTransformation, name) {
-  override def remove(): Unit = { parent.remove(this) }
+  override def remove(): Unit = {
+    parent.remove(this)
+  }
 }
 
 object ShapeModelTransformationComponentNode {

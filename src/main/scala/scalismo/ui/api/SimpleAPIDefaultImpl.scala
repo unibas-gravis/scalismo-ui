@@ -17,8 +17,8 @@
 
 package scalismo.ui.api
 
-import scalismo.ui.model.{ GroupNode, Scene, SceneNode }
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
+import scalismo.ui.model.{ GroupNode, Scene, SceneNode }
 
 trait SimpleAPIDefaultImpl {
   self: SimpleAPI =>

@@ -18,8 +18,8 @@
 package scalismo.ui.view.properties
 
 import java.awt.Color
-import javax.swing.border.TitledBorder
 
+import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasScalarRange, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
@@ -114,6 +114,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
         s.max = 99
         s.max = 100
       }
+
       reinitSlider(minimumSlider)
       reinitSlider(maximumSlider)
 

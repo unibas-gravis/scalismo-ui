@@ -51,6 +51,7 @@ sealed trait ObjectView {
 }
 
 object ObjectView {
+
   implicit object FindInSceneObjectView extends FindInScene[ObjectView] {
     override def createView(s: SceneNode): Option[ObjectView] = {
 
@@ -68,6 +69,7 @@ object ObjectView {
       }
     }
   }
+
 }
 
 case class PointCloudView private[ui] (override protected[api] val peer: PointCloudNode) extends ObjectView {
@@ -188,6 +190,7 @@ object TriangleMeshView {
     }
 
   }
+
 }
 
 case class VertexColorMeshView private[ui] (override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
@@ -242,6 +245,7 @@ object VertexColorMeshView {
       }
     }
   }
+
 }
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
@@ -261,6 +265,7 @@ case class LineMeshView private[ui] (override protected[api] val peer: LineMeshN
   }
 
   def lineWidth = peer.lineWidth.value
+
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
@@ -302,6 +307,7 @@ object LineMeshView {
     }
 
   }
+
 }
 
 case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
@@ -375,6 +381,7 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
   }
 
   def lineWidth = peer.lineWidth.value
+
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
@@ -540,11 +547,13 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
   }
 
   def window: Double = peer.windowLevel.value.window
+
   def window_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(window = w)
   }
 
   def level = peer.windowLevel.value.level
+
   def level_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
   }
@@ -799,6 +808,7 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
   }
 
   def hasShapeTransformation(): Boolean = peer.gaussianProcessTransformation.isDefined
+
   def hasPoseTransformation(): Boolean = peer.poseTransformation.isDefined
 
 }

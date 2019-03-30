@@ -18,9 +18,9 @@
 package scalismo.ui.view.util
 
 import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
+
 import javax.swing.plaf.FontUIResource
 import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
-
 import scalismo.ui.resources.icons.ScalableIcon
 import scalismo.ui.settings.GlobalSettings
 

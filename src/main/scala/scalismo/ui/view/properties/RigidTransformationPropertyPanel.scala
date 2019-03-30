@@ -17,9 +17,8 @@
 
 package scalismo.ui.view.properties
 
-import javax.swing.border.TitledBorder
-
 import breeze.linalg.DenseVector
+import javax.swing.border.TitledBorder
 import scalismo.geometry._3D
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.ui.model._

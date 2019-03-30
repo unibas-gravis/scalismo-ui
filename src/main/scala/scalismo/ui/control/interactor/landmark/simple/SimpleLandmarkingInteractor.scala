@@ -19,8 +19,8 @@ package scalismo.ui.control.interactor.landmark.simple
 
 import java.awt.event.MouseEvent
 import java.awt.{ Color, Cursor }
-import javax.swing.SwingUtilities
 
+import javax.swing.SwingUtilities
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
@@ -83,6 +83,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
         case nope: LandmarkNode => false
         case _ => true
       }
+
       Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, exceptLandmarks)
     }
     super.mouseMoved(e)

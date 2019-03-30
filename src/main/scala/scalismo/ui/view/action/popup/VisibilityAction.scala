@@ -19,15 +19,15 @@ package scalismo.ui.view.action.popup
 
 import java.awt.Color
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.{ BorderFactory, Icon, JComponent }
 
+import javax.swing.{ BorderFactory, Icon, JComponent }
 import scalismo.ui.control.NodeVisibility
 import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 import scalismo.ui.view.util.ScalableUI.implicits._
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 import scala.swing._
 

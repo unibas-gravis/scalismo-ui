@@ -18,8 +18,8 @@
 package scalismo.ui.view.properties
 
 import java.awt.Font
-import javax.swing.border.TitledBorder
 
+import javax.swing.border.TitledBorder
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.model.{ Axis, Scene, SceneNode }
 import scalismo.ui.view.ScalismoFrame

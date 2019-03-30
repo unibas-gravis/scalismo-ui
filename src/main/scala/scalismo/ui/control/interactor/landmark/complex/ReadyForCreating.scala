@@ -44,6 +44,7 @@ class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[Interactor
       case nope: LandmarkNode => false
       case _ => true
     }
+
     Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, exceptLandmarks)
   }
 

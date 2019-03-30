@@ -18,8 +18,8 @@
 package scalismo.ui.view
 
 import java.awt.Dimension
-import javax.swing.{ JLabel, JTabbedPane }
 
+import javax.swing.{ JLabel, JTabbedPane }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged

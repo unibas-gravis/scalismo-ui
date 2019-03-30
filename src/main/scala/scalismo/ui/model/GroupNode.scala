@@ -42,6 +42,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
     _isGhost = b
     scene.publishEvent(SceneChanged(scene))
   }
+
   def isGhost = _isGhost
 
   val genericTransformations = new GenericTransformationsNode(this)

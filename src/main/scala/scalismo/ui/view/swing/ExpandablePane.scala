@@ -19,6 +19,7 @@ package scalismo.ui.view.swing
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Container, Dimension }
+
 import javax.swing.{ JComponent, JSplitPane }
 
 object ExpandablePane {
@@ -95,6 +96,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
         val parent = current.getParent
         if (parent == null) current else containing(parent)
       }
+
       val fake = containing(this).getSize
 
       if (isVertical) {

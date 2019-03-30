@@ -18,8 +18,8 @@
 package scalismo.ui.view.dialog
 
 import java.io.{ PrintWriter, StringWriter }
-import javax.swing.{ BorderFactory, JComponent, UIManager }
 
+import javax.swing.{ BorderFactory, JComponent, UIManager }
 import scalismo.ui.resources.icons.ScalableIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.{ MultiLineLabel, ScalableUI }

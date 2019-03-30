@@ -18,7 +18,6 @@
 package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
-
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasRadius, NodeProperty }
 import scalismo.ui.view.ScalismoFrame

@@ -18,7 +18,7 @@
 package scalismo.ui.api
 
 import scalismo.common.UnstructuredPointsDomain3D
-import scalismo.geometry.{ _3D, Point }
+import scalismo.geometry.{ Point, _3D }
 
 /**
  * A dummy class used only in the api to be able to show the transformation glyphs using a uniform syntax

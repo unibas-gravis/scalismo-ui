@@ -55,6 +55,7 @@ object FileIoMetadata {
   val VertexColorMesh = new FileIoMetadata {
 
     override def fileExtensions: List[String] = List("ply")
+
     override def description: String = "Triangle Mesh with vertex color"
   }
 

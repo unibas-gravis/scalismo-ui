@@ -18,7 +18,6 @@
 package scalismo.ui.view.action.popup
 
 import javax.swing.{ Icon, JComponent }
-
 import scalismo.ui.model.SceneNode
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame

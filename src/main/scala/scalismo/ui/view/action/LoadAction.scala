@@ -18,8 +18,8 @@
 package scalismo.ui.view.action
 
 import java.io.File
-import javax.swing.filechooser.FileNameExtensionFilter
 
+import javax.swing.filechooser.FileNameExtensionFilter
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame

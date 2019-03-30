@@ -19,7 +19,7 @@ package scalismo.ui.model
 
 import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteDomain, NearestNeighborInterpolator }
-import scalismo.geometry.{ Point, EuclideanVector, _3D }
+import scalismo.geometry.{ EuclideanVector, Point, _3D }
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess }
 
 // This used to be a case class, but since it is extended by the discrete version, it can no longer be.

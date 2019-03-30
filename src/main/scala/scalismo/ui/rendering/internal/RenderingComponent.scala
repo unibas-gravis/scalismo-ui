@@ -18,9 +18,9 @@
 package scalismo.ui.rendering.internal
 
 import java.util.concurrent.locks.ReentrantLock
+
 import javax.media.opengl.awt.GLJPanel
 import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
-
 import scalismo.ui.view.ViewportPanel
 import vtk._
 

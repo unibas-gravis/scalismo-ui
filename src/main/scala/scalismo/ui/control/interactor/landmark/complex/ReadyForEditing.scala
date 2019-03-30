@@ -43,6 +43,7 @@ class ReadyForEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorT
       case yep: LandmarkNode => true
       case _ => false
     }
+
     Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, onlyLandmarks)
   }
 

@@ -19,11 +19,11 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{ FastCachingVertexColorMesh, FastCachingTriangleMesh }
+import scalismo.ui.rendering.Caches.{ FastCachingTriangleMesh, FastCachingVertexColorMesh }
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
@@ -233,6 +233,7 @@ trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRende
       pd.GetPointData().SetScalars(vtkColors)
       pd
     }
+
     Caches.VertexColorMeshCache.getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
   }
 }

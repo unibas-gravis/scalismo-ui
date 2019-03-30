@@ -20,8 +20,8 @@ package scalismo.ui.view
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Color, Cursor, Font, Component => AComponent }
 import java.text.SimpleDateFormat
-import javax.swing._
 
+import javax.swing._
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.model.StatusMessage._
 import scalismo.ui.resources.icons.BundledIcon

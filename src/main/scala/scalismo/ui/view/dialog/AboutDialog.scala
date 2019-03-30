@@ -20,8 +20,8 @@ package scalismo.ui.view.dialog
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Color, Cursor, Font }
 import java.net.URI
-import javax.swing._
 
+import javax.swing._
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame

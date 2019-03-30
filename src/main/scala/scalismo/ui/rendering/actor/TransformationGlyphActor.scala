@@ -77,4 +77,5 @@ trait TransformationGlyphActor extends VectorFieldActor {
 }
 
 class TransformationGlyphActor3D(override val sceneNode: TransformationGlyphNode) extends VectorFieldActor3D(sceneNode) with TransformationGlyphActor
+
 class TransformationGlyphActor2D(override val sceneNode: TransformationGlyphNode, viewport: ViewportPanel2D) extends VectorFieldActor2D(sceneNode, viewport) with TransformationGlyphActor
