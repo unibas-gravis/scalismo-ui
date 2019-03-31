@@ -184,7 +184,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  var keyListener = new KeyAdapter {
+  val keyListener = new KeyAdapter {
     override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete

@@ -34,8 +34,9 @@ import scala.swing.event.{ ButtonClicked, ValueChanged }
 object GaussianProcessCoefficientsPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new GaussianProcessCoefficientsPanel(frame)
 
-  var MaxAbsoluteCoefficientValue: Float = 3.0f
-  var CoefficientValueStep: Float = 0.1f
+  val MaxAbsoluteCoefficientValue: Float = 3.0f
+
+  val CoefficientValueStep: Float = 0.1f
 }
 
 class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
@@ -79,7 +80,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   }
 
   private class Table extends GridBagPanel {
-    var entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
+    val entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
 
     // need to redefine because add() is protected in superclass
     def add(comp: Component, position: (Int, Int)) = {

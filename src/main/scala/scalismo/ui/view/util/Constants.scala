@@ -20,12 +20,19 @@ package scalismo.ui.view.util
 import java.awt.Color
 
 /**
+ * User Interface Constants
+ *
  * The values in here are constants, in the sense that they're not supposed to change while an
  * application is running. However, they are still defined as vars, to allow developers to
  * easily override them if needed. If that is done, it should be done as early as possible
  * (e.g. in the main method), before an actual instance of the UI is created.
  */
 object Constants {
+
+  /* Note: the following line suppresses "var could be a val" warnings from IntelliJ IDEA.
+  * //noinspection VarCouldBeVal
+  * It is prepended to all definitions, because they are intentionally vars instead of vals.
+  */
 
   /**
    * This is the color value that is used as the basic background color when presenting color selections.
@@ -36,11 +43,13 @@ object Constants {
    * The only place where this is currently used is in the [[scalismo.ui.view.properties.ColorPropertyPanel]] class.
    *
    */
+  //noinspection VarCouldBeVal
   var PerceivedBackgroundColor: Color = Color.GRAY
 
   /**
    * This is the default size of icons, *before* any scaling is applied.
    */
+  //noinspection VarCouldBeVal
   var StandardUnscaledIconSize: Int = 16
 
   /**
@@ -48,6 +57,7 @@ object Constants {
    * This seems to be baked in deeply in all of the Swing internals, so
    * DO NOT CHANGE THIS VALUE unless you REALLY know what you are doing.
    */
+  //noinspection VarCouldBeVal
   var DefaultFontSize: Int = 12
 
 }

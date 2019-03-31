@@ -33,6 +33,9 @@ object CardPanel {
   }
 
   class CustomCardLayout extends CardLayout {
+    private val minimumWidth = 0
+    private val minimumHeight = 0
+
     override def preferredLayoutSize(parent: awt.Container): Dimension = {
       if (activeCards.isDefined) {
         parent.getTreeLock synchronized {
@@ -53,8 +56,6 @@ object CardPanel {
     }
 
     private[CardPanel] var activeCards: Option[List[AComponent]] = None
-    var minimumWidth = 0
-    var minimumHeight = 0
   }
 
   val NoCard: String = null

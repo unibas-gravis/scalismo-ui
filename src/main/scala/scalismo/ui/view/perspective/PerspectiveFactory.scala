@@ -51,7 +51,7 @@ object PerspectiveFactory {
     _factories = factories.filterNot(_ == factory)
   }
 
-  var defaultPerspective: PerspectiveFactory = {
+  val defaultPerspective: PerspectiveFactory = {
     val userPreferred = GlobalSettings.get[String](GlobalSettings.Keys.PerspectiveName).flatMap { name => factories.find(_.perspectiveName == name) }
     userPreferred.getOrElse(factories.head)
   }

@@ -29,7 +29,7 @@ import scala.swing.{ BorderPanel, Component, FileChooser, Label }
 import scala.util.Failure
 
 object EnhancedFileChooser {
-  var MaxDirs = 13
+  val MaxDirs = 13
 }
 
 /*

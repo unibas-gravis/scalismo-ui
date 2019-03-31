@@ -31,9 +31,9 @@ object RadiusPropertyPanel extends PropertyPanel.Factory {
     new RadiusPropertyPanel(frame)
   }
 
-  var MinValue: Float = 0.0f
-  var MaxValue: Float = 25.0f
-  var StepSize: Float = 0.1f
+  val MinValue: Float = 0.0f
+  val MaxValue: Float = 25.0f
+  val StepSize: Float = 0.1f
 }
 
 class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
