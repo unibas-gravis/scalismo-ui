@@ -85,7 +85,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.radius.value = slider.floatValue.toFloat)
+    case ValueChanged(c) => targets.foreach(_.radius.value = slider.floatValue)
   }
 
 }

@@ -49,11 +49,11 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
       }
     }
 
-    visibleViewports.foreach(v => setVisible(true, v.name))
+    visibleViewports.foreach(v => setVisible(isVisible = true, v.name))
 
     //set invisible in other viewports
     val viewsNotInConfig = frame.perspective.viewports.filterNot(v => visibleViewports.exists(_.name == v.name))
-    viewsNotInConfig.foreach(v => setVisible(false, v.name))
+    viewsNotInConfig.foreach(v => setVisible(isVisible = false, v.name))
 
   }
 

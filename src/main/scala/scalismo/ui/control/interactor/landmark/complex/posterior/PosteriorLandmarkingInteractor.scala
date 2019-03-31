@@ -65,11 +65,11 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
   }
 
   def showPreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, true)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = true)
   }
 
   def hidePreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = false)
   }
 
   def initialize(): Unit = {
