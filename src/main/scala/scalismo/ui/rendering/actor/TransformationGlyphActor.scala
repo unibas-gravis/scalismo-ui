@@ -48,7 +48,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
       SetNumberOfComponents(3)
     }
 
-    var maxNorm = 0.0;
+    var maxNorm = 0.0
     var minNorm = Double.MaxValue
 
     for ((vector, i) <- sceneNode.transformedSource.values.zipWithIndex) {

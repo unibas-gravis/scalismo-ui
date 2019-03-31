@@ -32,7 +32,7 @@ import scala.swing._
 
 object ChildVisibilityAction extends PopupAction.Factory {
   override def apply(nodes: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupActionWithOwnMenu] = {
-    val affected = allMatch[GroupNode](nodes).filterNot(g => g.renderables.find(_ => true).size == 0)
+    val affected = allMatch[GroupNode](nodes).filter(g => g.renderables.nonEmpty)
     if (affected.isEmpty) {
       Nil
     } else {

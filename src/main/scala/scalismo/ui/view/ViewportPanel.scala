@@ -198,7 +198,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
     case SlicingPosition.event.PointChanged(_, _, current) => updateSliderValue(current)
     case SlicingPosition.event.BoundingBoxChanged(s) => updateSliderMinMax(s.boundingBox)
     case SlicingPosition.event.PerspectiveChanged(s) => {
-      updateSliderMinMax(s.boundingBox);
+      updateSliderMinMax(s.boundingBox)
       updateSliderValue(s.point)
     }
     case ValueChanged(s) if s eq positionSlider => sliderValueChanged()

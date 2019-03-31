@@ -223,7 +223,7 @@ trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRende
 
       val pd = MeshConversion.meshToVtkPolyData(colorMesh.shape)
       val vtkColors = new vtkUnsignedCharArray()
-      vtkColors.SetNumberOfComponents(3);
+      vtkColors.SetNumberOfComponents(3)
       vtkColors.SetName("RGB")
 
       for (id <- colorMesh.shape.pointSet.pointIds) {

@@ -117,6 +117,8 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
       val pointOption = {
         val point: Point3D = scalismo.geometry.Point[_3D](array)
         val bb = viewport.frame.sceneControl.slicingPosition.boundingBox
+        //IntelliJ IDEA hint: don't complain, your suggested alternative is less understandable
+        //noinspection IfElseToFilterdOption
         if (bb.contains(point)) Some(point) else None
       }
       PointAndProp(pointOption, None)

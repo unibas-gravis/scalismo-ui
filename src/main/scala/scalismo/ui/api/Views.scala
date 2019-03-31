@@ -807,9 +807,9 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
     case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
   }
 
-  def hasShapeTransformation(): Boolean = peer.gaussianProcessTransformation.isDefined
+  def hasShapeTransformation: Boolean = peer.gaussianProcessTransformation.isDefined
 
-  def hasPoseTransformation(): Boolean = peer.poseTransformation.isDefined
+  def hasPoseTransformation: Boolean = peer.poseTransformation.isDefined
 
 }
 

@@ -36,7 +36,7 @@ object SaveLandmarksAction extends PopupAction.Factory {
       if (landmarksNodeOpt.isEmpty) {
         Nil
       } else {
-        if (landmarksNodeOpt.get.children.length > 0) {
+        if (landmarksNodeOpt.get.children.nonEmpty) {
           List(new SaveLandmarksAction(landmarksNodeOpt.get.children), new SaveLandmarksAction(landmarksNodeOpt.get.children, false))
         } else Nil
       }
