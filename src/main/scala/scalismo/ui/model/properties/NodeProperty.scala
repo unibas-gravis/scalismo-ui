@@ -40,7 +40,7 @@ class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
    * @param possiblyNotSane a value, possibly not a sane one
    * @return the sanitized version of the value
    */
-  protected def sanitize(possiblyNotSane: V) = possiblyNotSane
+  protected def sanitize(possiblyNotSane: V): V = possiblyNotSane
 
   private var _value: V = sanitize(initialValue)
 

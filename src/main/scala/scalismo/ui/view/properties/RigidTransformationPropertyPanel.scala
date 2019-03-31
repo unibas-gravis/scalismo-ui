@@ -43,7 +43,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
   val labels = List("T1", "T2", "T3", "R1", "R2", "R3")
   val centerLabel = new Label("-")
 
-  val panel = new GridBagPanel {
+  val panel: GridBagPanel = new GridBagPanel {
     val constraints = new Constraints()
 
     var (x, y) = (0, 0)

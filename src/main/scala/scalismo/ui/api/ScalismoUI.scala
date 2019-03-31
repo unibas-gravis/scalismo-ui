@@ -19,6 +19,7 @@ package scalismo.ui.api
 
 import java.awt.Image
 
+import scalismo.ui.model.Scene
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
@@ -37,8 +38,8 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
     frame
   }
 
-  protected[api] val scene = fr.scene
-  protected[api] val frame = fr
+  protected[api] val scene: Scene = fr.scene
+  protected[api] val frame: ScalismoFrame = fr
 
   override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit = {
 

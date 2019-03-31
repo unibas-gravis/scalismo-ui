@@ -166,7 +166,7 @@ object AboutDialog {
       border = descriptionBorder
     }
 
-    val center = new BorderPanel {
+    val center: BorderPanel = new BorderPanel {
       val list = new ThirdPartyListPanel(frame) {
         border = listBorder
       }
@@ -329,7 +329,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
     layout(new LogoPanel) = BorderPanel.Position.West
   }
 
-  val main = new BorderPanel {
+  val main: BorderPanel = new BorderPanel {
 
     val keyValue = List(
       "Developers" -> "<html>Ghazi Bouabene<br/>Thomas Gerig<br/>Christoph Langguth<br/>Marcel Lüthi</html>",
@@ -340,7 +340,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       "Build Time" -> BuildInfo.buildTime
     )
 
-    val kvPanel = new BorderPanel {
+    val kvPanel: BorderPanel = new BorderPanel {
       val west = new BorderPanel {
         layout(new KeyValuePanel(keyValue)) = BorderPanel.Position.Center
       }
@@ -358,7 +358,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
     tabsPane.pages += new Page("Scalismo UI", withLogo(kvPanel), null)
     tabsPane.pages += new Page("Third Party", withLogo(new ThirdPartyPanel(frame)), null)
 
-    val bottomPanel = new BorderPanel {
+    val bottomPanel: BorderPanel = new BorderPanel {
       val ok = new Button(new Action("OK") {
         override def apply(): Unit = AboutDialog.this.dispose()
       })

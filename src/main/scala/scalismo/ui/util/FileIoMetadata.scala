@@ -37,17 +37,17 @@ trait FileIoMetadata {
 
 object FileIoMetadata {
 
-  val Png = new FileIoMetadata {
+  val Png: FileIoMetadata = new FileIoMetadata {
     override val description = "PNG Image"
     override val fileExtensions = List("png")
   }
 
-  val TriangleMesh = new FileIoMetadata {
+  val TriangleMesh: FileIoMetadata = new FileIoMetadata {
     override val description = "Triangle Mesh"
     override val fileExtensions = List("stl", "vtk", "ply")
   }
 
-  val ScalarMeshField = new FileIoMetadata {
+  val ScalarMeshField: FileIoMetadata = new FileIoMetadata {
     override val description = "Scalar Mesh Field"
     override val fileExtensions = List("vtk")
   }
@@ -59,17 +59,17 @@ object FileIoMetadata {
     override def description: String = "Triangle Mesh with vertex color"
   }
 
-  val Image = new FileIoMetadata {
+  val Image: FileIoMetadata = new FileIoMetadata {
     override val description = "3D Image"
     override val fileExtensions = List("nii", "vtk")
   }
 
-  val Landmarks = new FileIoMetadata {
+  val Landmarks: FileIoMetadata = new FileIoMetadata {
     override val description = "Landmarks"
     override val fileExtensions = List("json", "csv")
   }
 
-  val StatisticalShapeModel = new FileIoMetadata {
+  val StatisticalShapeModel: FileIoMetadata = new FileIoMetadata {
     override val description = "Statistical Shape Model"
     override val fileExtensions = List("h5")
   }

@@ -36,7 +36,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
   def defaultUncertainty: Uncertainty
 
-  val landmarkingButton = new ToggleButton {
+  val landmarkingButton: ToggleButton = new ToggleButton {
     val myIcon = BundledIcon.Landmark
 
     def updateUi(): Unit = {

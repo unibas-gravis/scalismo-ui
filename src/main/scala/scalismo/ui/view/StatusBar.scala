@@ -71,7 +71,7 @@ class StatusBar extends BorderPanel {
     logPanel.visible = visible
   }
 
-  private val statusLabel = new Label("Welcome to the Scalismo Viewer!", BundledIcon.Smiley.standardSized(), Alignment.Leading) {
+  private val statusLabel: Label = new Label("Welcome to the Scalismo Viewer!", BundledIcon.Smiley.standardSized(), Alignment.Leading) {
 
     import BorderFactory._
 
@@ -88,7 +88,7 @@ class StatusBar extends BorderPanel {
     })
   }
 
-  private val logModel = new DefaultListModel[StatusMessage] {
+  private val logModel: DefaultListModel[StatusMessage] = new DefaultListModel[StatusMessage] {
     val MaxLength = 10000
 
     override def addElement(e: StatusMessage): Unit = {
@@ -117,7 +117,7 @@ class StatusBar extends BorderPanel {
 
   private val log = Component.wrap(jLog)
 
-  private val logPanel = new BorderPanel {
+  private val logPanel: BorderPanel = new BorderPanel {
     layout(new ScrollPane(log)) = BorderPanel.Position.Center
     val toolBar = new ToolBar {
       floatable = false

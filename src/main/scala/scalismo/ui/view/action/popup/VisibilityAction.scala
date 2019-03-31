@@ -48,7 +48,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Visible in") {
+      val menu: Menu = new Menu("Visible in") {
         def updateIcon(): Unit = {
           icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
         }

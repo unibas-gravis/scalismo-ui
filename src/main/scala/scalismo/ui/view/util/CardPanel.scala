@@ -73,7 +73,7 @@ class CardPanel extends Panel with LayoutContainer {
   private var cards: Map[UniqueID, ComponentWithUniqueId] = Map.empty
   private var _current: UniqueID = CardPanel.NoCard
 
-  protected def areValid(c: UniqueID) = (true, "")
+  protected def areValid(c: UniqueID): (Boolean, UniqueID) = (true, "")
 
   def add(card: ComponentWithUniqueId): Unit = {
     add(card, card.uniqueId)
@@ -111,7 +111,7 @@ class CardPanel extends Panel with LayoutContainer {
 
   def currentComponent: ComponentWithUniqueId = cards(_current)
 
-  protected def constraintsFor(comp: Component) = cards.iterator.find {
+  protected def constraintsFor(comp: Component): UniqueID = cards.iterator.find {
     case (_, c) => c eq comp
   }.map(_._1).orNull
 

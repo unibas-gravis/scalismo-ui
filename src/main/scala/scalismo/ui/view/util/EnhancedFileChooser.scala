@@ -102,13 +102,13 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       val model = new DefaultListModel[FileEntry]()
       lastDirs.foreach(d => model.addElement(new FileEntry(d)))
 
-      val panel = new BorderPanel {
+      val panel: BorderPanel = new BorderPanel {
         val title = new BorderPanel {
           layout(new Label("Recent Folders:")) = BorderPanel.Position.West
         }
         layout(title) = BorderPanel.Position.North
 
-        val list = new JList(model) {
+        val list: JList[FileEntry] = new JList(model) {
           def affectedItem(point: Point): Option[FileEntry] = {
             val index = locationToIndex(point)
             if (index > -1 && getCellBounds(index, index).contains(point)) {

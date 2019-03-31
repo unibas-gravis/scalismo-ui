@@ -188,9 +188,9 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
   // layout
   {
     val inset = 10.scaled
-    val northedPanel = new BorderPanel {
+    val northedPanel: BorderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
-      val slidersPanel = new GridBagPanel {
+      val slidersPanel: GridBagPanel = new GridBagPanel {
         val constraints = new Constraints() {
           ipadx = inset
         }

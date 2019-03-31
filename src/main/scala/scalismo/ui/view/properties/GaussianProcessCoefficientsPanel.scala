@@ -56,7 +56,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private case class Entry(index: Int) {
     val label = new Label(index.toString)
-    val slider = new Slider {
+    val slider: Slider = new Slider {
       override lazy val peer = new JSlider with SuperMixin {
         // this tries to jump directly to the value the user clicked.
         addMouseListener(new MouseAdapter() {

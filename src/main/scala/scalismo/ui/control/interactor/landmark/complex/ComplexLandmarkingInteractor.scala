@@ -56,7 +56,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
 
   implicit lazy val myself: InteractorType = this.asInstanceOf[InteractorType]
 
-  private lazy val landmarkingButton = new ToggleButton {
+  private lazy val landmarkingButton: ToggleButton = new ToggleButton {
     selected = true
     val myIcon = BundledIcon.Landmark
 
@@ -74,7 +74,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     updateUi()
   }
 
-  override protected def initialDelegate = {
+  override protected def initialDelegate: Delegate[InteractorType] = {
     if (isLandmarkCreationEnabled) {
       ReadyForCreating.enter()
     } else {

@@ -138,7 +138,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
   // being performed (i.e. tree is being programmatically modified)
   private var synchronizing = false
 
-  val mouseListener = new MouseAdapter() {
+  val mouseListener: MouseAdapter = new MouseAdapter() {
     override def mousePressed(event: MouseEvent): Unit = handle(event)
 
     override def mouseReleased(event: MouseEvent): Unit = handle(event)

@@ -47,7 +47,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Children visible in") {
+      val menu: Menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
           val state = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
           icon = iconFor(state)

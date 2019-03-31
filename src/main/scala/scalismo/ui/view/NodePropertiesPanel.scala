@@ -162,7 +162,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   }
 
   // placeholder object that gets shown when nothing is to be shown :-)
-  val empty = new BorderPanel with CardPanel.ComponentWithUniqueId {
+  val empty: BorderPanel with CardPanel.ComponentWithUniqueId = new BorderPanel with CardPanel.ComponentWithUniqueId {
     val zero = new Dimension(0, 0)
     peer.setPreferredSize(zero)
     peer.setMinimumSize(zero)
