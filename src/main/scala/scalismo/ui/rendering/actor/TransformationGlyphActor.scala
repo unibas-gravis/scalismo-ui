@@ -36,7 +36,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
 
   override def sceneNode: TransformationGlyphNode
 
-  override def rerender(geometryChanged: Boolean) = {
+  override def rerender(geometryChanged: Boolean): Unit = {
 
     sceneNode.transformedSource
 

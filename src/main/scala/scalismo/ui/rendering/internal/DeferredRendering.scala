@@ -54,7 +54,7 @@ class DeferredRendering(operation: => Unit) extends Timer(true) {
     }
   }
 
-  def request() = skipped.synchronized {
+  def request(): Unit = skipped.synchronized {
     if (pending.isEmpty) {
       val task = new DeferredRenderTask
       pending = Some(task)

@@ -29,7 +29,7 @@ trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
   }
 
-  private def setAppearance() = {
+  private def setAppearance(): Unit = {
     mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
     mapper.Modified()
     actorChanged()

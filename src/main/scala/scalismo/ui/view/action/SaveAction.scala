@@ -50,7 +50,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
 
   def parentComponent = frame.componentForDialogs
 
-  def apply() = {
+  def apply(): Unit = {
     if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {
       if (chooser.selectedFile.exists && confirmWhenExists) {
         val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
@@ -62,7 +62,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     }
   }
 
-  def verifyThenSave(file: File) = {
+  def verifyThenSave(file: File): Unit = {
     def candidateName = file.getName.toLowerCase
 
     var verified = true
@@ -79,7 +79,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     if (verified) trySave(file)
   }
 
-  def trySave(file: File) = {
+  def trySave(file: File): Unit = {
     val ok = save(file)
     ok match {
       case Success(_) => onSuccess(file)

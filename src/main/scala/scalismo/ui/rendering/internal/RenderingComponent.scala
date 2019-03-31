@@ -115,13 +115,13 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
 
   ////// helper methods
 
-  private def executeLocked(block: => Unit) = {
+  private def executeLocked(block: => Unit): Unit = {
     lock.lock()
     block
     lock.unlock()
   }
 
-  private def executeInterruptibly(block: => Unit) = {
+  private def executeInterruptibly(block: => Unit): Unit = {
     try {
       lock.lockInterruptibly()
       block

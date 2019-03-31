@@ -22,7 +22,7 @@ trait Renameable {
 
   def name = if (_name == null) "(null)" else _name
 
-  def name_=(newValue: String) = {
+  def name_=(newValue: String): Unit = {
     _name = newValue
   }
 }

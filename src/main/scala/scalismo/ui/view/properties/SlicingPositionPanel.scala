@@ -78,7 +78,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       slider.value
     }
 
-    def update() = {
+    def update(): Unit = {
       val sp = slicingPosition.get
       val (min, max, value) = axis match {
         case Axis.X => (sp.boundingBox.xMin, sp.boundingBox.xMax, sp.x)
@@ -149,7 +149,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
     }
   }
 
-  def cleanup() = {
+  def cleanup(): Unit = {
     slicingPosition.foreach(sp => deafTo(sp))
     slicingPosition = None
   }
@@ -164,11 +164,11 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
     }
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 

@@ -76,11 +76,11 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(minimumSlider, maximumSlider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(minimumSlider, maximumSlider)
   }
 
@@ -100,7 +100,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     v * step + min
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.foreach { t =>
       min = t.scalarRange.value.absoluteMinimum
@@ -108,7 +108,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
       step = (max - min) / 100.0f
 
       // this is an ugly workaround to make sure (min, max) values are properly displayed
-      def reinitSlider(s: FancySlider) = {
+      def reinitSlider(s: FancySlider): Unit = {
         s.min = 1
         s.min = 0
         s.max = 99

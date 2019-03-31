@@ -56,15 +56,15 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.value = (t.opacity.value * 100.0f).toInt)
     listenToOwnEvents()

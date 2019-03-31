@@ -29,7 +29,7 @@ trait ActorLineWidth extends SingleActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq lineWidth => setAppearance()
   }
 
-  private def setAppearance() = {
+  private def setAppearance(): Unit = {
     GetProperty().SetLineWidth(lineWidth.value)
     actorChanged()
   }

@@ -166,7 +166,7 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
   // this is invoked from within the rerender method, if the geometry has changed.
   protected def onGeometryChanged(): Unit
 
-  protected def rerender(geometryChanged: Boolean) = {
+  protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       polydata = meshToPolyData(Some(polydata))
       onGeometryChanged()
@@ -276,7 +276,7 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
     mapper.SetInputConnection(normals.GetOutputPort())
   }
 
-  override protected def onGeometryChanged() = {
+  override protected def onGeometryChanged(): Unit = {
     normals.RemoveAllInputs()
     normals.SetInputData(polydata)
     normals.Update()

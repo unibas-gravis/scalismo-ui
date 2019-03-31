@@ -22,13 +22,13 @@ import scala.swing.{ Action, Button, Component, Orientable }
 class ToolBar extends Component with Orientable.Wrapper {
   override lazy val peer = new javax.swing.JToolBar with SuperMixin
 
-  def add(c: Component) = {
+  def add(c: Component): Unit = {
     peer.add(c.peer)
     peer.repaint()
     peer.revalidate()
   }
 
-  def remove(c: Component) = {
+  def remove(c: Component): Unit = {
     peer.remove(c.peer)
     peer.repaint()
     peer.revalidate()
@@ -52,11 +52,11 @@ class ToolBar extends Component with Orientable.Wrapper {
 
   def floatable: Boolean = peer.isFloatable
 
-  def floatable_=(b: Boolean) = peer.setFloatable(b)
+  def floatable_=(b: Boolean): Unit = peer.setFloatable(b)
 
   def rollover: Boolean = peer.isRollover
 
-  def rollover_=(b: Boolean) = peer.setRollover(b)
+  def rollover_=(b: Boolean): Unit = peer.setRollover(b)
 
   // constructor
   floatable = false

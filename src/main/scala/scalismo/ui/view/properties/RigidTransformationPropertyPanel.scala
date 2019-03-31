@@ -109,7 +109,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
     border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
   }) = BorderPanel.Position.North
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     targets.headOption.foreach { node =>
       val params = node.transformation.translation.parameters.toArray ++ node.transformation.rotation.parameters.toArray
       params.zip(textFields).foreach {

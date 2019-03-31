@@ -48,13 +48,13 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
 
   def parentComponent = frame.componentForDialogs
 
-  def apply() = {
+  def apply(): Unit = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {
       chooser.selectedFiles foreach tryLoad
     }
   }
 
-  def tryLoad(file: File) = {
+  def tryLoad(file: File): Unit = {
     val ok = load(file)
     ok match {
       case Success(_) => onSuccess(file)

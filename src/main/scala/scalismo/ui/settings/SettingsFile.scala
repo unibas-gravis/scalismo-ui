@@ -39,7 +39,7 @@ class SettingsFile(directory: File, name: String) {
     } else Nil
   }
 
-  private def writeFile(values: List[String]) = {
+  private def writeFile(values: List[String]): Unit = {
     if (!file.exists) {
       if (!file.getParentFile.exists) {
         file.getParentFile.mkdirs()

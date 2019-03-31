@@ -46,7 +46,7 @@ class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
 
   def value: V = _value
 
-  def value_=(newValue: V) = {
+  def value_=(newValue: V): Unit = {
     _value = sanitize(newValue)
     publishEvent(PropertyChanged(this))
   }

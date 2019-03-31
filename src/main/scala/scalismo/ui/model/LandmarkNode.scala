@@ -47,7 +47,7 @@ object LandmarksNode {
       name
     }
 
-    def reset() = {
+    def reset(): Unit = {
       prefix = 0
       suffix = 0
     }

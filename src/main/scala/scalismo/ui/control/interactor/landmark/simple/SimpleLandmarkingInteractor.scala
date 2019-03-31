@@ -39,7 +39,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
   val landmarkingButton = new ToggleButton {
     val myIcon = BundledIcon.Landmark
 
-    def updateUi() = {
+    def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"
       tooltip = s"Toggle landmarking (currently $onOff)"
       val iconColor = if (selected) Color.GREEN.darker else Color.DARK_GRAY

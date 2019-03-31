@@ -85,7 +85,7 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
   mapper.SetInputConnection(glyph.GetOutputPort)
   mapper.ScalarVisibilityOn()
 
-  def rerender(geometryChanged: Boolean) = {
+  def rerender(geometryChanged: Boolean): Unit = {
     arrow.Modified()
     glyph.Update()
     glyph.Modified()

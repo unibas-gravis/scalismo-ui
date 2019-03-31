@@ -20,6 +20,7 @@ package scalismo.ui.view.swing
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Container, Dimension }
 
+import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.{ JComponent, JSplitPane }
 
 object ExpandablePane {
@@ -110,7 +111,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
 
   private trait BasicUIOverrides extends javax.swing.plaf.basic.BasicSplitPaneUI {
 
-    override def createDefaultDivider = {
+    override def createDefaultDivider: BasicSplitPaneDivider = {
       val divider = super.createDefaultDivider
       divider.addMouseListener(new MouseAdapter {
         override def mousePressed(e: MouseEvent): Unit = {

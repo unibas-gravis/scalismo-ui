@@ -60,7 +60,7 @@ object NodePropertiesPanel {
   class Tabs extends Component with ScalismoPublisher {
     outer =>
     override lazy val peer: JTabbedPane = new JTabbedPane() with SuperMixin {
-      override def setSelectedIndex(index: Int) = {
+      override def setSelectedIndex(index: Int): Unit = {
         super.setSelectedIndex(index)
         if (getTabCount > index) {
           getTabComponentAt(index) match {
@@ -144,17 +144,17 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
    */
   def handlers: List[PropertyPanel] = _handlers
 
-  def addHandler(handler: PropertyPanel) = {
+  def addHandler(handler: PropertyPanel): Unit = {
     _handlers ++= List(handler)
     cards.add(handler)
   }
 
-  def removeHandler(handler: PropertyPanel) = {
+  def removeHandler(handler: PropertyPanel): Unit = {
     _handlers = _handlers.filterNot(_ eq handler)
     cards.remove(handler)
   }
 
-  def setupHandlers() = {
+  def setupHandlers(): Unit = {
     // default implementation: instantiate all builtin providers.
     NodePropertiesPanel.BuiltinHandlers.foreach { constructor =>
       addHandler(constructor(frame))

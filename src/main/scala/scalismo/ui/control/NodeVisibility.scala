@@ -175,7 +175,7 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
     setVisibility(List(node), List(viewport), show)
   }
 
-  private def handlePerspectiveChange(current: Perspective, previous: Perspective) = {
+  private def handlePerspectiveChange(current: Perspective, previous: Perspective): Unit = {
     // We keep it simple here, and only hide items if they have been completely hidden before.
     // anything else would just be guesswork.
 

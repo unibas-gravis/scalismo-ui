@@ -30,7 +30,7 @@ trait ActorColor extends SingleActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq color => setAppearance()
   }
 
-  private def setAppearance() = {
+  private def setAppearance(): Unit = {
     GetProperty().SetColor(VtkUtil.colorToArray(color.value))
     actorChanged()
   }

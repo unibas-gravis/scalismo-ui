@@ -47,16 +47,16 @@ trait ScalismoPublisher extends Publisher {
    */
   @deprecated(message = "use method publishEvent instead", since = "always")
   @silent
-  override def publish(e: Event) = {
+  override def publish(e: Event): Unit = {
     doPublish(e)
   }
 
   // this is the preferred method to use
-  def publishEvent(e: Event) = {
+  def publishEvent(e: Event): Unit = {
     EdtUtil.onEdtWait(doPublish(e))
   }
 
-  private def doPublish(e: Event) = {
+  private def doPublish(e: Event): Unit = {
     // make sure that each listener is notified, even if the
     // listeners change during the handling.
     val copy = listeners.map(l => l)

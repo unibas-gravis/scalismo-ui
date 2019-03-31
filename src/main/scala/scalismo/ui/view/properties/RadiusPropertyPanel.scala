@@ -53,15 +53,15 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.floatValue = t.radius.value.toFloat)
     listenToOwnEvents()

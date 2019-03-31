@@ -35,11 +35,11 @@ trait SimplePluginAPI {
     onDeactivated()
   }
 
-  def message(message: String) = {
+  def message(message: String): Unit = {
     ui.frame.status.set(StatusMessage(message))
   }
 
-  def message(message: StatusMessage) = {
+  def message(message: StatusMessage): Unit = {
     ui.frame.status.set(StatusMessage(message.text, message.kind))
   }
 

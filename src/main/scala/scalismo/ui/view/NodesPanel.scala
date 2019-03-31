@@ -48,7 +48,7 @@ object NodesPanel {
 
     class Icons(open: Icon, closed: Icon, leaf: Icon) {
       // the invocation context is a call to getTreeCellRendererComponent().
-      def apply() = {
+      def apply(): Unit = {
         setOpenIcon(open)
         setClosedIcon(closed)
         setLeafIcon(leaf)
@@ -139,11 +139,11 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
   private var synchronizing = false
 
   val mouseListener = new MouseAdapter() {
-    override def mousePressed(event: MouseEvent) = handle(event)
+    override def mousePressed(event: MouseEvent): Unit = handle(event)
 
-    override def mouseReleased(event: MouseEvent) = handle(event)
+    override def mouseReleased(event: MouseEvent): Unit = handle(event)
 
-    def handle(event: MouseEvent) = {
+    def handle(event: MouseEvent): Unit = {
       if (event.isPopupTrigger) {
         val (x, y) = (event.getX, event.getY)
         pathToSceneNode(tree.getPathForLocation(x, y)).foreach { node =>
@@ -250,7 +250,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  def setSelectedSceneNodes(nodes: immutable.Seq[SceneNode]) = {
+  def setSelectedSceneNodes(nodes: immutable.Seq[SceneNode]): Unit = {
     val paths = nodes.map(sceneNodeToPath).collect(definedOnly)
     if (paths.nonEmpty) {
       tree.setSelectionPaths(paths.toArray)

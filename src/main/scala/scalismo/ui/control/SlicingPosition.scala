@@ -53,7 +53,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   def visible = _visible
 
-  def visible_=(newVisible: Boolean) = {
+  def visible_=(newVisible: Boolean): Unit = {
     if (_visible != newVisible) {
       _visible = newVisible
       GlobalSettings.set(GlobalSettings.Keys.SlicingPositionShow, newVisible)
@@ -69,7 +69,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     _point
   }
 
-  def point_=(np: Point3D) = {
+  def point_=(np: Point3D): Unit = {
     if (_point != np) {
       val prev = _point
       _point = np
@@ -83,21 +83,21 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   def z = point(2)
 
-  def x_=(nv: Float) = {
+  def x_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
     if (x != sv) {
       point_=(Point(sv, y, z))
     }
   }
 
-  def y_=(nv: Float) = {
+  def y_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.yMin, nv), boundingBox.yMax)
     if (y != sv) {
       point = Point(x, sv, z)
     }
   }
 
-  def z_=(nv: Float) = {
+  def z_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
     if (z != sv) {
       point = Point(x, y, sv)

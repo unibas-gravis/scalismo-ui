@@ -63,7 +63,7 @@ trait LandmarkActor extends ActorColor with ActorOpacity with ActorSceneNode {
     case _ =>
   }
 
-  protected def rerender(geometryChanged: Boolean) = {
+  protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       val (xRadius, yRadius, zRadius) = {
         val r = sceneNode.uncertainty.value.sigmas.toArray

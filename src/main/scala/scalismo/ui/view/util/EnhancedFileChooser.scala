@@ -50,7 +50,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     }
   }
 
-  def lastUsedDirectories_=(files: Seq[File]) = {
+  def lastUsedDirectories_=(files: Seq[File]): Unit = {
     val dirs = files.map(f => if (f.isDirectory) f else f.getParentFile).distinct
     if (dirs.nonEmpty) {
       val old = lastUsedDirectories.diff(dirs)
@@ -74,12 +74,12 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     r
   }
 
-  override def selectedFiles_=(files: File*) = {
+  override def selectedFiles_=(files: File*): Unit = {
     lastUsedDirectories = files
     super.selectedFiles_=(files: _*)
   }
 
-  override def selectedFile_=(file: File) = {
+  override def selectedFile_=(file: File): Unit = {
     lastUsedDirectories = Seq(file)
     super.selectedFile_=(file)
   }
@@ -119,7 +119,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
           }
 
           addMouseMotionListener(new MouseMotionAdapter {
-            override def mouseMoved(e: MouseEvent) = {
+            override def mouseMoved(e: MouseEvent): Unit = {
               affectedItem(e.getPoint) match {
                 case None => setToolTipText(null)
                 case Some(f) => setToolTipText(f.tooltip)
@@ -128,7 +128,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
           })
 
           addMouseListener(new MouseAdapter {
-            override def mouseClicked(e: MouseEvent) = {
+            override def mouseClicked(e: MouseEvent): Unit = {
               if (e.getClickCount >= 2 && e.getButton == MouseEvent.BUTTON1) {
                 affectedItem(e.getPoint).foreach(f => EnhancedJFileChooser.this.setCurrentDirectory(f.dir))
               }

@@ -53,15 +53,15 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.value = t.lineWidth.value)
     listenToOwnEvents()

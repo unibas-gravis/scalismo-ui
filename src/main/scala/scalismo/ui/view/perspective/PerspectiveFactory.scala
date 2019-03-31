@@ -43,11 +43,11 @@ object PerspectiveFactory {
 
   def factories: List[PerspectiveFactory] = _factories
 
-  def addFactory(factory: PerspectiveFactory) = {
+  def addFactory(factory: PerspectiveFactory): Unit = {
     _factories ++= List(factory)
   }
 
-  def removeFactory(factory: PerspectiveFactory) = {
+  def removeFactory(factory: PerspectiveFactory): Unit = {
     _factories = factories.filterNot(_ == factory)
   }
 

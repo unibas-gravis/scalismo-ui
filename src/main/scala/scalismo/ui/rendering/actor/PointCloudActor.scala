@@ -58,7 +58,7 @@ trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorCo
     SetInputData(polydata)
   }
 
-  def rerender(geometryChanged: Boolean) = {
+  def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       polydata.SetPoints(transformedPoints)
     }

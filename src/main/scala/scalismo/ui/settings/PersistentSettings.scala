@@ -113,7 +113,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
     sf.getValues(key)
   }
 
-  private def doSet(key: String, vals: List[String]) = {
+  private def doSet(key: String, vals: List[String]): Unit = {
     val sf: SettingsFile = settingsFile
     sf.setValues(key, vals)
   }

@@ -54,11 +54,11 @@ object PopupAction {
 
   def factories: List[Factory] = _factories
 
-  def addFactory(factory: Factory) = {
+  def addFactory(factory: Factory): Unit = {
     _factories = factory :: _factories
   }
 
-  def removeFactory(factory: Factory) = {
+  def removeFactory(factory: Factory): Unit = {
     _factories = _factories.filter(_ != factory)
   }
 
