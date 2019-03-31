@@ -28,7 +28,7 @@ import vtk._
 object VectorFieldActor extends SimpleActorsFactory[VectorFieldNode] {
   override def actorsFor(renderable: VectorFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new VectorFieldActor3D(renderable))
+      case _: ViewportPanel3D => Some(new VectorFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new VectorFieldActor2D(renderable, _2d))
     }
   }
@@ -56,7 +56,7 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
       SetNumberOfComponents(1)
     }
 
-    for (((point, vector), i) <- sceneNode.source.pointsWithValues.zipWithIndex) {
+    for (((point, vector), _) <- sceneNode.source.pointsWithValues.zipWithIndex) {
       points.InsertNextPoint(point(0), point(1), point(2))
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
       scalars.InsertNextValue(vector.norm)
@@ -97,7 +97,7 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
 
   reactions += {
     case Transformable.event.GeometryChanged(_) => rerender(true)
-    case NodeProperty.event.PropertyChanged(p) => rerender(false)
+    case NodeProperty.event.PropertyChanged(_) => rerender(false)
   }
 
   onInstantiated()

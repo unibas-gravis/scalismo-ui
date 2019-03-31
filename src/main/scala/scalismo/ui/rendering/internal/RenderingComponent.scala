@@ -126,7 +126,7 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
       lock.lockInterruptibly()
       block
     } catch {
-      case e: InterruptedException => // nothing we can do
+      case _: InterruptedException => // nothing we can do
     } finally {
       lock.unlock()
     }

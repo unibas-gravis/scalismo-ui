@@ -98,7 +98,7 @@ object Recipe {
     def mouseClicked(e: MouseEvent, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty): Verdict = {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
       pointAndNode.nodeOption.foreach {
-        case skip: LandmarkNode => None
+        case _: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           val name = ok.group.landmarks.nameGenerator.nextName()
           val point = ok.inverseTransform(pointAndNode.pointOption.get)
@@ -144,7 +144,7 @@ object Recipe {
   object Block2DRotation {
     def mousePressed(e: MouseEvent): Verdict = {
       e.viewport match {
-        case _2d: ViewportPanel2D if e.getButton == MouseEvent.BUTTON1 => Block
+        case _: ViewportPanel2D if e.getButton == MouseEvent.BUTTON1 => Block
         case _ => Pass
       }
     }

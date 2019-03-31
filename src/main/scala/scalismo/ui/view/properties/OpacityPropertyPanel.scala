@@ -88,7 +88,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
+    case ValueChanged(_) => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
   }
 
 }

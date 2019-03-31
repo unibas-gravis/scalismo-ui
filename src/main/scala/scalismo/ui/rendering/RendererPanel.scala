@@ -202,8 +202,8 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
         def prioritize(a1: vtkActor, a2: vtkActor): Boolean = {
           (a1, a2) match {
-            case (i1: IsImageActor, i2: IsImageActor) => false
-            case (i1: IsImageActor, _) => true
+            case (_: IsImageActor, _: IsImageActor) => false
+            case (_: IsImageActor, _) => true
             case (_, _) => false
           }
         }

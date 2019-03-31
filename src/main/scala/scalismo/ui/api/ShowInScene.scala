@@ -221,8 +221,8 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
       val t = for {
-        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
-        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
+        _ <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
+        _ <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
       } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)
       t.get
     }

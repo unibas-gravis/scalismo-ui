@@ -32,7 +32,7 @@ import vtk.{ vtkGlyph3D, vtkPoints, vtkSphereSource }
 object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {
   override def actorsFor(renderable: ScalarFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new ScalarFieldActor3D(renderable))
+      case _: ViewportPanel3D => Some(new ScalarFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new ScalarFieldActor2D(renderable, _2d))
     }
   }

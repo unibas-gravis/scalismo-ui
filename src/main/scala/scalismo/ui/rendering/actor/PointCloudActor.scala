@@ -28,7 +28,7 @@ import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 object PointCloudActor extends SimpleActorsFactory[PointCloudNode] {
   override def actorsFor(renderable: PointCloudNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
+      case _: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new PointCloudActor2D(renderable, _2d))
     }
   }

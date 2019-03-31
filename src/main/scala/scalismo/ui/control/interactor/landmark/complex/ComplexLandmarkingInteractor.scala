@@ -105,7 +105,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
     pointAndNode.nodeOption.flatMap { node =>
       val contextOption: Option[(Point3D, GroupNode)] = node match {
-        case skip: LandmarkNode => None
+        case _: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           Some((ok.inverseTransform(pointAndNode.pointOption.get), ok.group))
         case ok: ImageNode =>
@@ -154,7 +154,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
           val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): EuclideanVector3D }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
-        case _3d: ViewportPanel3D =>
+        case _: ViewportPanel3D =>
           val meshNormal = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id)
           val firstPerp = {
             /* There is an infinite number of perpendicular vectors, any one will do.

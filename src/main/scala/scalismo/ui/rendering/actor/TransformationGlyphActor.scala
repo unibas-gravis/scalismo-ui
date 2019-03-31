@@ -26,7 +26,7 @@ import vtk.vtkFloatArray
 object TransformationGlyphActor extends SimpleActorsFactory[TransformationGlyphNode] {
   override def actorsFor(renderable: TransformationGlyphNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new TransformationGlyphActor3D(renderable))
+      case _: ViewportPanel3D => Some(new TransformationGlyphActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new TransformationGlyphActor2D(renderable, _2d))
     }
   }
@@ -51,7 +51,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
     var maxNorm = 0.0
     var minNorm = Double.MaxValue
 
-    for ((vector, i) <- sceneNode.transformedSource.values.zipWithIndex) {
+    for ((vector, _) <- sceneNode.transformedSource.values.zipWithIndex) {
       val norm = vector.norm
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
       scalars.InsertNextValue(norm)

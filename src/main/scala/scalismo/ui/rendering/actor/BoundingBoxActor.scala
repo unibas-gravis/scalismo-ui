@@ -31,7 +31,7 @@ import vtk._
 object BoundingBoxActor extends SimpleActorsFactory[SlicingPosition.renderable.BoundingBoxRenderable] {
   override def actorsFor(renderable: BoundingBoxRenderable, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new BoundingBoxActor3D(renderable.source))
+      case _: ViewportPanel3D => Some(new BoundingBoxActor3D(renderable.source))
       case _2d: ViewportPanel2D => Some(new SingleBoundingBoxActor2D(renderable.source, _2d.axis))
     }
   }

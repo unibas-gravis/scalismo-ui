@@ -161,8 +161,8 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   def renderablesFor(viewport: ViewportPanel): List[Renderable] = {
     viewport match {
-      case _3d: ViewportPanel3D => List(boundingBoxRenderable)
-      case _2d: ViewportPanel2D => List(boundingBoxRenderable)
+      case _: ViewportPanel3D => List(boundingBoxRenderable)
+      case _: ViewportPanel2D => List(boundingBoxRenderable)
     }
   }
 }

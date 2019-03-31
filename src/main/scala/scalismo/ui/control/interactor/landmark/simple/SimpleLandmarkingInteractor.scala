@@ -80,7 +80,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
   override def mouseMoved(e: MouseEvent): Verdict = {
     if (landmarkingButton.selected) {
       def exceptLandmarks(node: SceneNode) = node match {
-        case nope: LandmarkNode => false
+        case _: LandmarkNode => false
         case _ => true
       }
 

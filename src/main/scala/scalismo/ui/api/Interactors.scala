@@ -44,8 +44,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
 
   override protected[api] lazy val peer = new PosteriorLandmarkingInteractor {
 
-    val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
-    //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
+    val meshView = ui.find[TriangleMeshView](modelGroup, (_: TriangleMeshView) => true).get
 
     private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", hidden = true))
 

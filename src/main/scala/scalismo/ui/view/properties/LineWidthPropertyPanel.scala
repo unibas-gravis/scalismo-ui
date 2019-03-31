@@ -85,7 +85,7 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.lineWidth.value = slider.value)
+    case ValueChanged(_) => targets.foreach(_.lineWidth.value = slider.value)
   }
 
 }

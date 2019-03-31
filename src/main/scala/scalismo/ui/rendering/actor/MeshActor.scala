@@ -35,7 +35,7 @@ object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
   override def actorsFor(renderable: TriangleMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new TriangleMeshActor3D(renderable))
+      case _: ViewportPanel3D => Some(new TriangleMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new TriangleMeshActor2D(renderable, _2d))
     }
   }
@@ -45,7 +45,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
   override def actorsFor(renderable: ScalarMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new ScalarMeshFieldActor3D(renderable))
+      case _: ViewportPanel3D => Some(new ScalarMeshFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new ScalarMeshFieldActor2D(renderable, _2d))
     }
   }
@@ -54,7 +54,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
   override def actorsFor(renderable: LineMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new LineMeshActor3D(renderable))
+      case _: ViewportPanel3D => Some(new LineMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new LineMeshActor2D(renderable, _2d))
     }
   }
@@ -63,7 +63,7 @@ object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
 object VertexColorMeshActor extends SimpleActorsFactory[VertexColorMeshNode] {
   override def actorsFor(renderable: VertexColorMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new VertexColorMeshActor3D(renderable))
+      case _: ViewportPanel3D => Some(new VertexColorMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new VertexColorMeshActor2D(renderable, _2d))
     }
   }

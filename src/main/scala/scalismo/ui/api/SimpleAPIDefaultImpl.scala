@@ -61,7 +61,7 @@ trait SimpleAPIDefaultImpl {
     scene.listenTo(scene.groups)
 
     scene.reactions += {
-      case ChildAdded(collection, newNode: GroupNode) =>
+      case ChildAdded(_, newNode: GroupNode) =>
         val gv = Group(newNode)
         f(gv)
     }
@@ -71,7 +71,7 @@ trait SimpleAPIDefaultImpl {
     scene.listenTo(scene.groups)
 
     scene.reactions += {
-      case ChildRemoved(collection, newNode: GroupNode) =>
+      case ChildRemoved(_, newNode: GroupNode) =>
         val gv = Group(newNode)
         f(gv)
     }

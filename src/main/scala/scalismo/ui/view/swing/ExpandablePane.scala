@@ -44,7 +44,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
   // indicates if the component is deemed to be functional at all. In case it isn't,
   // the drag handle will still be displayed, but simply won't have any effect.
   val operational: Boolean = getUI match {
-    case synth: javax.swing.plaf.synth.SynthSplitPaneUI =>
+    case _: javax.swing.plaf.synth.SynthSplitPaneUI =>
       setUI(new SynthUI)
       true
     case _ =>
