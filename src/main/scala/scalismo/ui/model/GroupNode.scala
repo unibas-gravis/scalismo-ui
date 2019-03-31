@@ -25,8 +25,8 @@ import scalismo.ui.model.capabilities.{ Removeable, Renameable }
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
 
-  def add(name: String, ghost: Boolean = false): GroupNode = {
-    val node = new GroupNode(this, name, ghost)
+  def add(name: String, hidden: Boolean = false): GroupNode = {
+    val node = new GroupNode(this, name, hidden)
     add(node)
     node
   }
@@ -35,15 +35,17 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
   override def isViewCollapsed: Boolean = true
 }
 
-class GroupNode(override val parent: GroupsNode, initialName: String, private var _isGhost: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
+class GroupNode(override val parent: GroupsNode, initialName: String, initallyHidden: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
   name = initialName
 
-  def isGhost_=(b: Boolean): Unit = {
-    _isGhost = b
+  private var _hidden = initallyHidden
+
+  def hidden_=(b: Boolean): Unit = {
+    _hidden = b
     scene.publishEvent(SceneChanged(scene))
   }
 
-  def isGhost = _isGhost
+  def hidden: Boolean = _hidden
 
   val genericTransformations = new GenericTransformationsNode(this)
   val shapeModelTransformations = new ShapeModelTransformationsNode(this)

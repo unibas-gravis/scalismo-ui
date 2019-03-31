@@ -47,7 +47,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     val meshView = ui.find[TriangleMeshView](modelGroup, (p: TriangleMeshView) => true).get
     //  val shapeTransformationView = ui.find[DiscreteLowRankGPTransformationView](modelGroup, (p: DiscreteLowRankGPTransformationView) => true).get
 
-    private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", ghost = true))
+    private val previewGroup = Group(ui.frame.scene.groups.add("__preview__", hidden = true))
 
     // we start by copying the shape model transformations of the modelGroup into the previewGroup
     modelGroup.peer.shapeModelTransformations.poseTransformation.map(p => previewGroup.peer.shapeModelTransformations.addPoseTransformation(p.transformation))
@@ -58,7 +58,7 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     previewNode.color.value = Color.YELLOW
     previewNode.pickable.value = false
 
-    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", ghost = true)).peer
+    override val targetUncertaintyGroup = Group(ui.frame.scene.groups.add("__target_preview__", hidden = true)).peer
 
     override def sourceGpNode: TransformationNode[DiscreteLowRankGpPointTransformation] = modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.get
 

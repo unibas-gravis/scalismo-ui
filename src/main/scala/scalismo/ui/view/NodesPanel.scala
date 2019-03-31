@@ -291,7 +291,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     def nodeOrChildrenIfCollapsed(node: SceneNode): Seq[SceneNode] = {
       node match {
         case c: CollapsableView if c.isViewCollapsed => node.children.flatMap(nodeOrChildrenIfCollapsed)
-        case group: GroupNode if group.isGhost => Nil
+        case group: GroupNode if group.hidden => Nil
         case _ => List(node)
       }
     }
