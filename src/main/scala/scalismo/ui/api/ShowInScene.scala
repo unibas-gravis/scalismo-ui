@@ -53,7 +53,7 @@ trait LowPriorityImplicits {
   implicit object CreateGenericTransformation extends ShowInScene[Point[_3D] => Point[_3D]] {
     override type View = TransformationView
 
-    override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
+    override def showInScene(t: Point[_3D] => Point[_3D], name: String, group: Group): View = {
       TransformationView(group.peer.genericTransformations.add(t, name))
     }
   }

@@ -97,7 +97,7 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
   val data = new InstanceData(sceneNode, axis)
 
   // This method computes the closest into the image for the given slicing position (point) for a given axis.
-  def point3DToSliceIndex(p: Point3D, axis: Axis): (Int) = {
+  def point3DToSliceIndex(p: Point3D, axis: Axis): Int = {
     val (fmin, fmax, fval, tmax) = axis match {
       case Axis.X => (data.min, data.max, p.x, data.exmax)
       case Axis.Y => (data.min, data.max, p.y, data.eymax)
@@ -128,27 +128,24 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
       data.sliceCorrectionTransform.Identity()
 
       def computeOffset(component: Int): Double = {
-        val pointComponentForIndex = (origin(component) + sliceIndex * spacing(component))
-        val offset = (slicingPoint(component) - pointComponentForIndex)
+        val pointComponentForIndex = origin(component) + sliceIndex * spacing(component)
+        val offset = slicingPoint(component) - pointComponentForIndex
         offset
       }
 
       axis match {
-        case Axis.X => {
+        case Axis.X =>
           data.slice.SetExtent(sliceIndex, sliceIndex, 0, data.eymax, 0, data.ezmax)
           val offset = computeOffset(0)
           data.sliceCorrectionTransform.Translate(+offset, 0, 0)
-        }
-        case Axis.Y => {
+        case Axis.Y =>
           data.slice.SetExtent(0, data.exmax, sliceIndex, sliceIndex, 0, data.ezmax)
           val offset = computeOffset(1)
           data.sliceCorrectionTransform.Translate(0, +offset, 0)
-        }
-        case Axis.Z => {
+        case Axis.Z =>
           data.slice.SetExtent(0, data.exmax, 0, data.eymax, sliceIndex, sliceIndex)
           val offset = computeOffset(2)
           data.sliceCorrectionTransform.Translate(0, 0, +offset)
-        }
       }
       data.sliceCorrectionTransform.Modified()
       data.slicePositionCorrector.Modified()

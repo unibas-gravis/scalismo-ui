@@ -70,7 +70,7 @@ object PropertyPanel {
 
     import scala.language.implicitConversions
 
-    implicit def factoryAsConstructor(factory: Factory): (ScalismoFrame => PropertyPanel) = {
+    implicit def factoryAsConstructor(factory: Factory): ScalismoFrame => PropertyPanel = {
       factory.create
     }
   }
