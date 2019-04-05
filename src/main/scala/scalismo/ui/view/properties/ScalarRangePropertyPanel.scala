@@ -64,7 +64,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   {
     val northedPanel: BorderPanel = new BorderPanel {
-      val slidersPanel = new BorderPanel {
+      private val slidersPanel = new BorderPanel {
         border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
         layout(minimumSlider) = BorderPanel.Position.North
         layout(maximumSlider) = BorderPanel.Position.Center

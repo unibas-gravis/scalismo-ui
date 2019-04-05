@@ -37,7 +37,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
   def defaultUncertainty: Uncertainty
 
   val landmarkingButton: ToggleButton = new ToggleButton {
-    val myIcon = BundledIcon.Landmark
+    private val myIcon = BundledIcon.Landmark
 
     def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"
@@ -93,7 +93,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
 object SimpleLandmarkingInteractor extends SimpleLandmarkingInteractorTrait with DefaultInteractor {
 
-  override val defaultUncertainty = Uncertainty.DefaultUncertainty
+  override val defaultUncertainty: Uncertainty = Uncertainty.DefaultUncertainty
 
   override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
 }

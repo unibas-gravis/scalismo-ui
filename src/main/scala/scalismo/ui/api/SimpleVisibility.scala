@@ -52,8 +52,8 @@ case object _3DMain extends Viewport {
 
 object Viewport {
 
-  val all = Seq(xView, yView, zView, _3DMain, _3DLeft, _3DRight)
-  val none = Seq()
+  val all: Seq[Viewport] = Seq(xView, yView, zView, _3DMain, _3DLeft, _3DRight)
+  val none: Seq[Viewport] = Seq()
   val xOnly: Seq[Viewport] = Seq(xView)
   val yOnly: Seq[Viewport] = Seq(yView)
   val zOnly: Seq[Viewport] = Seq(zView)

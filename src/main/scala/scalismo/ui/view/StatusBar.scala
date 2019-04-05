@@ -75,8 +75,8 @@ class StatusBar extends BorderPanel {
 
     import BorderFactory._
 
-    val _3 = ScalableUI.scale(3)
-    val _2 = ScalableUI.scale(2)
+    private val _3 = ScalableUI.scale(3)
+    private val _2 = ScalableUI.scale(2)
     border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
 
     cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
@@ -119,7 +119,7 @@ class StatusBar extends BorderPanel {
 
   private val logPanel: BorderPanel = new BorderPanel {
     layout(new ScrollPane(log)) = BorderPanel.Position.Center
-    val toolBar = new ToolBar {
+    private val toolBar = new ToolBar {
       floatable = false
       rollover = false
       rollover = false

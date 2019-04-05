@@ -27,7 +27,7 @@ import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
-import vtk.{ vtkGlyph3D, vtkPoints, vtkSphereSource }
+import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 
 object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {
   override def actorsFor(renderable: ScalarFieldNode, viewport: ViewportPanel): Option[Actors] = {
@@ -55,7 +55,7 @@ trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     }
   }
 
-  protected lazy val polydata = {
+  protected lazy val polydata: vtkPolyData = {
     // Hack alert! We create a triangle mesh with empty cells and built from it a scalarMeshData.
     // In this way we can use the conversion utilities and have colors for free
 

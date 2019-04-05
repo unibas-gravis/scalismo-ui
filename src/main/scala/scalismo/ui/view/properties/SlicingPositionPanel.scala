@@ -39,11 +39,12 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   private var slicingPosition: Option[SlicingPosition] = None
 
   private[SlicingPositionPanel] class AxisControl(axis: Axis) {
-    val nameLabel = new Label(axis.toString) {
+    val nameLabel: Label = new Label(axis.toString) {
       foreground = AxisColor.forAxis(axis).darker()
       font = font.deriveFont(font.getStyle | Font.BOLD)
     }
-    val slider = new FancySlider {
+
+    val slider: FancySlider = new FancySlider {
 
       min = 0
       max = 0
@@ -125,7 +126,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
   val slicesVisible = new CheckBox("Show bounding box and slices")
 
-  val visibilityPanel = new BorderPanel {
+  private val visibilityPanel = new BorderPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
     layout(slicesVisible) = BorderPanel.Position.Center
   }

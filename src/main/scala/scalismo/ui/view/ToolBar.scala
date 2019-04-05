@@ -17,6 +17,8 @@
 
 package scalismo.ui.view
 
+import javax.swing.JButton
+
 import scala.swing.{ Action, Button, Component, Orientable }
 
 class ToolBar extends Component with Orientable.Wrapper {
@@ -46,7 +48,7 @@ class ToolBar extends Component with Orientable.Wrapper {
   def add(action: Action): Button = {
     val jb = peer.add(action.peer)
     new Button {
-      override lazy val peer = jb
+      override lazy val peer: JButton = jb
     }
   }
 
