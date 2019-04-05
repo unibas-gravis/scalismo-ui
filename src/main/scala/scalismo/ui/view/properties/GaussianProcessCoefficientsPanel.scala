@@ -46,7 +46,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   val random = new Button("Random")
   listenTo(reset, random)
 
-  val buttons = {
+  private val buttons = {
     val panel = new GridPanel(1, 2)
     panel.contents ++= Seq(reset, random)
     panel
@@ -57,7 +57,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   private case class Entry(index: Int) {
     val label = new Label(index.toString)
     val slider: Slider = new Slider {
-      override lazy val peer = new JSlider with SuperMixin {
+      override lazy val peer: JSlider with SuperMixin = new JSlider with SuperMixin {
         // this tries to jump directly to the value the user clicked.
         addMouseListener(new MouseAdapter() {
           override def mousePressed(e: MouseEvent): Unit = {

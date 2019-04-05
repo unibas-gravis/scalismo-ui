@@ -58,7 +58,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
 
   private lazy val landmarkingButton: ToggleButton = new ToggleButton {
     selected = true
-    val myIcon = BundledIcon.Landmark
+    private val myIcon = BundledIcon.Landmark
 
     def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"

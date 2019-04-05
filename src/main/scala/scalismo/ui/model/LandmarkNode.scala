@@ -38,7 +38,7 @@ object LandmarksNode {
     private var prefix = 0
     private var suffix = 0
 
-    def nextName() = {
+    def nextName(): String = {
       val p = Prefixes(prefix)
       val name = if (suffix == 0) p.toString else s"${p}_$suffix"
       prefix = (prefix + 1) % Prefixes.length()

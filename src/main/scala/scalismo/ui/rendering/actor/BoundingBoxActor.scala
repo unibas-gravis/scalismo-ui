@@ -41,7 +41,7 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor
   // this actor is displaying the bounding box, but doesn't "have" one itself (i.e., doesn't affect it).
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
-  val sliceActors = Axis.All.map(axis => BoundingBoxActor2D(axis, slicingPosition))
+  private val sliceActors = Axis.All.map(axis => BoundingBoxActor2D(axis, slicingPosition))
 
   override def vtkActors: List[vtkActor] = this :: sliceActors
 
@@ -84,7 +84,7 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor
 class SingleBoundingBoxActor2D(override val slicingPosition: SlicingPosition, override val axis: Axis) extends BoundingBoxActor2D with Actors {
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
-  override lazy val intersectionActors = {
+  override lazy val intersectionActors: List[BoundingBoxIntersectionActor] = {
     Axis.All.filterNot(_ == axis).map { iAxis =>
       new BoundingBoxIntersectionActor(iAxis)
     }

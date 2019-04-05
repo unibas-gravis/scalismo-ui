@@ -52,7 +52,7 @@ object FileIoMetadata {
     override val fileExtensions = List("vtk")
   }
 
-  val VertexColorMesh = new FileIoMetadata {
+  val VertexColorMesh: FileIoMetadata = new FileIoMetadata {
 
     override def fileExtensions: List[String] = List("ply")
 

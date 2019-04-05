@@ -42,7 +42,7 @@ object ChildVisibilityAction extends PopupAction.Factory {
 }
 
 class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
-  val control = frame.sceneControl.nodeVisibility
+  private val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
@@ -87,10 +87,10 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2.scaled
-    val lr = 12.scaled
+    private val tb = 2.scaled
+    private val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
+    private def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)

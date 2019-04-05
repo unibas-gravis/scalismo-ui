@@ -19,7 +19,7 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry.Point3D
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.properties.NodeProperty
+import scalismo.ui.model.properties.{ NodeProperty, OpacityProperty }
 import scalismo.ui.model.{ Axis, BoundingBox, ImageNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.ImageActor2D.InstanceData
@@ -40,7 +40,7 @@ object ImageActor extends SimpleActorsFactory[ImageNode] {
 
 object ImageActor2D {
 
-  def apply(node: ImageNode, viewport: ViewportPanel2D) = new ImageActor2D(node, viewport.axis, viewport.frame) with SinglePolyDataActor {
+  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SinglePolyDataActor = new ImageActor2D(node, viewport.axis, viewport.frame) with SinglePolyDataActor {
     override def boundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(data.points.GetBounds())
   }
 
@@ -92,7 +92,7 @@ object ImageActor2D {
 
 class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends PolyDataActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
 
-  override def opacity = sceneNode.opacity
+  override def opacity: OpacityProperty = sceneNode.opacity
 
   val data = new InstanceData(sceneNode, axis)
 

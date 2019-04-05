@@ -26,7 +26,7 @@ import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.ErrorDialog
 import scalismo.ui.view.util.EnhancedFileChooser
 
-import scala.swing.{ Action, FileChooser }
+import scala.swing.{ Action, Component, FileChooser }
 import scala.util.{ Failure, Success, Try }
 
 object LoadAction {
@@ -34,19 +34,19 @@ object LoadAction {
 }
 
 class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadAction.DefaultName, val multiSelect: Boolean = true)(implicit val frame: ScalismoFrame) extends Action(name) {
-  lazy val chooserTitle = {
+  private lazy val chooserTitle = {
     if (name != LoadAction.DefaultName) name
     else "Load " + metadata.description
   }
 
-  lazy val chooser = new EnhancedFileChooser() {
+  private lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
     multiSelectionEnabled = multiSelect
     peer.setAcceptAllFileFilterUsed(false)
     fileFilter = new FileNameExtensionFilter(metadata.longDescription, metadata.fileExtensions: _*)
   }
 
-  def parentComponent = frame.componentForDialogs
+  def parentComponent: Component = frame.componentForDialogs
 
   def apply(): Unit = {
     if (chooser.showOpenDialog(parentComponent) == FileChooser.Result.Approve) {

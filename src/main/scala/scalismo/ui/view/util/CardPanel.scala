@@ -68,7 +68,7 @@ class CardPanel extends Panel with LayoutContainer {
 
   override lazy val peer = new javax.swing.JPanel(new CustomCardLayout) with SuperMixin
 
-  val layoutManager = peer.getLayout.asInstanceOf[CustomCardLayout]
+  private val layoutManager = peer.getLayout.asInstanceOf[CustomCardLayout]
 
   private var cards: Map[UniqueID, ComponentWithUniqueId] = Map.empty
   private var _current: UniqueID = CardPanel.NoCard

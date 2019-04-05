@@ -62,13 +62,13 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     }
   }
 
-  override def selectedFiles = {
+  override def selectedFiles: Seq[File] = {
     val r = super.selectedFiles
     lastUsedDirectories = r
     r
   }
 
-  override def selectedFile = {
+  override def selectedFile: File = {
     val r = super.selectedFile
     lastUsedDirectories = Seq(r)
     r
@@ -87,9 +87,9 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
   private[EnhancedFileChooser] class EnhancedJFileChooser extends JFileChooser {
 
     private[EnhancedJFileChooser] class FileEntry(val dir: File) {
-      override def toString = dir.getName
+      override def toString: String = dir.getName
 
-      def tooltip = dir.getCanonicalPath
+      def tooltip: String = dir.getCanonicalPath
     }
 
     override def createDialog(parent: AComponent): JDialog = {
@@ -103,7 +103,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       lastDirs.foreach(d => model.addElement(new FileEntry(d)))
 
       val panel: BorderPanel = new BorderPanel {
-        val title = new BorderPanel {
+        private val title = new BorderPanel {
           layout(new Label("Recent Folders:")) = BorderPanel.Position.West
         }
         layout(title) = BorderPanel.Position.North
@@ -149,7 +149,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       else Some(createRecentDirsPanel(l))
     }
 
-    def decorateDialog(dialog: JDialog) = {
+    private def decorateDialog(dialog: JDialog): JDialog = {
       val cp = dialog.getContentPane
       leftComponent match {
         case Some(c) => cp.add(c.peer, BorderLayout.WEST)

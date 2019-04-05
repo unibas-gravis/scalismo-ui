@@ -44,26 +44,26 @@ class ErrorDialog(exception: Throwable, title: String, additionalMessage: String
 
   val main = new BorderPanel
 
-  val icon = {
+  private val icon = {
     val fallback = UIManager.getIcon("OptionPane.errorIcon")
     iconOverride.map(_.resize(fallback.getIconWidth, fallback.getIconHeight)).getOrElse(fallback)
   }
 
-  val iconLabel = new Label("", icon, Alignment.Center)
+  private val iconLabel = new Label("", icon, Alignment.Center)
 
-  val placeHolderMessageLabel = {
+  private val placeHolderMessageLabel = {
     val textOption = Option(exception.getMessage)
     val text = textOption.getOrElse(exception.getClass.getName)
     new Label(text, icon, Alignment.Right)
   }
 
-  val placeHolderAdditionalLabelOption: Option[Label] = additionalMessage match {
+  private val placeHolderAdditionalLabelOption: Option[Label] = additionalMessage match {
     case null => None
     case s if s.trim.length == 0 => None
     case text => Some(new Label(text, icon, Alignment.Right))
   }
 
-  val messageLabel = {
+  private val messageLabel = {
     val fullText = placeHolderAdditionalLabelOption match {
       case Some(label) => s"${label.text}\n\n${placeHolderMessageLabel.text}"
       case None => ""
@@ -71,12 +71,12 @@ class ErrorDialog(exception: Throwable, title: String, additionalMessage: String
     new MultiLineLabel(fullText)
   }
 
-  val messagePanel = new BorderPanel {
+  private val messagePanel = new BorderPanel {
     layout(iconLabel) = BorderPanel.Position.West
     layout(messageLabel) = BorderPanel.Position.Center
   }
 
-  val stackTrace = {
+  private val stackTrace = {
     val trace = new StringWriter()
     exception.printStackTrace(new PrintWriter(trace))
 
@@ -88,7 +88,7 @@ class ErrorDialog(exception: Throwable, title: String, additionalMessage: String
     new ScrollPane(area)
   }
 
-  val placeholder = Component.wrap(new JComponent {
+  private val placeholder = Component.wrap(new JComponent {
     override def getPreferredSize: Dimension = {
       val size = new Dimension
       size.height = 0
@@ -120,7 +120,7 @@ class ErrorDialog(exception: Throwable, title: String, additionalMessage: String
     override def apply(): Unit = dispose()
   })
 
-  val buttons = new BorderPanel {
+  private val buttons = new BorderPanel {
     layout(okButton) = BorderPanel.Position.East
     layout(detailsButton) = BorderPanel.Position.West
   }

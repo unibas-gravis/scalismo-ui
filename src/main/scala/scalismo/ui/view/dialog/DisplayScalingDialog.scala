@@ -51,14 +51,14 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
     }
   })
 
-  val initialScale = Math.round(ScalableUI.scaleFactor * 100)
+  private val initialScale = Math.round(ScalableUI.scaleFactor * 100)
 
   val example: Label = new Label("This is an example of how the User Interface would look at the chosen setting.") {
-    val b = Constants.DefaultFontSize
+    private val b = Constants.DefaultFontSize
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
   val main: BorderPanel = new BorderPanel {
-    val b = 5.scaled
+    private val b = 5.scaled
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
 
