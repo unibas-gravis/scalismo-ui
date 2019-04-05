@@ -45,7 +45,7 @@ trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorCo
 
   lazy val sphere = new vtkSphereSource
 
-  def transformedPoints = new vtkPoints {
+  private def transformedPoints: vtkPoints = new vtkPoints {
     sceneNode.transformedSource.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
@@ -53,7 +53,7 @@ trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorCo
 
   lazy val polydata = new vtkPolyData
 
-  lazy val glyph = new vtkGlyph3D {
+  protected lazy val glyph: vtkGlyph3D = new vtkGlyph3D {
     SetSourceConnection(sphere.GetOutputPort)
     SetInputData(polydata)
   }

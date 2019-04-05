@@ -44,7 +44,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
   private val slider = new FloatSlider(RadiusPropertyPanel.MinValue, RadiusPropertyPanel.MaxValue, RadiusPropertyPanel.StepSize)
 
   layout(new BorderPanel {
-    val sliderPanel = new BorderPanel {
+    private val sliderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
       layout(slider) = BorderPanel.Position.Center
     }

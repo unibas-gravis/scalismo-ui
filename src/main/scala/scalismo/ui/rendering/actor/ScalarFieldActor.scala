@@ -49,13 +49,13 @@ trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
 
   lazy val sphere = new vtkSphereSource
 
-  def transformedPoints = new vtkPoints {
+  def transformedPoints: vtkPoints = new vtkPoints {
     sceneNode.transformedSource.domain.points.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
   }
 
-  lazy val polydata = {
+  protected lazy val polydata = {
     // Hack alert! We create a triangle mesh with empty cells and built from it a scalarMeshData.
     // In this way we can use the conversion utilities and have colors for free
 
@@ -65,7 +65,7 @@ trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     MeshConversion.scalarMeshFieldToVtkPolyData(smf)
   }
 
-  lazy val glyph = new vtkGlyph3D {
+  protected lazy val glyph: vtkGlyph3D = new vtkGlyph3D {
     SetSourceConnection(sphere.GetOutputPort)
     SetInputData(polydata)
     SetScaleModeToDataScalingOff()

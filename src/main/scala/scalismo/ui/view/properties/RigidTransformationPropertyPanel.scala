@@ -39,7 +39,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
 
   private var targets: List[TransformationNode[RigidTransformation[_3D]]] = Nil
 
-  val textFields = Array.fill(6)(new TextField())
+  private val textFields = Array.fill(6)(new TextField())
   val labels = List("T1", "T2", "T3", "R1", "R2", "R3")
   val centerLabel = new Label("-")
 
@@ -48,7 +48,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
 
     var (x, y) = (0, 0)
 
-    def next = {
+    private def next: Constraints = {
       constraints.gridx = x
       constraints.gridy = y
 

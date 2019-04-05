@@ -55,7 +55,7 @@ object SaveLandmarksAction extends PopupAction.Factory {
 
 // the companion object took care of the safety checks, like making sure the list is not empty etc.
 class SaveLandmarksAction private (nodes: List[LandmarkNode], transformedFlag: Boolean = true)(implicit val frame: ScalismoFrame) extends PopupAction(s"Save${if (transformedFlag) " transformed" else " original"} ${FileIoMetadata.Landmarks.description} ...", BundledIcon.Save) {
-  val landmarks = nodes.head.parent
+  private val landmarks = nodes.head.parent
 
   def doSave(file: File): Try[Unit] = {
     landmarks.saveNodes(nodes, file, transformedFlag)

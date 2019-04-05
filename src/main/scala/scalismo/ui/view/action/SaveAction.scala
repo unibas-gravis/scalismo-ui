@@ -26,7 +26,7 @@ import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.ErrorDialog
 import scalismo.ui.view.util.EnhancedFileChooser
 
-import scala.swing.{ Action, Dialog, FileChooser }
+import scala.swing.{ Action, Component, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }
 
 object SaveAction {
@@ -36,19 +36,19 @@ object SaveAction {
 class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val name: String = SaveAction.DefaultName)(implicit val frame: ScalismoFrame) extends Action(name) {
   lazy val confirmWhenExists = true
   lazy val verifyFileExtension = true
-  lazy val chooserTitle = {
+  private lazy val chooserTitle = {
     if (name != SaveAction.DefaultName) name
     else "Save " + metadata.description
   }
 
-  lazy val chooser = new EnhancedFileChooser() {
+  private lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
     multiSelectionEnabled = false
     peer.setAcceptAllFileFilterUsed(false)
     fileFilter = new FileNameExtensionFilter(metadata.longDescription, metadata.fileExtensions: _*)
   }
 
-  def parentComponent = frame.componentForDialogs
+  def parentComponent: Component = frame.componentForDialogs
 
   def apply(): Unit = {
     if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {

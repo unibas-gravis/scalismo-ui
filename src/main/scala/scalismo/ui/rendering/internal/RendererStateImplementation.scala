@@ -31,7 +31,7 @@ import vtk._
 class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel) extends RendererState {
   val adapter = new CoordinateAdapter
 
-  val cellPicker = new vtkCellPicker {
+  private val cellPicker: vtkCellPicker = new vtkCellPicker {
     PickFromListOff()
     // This is needed so that 2D sliced actors can also be picked.
     // (At the default tolerance of 1e-6, it's virtually impossible to
