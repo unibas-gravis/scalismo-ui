@@ -29,7 +29,7 @@ import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.MeshConversion
-import vtk.{ vtkPolyData, vtkUnsignedCharArray }
+import vtk.{ vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray }
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
@@ -109,7 +109,7 @@ object MeshActor {
 
       override def lineWidth: LineWidthProperty = node.lineWidth
 
-      def colorMesh = node.transformedSource
+      def colorMesh: VertexColorMesh3D = node.transformedSource
     }
 
     class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
@@ -248,7 +248,7 @@ trait LineMeshActor extends MeshActor[MeshRenderable.LineMeshRenderable] with Ac
     MeshConversion.lineMeshToVTKPolyData(renderable.mesh, template)
   }
 
-  override def lineWidth = renderable.lineWidth
+  override def lineWidth: LineWidthProperty = renderable.lineWidth
 
 }
 
@@ -267,7 +267,7 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
 
   // not declaring this as lazy causes all sorts of weird VTK errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)
-  lazy val normals = new vtk.vtkPolyDataNormals() {
+  private lazy val normals: vtkPolyDataNormals = new vtk.vtkPolyDataNormals() {
     ComputePointNormalsOn()
     ComputeCellNormalsOff()
   }

@@ -57,12 +57,13 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
     private val b = Constants.DefaultFontSize
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
+
   val main: BorderPanel = new BorderPanel {
     private val b = 5.scaled
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
 
-  val scaleSlider = new FancySlider {
+  private class ScaleSlider extends FancySlider {
     min = 25
     max = 400
     value = initialScale
@@ -71,6 +72,8 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
     def sliderLabels: List[Component] = List(minLabel, maxLabel, valueLabel)
   }
+
+  private val scaleSlider = new ScaleSlider()
 
   // when the user is done sliding, re-pack the window
 

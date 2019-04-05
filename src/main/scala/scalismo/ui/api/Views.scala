@@ -77,19 +77,19 @@ case class PointCloudView private[ui] (override protected[api] val peer: PointCl
 
   type PeerType = PointCloudNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def radius = peer.radius.value
+  def radius: Double = peer.radius.value
 
   def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -136,19 +136,19 @@ object PointCloudView {
 case class TriangleMeshView private[ui] (override protected[api] val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -198,13 +198,13 @@ case class VertexColorMeshView private[ui] (override protected[api] val peer: Ve
 
   type PeerType = VertexColorMeshNode
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -253,19 +253,19 @@ case class LineMeshView private[ui] (override protected[api] val peer: LineMeshN
 
   type PeerType = LineMeshNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Float): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -315,13 +315,13 @@ case class LandmarkView private[ui] (override protected[api] val peer: LandmarkN
 
   type PeerType = LandmarkNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -375,13 +375,13 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
     peer.scalarRange.value = s
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -389,7 +389,7 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
 
-  def transformedScalarMeshField = peer.transformedSource
+  def transformedScalarMeshField: ScalarMeshField[Float] = peer.transformedSource
 }
 
 object ScalarMeshFieldView {
@@ -435,13 +435,13 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
     peer.scalarRange.value = s
   }
 
-  def radius = peer.radius.value
+  def radius: Double = peer.radius.value
 
   def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -449,7 +449,7 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
 
   def scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.source
 
-  def transformedScalarField = peer.transformedSource
+  def transformedScalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.transformedSource
 }
 
 object ScalarFieldView {
@@ -495,7 +495,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.scalarRange.value = s
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -541,7 +541,7 @@ object VectorFieldView {
 case class ImageView private[ui] (override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -553,7 +553,7 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
     peer.windowLevel.value = peer.windowLevel.value.copy(window = w)
   }
 
-  def level = peer.windowLevel.value.level
+  def level: Double = peer.windowLevel.value.level
 
   def level_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
@@ -605,7 +605,7 @@ case class Group(override protected[api] val peer: GroupNode) extends ObjectView
     peer.hidden = b
   }
 
-  def hidden = peer.hidden
+  def hidden: Boolean = peer.hidden
 
   type PeerType = GroupNode
 }
@@ -721,7 +721,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
-  def discreteLowRankGaussianProcess = peer.transformation.dgp
+  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = peer.transformation.dgp
 
   def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
@@ -798,12 +798,12 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
 
   override type PeerType = ShapeModelTransformationsNode
 
-  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
+  def shapeTransformationView: DiscreteLowRankGPTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
     case Some(sv) => sv
     case None => throw new Exception("There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView.")
   }
 
-  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
+  def poseTransformationView: RigidTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
     case Some(sv) => sv
     case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
   }

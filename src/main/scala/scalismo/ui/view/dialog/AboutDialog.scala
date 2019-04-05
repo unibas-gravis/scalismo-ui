@@ -49,8 +49,8 @@ object AboutDialog {
 
     import scala.reflect.runtime.universe
 
-    lazy val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
-    lazy val objectName = "scalismo.ui.BuildInfo$"
+    private lazy val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
+    private lazy val objectName = "scalismo.ui.BuildInfo$"
 
     def proxy(fieldName: String): String = Try {
       val moduleSymbol = runtimeMirror.moduleSymbol(
@@ -90,17 +90,17 @@ object AboutDialog {
     * the values defined here, not a literal value)
      */
 
-    def s_3 = 3.scaled
+    def s_3: Int = 3.scaled
 
-    def s_5 = 5.scaled
+    def s_5: Int = 5.scaled
 
-    def s_10 = 10.scaled
+    def s_10: Int = 10.scaled
 
-    def s_15 = 15.scaled
+    def s_15: Int = 15.scaled
 
-    def s_20 = 20.scaled
+    def s_20: Int = 20.scaled
 
-    def s_128 = 128.scaled
+    def s_128: Int = 128.scaled
   }
 
   class BoldLabel(text: String, icon: Icon = EmptyIcon, alignment: Alignment.Value = Alignment.Center) extends Label(text, icon, alignment) {
@@ -108,15 +108,15 @@ object AboutDialog {
   }
 
   class LogoPanel extends BorderPanel {
-    val logo = BundledIcon.Logo
-    val dim = s_128
-    val scaledIcon = ScalableUI.resizeIcon(logo, dim, dim)
+    private val logo = BundledIcon.Logo
+    private val dim = s_128
+    private val scaledIcon = ScalableUI.resizeIcon(logo, dim, dim)
 
-    val image = new LinkLabel("", new URI("https://github.com/unibas-gravis/scalismo"), scaledIcon, Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
+    private val image = new LinkLabel("", new URI("https://github.com/unibas-gravis/scalismo"), scaledIcon, Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
       peer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
     }
 
-    val h = s_15
+    private val h = s_15
     image.border = BorderFactory.createEmptyBorder(h * 2, h, h * 2, h)
 
     layout(image) = BorderPanel.Position.North
@@ -127,7 +127,7 @@ object AboutDialog {
     private var y = 0
     val columns = 2
 
-    def constraints(text: String) = new Constraints {
+    private def constraints(text: String): Constraints = new Constraints {
       this.gridx = x
       this.gridy = y
       this.anchor = Anchor.NorthWest
@@ -157,20 +157,20 @@ object AboutDialog {
   class ThirdPartyPanel(frame: ScalismoFrame) extends BorderPanel {
     val description = "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
 
-    val descriptionBorder = BorderFactory.createEmptyBorder(s_10, 0, s_10, 0)
-    val thanksBorder = BorderFactory.createEmptyBorder(s_10, 0, 0, 0)
-    val listBorder = BorderFactory.createEmptyBorder(s_3, s_10, s_3, s_10)
-    val scrollBorder = BorderFactory.createEmptyBorder(0, 0, 0, s_10)
+    private val descriptionBorder = BorderFactory.createEmptyBorder(s_10, 0, s_10, 0)
+    private val thanksBorder = BorderFactory.createEmptyBorder(s_10, 0, 0, 0)
+    private val listBorder = BorderFactory.createEmptyBorder(s_3, s_10, s_3, s_10)
+    private val scrollBorder = BorderFactory.createEmptyBorder(0, 0, 0, s_10)
 
-    val north = new MultiLineLabel(description) {
+    private val north = new MultiLineLabel(description) {
       border = descriptionBorder
     }
 
     val center: BorderPanel = new BorderPanel {
-      val list = new ThirdPartyListPanel(frame) {
+      private val list = new ThirdPartyListPanel(frame) {
         border = listBorder
       }
-      val scroll = new ScrollPane(list) {
+      private val scroll = new ScrollPane(list) {
         horizontalScrollBarPolicy = ScrollPane.BarPolicy.AsNeeded
         verticalScrollBarPolicy = ScrollPane.BarPolicy.AsNeeded
       }
@@ -190,10 +190,10 @@ object AboutDialog {
     private var x = 0
     private var y = 0
     val columns = List("Name", "Author(s)", "License")
-    val lastColumnIndex = columns.length - 1
-    val lastRowIndex = ThirdPartyResource.All.length + 1 // accounts for header and footer
+    private val lastColumnIndex = columns.length - 1
+    private val lastRowIndex = ThirdPartyResource.All.length + 1 // accounts for header and footer
 
-    def constraints() = new Constraints {
+    private def constraints(): Constraints = new Constraints {
       this.gridx = x
       this.gridy = y
       this.anchor = Anchor.NorthWest
@@ -324,7 +324,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
   modal = true
   title = "About Scalismo UI"
 
-  def withLogo(component: Component) = new BorderPanel {
+  private def withLogo(component: Component): BorderPanel = new BorderPanel {
     layout(component) = BorderPanel.Position.Center
     layout(new LogoPanel) = BorderPanel.Position.West
   }
@@ -340,14 +340,14 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       "Build Time" -> BuildInfo.buildTime
     )
 
-    val kvPanel: BorderPanel = new BorderPanel {
-      val west = new BorderPanel {
+    private val kvPanel: BorderPanel = new BorderPanel {
+      val west: BorderPanel = new BorderPanel {
         layout(new KeyValuePanel(keyValue)) = BorderPanel.Position.Center
       }
 
       layout(west) = BorderPanel.Position.West
       layout(new LinkLabel("Copyright (c) Graphics and Vision Research Group, University of Basel", new URI("http://gravis.cs.unibas.ch/"), alignment = Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
-        val b = s_10
+        private val b = s_10
         border = BorderFactory.createEmptyBorder(b, b, b, b)
       }) = BorderPanel.Position.North
     }
@@ -364,7 +364,7 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       })
       layout(new BorderPanel {
         layout(ok) = BorderPanel.Position.Center
-        val b = s_5
+        private val b = s_5
         border = BorderFactory.createEmptyBorder(b, b, b, b)
       }) = BorderPanel.Position.East
     }

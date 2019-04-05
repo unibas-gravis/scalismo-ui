@@ -26,7 +26,7 @@ import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussi
 // Therefore, the copy methods have to be defined manually.
 class LowRankGpPointTransformation protected (val gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], val coefficients: DenseVector[Double]) extends PointTransformation {
 
-  lazy val vectorField = gp.instance(coefficients)
+  private lazy val vectorField = gp.instance(coefficients)
 
   override def apply(point: Point[_3D]): Point[_3D] = {
     point + vectorField(point)

@@ -32,7 +32,7 @@ import scala.swing.SimpleSwingApplication
  */
 class ScalismoApplication(frame: => ScalismoFrame, lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName) extends SimpleSwingApplication {
 
-  override lazy val top = EdtUtil.onEdtWait(frame)
+  override lazy val top: ScalismoFrame = EdtUtil.onEdtWait(frame)
 
   override def main(args: Array[String]): Unit = {
     scalismo.initialize()

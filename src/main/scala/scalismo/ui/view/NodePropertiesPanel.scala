@@ -173,11 +173,11 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   val tabs = new Tabs
 
   // actual content.
-  val cards = new CardPanel {
+  private val cards = new CardPanel {
     add(empty)
   }
 
-  val scroll = new ScrollPane() {
+  private val scroll = new ScrollPane() {
     contents = cards
     enabled = false
 

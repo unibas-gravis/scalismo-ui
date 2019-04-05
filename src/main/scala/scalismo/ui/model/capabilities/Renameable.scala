@@ -20,7 +20,7 @@ package scalismo.ui.model.capabilities
 trait Renameable {
   private var _name: String = _ // default: null
 
-  def name = if (_name == null) "(null)" else _name
+  def name: String = if (_name == null) "(null)" else _name
 
   def name_=(newValue: String): Unit = {
     _name = newValue

@@ -113,7 +113,7 @@ class LoadStatisticalShapeModelAction(group: GroupNode)(implicit frame: Scalismo
 
     // the path entry will always be found, as the user can only select entries from the
     // same list. Hence .get is justified here.
-    def path = entries.find(_.name == combo.selection.item).get.modelPath
+    def path: String = entries.find(_.name == combo.selection.item).get.modelPath
 
   }
 

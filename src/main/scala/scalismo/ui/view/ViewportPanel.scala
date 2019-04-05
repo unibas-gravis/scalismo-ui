@@ -119,7 +119,7 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 }
 
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
-  override def name = axis.toString
+  override def name: String = axis.toString
 
   lazy val positionSlider = new Slider {
     peer.setOrientation(SwingConstants.VERTICAL)

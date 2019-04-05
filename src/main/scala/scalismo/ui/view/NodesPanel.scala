@@ -56,9 +56,8 @@ object NodesPanel {
     }
 
     object Icons {
-      val fallback = BundledIcon.Fallback.standardSized()
-      /* note: this uses the "closed" icon for leaves. */
 
+      /* note: this uses the "closed" icon for leaves. */
       private def closedIcon(node: SceneNode): Option[ScalableIcon] = {
         node match {
           case _: Scene => Some(BundledIcon.Scene)
@@ -130,7 +129,7 @@ object NodesPanel {
 }
 
 class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilters {
-  val scene = frame.scene
+  private val scene = frame.scene
 
   val rootNode = new ViewNode(scene)
 
@@ -170,7 +169,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  val selectionListener = new TreeSelectionListener {
+  private val selectionListener = new TreeSelectionListener {
     override def valueChanged(e: TreeSelectionEvent): Unit = {
       if (!synchronizing) {
         frame.selectedNodes = getSelectedSceneNodes
@@ -178,13 +177,13 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  val componentListener = new ComponentAdapter {
+  private val componentListener = new ComponentAdapter {
     override def componentResized(e: ComponentEvent): Unit = {
       repaintTree()
     }
   }
 
-  val keyListener = new KeyAdapter {
+  private val keyListener = new KeyAdapter {
     override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete
