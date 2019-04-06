@@ -99,7 +99,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
   private def axisControls = Seq(x, y, z)
 
-  val position = new GridBagPanel {
+  private class PositionPanel extends GridBagPanel {
     border = new TitledBorder(null, "Position", TitledBorder.LEADING, 0, null, null)
 
     def add(comp: Component, position: (Int, Int)): Unit = {
@@ -120,6 +120,9 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       add(axis.control, (1, row))
     }
   }
+
+  private val position = new PositionPanel()
+
   position.add(x, 1)
   position.add(y, 2)
   position.add(z, 3)

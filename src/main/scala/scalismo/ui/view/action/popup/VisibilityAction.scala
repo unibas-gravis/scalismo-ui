@@ -43,7 +43,7 @@ object VisibilityAction extends PopupAction.Factory {
 }
 
 class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
-  val control = frame.sceneControl.nodeVisibility
+  private val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports

@@ -63,7 +63,7 @@ object ObjectView {
           val ov = new ObjectView {
             override type PeerType = SceneNode with Removeable
 
-            override protected[api] def peer = node
+            override protected[api] def peer: SceneNode with Removeable = node
           }
           Some(ov)
         case _ => None
@@ -111,7 +111,7 @@ object PointCloudView {
     }
   }
 
-  implicit def callbackPointCloudView = new HandleCallback[PointCloudView] {
+  implicit def callbackPointCloudView: HandleCallback[PointCloudView] = new HandleCallback[PointCloudView] {
 
     override def registerOnAdd[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
