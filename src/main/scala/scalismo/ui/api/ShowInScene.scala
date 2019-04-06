@@ -40,7 +40,9 @@ trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit def showInSceneScalarField[A: Scalar: ClassTag] =
+  implicit def showInSceneScalarField[A: Scalar: ClassTag]: ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
+    type View = ScalarFieldView
+  } =
     new ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
 
       override type View = ScalarFieldView
@@ -72,7 +74,9 @@ trait LowPriorityImplicits {
 
 object ShowInScene extends LowPriorityImplicits {
 
-  implicit def ShowVertexColorMesh = new ShowInScene[VertexColorMesh3D] {
+  implicit def ShowVertexColorMesh: ShowInScene[VertexColorMesh3D] {
+    type View = VertexColorMeshView
+  } = new ShowInScene[VertexColorMesh3D] {
     override type View = VertexColorMeshView
 
     override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
@@ -109,7 +113,9 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
+  implicit def ShowScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarMeshField[S]] {
+    type View = ScalarMeshFieldView
+  } = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
@@ -129,7 +135,9 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar: ClassTag]: ShowInScene[DiscreteScalarImage[_3D, S]] {
+    type View = ImageView
+  } = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {
