@@ -50,7 +50,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
   val rendererPanel = new RendererPanel(this)
 
-  val toolBar = new ToolBar {
+  protected val toolBar: ToolBar = new ToolBar {
     floatable = false
     rollover = true
     orientation = Orientation.Horizontal
@@ -121,7 +121,7 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
   override def name: String = axis.toString
 
-  lazy val positionSlider = new Slider {
+  private lazy val positionSlider = new Slider {
     peer.setOrientation(SwingConstants.VERTICAL)
   }
 
@@ -141,7 +141,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
     }
   })
 
-  lazy val sliderPanel = new BorderPanel {
+  private lazy val sliderPanel = new BorderPanel {
     layout(positionPlusButton) = BorderPanel.Position.North
     layout(positionSlider) = BorderPanel.Position.Center
     layout(positionMinusButton) = BorderPanel.Position.South

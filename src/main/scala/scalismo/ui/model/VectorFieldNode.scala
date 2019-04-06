@@ -22,6 +22,8 @@ import scalismo.geometry._
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 
+import scala.collection.immutable
+
 class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[VectorFieldNode] {
   override val name: String = "Scalar fields"
 
@@ -50,7 +52,7 @@ class VectorFieldNode(
 
   // we store the vectors as a sequence, as values are defined by iterators, which we cannot
   // traverse twice
-  lazy val vectors = source.values.toIndexedSeq
+  private lazy val vectors: immutable.IndexedSeq[EuclideanVector[_3D]] = source.values.toIndexedSeq
 
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()

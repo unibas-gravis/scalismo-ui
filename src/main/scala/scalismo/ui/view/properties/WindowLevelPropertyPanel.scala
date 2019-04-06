@@ -191,7 +191,7 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
     val northedPanel: BorderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
       val slidersPanel: GridBagPanel = new GridBagPanel {
-        val constraints = new Constraints() {
+        private val constraints = new Constraints() {
           ipadx = inset
         }
         var (x, y) = (0, 0)
@@ -225,7 +225,7 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
         add(windowSlider, next)
       }
 
-      val showitWrap = new BorderPanel {
+      private val showitWrap = new BorderPanel {
         layout(Component.wrap(showit)) = BorderPanel.Position.Center
         border = {
           val line = BorderFactory.createLineBorder(Color.DARK_GRAY, 3.scaled, true)

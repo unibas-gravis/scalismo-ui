@@ -87,10 +87,10 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2.scaled
-    val lr = 12.scaled
+    private val tb = 2.scaled
+    private val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes, viewports)
+    def currentState: NodeVisibility.State = control.getVisibilityState(nodes, viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)

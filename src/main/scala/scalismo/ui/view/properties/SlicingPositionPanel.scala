@@ -69,7 +69,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       }
     })
 
-    val control = new BorderPanel {
+    val control: BorderPanel = new BorderPanel {
       layout(minus) = BorderPanel.Position.West
       layout(slider) = BorderPanel.Position.Center
       layout(plus) = BorderPanel.Position.East

@@ -69,9 +69,9 @@ trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorS
     }
   }
 
-  lazy val polydata = setupPolyData()
+  lazy val polydata: vtkPolyData = setupPolyData()
 
-  lazy val glyph = new vtkGlyph3D {
+  lazy val glyph: vtkGlyph3D = new vtkGlyph3D {
     SetSourceConnection(arrow.GetOutputPort)
     SetInputData(polydata)
     //    ScalingOn()
