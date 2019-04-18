@@ -42,7 +42,7 @@ private[api] sealed trait SimpleInteractor {
 }
 
 case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Group, targetGroup: Group,
-                                                color: Color = Color.YELLOW, lineWidth: Int = 3, opacity:Double = 1.0) extends SimpleInteractor {
+    color: Color = Color.YELLOW, lineWidth: Int = 3, opacity: Double = 1.0) extends SimpleInteractor {
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
