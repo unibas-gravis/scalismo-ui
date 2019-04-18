@@ -67,7 +67,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
   def getList[A: TypeTag: Codec](key: String): Option[List[A]] = {
 
     Try(doGet(key)) match {
-      case Failure(error) => None
+      case Failure(_) => None
       case Success(r) => Some(r.map(s => implicitly[Codec[A]].fromString(s)))
     }
   }
@@ -103,7 +103,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
 
   def setList[A: TypeTag: Codec](key: String, values: List[A]): Try[Unit] = {
     Try(doSet(key, values.map(v => implicitly[Codec[A]].toString(v)))) match {
-      case Success(r) => Success(())
+      case Success(_) => Success(())
       case Failure(oops) => Failure(oops)
     }
   }
@@ -113,7 +113,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
     sf.getValues(key)
   }
 
-  private def doSet(key: String, vals: List[String]) = {
+  private def doSet(key: String, vals: List[String]): Unit = {
     val sf: SettingsFile = settingsFile
     sf.setValues(key, vals)
   }

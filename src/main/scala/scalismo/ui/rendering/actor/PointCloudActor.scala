@@ -28,7 +28,7 @@ import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
 object PointCloudActor extends SimpleActorsFactory[PointCloudNode] {
   override def actorsFor(renderable: PointCloudNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
+      case _: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new PointCloudActor2D(renderable, _2d))
     }
   }
@@ -45,7 +45,7 @@ trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorCo
 
   lazy val sphere = new vtkSphereSource
 
-  def transformedPoints = new vtkPoints {
+  private def transformedPoints: vtkPoints = new vtkPoints {
     sceneNode.transformedSource.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
@@ -53,12 +53,12 @@ trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorCo
 
   lazy val polydata = new vtkPolyData
 
-  lazy val glyph = new vtkGlyph3D {
+  protected lazy val glyph: vtkGlyph3D = new vtkGlyph3D {
     SetSourceConnection(sphere.GetOutputPort)
     SetInputData(polydata)
   }
 
-  def rerender(geometryChanged: Boolean) = {
+  def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       polydata.SetPoints(transformedPoints)
     }

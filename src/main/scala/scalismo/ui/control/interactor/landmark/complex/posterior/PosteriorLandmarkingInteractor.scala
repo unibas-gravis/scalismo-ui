@@ -26,7 +26,6 @@ import scalismo.ui.model._
 
 trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[PosteriorLandmarkingInteractor] {
 
-  implicit val theFrame = frame
   private lazy val nodeVisibility = frame.sceneControl.nodeVisibility
 
   def previewNode: TriangleMeshNode
@@ -48,7 +47,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
   def updatePreview(modelLm: LandmarkNode, targetLm: LandmarkNode, mousePosition: Point3D): Unit = {
 
     targetUncertaintyGroup.genericTransformations.foreach(_.remove())
-    targetUncertaintyGroup.genericTransformations.add((p: Point[_3D]) => mousePosition, "mousePosition")
+    targetUncertaintyGroup.genericTransformations.add((_: Point[_3D]) => mousePosition, "mousePosition")
 
     val lmPointAndId = {
       previewNode.source.pointSet.findClosestPoint(modelLm.source.point)
@@ -65,11 +64,11 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
   }
 
   def showPreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, true)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = true)
   }
 
   def hidePreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = false)
   }
 
   def initialize(): Unit = {

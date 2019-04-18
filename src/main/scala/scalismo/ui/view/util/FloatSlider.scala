@@ -28,9 +28,9 @@ class FloatSlider(val minFloat: Float, val maxFloat: Float, val stepFloat: Float
     minFloat + stepFloat * i
   }
 
-  def floatValue = i2f(value)
+  def floatValue: Float = i2f(value)
 
-  def floatValue_=(newValue: Float) = value = f2i(newValue)
+  def floatValue_=(newValue: Float): Unit = value = f2i(newValue)
 
   min = 0
   max = ((maxFloat - minFloat) / stepFloat).toInt

@@ -33,6 +33,9 @@ object CardPanel {
   }
 
   class CustomCardLayout extends CardLayout {
+    private val minimumWidth = 0
+    private val minimumHeight = 0
+
     override def preferredLayoutSize(parent: awt.Container): Dimension = {
       if (activeCards.isDefined) {
         parent.getTreeLock synchronized {
@@ -53,8 +56,6 @@ object CardPanel {
     }
 
     private[CardPanel] var activeCards: Option[List[AComponent]] = None
-    var minimumWidth = 0
-    var minimumHeight = 0
   }
 
   val NoCard: String = null
@@ -67,12 +68,12 @@ class CardPanel extends Panel with LayoutContainer {
 
   override lazy val peer = new javax.swing.JPanel(new CustomCardLayout) with SuperMixin
 
-  val layoutManager = peer.getLayout.asInstanceOf[CustomCardLayout]
+  private val layoutManager = peer.getLayout.asInstanceOf[CustomCardLayout]
 
   private var cards: Map[UniqueID, ComponentWithUniqueId] = Map.empty
   private var _current: UniqueID = CardPanel.NoCard
 
-  protected def areValid(c: UniqueID) = (true, "")
+  protected def areValid(c: UniqueID): (Boolean, UniqueID) = (true, "")
 
   def add(card: ComponentWithUniqueId): Unit = {
     add(card, card.uniqueId)
@@ -110,7 +111,7 @@ class CardPanel extends Panel with LayoutContainer {
 
   def currentComponent: ComponentWithUniqueId = cards(_current)
 
-  protected def constraintsFor(comp: Component) = cards.iterator.find {
+  protected def constraintsFor(comp: Component): UniqueID = cards.iterator.find {
     case (_, c) => c eq comp
   }.map(_._1).orNull
 

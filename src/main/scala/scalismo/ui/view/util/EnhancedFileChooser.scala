@@ -20,8 +20,8 @@ package scalismo.ui.view.util
 import java.awt.event.{ MouseAdapter, MouseEvent, MouseMotionAdapter }
 import java.awt.{ BorderLayout, Color, Point, Component => AComponent }
 import java.io.File
-import javax.swing._
 
+import javax.swing._
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 
@@ -29,7 +29,7 @@ import scala.swing.{ BorderPanel, Component, FileChooser, Label }
 import scala.util.Failure
 
 object EnhancedFileChooser {
-  var MaxDirs = 13
+  val MaxDirs = 13
 }
 
 /*
@@ -50,7 +50,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     }
   }
 
-  def lastUsedDirectories_=(files: Seq[File]) = {
+  def lastUsedDirectories_=(files: Seq[File]): Unit = {
     val dirs = files.map(f => if (f.isDirectory) f else f.getParentFile).distinct
     if (dirs.nonEmpty) {
       val old = lastUsedDirectories.diff(dirs)
@@ -62,24 +62,24 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     }
   }
 
-  override def selectedFiles = {
+  override def selectedFiles: Seq[File] = {
     val r = super.selectedFiles
     lastUsedDirectories = r
     r
   }
 
-  override def selectedFile = {
+  override def selectedFile: File = {
     val r = super.selectedFile
     lastUsedDirectories = Seq(r)
     r
   }
 
-  override def selectedFiles_=(files: File*) = {
+  override def selectedFiles_=(files: File*): Unit = {
     lastUsedDirectories = files
     super.selectedFiles_=(files: _*)
   }
 
-  override def selectedFile_=(file: File) = {
+  override def selectedFile_=(file: File): Unit = {
     lastUsedDirectories = Seq(file)
     super.selectedFile_=(file)
   }
@@ -87,9 +87,9 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
   private[EnhancedFileChooser] class EnhancedJFileChooser extends JFileChooser {
 
     private[EnhancedJFileChooser] class FileEntry(val dir: File) {
-      override def toString = dir.getName
+      override def toString: String = dir.getName
 
-      def tooltip = dir.getCanonicalPath
+      def tooltip: String = dir.getCanonicalPath
     }
 
     override def createDialog(parent: AComponent): JDialog = {
@@ -102,13 +102,13 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       val model = new DefaultListModel[FileEntry]()
       lastDirs.foreach(d => model.addElement(new FileEntry(d)))
 
-      val panel = new BorderPanel {
-        val title = new BorderPanel {
+      val panel: BorderPanel = new BorderPanel {
+        private val title = new BorderPanel {
           layout(new Label("Recent Folders:")) = BorderPanel.Position.West
         }
         layout(title) = BorderPanel.Position.North
 
-        val list = new JList(model) {
+        val list: JList[FileEntry] = new JList(model) {
           def affectedItem(point: Point): Option[FileEntry] = {
             val index = locationToIndex(point)
             if (index > -1 && getCellBounds(index, index).contains(point)) {
@@ -119,7 +119,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
           }
 
           addMouseMotionListener(new MouseMotionAdapter {
-            override def mouseMoved(e: MouseEvent) = {
+            override def mouseMoved(e: MouseEvent): Unit = {
               affectedItem(e.getPoint) match {
                 case None => setToolTipText(null)
                 case Some(f) => setToolTipText(f.tooltip)
@@ -128,7 +128,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
           })
 
           addMouseListener(new MouseAdapter {
-            override def mouseClicked(e: MouseEvent) = {
+            override def mouseClicked(e: MouseEvent): Unit = {
               if (e.getClickCount >= 2 && e.getButton == MouseEvent.BUTTON1) {
                 affectedItem(e.getPoint).foreach(f => EnhancedJFileChooser.this.setCurrentDirectory(f.dir))
               }
@@ -149,7 +149,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       else Some(createRecentDirsPanel(l))
     }
 
-    def decorateDialog(dialog: JDialog) = {
+    private def decorateDialog(dialog: JDialog): JDialog = {
       val cp = dialog.getContentPane
       leftComponent match {
         case Some(c) => cp.add(c.peer, BorderLayout.WEST)

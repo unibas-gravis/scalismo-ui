@@ -20,18 +20,16 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
-import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
+import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
+import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, StatisticalMeshModel}
-import scalismo.ui.control.NodeVisibility
-import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.{Removeable, RenderableSceneNode}
+import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
-import scalismo.ui.view.ScalismoFrame
 
 sealed trait ObjectView {
   type PeerType <: SceneNode with Removeable
@@ -47,48 +45,51 @@ sealed trait ObjectView {
   def remove(): Unit = peer.remove()
 
   private def findBelongingGroup(node: SceneNode): GroupNode = {
-    if (node.isInstanceOf[GroupNode]) node.asInstanceOf[GroupNode]
-    else findBelongingGroup(node.parent)
+    node match {
+      case groupNode: GroupNode => groupNode
+      case _ => findBelongingGroup(node.parent)
+    }
   }
 }
 
 object ObjectView {
+
   implicit object FindInSceneObjectView extends FindInScene[ObjectView] {
     override def createView(s: SceneNode): Option[ObjectView] = {
 
       s match {
-        case node: GroupNode => None // we ignore all group nodes, as they are not real objects
-        case node: SceneNode with Removeable => {
+        case _: GroupNode => None // we ignore all group nodes, as they are not real objects
+        case node: SceneNode with Removeable =>
           val ov = new ObjectView {
             override type PeerType = SceneNode with Removeable
 
-            override protected[api] def peer = node
+            override protected[api] def peer: SceneNode with Removeable = node
           }
           Some(ov)
-        }
         case _ => None
       }
     }
   }
+
 }
 
 case class PointCloudView private[ui] (override protected[api] val peer: PointCloudNode) extends ObjectView {
 
   type PeerType = PointCloudNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def radius = peer.radius.value
+  def radius: Double = peer.radius.value
 
   def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -110,12 +111,12 @@ object PointCloudView {
     }
   }
 
-  implicit def callbackPointCloudView = new HandleCallback[PointCloudView] {
+  implicit def callbackPointCloudView: HandleCallback[PointCloudView] = new HandleCallback[PointCloudView] {
 
     override def registerOnAdd[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: PointCloudNode) =>
+        case ChildAdded(_, newNode: PointCloudNode) =>
           val tmv = PointCloudView(newNode)
           f(tmv)
       }
@@ -124,7 +125,7 @@ object PointCloudView {
     override def registerOnRemove[R](g: Group, f: PointCloudView => R): Unit = {
       g.peer.listenTo(g.peer.pointClouds)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: PointCloudNode) =>
+        case ChildRemoved(_, removedNode: PointCloudNode) =>
           val tmv = PointCloudView(removedNode)
           f(tmv)
       }
@@ -135,19 +136,19 @@ object PointCloudView {
 case class TriangleMeshView private[ui] (override protected[api] val peer: TriangleMeshNode) extends ObjectView {
   type PeerType = TriangleMeshNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -174,7 +175,7 @@ object TriangleMeshView {
     override def registerOnAdd[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TriangleMeshNode) =>
+        case ChildAdded(_, newNode: TriangleMeshNode) =>
           val tmv = TriangleMeshView(newNode)
           f(tmv)
       }
@@ -183,26 +184,27 @@ object TriangleMeshView {
     override def registerOnRemove[R](g: Group, f: TriangleMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TriangleMeshNode) =>
+        case ChildRemoved(_, removedNode: TriangleMeshNode) =>
           val tmv = TriangleMeshView(removedNode)
           f(tmv)
       }
     }
 
   }
+
 }
 
-case class VertexColorMeshView private[ui](override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
+case class VertexColorMeshView private[ui] (override protected[api] val peer: VertexColorMeshNode) extends ObjectView {
 
   type PeerType = VertexColorMeshNode
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
 
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
@@ -229,7 +231,7 @@ object VertexColorMeshView {
     override def registerOnAdd[R](g: Group, f: VertexColorMeshView => R): Unit = {
       g.peer.listenTo(g.peer.colorMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: VertexColorMeshNode) =>
+        case ChildAdded(_, newNode: VertexColorMeshNode) =>
           val tmv = VertexColorMeshView(newNode)
           f(tmv)
       }
@@ -238,33 +240,33 @@ object VertexColorMeshView {
     override def registerOnRemove[R](g: Group, f: VertexColorMeshView => R): Unit = {
       g.peer.listenTo(g.peer.colorMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: VertexColorMeshNode) =>
+        case ChildRemoved(_, removedNode: VertexColorMeshNode) =>
           val tmv = VertexColorMeshView(removedNode)
           f(tmv)
       }
     }
   }
+
 }
-
-
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
 
   type PeerType = LineMeshNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Float): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
+
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
@@ -290,7 +292,7 @@ object LineMeshView {
     override def registerOnAdd[R](g: Group, f: LineMeshView => R): Unit = {
       g.peer.listenTo(g.peer.lineMeshes)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: LineMeshNode) =>
+        case ChildAdded(_, newNode: LineMeshNode) =>
           val lmv = LineMeshView(newNode)
           f(lmv)
       }
@@ -299,26 +301,27 @@ object LineMeshView {
     override def registerOnRemove[R](g: Group, f: LineMeshView => R): Unit = {
       g.peer.listenTo(g.peer.lineMeshes)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: LineMeshNode) =>
+        case ChildRemoved(_, removedNode: LineMeshNode) =>
           val lmv = LineMeshView(removedNode)
           f(lmv)
       }
     }
 
   }
+
 }
 
 case class LandmarkView private[ui] (override protected[api] val peer: LandmarkNode) extends ObjectView {
 
   type PeerType = LandmarkNode
 
-  def color = peer.color.value
+  def color: Color = peer.color.value
 
   def color_=(c: Color): Unit = {
     peer.color.value = c
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -345,7 +348,7 @@ object LandmarkView {
     override def registerOnAdd[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: LandmarkNode) =>
+        case ChildAdded(_, newNode: LandmarkNode) =>
           val tmv = LandmarkView(newNode)
           f(tmv)
       }
@@ -354,7 +357,7 @@ object LandmarkView {
     override def registerOnRemove[R](g: Group, f: LandmarkView => R): Unit = {
       g.peer.listenTo(g.peer.landmarks)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: LandmarkNode) =>
+        case ChildRemoved(_, removedNode: LandmarkNode) =>
           val tmv = LandmarkView(removedNode)
           f(tmv)
       }
@@ -372,20 +375,21 @@ case class ScalarMeshFieldView private[ui] (override protected[api] val peer: Sc
     peer.scalarRange.value = s
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
-  def lineWidth = peer.lineWidth.value
+  def lineWidth: Int = peer.lineWidth.value
+
   def lineWidth_=(width: Int): Unit = {
     peer.lineWidth.value = width
   }
 
   def scalarMeshField: ScalarMeshField[Float] = peer.source
 
-  def transformedScalarMeshField = peer.transformedSource
+  def transformedScalarMeshField: ScalarMeshField[Float] = peer.transformedSource
 }
 
 object ScalarMeshFieldView {
@@ -404,7 +408,7 @@ object ScalarMeshFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: ScalarMeshFieldNode) =>
+        case ChildAdded(_, newNode: ScalarMeshFieldNode) =>
           val tmv = ScalarMeshFieldView(newNode)
           f(tmv)
       }
@@ -413,7 +417,7 @@ object ScalarMeshFieldView {
     override def registerOnRemove[R](g: Group, f: ScalarMeshFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarMeshFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: ScalarMeshFieldNode) =>
+        case ChildRemoved(_, removedNode: ScalarMeshFieldNode) =>
           val tmv = ScalarMeshFieldView(removedNode)
           f(tmv)
       }
@@ -431,13 +435,13 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
     peer.scalarRange.value = s
   }
 
-  def radius = peer.radius.value
+  def radius: Double = peer.radius.value
 
   def radius_=(r: Double): Unit = {
     peer.radius.value = r
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -445,7 +449,7 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
 
   def scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.source
 
-  def transformedScalarField = peer.transformedSource
+  def transformedScalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.transformedSource
 }
 
 object ScalarFieldView {
@@ -464,7 +468,7 @@ object ScalarFieldView {
     override def registerOnAdd[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: ScalarFieldNode) =>
+        case ChildAdded(_, newNode: ScalarFieldNode) =>
           val tmv = ScalarFieldView(newNode)
           f(tmv)
       }
@@ -473,7 +477,7 @@ object ScalarFieldView {
     override def registerOnRemove[R](g: Group, f: ScalarFieldView => R): Unit = {
       g.peer.listenTo(g.peer.scalarFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: ScalarFieldNode) =>
+        case ChildRemoved(_, removedNode: ScalarFieldNode) =>
           val tmv = ScalarFieldView(removedNode)
           f(tmv)
       }
@@ -491,7 +495,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.scalarRange.value = s
   }
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
@@ -516,7 +520,7 @@ object VectorFieldView {
     override def registerOnAdd[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: VectorFieldNode) =>
+        case ChildAdded(_, newNode: VectorFieldNode) =>
           val tmv = VectorFieldView(newNode)
           f(tmv)
       }
@@ -525,7 +529,7 @@ object VectorFieldView {
     override def registerOnRemove[R](g: Group, f: VectorFieldView => R): Unit = {
       g.peer.listenTo(g.peer.vectorFields)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: VectorFieldNode) =>
+        case ChildRemoved(_, removedNode: VectorFieldNode) =>
           val tmv = VectorFieldView(removedNode)
           f(tmv)
       }
@@ -537,18 +541,20 @@ object VectorFieldView {
 case class ImageView private[ui] (override protected[api] val peer: ImageNode) extends ObjectView {
   type PeerType = ImageNode
 
-  def opacity = peer.opacity.value
+  def opacity: Double = peer.opacity.value
 
   def opacity_=(o: Double): Unit = {
     peer.opacity.value = o
   }
 
   def window: Double = peer.windowLevel.value.window
+
   def window_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(window = w)
   }
 
-  def level = peer.windowLevel.value.level
+  def level: Double = peer.windowLevel.value.level
+
   def level_=(w: Double): Unit = {
     peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
   }
@@ -572,7 +578,7 @@ object ImageView {
     override def registerOnAdd[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: ImageNode) =>
+        case ChildAdded(_, newNode: ImageNode) =>
           val imv = ImageView(newNode)
           f(imv)
       }
@@ -581,7 +587,7 @@ object ImageView {
     override def registerOnRemove[R](g: Group, f: ImageView => R): Unit = {
       g.peer.listenTo(g.peer.images)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: ImageNode) =>
+        case ChildRemoved(_, removedNode: ImageNode) =>
           val tmv = ImageView(removedNode)
           f(tmv)
       }
@@ -591,15 +597,15 @@ object ImageView {
 }
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class StatisticalMeshModelViewControls private[ui] (val meshView: TriangleMeshView, val shapeModelTransformationView: ShapeModelTransformationView)
+case class StatisticalMeshModelViewControls private[ui] (meshView: TriangleMeshView, shapeModelTransformationView: ShapeModelTransformationView)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   def hidden_=(b: Boolean): Unit = {
-    peer.isGhost = b
+    peer.hidden = b
   }
 
-  def hidden = peer.isGhost
+  def hidden: Boolean = peer.hidden
 
   type PeerType = GroupNode
 }
@@ -677,7 +683,7 @@ object RigidTransformationView {
     override def registerOnAdd[R](g: Group, f: RigidTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TransformationNode[_]) =>
+        case ChildAdded(_, newNode: TransformationNode[_]) =>
 
           if (newNode.transformation.isInstanceOf[RigidTransformation[_]]) {
             val tmv = RigidTransformationView(newNode.asInstanceOf[TransformationNode[RigidTransformation[_3D]]])
@@ -690,7 +696,7 @@ object RigidTransformationView {
     override def registerOnRemove[R](g: Group, f: RigidTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
+        case ChildRemoved(_, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[RigidTransformation[_]]) {
             val tmv = RigidTransformationView(removedNode.asInstanceOf[TransformationNode[RigidTransformation[_3D]]])
             f(tmv)
@@ -715,7 +721,7 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
-  def discreteLowRankGaussianProcess = peer.transformation.dgp
+  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = peer.transformation.dgp
 
   def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
@@ -743,7 +749,7 @@ object DiscreteLowRankGPTransformationView {
     override def registerOnAdd[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TransformationNode[_]) =>
+        case ChildAdded(_, newNode: TransformationNode[_]) =>
 
           if (newNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
             val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
@@ -756,7 +762,7 @@ object DiscreteLowRankGPTransformationView {
     override def registerOnRemove[R](g: Group, f: DiscreteLowRankGPTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TransformationNode[_]) =>
+        case ChildRemoved(_, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
             val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
             f(tmv)
@@ -792,18 +798,19 @@ case class ShapeModelTransformationView private[ui] (override protected[api] val
 
   override type PeerType = ShapeModelTransformationsNode
 
-  def shapeTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
+  def shapeTransformationView: DiscreteLowRankGPTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
     case Some(sv) => sv
     case None => throw new Exception("There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView.")
   }
 
-  def poseTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
+  def poseTransformationView: RigidTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
     case Some(sv) => sv
     case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
   }
 
-  def hasShapeTransformation(): Boolean = peer.gaussianProcessTransformation.isDefined
-  def hasPoseTransformation(): Boolean = peer.poseTransformation.isDefined
+  def hasShapeTransformation: Boolean = peer.gaussianProcessTransformation.isDefined
+
+  def hasPoseTransformation: Boolean = peer.poseTransformation.isDefined
 
 }
 
@@ -824,14 +831,14 @@ object ShapeModelTransformationView {
     override def registerOnAdd[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildAdded(collection, newNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+        case ChildAdded(_, _: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildRemoved(collection, removedNode: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+        case ChildRemoved(_, _: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
       }
     }
   }

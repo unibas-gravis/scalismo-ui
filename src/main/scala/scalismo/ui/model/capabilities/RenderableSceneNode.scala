@@ -30,9 +30,3 @@ trait RenderableSceneNode extends SceneNode with Renderable {
 
   final override def children: List[SceneNode] = Nil
 }
-
-object RenderableSceneNode {
-
-  import scala.language.implicitConversions
-
-}

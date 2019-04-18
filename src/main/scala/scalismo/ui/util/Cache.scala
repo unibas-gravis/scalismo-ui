@@ -20,6 +20,14 @@ package scalismo.ui.util
 import scala.collection.mutable
 
 object Cache {
+  /**
+   * Global flag to debug all cache operations.
+   */
+
+  //noinspection VarCouldBeVal
+  /* This is a global variable that can be set by developers using the library.
+   * The "noinspection" comment suppresses a "var could be val" warning from IntelliJ IDEA.
+   */
   var DebugAll = false
 }
 

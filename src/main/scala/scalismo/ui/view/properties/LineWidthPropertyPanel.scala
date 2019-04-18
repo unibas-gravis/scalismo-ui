@@ -18,7 +18,6 @@
 package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
-
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasLineWidth, LineWidthProperty, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
@@ -45,7 +44,7 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
   }
 
   layout(new BorderPanel {
-    val sliderPanel = new BorderPanel {
+    val sliderPanel: BorderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
       layout(slider) = BorderPanel.Position.Center
     }
@@ -54,15 +53,15 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.value = t.lineWidth.value)
     listenToOwnEvents()
@@ -86,7 +85,7 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.lineWidth.value = slider.value)
+    case ValueChanged(_) => targets.foreach(_.lineWidth.value = slider.value)
   }
 
 }

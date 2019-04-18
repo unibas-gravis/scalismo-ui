@@ -19,6 +19,8 @@ package scalismo.ui.view.swing
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Container, Dimension }
+
+import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.{ JComponent, JSplitPane }
 
 object ExpandablePane {
@@ -43,7 +45,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
   // indicates if the component is deemed to be functional at all. In case it isn't,
   // the drag handle will still be displayed, but simply won't have any effect.
   val operational: Boolean = getUI match {
-    case synth: javax.swing.plaf.synth.SynthSplitPaneUI =>
+    case _: javax.swing.plaf.synth.SynthSplitPaneUI =>
       setUI(new SynthUI)
       true
     case _ =>
@@ -95,6 +97,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
         val parent = current.getParent
         if (parent == null) current else containing(parent)
       }
+
       val fake = containing(this).getSize
 
       if (isVertical) {
@@ -108,7 +111,7 @@ class ExpandablePane(orientation: Int, leftOrTop: java.awt.Component) extends JS
 
   private trait BasicUIOverrides extends javax.swing.plaf.basic.BasicSplitPaneUI {
 
-    override def createDefaultDivider = {
+    override def createDefaultDivider: BasicSplitPaneDivider = {
       val divider = super.createDefaultDivider
       divider.addMouseListener(new MouseAdapter {
         override def mousePressed(e: MouseEvent): Unit = {

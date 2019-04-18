@@ -18,8 +18,8 @@
 package scalismo.ui.view.properties
 
 import java.awt.Color
-import javax.swing.border.TitledBorder
 
+import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasScalarRange, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
@@ -63,8 +63,8 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
   }
 
   {
-    val northedPanel = new BorderPanel {
-      val slidersPanel = new BorderPanel {
+    val northedPanel: BorderPanel = new BorderPanel {
+      private val slidersPanel = new BorderPanel {
         border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
         layout(minimumSlider) = BorderPanel.Position.North
         layout(maximumSlider) = BorderPanel.Position.Center
@@ -76,11 +76,11 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(minimumSlider, maximumSlider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(minimumSlider, maximumSlider)
   }
 
@@ -100,7 +100,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     v * step + min
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.foreach { t =>
       min = t.scalarRange.value.absoluteMinimum
@@ -108,12 +108,13 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
       step = (max - min) / 100.0f
 
       // this is an ugly workaround to make sure (min, max) values are properly displayed
-      def reinitSlider(s: FancySlider) = {
+      def reinitSlider(s: FancySlider): Unit = {
         s.min = 1
         s.min = 0
         s.max = 99
         s.max = 100
       }
+
       reinitSlider(minimumSlider)
       reinitSlider(maximumSlider)
 

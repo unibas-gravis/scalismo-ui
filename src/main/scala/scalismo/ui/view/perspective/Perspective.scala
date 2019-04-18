@@ -29,7 +29,7 @@ trait Perspective extends CardPanel.ComponentWithUniqueId {
 
   final override val uniqueId = factory.perspectiveName
 
-  override def toString = factory.perspectiveName
+  override def toString: String = factory.perspectiveName
 }
 
 object Perspective {

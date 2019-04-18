@@ -18,7 +18,6 @@
 package scalismo.ui.view.action
 
 import javax.swing.{ Icon, UIManager }
-
 import scalismo.ui.view.ScalismoFrame
 
 import scala.swing.Dialog.Message

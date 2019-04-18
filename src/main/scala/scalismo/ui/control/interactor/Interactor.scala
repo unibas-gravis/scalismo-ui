@@ -54,7 +54,7 @@ object Interactor {
  * This can be used for building complicated interaction state machines, as well as to selectively block events
  * from reaching the rendering implementation.
  *
- * Interactors are made active by using the [[ScalismoFrame.interactor]] setter.
+ * Interactors are made active by using the [[scalismo.ui.view.ScalismoFrame.interactor]] setter.
  *
  * They are invoked from the [[scalismo.ui.rendering.internal.EventInterceptor]] class, and if the verdict is to
  * pass on the event, it is handled by an [[scalismo.ui.rendering.internal.InteractorForwarder]], ultimately reaching

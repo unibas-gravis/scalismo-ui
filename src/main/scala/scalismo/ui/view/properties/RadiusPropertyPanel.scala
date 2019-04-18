@@ -18,7 +18,6 @@
 package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
-
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ HasRadius, NodeProperty }
 import scalismo.ui.view.ScalismoFrame
@@ -32,9 +31,9 @@ object RadiusPropertyPanel extends PropertyPanel.Factory {
     new RadiusPropertyPanel(frame)
   }
 
-  var MinValue: Float = 0.0f
-  var MaxValue: Float = 25.0f
-  var StepSize: Float = 0.1f
+  val MinValue: Float = 0.0f
+  val MaxValue: Float = 25.0f
+  val StepSize: Float = 0.1f
 }
 
 class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
@@ -45,7 +44,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
   private val slider = new FloatSlider(RadiusPropertyPanel.MinValue, RadiusPropertyPanel.MaxValue, RadiusPropertyPanel.StepSize)
 
   layout(new BorderPanel {
-    val sliderPanel = new BorderPanel {
+    private val sliderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
       layout(slider) = BorderPanel.Position.Center
     }
@@ -54,15 +53,15 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.floatValue = t.radius.value.toFloat)
     listenToOwnEvents()
@@ -86,7 +85,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.radius.value = slider.floatValue.toFloat)
+    case ValueChanged(_) => targets.foreach(_.radius.value = slider.floatValue)
   }
 
 }

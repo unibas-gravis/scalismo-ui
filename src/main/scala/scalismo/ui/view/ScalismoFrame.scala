@@ -21,17 +21,15 @@ import java.awt.Dimension
 
 import javax.swing.{ SwingUtilities, WindowConstants }
 import scalismo.ui.control.SceneControl
-import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
-import scalismo.ui.view.menu.ViewMenu.ShowBackgroundColorDialogItem
-
 import scalismo.ui.control.interactor.Interactor
+import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
 import scalismo.ui.event.{ Event, ScalismoPublisher }
 import scalismo.ui.model.{ Scene, SceneNode }
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.CloseFrameItem
 import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
-import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowDisplayScalingDialogItem }
+import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowBackgroundColorDialogItem, ShowDisplayScalingDialogItem }
 import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
 
 import scala.swing.{ BorderPanel, Component, MainFrame, MenuBar }
@@ -53,7 +51,7 @@ object ScalismoFrame {
  * a ScalismoFrame MUST be instantiated on the Swing EDT. The constructor will throw
  * an exception if this is not the case.
  *
- * @param scene a [[Scene]] object representing the model that the view uses.
+ * @param scene a [[scalismo.ui.model.Scene]] object representing the model that the view uses.
  * @see [[ScalismoApplication]]
  */
 class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {

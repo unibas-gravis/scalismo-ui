@@ -34,6 +34,7 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
   def source: T // the untransformed T
 
   private def genericTransformationsNode: GenericTransformationsNode = group.genericTransformations
+
   private def shapeModelTransformationsNode: ShapeModelTransformationsNode = group.shapeModelTransformations
 
   private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map(smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse {

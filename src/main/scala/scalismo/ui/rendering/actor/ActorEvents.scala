@@ -53,7 +53,7 @@ trait ActorEvents extends ScalismoPublisher {
   //  def actorGeometryChanged(): Unit = {
   //    publishEvent(ActorEvents.event.ActorGeometryChanged(this))
   //  }
-  def actorChanged(didGeometryChange: Boolean = false) = {
+  def actorChanged(didGeometryChange: Boolean = false): Unit = {
     publishEvent(ActorEvents.event.ActorChanged(this, didGeometryChange))
   }
 

@@ -19,7 +19,7 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry.Point3D
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.properties.NodeProperty
+import scalismo.ui.model.properties.{ NodeProperty, OpacityProperty }
 import scalismo.ui.model.{ Axis, BoundingBox, ImageNode }
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.ImageActor2D.InstanceData
@@ -40,7 +40,7 @@ object ImageActor extends SimpleActorsFactory[ImageNode] {
 
 object ImageActor2D {
 
-  def apply(node: ImageNode, viewport: ViewportPanel2D) = new ImageActor2D(node, viewport.axis, viewport.frame) with SinglePolyDataActor {
+  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SinglePolyDataActor = new ImageActor2D(node, viewport.axis, viewport.frame) with SinglePolyDataActor {
     override def boundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(data.points.GetBounds())
   }
 
@@ -92,12 +92,12 @@ object ImageActor2D {
 
 class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends PolyDataActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
 
-  override def opacity = sceneNode.opacity
+  override def opacity: OpacityProperty = sceneNode.opacity
 
   val data = new InstanceData(sceneNode, axis)
 
   // This method computes the closest into the image for the given slicing position (point) for a given axis.
-  def point3DToSliceIndex(p: Point3D, axis: Axis): (Int) = {
+  def point3DToSliceIndex(p: Point3D, axis: Axis): Int = {
     val (fmin, fmax, fval, tmax) = axis match {
       case Axis.X => (data.min, data.max, p.x, data.exmax)
       case Axis.Y => (data.min, data.max, p.y, data.eymax)
@@ -128,27 +128,24 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
       data.sliceCorrectionTransform.Identity()
 
       def computeOffset(component: Int): Double = {
-        val pointComponentForIndex = (origin(component) + sliceIndex * spacing(component))
-        val offset = (slicingPoint(component) - pointComponentForIndex)
+        val pointComponentForIndex = origin(component) + sliceIndex * spacing(component)
+        val offset = slicingPoint(component) - pointComponentForIndex
         offset
       }
 
       axis match {
-        case Axis.X => {
+        case Axis.X =>
           data.slice.SetExtent(sliceIndex, sliceIndex, 0, data.eymax, 0, data.ezmax)
           val offset = computeOffset(0)
           data.sliceCorrectionTransform.Translate(+offset, 0, 0)
-        }
-        case Axis.Y => {
+        case Axis.Y =>
           data.slice.SetExtent(0, data.exmax, sliceIndex, sliceIndex, 0, data.ezmax)
           val offset = computeOffset(1)
           data.sliceCorrectionTransform.Translate(0, +offset, 0)
-        }
-        case Axis.Z => {
+        case Axis.Z =>
           data.slice.SetExtent(0, data.exmax, 0, data.eymax, sliceIndex, sliceIndex)
           val offset = computeOffset(2)
           data.sliceCorrectionTransform.Translate(0, 0, +offset)
-        }
       }
       data.sliceCorrectionTransform.Modified()
       data.slicePositionCorrector.Modified()

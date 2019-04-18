@@ -38,7 +38,7 @@ object ColorProperty extends ScalismoPublisher {
 class ColorProperty(initialValue: Color) extends NodeProperty[Color](initialValue) {
   def this() = this(ColorProperty.DefaultValue)
 
-  override def value_=(newValue: Color) = {
+  override def value_=(newValue: Color): Unit = {
     super.value_=(newValue)
     ColorProperty.publishEvent(ColorProperty.event.SomeColorPropertyChanged)
   }

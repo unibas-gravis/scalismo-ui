@@ -25,14 +25,14 @@ import scalismo.ui.control.NodeVisibility
 import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 import scalismo.ui.view.util.ScalableUI.implicits._
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 import scala.swing._
 
 object ChildVisibilityAction extends PopupAction.Factory {
   override def apply(nodes: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupActionWithOwnMenu] = {
-    val affected = allMatch[GroupNode](nodes).filterNot(g => g.renderables.find(_ => true).size == 0)
+    val affected = allMatch[GroupNode](nodes).filter(g => g.renderables.nonEmpty)
     if (affected.isEmpty) {
       Nil
     } else {
@@ -42,12 +42,12 @@ object ChildVisibilityAction extends PopupAction.Factory {
 }
 
 class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
-  val control = frame.sceneControl.nodeVisibility
+  private val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Children visible in") {
+      val menu: Menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
           val state = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
           icon = iconFor(state)
@@ -87,10 +87,10 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2.scaled
-    val lr = 12.scaled
+    private val tb = 2.scaled
+    private val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
+    private def currentState = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)

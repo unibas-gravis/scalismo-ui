@@ -28,15 +28,15 @@ class FancySlider extends Slider {
 
   // The labels are protected so that subclasses can override properties like color etc.
   // When setting the visible property of a label to false, it won't be shown on the slider (duh! :-) )
-  protected val minLabel = new Label {
+  protected val minLabel: Label = new Label {
     foreground = Color.GRAY
   }
 
-  protected val maxLabel = new Label {
+  protected val maxLabel: Label = new Label {
     foreground = Color.GRAY
   }
 
-  protected val valueLabel = new Label {
+  protected val valueLabel: Label = new Label {
     foreground = Color.BLACK
   }
 

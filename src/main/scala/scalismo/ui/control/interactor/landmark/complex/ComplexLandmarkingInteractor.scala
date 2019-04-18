@@ -56,11 +56,11 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
 
   implicit lazy val myself: InteractorType = this.asInstanceOf[InteractorType]
 
-  private lazy val landmarkingButton = new ToggleButton {
+  private lazy val landmarkingButton: ToggleButton = new ToggleButton {
     selected = true
-    val myIcon = BundledIcon.Landmark
+    private val myIcon = BundledIcon.Landmark
 
-    def updateUi() = {
+    def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"
       tooltip = s"Toggle landmarking (currently $onOff)"
       val iconColor = if (selected) Color.GREEN.darker else Color.DARK_GRAY
@@ -74,7 +74,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     updateUi()
   }
 
-  override protected def initialDelegate = {
+  override protected def initialDelegate: Delegate[InteractorType] = {
     if (isLandmarkCreationEnabled) {
       ReadyForCreating.enter()
     } else {
@@ -105,7 +105,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
     pointAndNode.nodeOption.flatMap { node =>
       val contextOption: Option[(Point3D, GroupNode)] = node match {
-        case skip: LandmarkNode => None
+        case _: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           Some((ok.inverseTransform(pointAndNode.pointOption.get), ok.group))
         case ok: ImageNode =>
@@ -154,7 +154,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
           val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): EuclideanVector3D }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
-        case _3d: ViewportPanel3D =>
+        case _: ViewportPanel3D =>
           val meshNormal = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id)
           val firstPerp = {
             /* There is an infinite number of perpendicular vectors, any one will do.

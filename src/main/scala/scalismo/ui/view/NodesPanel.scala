@@ -29,9 +29,9 @@ import scalismo.ui.model.properties.ColorProperty
 import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.ui.view.action.popup.{ ChildVisibilityAction, PopupAction, PopupActionWithOwnMenu }
+import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
 
-import scala.collection.JavaConversions.enumerationAsScalaIterator
+import scala.collection.JavaConverters._
 import scala.collection.immutable
 import scala.swing.{ BorderPanel, Component, ScrollPane }
 import scala.util.Try
@@ -48,7 +48,7 @@ object NodesPanel {
 
     class Icons(open: Icon, closed: Icon, leaf: Icon) {
       // the invocation context is a call to getTreeCellRendererComponent().
-      def apply() = {
+      def apply(): Unit = {
         setOpenIcon(open)
         setClosedIcon(closed)
         setLeafIcon(leaf)
@@ -56,9 +56,8 @@ object NodesPanel {
     }
 
     object Icons {
-      val fallback = BundledIcon.Fallback.standardSized()
-      /* note: this uses the "closed" icon for leaves. */
 
+      /* note: this uses the "closed" icon for leaves. */
       private def closedIcon(node: SceneNode): Option[ScalableIcon] = {
         node match {
           case _: Scene => Some(BundledIcon.Scene)
@@ -130,7 +129,7 @@ object NodesPanel {
 }
 
 class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilters {
-  val scene = frame.scene
+  private val scene = frame.scene
 
   val rootNode = new ViewNode(scene)
 
@@ -138,12 +137,12 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
   // being performed (i.e. tree is being programmatically modified)
   private var synchronizing = false
 
-  val mouseListener = new MouseAdapter() {
-    override def mousePressed(event: MouseEvent) = handle(event)
+  val mouseListener: MouseAdapter = new MouseAdapter() {
+    override def mousePressed(event: MouseEvent): Unit = handle(event)
 
-    override def mouseReleased(event: MouseEvent) = handle(event)
+    override def mouseReleased(event: MouseEvent): Unit = handle(event)
 
-    def handle(event: MouseEvent) = {
+    def handle(event: MouseEvent): Unit = {
       if (event.isPopupTrigger) {
         val (x, y) = (event.getX, event.getY)
         pathToSceneNode(tree.getPathForLocation(x, y)).foreach { node =>
@@ -170,7 +169,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  val selectionListener = new TreeSelectionListener {
+  private val selectionListener = new TreeSelectionListener {
     override def valueChanged(e: TreeSelectionEvent): Unit = {
       if (!synchronizing) {
         frame.selectedNodes = getSelectedSceneNodes
@@ -178,13 +177,13 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  val componentListener = new ComponentAdapter {
+  private val componentListener = new ComponentAdapter {
     override def componentResized(e: ComponentEvent): Unit = {
       repaintTree()
     }
   }
 
-  var keyListener = new KeyAdapter {
+  private val keyListener = new KeyAdapter {
     override def keyTyped(event: KeyEvent): Unit = {
       if (event.getKeyChar == '\u007f') {
         // delete
@@ -220,7 +219,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     def findRecursive(currentNode: ViewNode): Option[ViewNode] = {
       if (currentNode.getUserObject eq node) Some(currentNode)
       else {
-        currentNode.children().foreach { child =>
+        currentNode.children().asScala.foreach { child =>
           findRecursive(child.asInstanceOf[ViewNode]) match {
             case found @ Some(_) => return found
             case _ =>
@@ -250,7 +249,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     }
   }
 
-  def setSelectedSceneNodes(nodes: immutable.Seq[SceneNode]) = {
+  def setSelectedSceneNodes(nodes: immutable.Seq[SceneNode]): Unit = {
     val paths = nodes.map(sceneNodeToPath).collect(definedOnly)
     if (paths.nonEmpty) {
       tree.setSelectionPaths(paths.toArray)
@@ -286,12 +285,12 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     // of that node's children.
 
     // don't replace this with a val, it has to be freshly evaluated every time
-    def viewChildren = view.children.map(_.asInstanceOf[ViewNode]).toList
+    def viewChildren = view.children.asScala.map(_.asInstanceOf[ViewNode]).toList
 
     def nodeOrChildrenIfCollapsed(node: SceneNode): Seq[SceneNode] = {
       node match {
         case c: CollapsableView if c.isViewCollapsed => node.children.flatMap(nodeOrChildrenIfCollapsed)
-        case group: GroupNode if group.isGhost => Nil
+        case group: GroupNode if group.hidden => Nil
         case _ => List(node)
       }
     }

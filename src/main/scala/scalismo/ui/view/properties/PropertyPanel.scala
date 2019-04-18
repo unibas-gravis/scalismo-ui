@@ -24,7 +24,7 @@ import scalismo.ui.view.util.CardPanel
 
 /**
  * A PropertyPanel is a UI component to show or manipulate aspects of
- * [[SceneNode]]s.
+ * a [[scalismo.ui.model.SceneNode]].
  */
 trait PropertyPanel extends CardPanel.ComponentWithUniqueId with NodeListFilters {
   /** human-readable description, used in tabs. */
@@ -70,7 +70,7 @@ object PropertyPanel {
 
     import scala.language.implicitConversions
 
-    implicit def factoryAsConstructor(factory: Factory): (ScalismoFrame => PropertyPanel) = {
+    implicit def factoryAsConstructor(factory: Factory): ScalismoFrame => PropertyPanel = {
       factory.create
     }
   }

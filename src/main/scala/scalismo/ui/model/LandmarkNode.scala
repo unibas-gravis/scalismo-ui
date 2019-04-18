@@ -26,7 +26,6 @@ import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }
-import scalismo.ui.view.action.popup.SaveLandmarksAction
 
 import scala.util.{ Failure, Success, Try }
 
@@ -39,7 +38,7 @@ object LandmarksNode {
     private var prefix = 0
     private var suffix = 0
 
-    def nextName() = {
+    def nextName(): String = {
       val p = Prefixes(prefix)
       val name = if (suffix == 0) p.toString else s"${p}_$suffix"
       prefix = (prefix + 1) % Prefixes.length()
@@ -48,7 +47,7 @@ object LandmarksNode {
       name
     }
 
-    def reset() = {
+    def reset(): Unit = {
       prefix = 0
       suffix = 0
     }

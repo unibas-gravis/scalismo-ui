@@ -20,6 +20,7 @@ package scalismo.ui.view.util
 import java.awt.event.{ MouseAdapter, MouseEvent }
 import java.awt.{ Color, Cursor, Desktop }
 import java.net.URI
+
 import javax.swing.Icon
 
 import scala.swing.Swing.EmptyIcon

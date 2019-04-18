@@ -17,8 +17,6 @@
 
 package scalismo.ui.api
 
-import scalismo.ui.view.ScalismoFrame
-
 /**
  * This typeclass needs to be implemented if callbacks should be allowed for a view V
  */

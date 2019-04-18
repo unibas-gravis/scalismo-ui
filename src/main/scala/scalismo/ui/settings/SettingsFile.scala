@@ -39,7 +39,7 @@ class SettingsFile(directory: File, name: String) {
     } else Nil
   }
 
-  private def writeFile(values: List[String]) = {
+  private def writeFile(values: List[String]): Unit = {
     if (!file.exists) {
       if (!file.getParentFile.exists) {
         file.getParentFile.mkdirs()
@@ -91,44 +91,39 @@ object SettingsFile {
    * @tparam A the type that can be (de)serialized
    */
   trait Codec[A] {
-    def toString(target: A): String = target.toString
+    def toString(value: A): String
 
     def fromString(s: String): A
   }
 
   object Codec {
 
-    implicit val stringCodec = new Codec[String] {
-      override def fromString(s: String) = s
+    /* Creates a codec using the default toString method to encode,
+     * and a given function to decode.
+     */
+    def apply[A](decode: String => A): Codec[A] = {
+      new Codec[A] {
+        override def toString(value: A): String = value.toString
+
+        override def fromString(s: String): A = decode(s)
+      }
     }
 
-    implicit val booleanCodec = new Codec[Boolean] {
-      override def fromString(s: String) = java.lang.Boolean.parseBoolean(s)
-    }
+    implicit val stringCodec: Codec[String] = Codec({ s: String => s })
 
-    implicit val intCodec = new Codec[Int] {
-      override def fromString(s: String) = Integer.parseInt(s)
-    }
+    implicit val booleanCodec: Codec[Boolean] = Codec(java.lang.Boolean.parseBoolean)
 
-    implicit val longCodec = new Codec[Long] {
-      override def fromString(s: String) = java.lang.Long.parseLong(s)
-    }
+    implicit val intCodec: Codec[Int] = Codec(Integer.parseInt)
 
-    implicit val shortCodec = new Codec[Short] {
-      override def fromString(s: String) = java.lang.Short.parseShort(s)
-    }
+    implicit val longCodec: Codec[Long] = Codec(java.lang.Long.parseLong)
 
-    implicit val byteCodec = new Codec[Byte] {
-      override def fromString(s: String) = java.lang.Byte.parseByte(s)
-    }
+    implicit val shortCodec: Codec[Short] = Codec(java.lang.Short.parseShort)
 
-    implicit val doubleCodec = new Codec[Double] {
-      override def fromString(s: String) = java.lang.Double.parseDouble(s)
-    }
+    implicit val byteCodec: Codec[Byte] = Codec(java.lang.Byte.parseByte)
 
-    implicit val floatCodec = new Codec[Float] {
-      override def fromString(s: String) = java.lang.Float.parseFloat(s)
-    }
+    implicit val doubleCodec: Codec[Double] = Codec(java.lang.Double.parseDouble)
+
+    implicit val floatCodec: Codec[Float] = Codec(java.lang.Float.parseFloat)
   }
 
 }

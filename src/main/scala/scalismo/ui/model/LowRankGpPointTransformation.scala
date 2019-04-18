@@ -19,14 +19,14 @@ package scalismo.ui.model
 
 import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteDomain, NearestNeighborInterpolator }
-import scalismo.geometry.{ Point, EuclideanVector, _3D }
+import scalismo.geometry.{ EuclideanVector, Point, _3D }
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess }
 
 // This used to be a case class, but since it is extended by the discrete version, it can no longer be.
 // Therefore, the copy methods have to be defined manually.
 class LowRankGpPointTransformation protected (val gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], val coefficients: DenseVector[Double]) extends PointTransformation {
 
-  lazy val vectorField = gp.instance(coefficients)
+  private lazy val vectorField = gp.instance(coefficients)
 
   override def apply(point: Point[_3D]): Point[_3D] = {
     point + vectorField(point)
@@ -43,8 +43,10 @@ object LowRankGpPointTransformation {
 
 class DiscreteLowRankGpPointTransformation private (val dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], coefficients: DenseVector[Double]) extends LowRankGpPointTransformation(gp, coefficients) {
 
-  protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
-    coefficients: DenseVector[Double]) = {
+  protected def this(
+    dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    coefficients: DenseVector[Double]
+  ) = {
     this(dgp, dgp.interpolate(NearestNeighborInterpolator[_3D, EuclideanVector[_3D]]()), coefficients)
   }
 

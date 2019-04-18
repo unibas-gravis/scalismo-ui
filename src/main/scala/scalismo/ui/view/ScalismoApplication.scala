@@ -22,7 +22,7 @@ import scalismo.ui.util.EdtUtil
 import scala.swing.SimpleSwingApplication
 
 /**
- * A Scalismo application is a [[SimpleSwingApplication]], having a [[ScalismoFrame]] as the top component, and using the [[ScalismoLookAndFeel]].
+ * A Scalismo application is a `scala.swing.SimpleSwingApplication`, having a [[ScalismoFrame]] as the top component, and using the [[ScalismoLookAndFeel]].
  *
  * This class takes care of initializing the Look and Feel, and setting up the frame with the command-line arguments.
  *
@@ -32,15 +32,15 @@ import scala.swing.SimpleSwingApplication
  */
 class ScalismoApplication(frame: => ScalismoFrame, lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName) extends SimpleSwingApplication {
 
-  override lazy val top = EdtUtil.onEdtWait(frame)
+  override lazy val top: ScalismoFrame = EdtUtil.onEdtWait(frame)
 
-  override def main(args: Array[String]) = {
+  override def main(args: Array[String]): Unit = {
     scalismo.initialize()
     ScalismoLookAndFeel.initializeWith(lookAndFeelClassName)
     super.main(args)
   }
 
-  override def startup(args: Array[String]) = {
+  override def startup(args: Array[String]): Unit = {
     top.setup(args)
     super.startup(args)
   }

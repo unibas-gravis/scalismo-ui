@@ -17,9 +17,8 @@
 
 package scalismo.ui.view.properties
 
-import javax.swing.border.TitledBorder
-
 import breeze.linalg.DenseVector
+import javax.swing.border.TitledBorder
 import scalismo.geometry._3D
 import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.ui.model._
@@ -40,16 +39,16 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
 
   private var targets: List[TransformationNode[RigidTransformation[_3D]]] = Nil
 
-  val textFields = Array.fill(6)(new TextField())
+  private val textFields = Array.fill(6)(new TextField())
   val labels = List("T1", "T2", "T3", "R1", "R2", "R3")
   val centerLabel = new Label("-")
 
-  val panel = new GridBagPanel {
+  val panel: GridBagPanel = new GridBagPanel {
     val constraints = new Constraints()
 
     var (x, y) = (0, 0)
 
-    def next = {
+    private def next: Constraints = {
       constraints.gridx = x
       constraints.gridy = y
 
@@ -110,7 +109,7 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
     border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
   }) = BorderPanel.Position.North
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     targets.headOption.foreach { node =>
       val params = node.transformation.translation.parameters.toArray ++ node.transformation.rotation.parameters.toArray
       params.zip(textFields).foreach {

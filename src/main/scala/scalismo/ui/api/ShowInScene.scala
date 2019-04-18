@@ -18,17 +18,15 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, EuclideanVector, _3D }
+import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
+import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
 import scalismo.ui.model._
-import scalismo.ui.view.ScalismoFrame
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
-import scala.util.Try
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -42,7 +40,9 @@ trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit def showInSceneScalarField[A: Scalar: ClassTag] =
+  implicit def showInSceneScalarField[A: Scalar: ClassTag]: ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
+    type View = ScalarFieldView
+  } =
     new ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
 
       override type View = ScalarFieldView
@@ -55,7 +55,7 @@ trait LowPriorityImplicits {
   implicit object CreateGenericTransformation extends ShowInScene[Point[_3D] => Point[_3D]] {
     override type View = TransformationView
 
-    override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
+    override def showInScene(t: Point[_3D] => Point[_3D], name: String, group: Group): View = {
       TransformationView(group.peer.genericTransformations.add(t, name))
     }
   }
@@ -74,7 +74,9 @@ trait LowPriorityImplicits {
 
 object ShowInScene extends LowPriorityImplicits {
 
-  implicit def ShowVertexColorMesh = new ShowInScene[VertexColorMesh3D] {
+  implicit def ShowVertexColorMesh: ShowInScene[VertexColorMesh3D] {
+    type View = VertexColorMeshView
+  } = new ShowInScene[VertexColorMesh3D] {
     override type View = VertexColorMeshView
 
     override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
@@ -111,7 +113,9 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
+  implicit def ShowScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarMeshField[S]] {
+    type View = ScalarMeshFieldView
+  } = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
@@ -131,7 +135,9 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar: ClassTag]: ShowInScene[DiscreteScalarImage[_3D, S]] {
+    type View = ImageView
+  } = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {
@@ -207,9 +213,11 @@ object ShowInScene extends LowPriorityImplicits {
 
     override type View = DiscreteLowRankGPTransformationView
 
-    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    override def showInScene(
+      gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
       name: String,
-      group: Group): View = {
+      group: Group
+    ): View = {
 
       val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)
@@ -221,8 +229,8 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
       val t = for {
-        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
-        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
+        _ <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
+        _ <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
       } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)
       t.get
     }

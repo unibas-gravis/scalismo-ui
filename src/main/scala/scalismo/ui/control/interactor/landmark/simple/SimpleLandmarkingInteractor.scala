@@ -19,8 +19,8 @@ package scalismo.ui.control.interactor.landmark.simple
 
 import java.awt.event.MouseEvent
 import java.awt.{ Color, Cursor }
-import javax.swing.SwingUtilities
 
+import javax.swing.SwingUtilities
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
 import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
@@ -36,10 +36,10 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
   def defaultUncertainty: Uncertainty
 
-  val landmarkingButton = new ToggleButton {
-    val myIcon = BundledIcon.Landmark
+  val landmarkingButton: ToggleButton = new ToggleButton {
+    private val myIcon = BundledIcon.Landmark
 
-    def updateUi() = {
+    def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"
       tooltip = s"Toggle landmarking (currently $onOff)"
       val iconColor = if (selected) Color.GREEN.darker else Color.DARK_GRAY
@@ -80,9 +80,10 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
   override def mouseMoved(e: MouseEvent): Verdict = {
     if (landmarkingButton.selected) {
       def exceptLandmarks(node: SceneNode) = node match {
-        case nope: LandmarkNode => false
+        case _: LandmarkNode => false
         case _ => true
       }
+
       Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, exceptLandmarks)
     }
     super.mouseMoved(e)
@@ -92,7 +93,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
 object SimpleLandmarkingInteractor extends SimpleLandmarkingInteractorTrait with DefaultInteractor {
 
-  override val defaultUncertainty = Uncertainty.DefaultUncertainty
+  override val defaultUncertainty: Uncertainty = Uncertainty.DefaultUncertainty
 
   override def mousePressed(e: MouseEvent): Verdict = Recipe.Block2DRotation.mousePressed(e)
 }

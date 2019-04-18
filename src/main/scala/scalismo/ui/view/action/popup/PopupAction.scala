@@ -18,7 +18,6 @@
 package scalismo.ui.view.action.popup
 
 import javax.swing.{ Icon, JComponent }
-
 import scalismo.ui.model.SceneNode
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame
@@ -55,11 +54,11 @@ object PopupAction {
 
   def factories: List[Factory] = _factories
 
-  def addFactory(factory: Factory) = {
+  def addFactory(factory: Factory): Unit = {
     _factories = factory :: _factories
   }
 
-  def removeFactory(factory: Factory) = {
+  def removeFactory(factory: Factory): Unit = {
     _factories = _factories.filter(_ != factory)
   }
 

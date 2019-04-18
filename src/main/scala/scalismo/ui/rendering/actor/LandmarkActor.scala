@@ -18,7 +18,6 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry.{ SquareMatrix, _3D }
-import scalismo.ui.control.SlicingPosition.renderable
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.model.{ BoundingBox, LandmarkNode }
@@ -30,7 +29,7 @@ import vtk._
 object LandmarkActor extends SimpleActorsFactory[LandmarkNode] {
   override def actorsFor(renderable: LandmarkNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new LandmarkActor3D(renderable))
+      case _: ViewportPanel3D => Some(new LandmarkActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new LandmarkActor2D(renderable, _2d))
     }
   }
@@ -64,7 +63,7 @@ trait LandmarkActor extends ActorColor with ActorOpacity with ActorSceneNode {
     case _ =>
   }
 
-  protected def rerender(geometryChanged: Boolean) = {
+  protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       val (xRadius, yRadius, zRadius) = {
         val r = sceneNode.uncertainty.value.sigmas.toArray

@@ -18,15 +18,15 @@
 package scalismo.ui.view.action
 
 import java.io.File
-import javax.swing.filechooser.FileNameExtensionFilter
 
+import javax.swing.filechooser.FileNameExtensionFilter
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.ErrorDialog
 import scalismo.ui.view.util.EnhancedFileChooser
 
-import scala.swing.{ Action, Dialog, FileChooser }
+import scala.swing.{ Action, Component, Dialog, FileChooser }
 import scala.util.{ Failure, Success, Try }
 
 object SaveAction {
@@ -36,21 +36,21 @@ object SaveAction {
 class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val name: String = SaveAction.DefaultName)(implicit val frame: ScalismoFrame) extends Action(name) {
   lazy val confirmWhenExists = true
   lazy val verifyFileExtension = true
-  lazy val chooserTitle = {
+  private lazy val chooserTitle = {
     if (name != SaveAction.DefaultName) name
     else "Save " + metadata.description
   }
 
-  lazy val chooser = new EnhancedFileChooser() {
+  private lazy val chooser = new EnhancedFileChooser() {
     title = chooserTitle
     multiSelectionEnabled = false
     peer.setAcceptAllFileFilterUsed(false)
     fileFilter = new FileNameExtensionFilter(metadata.longDescription, metadata.fileExtensions: _*)
   }
 
-  def parentComponent = frame.componentForDialogs
+  def parentComponent: Component = frame.componentForDialogs
 
-  def apply() = {
+  def apply(): Unit = {
     if (chooser.showSaveDialog(parentComponent) == FileChooser.Result.Approve) {
       if (chooser.selectedFile.exists && confirmWhenExists) {
         val result = Dialog.showConfirmation(parentComponent, "The file " + chooser.selectedFile.getName + " already exists.\nDo you want to overwrite it?", "Overwrite existing file?", Dialog.Options.OkCancel)
@@ -62,8 +62,9 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     }
   }
 
-  def verifyThenSave(file: File) = {
+  def verifyThenSave(file: File): Unit = {
     def candidateName = file.getName.toLowerCase
+
     var verified = true
     if (verifyFileExtension) {
       val matching = metadata.fileExtensions.filter {
@@ -78,7 +79,7 @@ class SaveAction(val save: File => Try[Unit], val metadata: FileIoMetadata, val 
     if (verified) trySave(file)
   }
 
-  def trySave(file: File) = {
+  def trySave(file: File): Unit = {
     val ok = save(file)
     ok match {
       case Success(_) => onSuccess(file)

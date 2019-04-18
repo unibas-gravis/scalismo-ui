@@ -19,14 +19,12 @@ package scalismo.ui.view
 
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, SwingConstants }
-
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.{ Axis, BoundingBox, Scene }
 import scalismo.ui.rendering.{ RendererPanel, RendererState }
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
-import scalismo.ui.view.PerspectivePanel.event.PerspectiveChanged
 import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{ AxisColor, ScalableUI }
 
@@ -52,7 +50,7 @@ sealed abstract class ViewportPanel(val frame: ScalismoFrame) extends BorderPane
 
   val rendererPanel = new RendererPanel(this)
 
-  val toolBar = new ToolBar {
+  protected val toolBar: ToolBar = new ToolBar {
     floatable = false
     rollover = true
     orientation = Orientation.Horizontal
@@ -121,9 +119,9 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 }
 
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
-  override def name = axis.toString
+  override def name: String = axis.toString
 
-  lazy val positionSlider = new Slider {
+  private lazy val positionSlider = new Slider {
     peer.setOrientation(SwingConstants.VERTICAL)
   }
 
@@ -143,7 +141,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
     }
   })
 
-  lazy val sliderPanel = new BorderPanel {
+  private lazy val sliderPanel = new BorderPanel {
     layout(positionPlusButton) = BorderPanel.Position.North
     layout(positionSlider) = BorderPanel.Position.Center
     layout(positionMinusButton) = BorderPanel.Position.South
@@ -199,7 +197,9 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
   reactions += {
     case SlicingPosition.event.PointChanged(_, _, current) => updateSliderValue(current)
     case SlicingPosition.event.BoundingBoxChanged(s) => updateSliderMinMax(s.boundingBox)
-    case SlicingPosition.event.PerspectiveChanged(s) => { updateSliderMinMax(s.boundingBox); updateSliderValue(s.point) }
+    case SlicingPosition.event.PerspectiveChanged(s) =>
+      updateSliderMinMax(s.boundingBox)
+      updateSliderValue(s.point)
     case ValueChanged(s) if s eq positionSlider => sliderValueChanged()
   }
 }

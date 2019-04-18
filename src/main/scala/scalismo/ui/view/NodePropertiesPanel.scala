@@ -18,8 +18,8 @@
 package scalismo.ui.view
 
 import java.awt.Dimension
-import javax.swing.{ JLabel, JTabbedPane }
 
+import javax.swing.{ JLabel, JTabbedPane }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged
@@ -60,7 +60,7 @@ object NodePropertiesPanel {
   class Tabs extends Component with ScalismoPublisher {
     outer =>
     override lazy val peer: JTabbedPane = new JTabbedPane() with SuperMixin {
-      override def setSelectedIndex(index: Int) = {
+      override def setSelectedIndex(index: Int): Unit = {
         super.setSelectedIndex(index)
         if (getTabCount > index) {
           getTabComponentAt(index) match {
@@ -144,17 +144,17 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
    */
   def handlers: List[PropertyPanel] = _handlers
 
-  def addHandler(handler: PropertyPanel) = {
+  def addHandler(handler: PropertyPanel): Unit = {
     _handlers ++= List(handler)
     cards.add(handler)
   }
 
-  def removeHandler(handler: PropertyPanel) = {
+  def removeHandler(handler: PropertyPanel): Unit = {
     _handlers = _handlers.filterNot(_ eq handler)
     cards.remove(handler)
   }
 
-  def setupHandlers() = {
+  def setupHandlers(): Unit = {
     // default implementation: instantiate all builtin providers.
     NodePropertiesPanel.BuiltinHandlers.foreach { constructor =>
       addHandler(constructor(frame))
@@ -162,7 +162,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   }
 
   // placeholder object that gets shown when nothing is to be shown :-)
-  val empty = new BorderPanel with CardPanel.ComponentWithUniqueId {
+  val empty: BorderPanel with CardPanel.ComponentWithUniqueId = new BorderPanel with CardPanel.ComponentWithUniqueId {
     val zero = new Dimension(0, 0)
     peer.setPreferredSize(zero)
     peer.setMinimumSize(zero)
@@ -173,11 +173,11 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   val tabs = new Tabs
 
   // actual content.
-  val cards = new CardPanel {
+  private val cards = new CardPanel {
     add(empty)
   }
 
-  val scroll = new ScrollPane() {
+  private val scroll = new ScrollPane() {
     contents = cards
     enabled = false
 

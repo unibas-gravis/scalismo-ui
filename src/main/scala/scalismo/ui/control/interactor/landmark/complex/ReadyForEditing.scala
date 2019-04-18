@@ -40,9 +40,10 @@ class ReadyForEditing[InteractorType <: ComplexLandmarkingInteractor[InteractorT
 
   override def mouseMoved(e: MouseEvent): Verdict = {
     def onlyLandmarks(node: SceneNode) = node match {
-      case yep: LandmarkNode => true
+      case _: LandmarkNode => true
       case _ => false
     }
+
     Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, onlyLandmarks)
   }
 

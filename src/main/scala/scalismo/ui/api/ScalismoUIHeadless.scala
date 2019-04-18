@@ -16,6 +16,7 @@
  */
 
 package scalismo.ui.api
+
 import scalismo.ui.model.Scene
 
 case class ScalismoUIHeadless() extends SimpleAPI with SimpleAPIDefaultImpl {

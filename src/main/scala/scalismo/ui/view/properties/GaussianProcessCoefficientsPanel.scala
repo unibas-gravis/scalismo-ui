@@ -18,10 +18,10 @@
 package scalismo.ui.view.properties
 
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.JSlider
 
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.Gaussian
+import javax.swing.JSlider
 import scalismo.ui.model.{ LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
@@ -34,8 +34,9 @@ import scala.swing.event.{ ButtonClicked, ValueChanged }
 object GaussianProcessCoefficientsPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new GaussianProcessCoefficientsPanel(frame)
 
-  var MaxAbsoluteCoefficientValue: Float = 3.0f
-  var CoefficientValueStep: Float = 0.1f
+  val MaxAbsoluteCoefficientValue: Float = 3.0f
+
+  val CoefficientValueStep: Float = 0.1f
 }
 
 class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
@@ -45,7 +46,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   val random = new Button("Random")
   listenTo(reset, random)
 
-  val buttons = {
+  private val buttons = {
     val panel = new GridPanel(1, 2)
     panel.contents ++= Seq(reset, random)
     panel
@@ -55,11 +56,11 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private case class Entry(index: Int) {
     val label = new Label(index.toString)
-    val slider = new Slider {
-      override lazy val peer = new JSlider with SuperMixin {
+    val slider: Slider = new Slider {
+      override lazy val peer: JSlider with SuperMixin = new JSlider with SuperMixin {
         // this tries to jump directly to the value the user clicked.
         addMouseListener(new MouseAdapter() {
-          override def mousePressed(e: MouseEvent) = {
+          override def mousePressed(e: MouseEvent): Unit = {
             val p = e.getPoint
             val percent = p.x / getWidth.toDouble
             val range = getMaximum - getMinimum
@@ -79,10 +80,10 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   }
 
   private class Table extends GridBagPanel {
-    var entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
+    val entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
 
     // need to redefine because add() is protected in superclass
-    def add(comp: Component, position: (Int, Int)) = {
+    def add(comp: Component, position: (Int, Int)): Unit = {
       val const = pair2Constraints(position)
       const.ipadx = 10.scaled
       if (position._1 == 0) {
@@ -134,13 +135,13 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   def labelFormat(value: Double) = f"$value%1.1f"
 
-  def resetValues() = {
+  def resetValues(): Unit = {
     node.foreach { n =>
       n.transformation = n.transformation.copy(coefficients = DenseVector.zeros[Double](n.transformation.gp.rank))
     }
   }
 
-  private def setCoefficient(index: Int, value: Double) = {
+  private def setCoefficient(index: Int, value: Double): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       if (coeffs(index) != value) {
@@ -150,7 +151,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
     }
   }
 
-  def randomizeValues() = {
+  def randomizeValues(): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices.foreach { index =>
@@ -163,7 +164,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private val table = new Table
 
-  def updateDisplayedCoefficients() = {
+  def updateDisplayedCoefficients(): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices foreach { i =>
@@ -194,7 +195,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
       updateDisplayedCoefficients()
   }
 
-  def cleanup() = {
+  def cleanup(): Unit = {
     node.foreach { n =>
       deafTo(n)
       node = None

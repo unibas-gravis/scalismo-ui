@@ -19,15 +19,15 @@ package scalismo.ui.view.action.popup
 
 import java.awt.Color
 import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.{ BorderFactory, Icon, JComponent }
 
+import javax.swing.{ BorderFactory, Icon, JComponent }
 import scalismo.ui.control.NodeVisibility
 import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 import scalismo.ui.view.util.ScalableUI.implicits._
+import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
 
 import scala.swing._
 
@@ -43,12 +43,12 @@ object VisibilityAction extends PopupAction.Factory {
 }
 
 class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
-  val control = frame.sceneControl.nodeVisibility
+  private val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Visible in") {
+      val menu: Menu = new Menu("Visible in") {
         def updateIcon(): Unit = {
           icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
         }
@@ -87,10 +87,10 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2.scaled
-    val lr = 12.scaled
+    private val tb = 2.scaled
+    private val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes, viewports)
+    def currentState: NodeVisibility.State = control.getVisibilityState(nodes, viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)

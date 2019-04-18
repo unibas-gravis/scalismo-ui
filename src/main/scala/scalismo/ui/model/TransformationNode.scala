@@ -88,16 +88,17 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
 class ShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Shape model transformations"
 
-  private def isPoseDefined(): Boolean = {
+  private def isPoseDefined: Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[RigidTransformation[_3D]])
   }
-  private def isShapeDefined(): Boolean = {
+
+  private def isShapeDefined: Boolean = {
     children.exists(tr => tr.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation])
   }
 
   def addPoseTransformation(transformation: RigidTransformation[_3D], name: String = "pose"): Try[ShapeModelTransformationComponentNode[RigidTransformation[_3D]]] = {
 
-    if (isPoseDefined()) {
+    if (isPoseDefined) {
       Failure(new Exception("The group already contains a rigid transformation as part of the Shape Model Transformation. Remove existing first"))
     } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
@@ -108,7 +109,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
   def addGaussianProcessTransformation(transformation: DiscreteLowRankGpPointTransformation, name: String = "shape"): Try[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] = {
 
-    if (isShapeDefined()) {
+    if (isShapeDefined) {
       Failure(new Exception("The group already contains a GP transformation as part of the Shape Model Transformation. Remove existing first"))
     } else {
       val node = ShapeModelTransformationComponentNode(this, transformation, name)
@@ -161,7 +162,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
 
 class ShapeModelTransformationComponentNode[T <: PointTransformation] private (override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
     extends TransformationNode[T](parent, initialTransformation, name) {
-  override def remove(): Unit = { parent.remove(this) }
+  override def remove(): Unit = {
+    parent.remove(this)
+  }
 }
 
 object ShapeModelTransformationComponentNode {

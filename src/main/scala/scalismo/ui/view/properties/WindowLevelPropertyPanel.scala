@@ -19,9 +19,9 @@ package scalismo.ui.view.properties
 
 import java.awt.Color
 import java.awt.image.BufferedImage
+
 import javax.swing.border.TitledBorder
 import javax.swing.{ BorderFactory, JComponent }
-
 import scalismo.ui.model.properties.NodeProperty
 import scalismo.ui.model.{ ImageNode, SceneNode }
 import scalismo.ui.view.ScalismoFrame
@@ -188,10 +188,10 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
   // layout
   {
     val inset = 10.scaled
-    val northedPanel = new BorderPanel {
+    val northedPanel: BorderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
-      val slidersPanel = new GridBagPanel {
-        val constraints = new Constraints() {
+      val slidersPanel: GridBagPanel = new GridBagPanel {
+        private val constraints = new Constraints() {
           ipadx = inset
         }
         var (x, y) = (0, 0)
@@ -225,7 +225,7 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
         add(windowSlider, next)
       }
 
-      val showitWrap = new BorderPanel {
+      private val showitWrap = new BorderPanel {
         layout(Component.wrap(showit)) = BorderPanel.Position.Center
         border = {
           val line = BorderFactory.createLineBorder(Color.DARK_GRAY, 3.scaled, true)

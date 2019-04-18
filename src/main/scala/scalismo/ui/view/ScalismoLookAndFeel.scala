@@ -18,7 +18,6 @@
 package scalismo.ui.view
 
 import javax.swing.{ ToolTipManager, UIDefaults, UIManager }
-
 import scalismo.ui.view.util.ScalableUI
 
 import scala.util.Try
@@ -33,7 +32,9 @@ object ScalismoLookAndFeel {
    */
   lazy val DefaultLookAndFeelClassName: String = {
     val nimbus = "javax.swing.plaf.nimbus.NimbusLookAndFeel"
+
     def system = UIManager.getSystemLookAndFeelClassName
+
     Stream(nimbus, system).find { laf => Try(Class.forName(laf)).isSuccess }.getOrElse(UIManager.getCrossPlatformLookAndFeelClassName)
   }
 
