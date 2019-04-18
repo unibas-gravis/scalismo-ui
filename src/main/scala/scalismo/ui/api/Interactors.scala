@@ -41,7 +41,8 @@ private[api] sealed trait SimpleInteractor {
 
 }
 
-case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Group, targetGroup: Group) extends SimpleInteractor {
+case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Group, targetGroup: Group,
+                                                color: Color = Color.YELLOW, lineWidth: Int = 3, opacity:Double = 1.0) extends SimpleInteractor {
 
   type ConcreteInteractor = PosteriorLandmarkingInteractor
 
@@ -56,8 +57,10 @@ case class SimplePosteriorLandmarkingInteractor(ui: ScalismoUI, modelGroup: Grou
     modelGroup.peer.shapeModelTransformations.gaussianProcessTransformation.map(g => previewGroup.peer.shapeModelTransformations.addGaussianProcessTransformation(g.transformation))
 
     override val previewNode: TriangleMeshNode = ui.show(previewGroup, meshView.triangleMesh, "previewMesh").peer
-    frame.sceneControl.nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = false)
-    previewNode.color.value = Color.YELLOW
+    frame.sceneControl.nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
+    previewNode.color.value = color
+    previewNode.lineWidth.value = lineWidth
+    previewNode.opacity.value = opacity
     previewNode.pickable.value = false
 
     override val targetUncertaintyGroup: GroupNode = Group(ui.frame.scene.groups.add("__target_preview__", hidden = true)).peer
