@@ -22,7 +22,7 @@ import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.capabilities.{ Removeable, Renameable }
 
-class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
+class GroupsNode(override val parent: SceneNode) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
 
   def add(name: String, hidden: Boolean = false): GroupNode = {
@@ -49,7 +49,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
 
   val genericTransformations = new GenericTransformationsNode(this)
   val shapeModelTransformations = new ShapeModelTransformationsNode(this)
-
+  val groups = new GroupsNode(this)
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
   val colorMeshes = new VertexColorMeshesNode(this)
@@ -61,6 +61,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
   val scalarFields = new ScalarFieldsNode(this)
 
   override val children: List[SceneNode] = List(
+    groups,
     genericTransformations,
     shapeModelTransformations,
     landmarks,
@@ -88,6 +89,10 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
+  }
+
+  def addGroup(s: String) = {
+    groups.add(s)
   }
 
   override def remove(): Unit = parent.remove(this)

@@ -25,7 +25,13 @@ trait SimpleAPIDefaultImpl {
 
   protected[api] def scene: Scene
 
-  override def createGroup(groupName: String): Group = Group(scene.groups.add(groupName))
+  override def createGroup(groupName: String): Group = {
+    Group(scene.groups.add(groupName))
+  }
+
+  override def createGroup(group: Group, groupName: String): Group = {
+    Group(group.peer.groups.add(groupName))
+  }
 
   override def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup)
 

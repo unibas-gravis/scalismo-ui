@@ -18,7 +18,7 @@
 package scalismo.ui.model.capabilities
 
 import scalismo.ui.event.Event
-import scalismo.ui.model.{ GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode }
+import scalismo.ui.model._
 
 object Transformable {
 
@@ -37,8 +37,10 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
 
   private def shapeModelTransformationsNode: ShapeModelTransformationsNode = group.shapeModelTransformations
 
-  private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map(smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse {
-    genericTransformationsNode.combinedTransformation
+  private def combinedTransform = {
+    shapeModelTransformationsNode.combinedTransformation.map(smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse {
+      genericTransformationsNode.combinedTransformation
+    }
   }
 
   private var _transformedSource = transform(source, combinedTransform)
@@ -50,6 +52,15 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
   def updateTransformedSource(): Unit = {
     _transformedSource = transform(source, combinedTransform)
     publishEvent(Transformable.event.GeometryChanged(this))
+  }
+
+  var p: SceneNode = parent
+  while (p != null) {
+    p match {
+      case g: GroupNode => listenTo(g.genericTransformations)
+      case _ => {}
+    }
+    p = p.parent
   }
 
   listenTo(genericTransformationsNode)

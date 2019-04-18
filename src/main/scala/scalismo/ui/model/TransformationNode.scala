@@ -64,8 +64,16 @@ class GenericTransformationsNode(override val parent: GroupNode) extends Transfo
     node
   }
 
+  def parentTransformations: PointTransformation = {
+    if (parent != null && parent.parent != null && parent.parent.parent != null && parent.parent.parent.isInstanceOf[GroupNode]) {
+      parent.parent.parent.asInstanceOf[GroupNode].genericTransformations.combinedTransformation
+    } else {
+      PointTransformation.RigidIdentity
+    }
+  }
+
   def combinedTransformation: PointTransformation = {
-    val transforms = children.map(_.transformation.asInstanceOf[PointTransformation])
+    val transforms = children.map(_.transformation.asInstanceOf[PointTransformation]) :+ parentTransformations
     transforms.foldLeft(PointTransformation.Identity: PointTransformation) { case (first, second) => first compose second }
   }
 

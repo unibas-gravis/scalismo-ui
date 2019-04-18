@@ -21,6 +21,8 @@ trait SimpleAPI {
 
   def createGroup(groupName: String): Group
 
+  def createGroup(group: Group, groupName: String): Group
+
   def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View
 
   def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View
