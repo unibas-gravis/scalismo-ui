@@ -47,7 +47,7 @@ object NodePropertiesPanel {
       // added the panels for the scalar bar and the toggle color scheme
       props += ScalarBarPropertyPanel
       props += DropDownPropertyPanel
-      
+
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
     }
 
