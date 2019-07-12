@@ -29,8 +29,26 @@ trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
   }
 
-  private def setAppearance() = {
+  private def setAppearance(): Unit = {
     mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+
+    val lowerValue = scalarRange.value.cappedMinimum
+    val upperValue = scalarRange.value.cappedMaximum
+    val colorMappingFunction = scalarRange.colorMapping.mappingFunction(scalarRange.scalarRange)
+
+
+    val colorTransferFun = new vtk.vtkColorTransferFunction()
+    colorTransferFun.SetRange(lowerValue, upperValue)
+    colorTransferFun.SetScaleToLinear()
+    colorTransferFun.SetColorSpaceToRGB()
+    val step: Double = (upperValue - lowerValue) / scalarRange.colorMapping.suggestedNumberOfColors
+    for (i <- 0 until scalarRange.colorMapping.suggestedNumberOfColors) {
+      val value = lowerValue + i * step
+      val color = colorMappingFunction(value)
+      colorTransferFun.AddRGBPoint(value, color.getRed / 255.0, color.getGreen / 255.0, color.getBlue / 255.0 )
+    }
+
+    mapper.SetLookupTable(colorTransferFun)
     mapper.Modified()
     actorChanged()
   }

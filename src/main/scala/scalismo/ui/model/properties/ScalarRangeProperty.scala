@@ -19,10 +19,16 @@ package scalismo.ui.model.properties
 
 object ScalarRangeProperty {
   val DefaultValue: ScalarRange = ScalarRange(0, 1, 0, 1)
+  val DefaultColorMap : ColorMapping = BlueToRedColorMapping
 }
 
-class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[ScalarRange](initialValue) {
-  def this() = this(ScalarRangeProperty.DefaultValue)
+class ScalarRangeProperty(initialValue: ScalarRange, var colorMapping : ColorMapping = ScalarRangeProperty.DefaultColorMap) extends NodeProperty[ScalarRange](initialValue) {
+  def this() = this(
+    ScalarRangeProperty.DefaultValue,
+    ScalarRangeProperty.DefaultColorMap
+  )
+
+  val scalarRange : ScalarRange = sanitize(initialValue)
 
   override protected def sanitize(newValue: ScalarRange): ScalarRange = {
     if (newValue.absoluteMaximum < newValue.absoluteMinimum) {

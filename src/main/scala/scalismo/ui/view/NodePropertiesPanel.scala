@@ -18,17 +18,18 @@
 package scalismo.ui.view
 
 import java.awt.Dimension
-import javax.swing.{ JLabel, JTabbedPane }
 
+import javax.swing.{JLabel, JTabbedPane}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged
+import scalismo.ui.view.ScalarBarWindow.{DropDownPropertyPanel, ScalarBarPropertyPanel}
 import scalismo.ui.view.properties._
 import scalismo.ui.view.util.CardPanel
 
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
-import scala.swing.{ BorderPanel, Component, ScrollPane }
+import scala.swing.{BorderPanel, Component, ScrollPane}
 
 object NodePropertiesPanel {
 
@@ -43,7 +44,10 @@ object NodePropertiesPanel {
       props += OpacityPropertyPanel
       props += RadiusPropertyPanel
       props += LineWidthPropertyPanel
-
+      // added the panels for the scalar bar and the toggle color scheme
+      props += ScalarBarPropertyPanel
+      props += DropDownPropertyPanel
+      
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
     }
 
@@ -104,7 +108,7 @@ object NodePropertiesPanel {
       val index = peer.getTabCount
       peer.addTab(view.description, null)
       peer.setTabComponentAt(index, new Tab(view))
-    }
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 
     def setSelectedItem(view: PropertyPanel): Boolean = {
       (0 until peer.getTabCount).foreach { index =>
