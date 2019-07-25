@@ -12,7 +12,10 @@ object BuildSettings {
   val buildScalaVersion = "2.12.6"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
-    scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
+    scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2,  11)) =>  Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.6")
+      case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
+    }),
     organization := buildOrganization,
     scalaVersion := buildScalaVersion,
     crossScalaVersions := Seq("2.11.12", "2.12.6")
@@ -40,7 +43,7 @@ object Creds {
 
 object Dependencies {
 
-  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.17.0"
+  val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.17.2"
   val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0"
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   val swingPlus = "de.sciss" %% "swingplus" % "0.2.2"
