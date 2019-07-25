@@ -10,11 +10,13 @@ language: scala
 #before_cache:
 #  - rm -f $HOME/.ivy2/.*.lock $HOME/.ivy2/*.lock
 
+jdk:
+  - openjdk8
+
 scala:
-  - 2.12.1
+  - 2.12.8
 
 script:
-  - jdk_switcher use oraclejdk8
   - travis_wait sbt ++$TRAVIS_SCALA_VERSION update
   - sbt ++$TRAVIS_SCALA_VERSION -Djava.awt.headless=true compile test
   - sbt scalariformFormat && git diff --exit-code   # fails build if scalariform results in changes to the code
