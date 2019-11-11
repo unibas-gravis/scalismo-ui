@@ -37,6 +37,7 @@ object ScalismoViewer {
     System.err.println(exception.getMessage)
   }
 
+
   def main(args: Array[String]): Unit = {
     scalismo.initialize()
 

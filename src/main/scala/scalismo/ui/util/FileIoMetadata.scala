@@ -59,6 +59,13 @@ object FileIoMetadata {
     override def description: String = "Triangle Mesh with vertex color"
   }
 
+  val TetrahedralMesh: FileIoMetadata = new FileIoMetadata {
+
+    override def fileExtensions: List[String] = List("vtk")
+
+    override def description: String = "Tetrahedral Mesh"
+  }
+
   val Image: FileIoMetadata = new FileIoMetadata {
     override val description = "3D Image"
     override val fileExtensions = List("nii", "vtk")

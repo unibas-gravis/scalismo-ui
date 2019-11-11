@@ -18,18 +18,20 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.tetramesh.TetrahedralMesh
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{ FastCachingTriangleMesh, FastCachingVertexColorMesh }
+import scalismo.ui.rendering.Caches.{FastCachingTetrahedralMesh, FastCachingTriangleMesh, FastCachingVertexColorMesh}
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
-import scalismo.utils.MeshConversion
-import vtk.{ vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import scalismo.utils.{MeshConversion, TetraMeshConversion}
+import vtk.{vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray, vtkUnstructuredGrid}
+
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
@@ -40,6 +42,27 @@ object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
     }
   }
 }
+
+object TetrahedralMeshActor extends SimpleActorsFactory[TetrahedralMeshNode] {
+
+  override def actorsFor(renderable: TetrahedralMeshNode, viewport: ViewportPanel): Option[Actors] = {
+    viewport match {
+      case _: ViewportPanel3D => Some(new TetrahedralMeshActor3D(renderable))
+      case _2d: ViewportPanel2D => Some(new TetrahedralMeshActor2D(renderable, _2d))
+    }
+  }
+}
+
+//object TetrahedralMeshFieldActor extends SimpleActorsFactory[TetrahedralMeshFieldNode] {
+//
+//  override def actorsFor(renderable: TetrahedralMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
+//    viewport match {
+//      case _: ViewportPanel3D => Some(new TetrahedralMeshFieldActor3D(renderable))
+//      case _2d: ViewportPanel2D => Some(new TetrahedralMeshFieldActor2D(renderable, _2d))
+//    }
+//  }
+//}
+
 
 object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
@@ -99,6 +122,19 @@ object MeshActor {
       def color: ColorProperty = node.color
     }
 
+    class TetrahedralMeshRenderable(override val node: TetrahedralMeshNode) extends MeshRenderable {
+
+      type MeshType = TetrahedralMesh[_3D]
+
+      override def opacity: OpacityProperty = node.opacity
+
+      override def mesh: TetrahedralMesh[_3D] = node.transformedSource
+
+      override def lineWidth: LineWidthProperty = node.lineWidth
+
+      def color: ColorProperty = node.color
+    }
+
     class VertexColorMeshRenderable(override val node: VertexColorMeshNode) extends MeshRenderable {
 
       type MeshType = TriangleMesh[_3D]
@@ -147,6 +183,8 @@ object MeshActor {
     def apply(source: ScalarMeshFieldNode): ScalarMeshFieldRenderable = new ScalarMeshFieldRenderable(source)
 
     def apply(source: LineMeshNode): LineMeshRenderable = new LineMeshRenderable(source)
+
+    def apply(source: TetrahedralMeshNode): TetrahedralMeshRenderable = new TetrahedralMeshRenderable(source)
 
   }
 
@@ -212,6 +250,33 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
   }
 
 }
+
+
+
+
+trait TetrahedralMeshActor extends MeshActor[MeshRenderable.TetrahedralMeshRenderable] with ActorColor {
+  override def renderable: MeshRenderable.TetrahedralMeshRenderable
+
+  override def color: ColorProperty = renderable.color
+
+  override protected def meshToPolyData(template2: Option[vtkPolyData]): vtkPolyData = {
+
+    def TetrahedralMeshToVtkPolyData(data: TetrahedralMesh[_3D], template2: Option[vtkUnstructuredGrid]): vtkPolyData = {
+      val t = new vtk.vtkDataSetSurfaceFilter()
+      val unstructuredgrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh, template2)
+      t.AddInputData(unstructuredgrid)
+      t.Update()
+      val polydata: vtkPolyData = t.GetOutput()
+      polydata
+    }
+
+    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh), TetrahedralMeshToVtkPolyData(renderable.mesh, None))
+
+  }
+
+}
+
+
 
 trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRenderable] {
 
@@ -312,3 +377,7 @@ class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2
 class LineMeshActor3D(node: LineMeshNode) extends MeshActor3D(MeshRenderable(node)) with LineMeshActor
 
 class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with LineMeshActor
+
+class TetrahedralMeshActor3D(node: TetrahedralMeshNode) extends MeshActor3D(MeshRenderable(node)) with TetrahedralMeshActor
+
+class TetrahedralMeshActor2D(node: TetrahedralMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TetrahedralMeshActor
