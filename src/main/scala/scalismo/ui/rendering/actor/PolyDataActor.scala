@@ -33,3 +33,4 @@ class PolyDataActor extends vtkActor {
   GetProperty().SetInterpolationToGouraud()
 
 }
+

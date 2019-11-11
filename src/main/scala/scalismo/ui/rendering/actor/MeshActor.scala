@@ -43,25 +43,17 @@ object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
   }
 }
 
-object TetrahedralMeshActor extends SimpleActorsFactory[TetrahedralMeshNode] {
-
-  override def actorsFor(renderable: TetrahedralMeshNode, viewport: ViewportPanel): Option[Actors] = {
-    viewport match {
-      case _: ViewportPanel3D => Some(new TetrahedralMeshActor3D(renderable))
-      case _2d: ViewportPanel2D => Some(new TetrahedralMeshActor2D(renderable, _2d))
-    }
-  }
-}
-
-//object TetrahedralMeshFieldActor extends SimpleActorsFactory[TetrahedralMeshFieldNode] {
+//object TetrahedralMeshActor extends SimpleActorsFactory[TetrahedralMeshNode] {
 //
-//  override def actorsFor(renderable: TetrahedralMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
+//  override def actorsFor(renderable: TetrahedralMeshNode, viewport: ViewportPanel): Option[Actors] = {
 //    viewport match {
-//      case _: ViewportPanel3D => Some(new TetrahedralMeshFieldActor3D(renderable))
-//      case _2d: ViewportPanel2D => Some(new TetrahedralMeshFieldActor2D(renderable, _2d))
+//      case _: ViewportPanel3D => Some(new TetrahedralMeshActor3D(renderable))
+//      case _2d: ViewportPanel2D => Some(new TetrahedralMeshActor2D(renderable, _2d))
 //    }
 //  }
 //}
+
+
 
 
 object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
@@ -122,18 +114,18 @@ object MeshActor {
       def color: ColorProperty = node.color
     }
 
-    class TetrahedralMeshRenderable(override val node: TetrahedralMeshNode) extends MeshRenderable {
-
-      type MeshType = TetrahedralMesh[_3D]
-
-      override def opacity: OpacityProperty = node.opacity
-
-      override def mesh: TetrahedralMesh[_3D] = node.transformedSource
-
-      override def lineWidth: LineWidthProperty = node.lineWidth
-
-      def color: ColorProperty = node.color
-    }
+//    class TetrahedralMeshRenderable(override val node: TetrahedralMeshNode) extends MeshRenderable {
+//
+//      type MeshType = TetrahedralMesh[_3D]
+//
+//      override def opacity: OpacityProperty = node.opacity
+//
+//      override def mesh: TetrahedralMesh[_3D] = node.transformedSource
+//
+//      override def lineWidth: LineWidthProperty = node.lineWidth
+//
+//      def color: ColorProperty = node.color
+//    }
 
     class VertexColorMeshRenderable(override val node: VertexColorMeshNode) extends MeshRenderable {
 
@@ -184,7 +176,7 @@ object MeshActor {
 
     def apply(source: LineMeshNode): LineMeshRenderable = new LineMeshRenderable(source)
 
-    def apply(source: TetrahedralMeshNode): TetrahedralMeshRenderable = new TetrahedralMeshRenderable(source)
+//    def apply(source: TetrahedralMeshNode): TetrahedralMeshRenderable = new TetrahedralMeshRenderable(source)
 
   }
 
@@ -254,27 +246,27 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
 
 
 
-trait TetrahedralMeshActor extends MeshActor[MeshRenderable.TetrahedralMeshRenderable] with ActorColor {
-  override def renderable: MeshRenderable.TetrahedralMeshRenderable
-
-  override def color: ColorProperty = renderable.color
-
-  override protected def meshToPolyData(template2: Option[vtkPolyData]): vtkPolyData = {
-
-    def TetrahedralMeshToVtkPolyData(data: TetrahedralMesh[_3D], template2: Option[vtkUnstructuredGrid]): vtkPolyData = {
-      val t = new vtk.vtkDataSetSurfaceFilter()
-      val unstructuredgrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh, template2)
-      t.AddInputData(unstructuredgrid)
-      t.Update()
-      val polydata: vtkPolyData = t.GetOutput()
-      polydata
-    }
-
-    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh), TetrahedralMeshToVtkPolyData(renderable.mesh, None))
-
-  }
-
-}
+//trait TetrahedralMeshActor extends MeshActor[MeshRenderable.TetrahedralMeshRenderable] with ActorColor {
+//  override def renderable: MeshRenderable.TetrahedralMeshRenderable
+//
+//  override def color: ColorProperty = renderable.color
+//
+//  override protected def meshToPolyData(template2: Option[vtkPolyData]): vtkPolyData = {
+//
+//    def TetrahedralMeshToVtkPolyData(data: TetrahedralMesh[_3D], template2: Option[vtkUnstructuredGrid]): vtkPolyData = {
+//      val t = new vtk.vtkDataSetSurfaceFilter()
+//      val unstructuredgrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh, template2)
+//      t.AddInputData(unstructuredgrid)
+//      t.Update()
+//      val polydata: vtkPolyData = t.GetOutput()
+//      polydata
+//    }
+//
+//    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh), TetrahedralMeshToVtkPolyData(renderable.mesh, None))
+//
+//  }
+//
+//}
 
 
 
@@ -378,6 +370,6 @@ class LineMeshActor3D(node: LineMeshNode) extends MeshActor3D(MeshRenderable(nod
 
 class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with LineMeshActor
 
-class TetrahedralMeshActor3D(node: TetrahedralMeshNode) extends MeshActor3D(MeshRenderable(node)) with TetrahedralMeshActor
-
-class TetrahedralMeshActor2D(node: TetrahedralMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TetrahedralMeshActor
+//class TetrahedralMeshActor3D(node: TetrahedralMeshNode) extends MeshActor3D(MeshRenderable(node)) with TetrahedralMeshActor
+//
+//class TetrahedralMeshActor2D(node: TetrahedralMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TetrahedralMeshActor
