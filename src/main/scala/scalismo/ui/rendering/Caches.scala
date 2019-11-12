@@ -17,13 +17,13 @@
 
 package scalismo.ui.rendering
 
-import scalismo.common.{DiscreteDomain, DiscreteScalarField}
+import scalismo.common.{ DiscreteDomain, DiscreteScalarField }
 import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ScalarMeshField, TriangleMesh3D, VertexColorMesh3D}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh3D, VertexColorMesh3D }
 import scalismo.tetramesh.TetrahedralMesh3D
 import scalismo.ui.util.Cache
-import vtk.{vtkPolyData, vtkStructuredPoints, vtkUnstructuredGrid}
+import vtk.{ vtkPolyData, vtkStructuredPoints, vtkUnstructuredGrid }
 
 object Caches {
 
@@ -43,7 +43,7 @@ object Caches {
 
   case class FastCachingTetrahedralMesh(mesh: TetrahedralMesh3D) {
     override lazy val hashCode: Int =
-      (31 + mesh.pointSet.hashCode()) * (31 + mesh.tetrahedralization.hashCode() )//* 31 + mesh.color.hashCode())
+      (31 + mesh.pointSet.hashCode()) * (31 + mesh.tetrahedralization.hashCode()) //* 31 + mesh.color.hashCode())
   }
 
   final val TriangleMeshCache = new Cache[FastCachingTriangleMesh, vtkPolyData]
@@ -51,7 +51,5 @@ object Caches {
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
   final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float], vtkPolyData]
   final val VertexColorMeshCache = new Cache[FastCachingVertexColorMesh, vtkPolyData]
-  //final val TetrahedralMeshCache = new Cache[FastCachingTetrahedralMesh, vtkUnstructuredGrid]
-  final val TetrahedralMeshCache = new Cache[FastCachingTetrahedralMesh, vtkPolyData]
-
+  final val TetrahedralMeshCache = new Cache[FastCachingTetrahedralMesh, vtkUnstructuredGrid]
 }

@@ -39,16 +39,8 @@ class PolyDataActor extends DataActor {
 
 class UnstructuredGridActor extends DataActor {
   val mapper: vtkDataSetMapper = new vtk.vtkDataSetMapper()
-  //
-  //  // to set a Blue to Red Color map
-  //  val lut = new vtkLookupTable()
-  //  lut.SetHueRange(0.667, 0.0)
-  //  lut.SetNumberOfColors(256)
-  //  lut.Build()
-  //  mapper.SetLookupTable(lut)
 
   SetMapper(mapper)
   GetProperty().SetInterpolationToGouraud()
-
 }
 

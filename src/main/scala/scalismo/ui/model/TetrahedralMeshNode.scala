@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,9 @@ import scalismo.io.TetraMeshIO
 import scalismo.tetramesh.TetrahedralMesh3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{FileIoMetadata, FileUtil}
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 class TetrahedralMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TetrahedralMeshNode] with Loadable {
   override val name: String = "Tetrahedral Meshes"

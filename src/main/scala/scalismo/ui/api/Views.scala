@@ -20,14 +20,14 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
-import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
+import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
+import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
 import scalismo.tetramesh.TetrahedralMesh3D
-import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
@@ -250,8 +250,6 @@ object VertexColorMeshView {
 
 }
 
-
-
 case class TetrahedralMeshView private[ui] (override protected[api] val peer: TetrahedralMeshNode) extends ObjectView {
 
   type PeerType = TetrahedralMeshNode
@@ -286,7 +284,7 @@ object TetrahedralMeshView {
 
   implicit object callbacksTetrahedralMeshView extends HandleCallback[TetrahedralMeshView] {
 
-    override def registerOnAdd[R](g: Group, f:TetrahedralMeshView => R): Unit = {
+    override def registerOnAdd[R](g: Group, f: TetrahedralMeshView => R): Unit = {
       g.peer.listenTo(g.peer.triangleMeshes)
       g.peer.reactions += {
         case ChildAdded(_, newNode: TetrahedralMeshNode) =>
@@ -303,12 +301,9 @@ object TetrahedralMeshView {
           f(tmv)
       }
     }
-
   }
 
 }
-
-
 
 case class LineMeshView private[ui] (override protected[api] val peer: LineMeshNode) extends ObjectView {
 

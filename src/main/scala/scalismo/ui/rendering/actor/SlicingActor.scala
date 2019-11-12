@@ -22,7 +22,7 @@ import scalismo.ui.model.{ Axis, BoundingBox }
 import scalismo.ui.view.ViewportPanel2D
 import vtk.{ vtkCutter, vtkPlane }
 
-abstract class SlicingActor(val viewport: ViewportPanel2D) extends SinglePolyDataActor with ActorEvents  {
+abstract class SlicingActor(val viewport: ViewportPanel2D) extends SinglePolyDataActor with ActorEvents {
 
   private def slicingPositionChanged(slicingPosition: SlicingPosition): Unit = {
     val newValue = viewport.axis match {
