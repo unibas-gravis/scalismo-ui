@@ -17,9 +17,13 @@
 
 package scalismo.ui.rendering.actor
 
-import vtk.{ vtkActor, vtkLookupTable, vtkPolyDataMapper }
+import vtk._
 
-class PolyDataActor extends vtkActor {
+trait DataActor extends vtkActor {
+  val mapper: vtkMapper
+}
+
+class PolyDataActor extends DataActor {
   val mapper: vtkPolyDataMapper = new vtkPolyDataMapper
 
   // to set a Blue to Red Color map
@@ -28,6 +32,20 @@ class PolyDataActor extends vtkActor {
   lut.SetNumberOfColors(256)
   lut.Build()
   mapper.SetLookupTable(lut)
+
+  SetMapper(mapper)
+  GetProperty().SetInterpolationToGouraud()
+}
+
+class UnstructuredGridActor extends DataActor {
+  val mapper: vtkDataSetMapper = new vtk.vtkDataSetMapper()
+  //
+  //  // to set a Blue to Red Color map
+  //  val lut = new vtkLookupTable()
+  //  lut.SetHueRange(0.667, 0.0)
+  //  lut.SetNumberOfColors(256)
+  //  lut.Build()
+  //  mapper.SetLookupTable(lut)
 
   SetMapper(mapper)
   GetProperty().SetInterpolationToGouraud()

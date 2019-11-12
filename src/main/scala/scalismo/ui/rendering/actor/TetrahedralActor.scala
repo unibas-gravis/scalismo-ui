@@ -101,7 +101,7 @@ object TetrahedralActor {
 trait TetrahedralActor[R <: TetrahedralRenderable] extends ActorOpacity with ActorSceneNode {
   def renderable: R
 
-  val mapper2 = new vtk.vtkDataSetMapper()
+  //val mapper2 = new vtk.vtkDataSetMapper()
 
   override def opacity: OpacityProperty = renderable.opacity
 
@@ -159,7 +159,7 @@ trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.Tetrah
   }
 }
 
-abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends TetrahedralActor[R] {
+abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends UnstructuredGridActor with TetrahedralActor[R] {
 
   // not declaring this as lazy causes all sorts of weird VTK errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)
@@ -181,8 +181,8 @@ abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val rende
 
 
   override protected def onInstantiated(): Unit = {
-    //mapper.SetInputConnection(normals.GetOutputPort())
-    mapper2.SetInputData(unstructuredgrid)
+//    mapper.SetInputConnection(normals.GetOutputPort())
+    mapper.SetInputData(unstructuredgrid)
   }
 
   override protected def onGeometryChanged(): Unit = {
@@ -207,7 +207,7 @@ abstract class TetrahedralActor2D[R <: TetrahedralRenderable](override val rende
 }
 
 
-class TetrahedralMeshActor3D(node: TetrahedralMeshNode) extends TetrahedralActor3D(TetrahedralRenderable(node)) with TetrahedralMeshActor
+class TetrahedralMeshActor3D(node: TetrahedralMeshNode) extends TetrahedralActor3D(TetrahedralRenderable(node)) with  TetrahedralMeshActor
 
 class TetrahedralMeshActor2D(node: TetrahedralMeshNode, viewport: ViewportPanel2D) extends TetrahedralActor2D(TetrahedralRenderable(node), viewport) with TetrahedralMeshActor
 //
