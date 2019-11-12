@@ -36,21 +36,21 @@ package scalismo.ui.rendering.actor
 
 import scalismo.common.Scalar
 import scalismo.geometry._3D
-import scalismo.mesh.{ScalarMeshField, TriangleMesh, VertexColorMesh3D}
-import scalismo.tetramesh.{ScalarVolumeMeshField, TetrahedralMesh}
+import scalismo.mesh.{ ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.tetramesh.{ ScalarVolumeMeshField, TetrahedralMesh }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.FastCachingTetrahedralMesh
+import scalismo.ui.rendering.Caches.{ FastCachingTetrahedralMesh, FastCachingTetrahedralMeshField }
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable.ScalarMeshFieldRenderable
 import scalismo.ui.rendering.actor.TetrahedralActor.TetrahedralRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
-import scalismo.utils.{TetraMeshConversion, VtkHelpers}
-import vtk.{vtkActor, vtkPolyData, vtkPolyDataNormals, vtkUnstructuredGrid}
+import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.utils.{ TetraMeshConversion, VtkHelpers }
+import vtk.{ vtkActor, vtkPolyData, vtkPolyDataNormals, vtkUnstructuredGrid }
 
 import scala.reflect.runtime.universe.TypeTag
 import scala.reflect.ClassTag
@@ -193,19 +193,17 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   lazy val grid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh) //using grid instead of unstructured grid, because unstructedgrid defined above as protected var cannot be made lazy but it is in a trait
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
-  def scalarVolumeMeshFieldToVtkPolyData[S: Scalar : ClassTag : TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
+  def scalarVolumeMeshFieldToVtkPolyData[S: Scalar: ClassTag: TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
 
     val pointDataArray = tetraMeshData.mesh.pointSet.pointSequence.toArray.flatMap(_.toArray)
     val pointDataArrayVTK = VtkHelpers.scalarArrayToVtkDataArray(Scalar.DoubleIsScalar.createArray(pointDataArray), 3)
-    //val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1)
+    //val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1) //note replaced with pointDataArrayVTK copied from Conversions
     grid.GetPointData().SetScalars(pointDataArrayVTK)
     grid
   }
 
-  override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = { //todo
-    scalarVolumeMeshFieldToVtkPolyData(renderable.field)
-
-//    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(FastCachingTetrahedralMesh(renderable.field), scalarVolumeMeshFieldToVtkPolyData(renderable.field))
+  override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
+    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(FastCachingTetrahedralMeshField(renderable.field), scalarVolumeMeshFieldToVtkPolyData(renderable.field))
   }
 
 }
@@ -217,6 +215,7 @@ abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val rende
   }
 
   override protected def onGeometryChanged(): Unit = {
+    mapper.SetInputData(unstructuredgrid)
   }
 
 }

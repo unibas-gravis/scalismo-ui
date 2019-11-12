@@ -20,14 +20,14 @@ package scalismo.ui.model
 import java.io.File
 
 import scalismo.geometry.Point3D
-import scalismo.io.{MeshIO, TetraMeshIO}
+import scalismo.io.{ MeshIO, TetraMeshIO }
 import scalismo.mesh.ScalarMeshField
-import scalismo.tetramesh.{ScalarVolumeMeshField, TetrahedralMesh3D}
+import scalismo.tetramesh.{ ScalarVolumeMeshField, TetrahedralMesh3D }
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{FileIoMetadata, FileUtil}
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 class TetrahedralMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TetrahedralMeshNode] with Loadable {
   override val name: String = "Tetrahedral Meshes"
