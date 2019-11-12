@@ -60,6 +60,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
   val images = new ImagesNode(this)
   val scalarFields = new ScalarFieldsNode(this)
   val tetrahedralMeshes = new TetrahedralMeshesNode(this)
+  val tetrahedralMeshFields = new ScalarTetrahedralMeshFieldsNode(this)
 
   override val children: List[SceneNode] = List(
     genericTransformations,
@@ -73,7 +74,8 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     images,
     scalarFields,
     vectorFields,
-    tetrahedralMeshes
+    tetrahedralMeshes,
+    tetrahedralMeshFields
   )
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.

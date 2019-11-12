@@ -66,6 +66,13 @@ object FileIoMetadata {
     override def description: String = "Tetrahedral Mesh"
   }
 
+  val ScalarTetrahedralMeshField: FileIoMetadata = new FileIoMetadata {
+
+    override def fileExtensions: List[String] = List("vtk")
+
+    override def description: String = "Scalar Tetrahedral Mesh Field"
+  }
+
   val Image: FileIoMetadata = new FileIoMetadata {
     override val description = "3D Image"
     override val fileExtensions = List("nii", "vtk")

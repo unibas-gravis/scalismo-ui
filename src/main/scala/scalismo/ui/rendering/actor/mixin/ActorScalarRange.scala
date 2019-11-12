@@ -17,8 +17,12 @@
 
 package scalismo.ui.rendering.actor.mixin
 
-import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SinglePolyDataActor }
+import scalismo.ui.model.properties.{NodeProperty, ScalarRangeProperty}
+import scalismo.ui.rendering.actor.{ActorEvents, SinglePolyDataActor, SingleUnstructuredGridActor}
+
+//trait ActorRange extends ActorEvents{
+//  def scalarRange: ScalarRangeProperty
+//}
 
 trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
   def scalarRange: ScalarRangeProperty
@@ -36,5 +40,23 @@ trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
   }
 
   setAppearance()
+}
 
+
+trait ActorScalarGridRange extends ActorEvents { // SingleUnstructuredGridActor
+  def scalarRange: ScalarRangeProperty
+
+  listenTo(scalarRange)
+
+//  reactions += {
+//    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
+//  }
+//
+//  private def setAppearance(): Unit = {
+//    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+//    mapper.Modified()
+//    actorChanged()
+//  }
+//
+//  setAppearance()
 }

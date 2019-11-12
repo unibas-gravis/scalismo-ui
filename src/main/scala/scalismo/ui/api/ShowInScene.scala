@@ -18,12 +18,12 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
-import scalismo.tetramesh.{ TetrahedralMesh, TetrahedralMesh3D }
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
+import scalismo.tetramesh.{ScalarVolumeMeshField, TetrahedralMesh, TetrahedralMesh3D}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -95,6 +95,19 @@ object ShowInScene extends LowPriorityImplicits {
       TetrahedralMeshView(group.peer.tetrahedralMeshes.add(mesh, name))
     }
   }
+
+  implicit def ShowTetrahedralMeshScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarVolumeMeshField[S]] {
+    type View = ScalarTetrahedralMeshFieldView
+  } = new ShowInScene[ScalarVolumeMeshField[S]] {
+    override type View = ScalarTetrahedralMeshFieldView
+
+    override def showInScene(mesh: ScalarVolumeMeshField[S], name: String, group: Group): ScalarTetrahedralMeshFieldView = {
+      val scalarConv = implicitly[Scalar[S]]
+      val smfAsFloat = mesh.copy(data = mesh.data.map[Float](x => scalarConv.toFloat(x)))
+      ScalarTetrahedralMeshFieldView(group.peer.tetrahedralMeshFields.add(smfAsFloat, name))
+    }
+  }
+
 
   implicit object ShowInSceneLineMesh extends ShowInScene[LineMesh[_3D]] {
     override type View = LineMeshView
