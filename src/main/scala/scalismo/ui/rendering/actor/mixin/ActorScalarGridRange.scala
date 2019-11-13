@@ -15,35 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package scalismo.ui.rendering.actor
+package scalismo.ui.rendering.actor.mixin
 
-import vtk._
+import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleUnstructuredGridActor }
 
-trait DataActor extends vtkActor {
-  val mapper: vtkMapper
+trait ActorScalarGridRange extends SingleUnstructuredGridActor with ActorEvents {
+  def scalarRange: ScalarRangeProperty
 
-  // to set a Blue to Red Color map
-  val lut = new vtkLookupTable()
-  lut.SetHueRange(0.667, 0.0)
-  lut.SetNumberOfColors(256)
-  lut.Build()
+  listenTo(scalarRange)
+
+  reactions += {
+    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
+  }
+
+  private def setAppearance(): Unit = {
+    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+    mapper.Modified()
+    actorChanged()
+  }
+
+  setAppearance()
 }
-
-class PolyDataActor extends DataActor {
-  val mapper: vtkPolyDataMapper = new vtkPolyDataMapper
-
-  mapper.SetLookupTable(lut)
-
-  SetMapper(mapper)
-  GetProperty().SetInterpolationToGouraud()
-}
-
-class UnstructuredGridActor extends DataActor {
-  val mapper: vtkDataSetMapper = new vtk.vtkDataSetMapper()
-
-  mapper.SetLookupTable(lut)
-
-  SetMapper(mapper)
-  GetProperty().SetInterpolationToGouraud()
-}
-

@@ -36,21 +36,18 @@ package scalismo.ui.rendering.actor
 
 import scalismo.common.Scalar
 import scalismo.geometry._3D
-import scalismo.mesh.{ ScalarMeshField, TriangleMesh, VertexColorMesh3D }
 import scalismo.tetramesh.{ ScalarVolumeMeshField, TetrahedralMesh }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.Caches.{ FastCachingTetrahedralMesh, FastCachingTetrahedralMeshField }
-import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
-import scalismo.ui.rendering.actor.MeshActor.MeshRenderable.ScalarMeshFieldRenderable
 import scalismo.ui.rendering.actor.TetrahedralActor.TetrahedralRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import scalismo.utils.{ TetraMeshConversion, VtkHelpers }
-import vtk.{ vtkActor, vtkPolyData, vtkPolyDataNormals, vtkUnstructuredGrid }
+import vtk.vtkUnstructuredGrid
 
 import scala.reflect.runtime.universe.TypeTag
 import scala.reflect.ClassTag
@@ -127,10 +124,8 @@ object TetrahedralActor {
 
 }
 
-trait TetrahedralActor[R <: TetrahedralRenderable] extends ActorOpacity with ActorSceneNode {
+trait TetrahedralActor[R <: TetrahedralRenderable] extends SingleUnstructuredGridActor with ActorOpacity with ActorSceneNode {
   def renderable: R
-
-  //val mapper2 = new vtk.vtkDataSetMapper()
 
   override def opacity: OpacityProperty = renderable.opacity
 
@@ -190,25 +185,24 @@ trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.Tetrah
 trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRenderable.ScalarTetrahedralMeshFieldRenderable] with ActorScalarGridRange {
 
   override def renderable: TetrahedralRenderable.ScalarTetrahedralMeshFieldRenderable
-  lazy val grid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh) //using grid instead of unstructured grid, because unstructedgrid defined above as protected var cannot be made lazy but it is in a trait
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
-  def scalarVolumeMeshFieldToVtkPolyData[S: Scalar: ClassTag: TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
+  lazy val grid: vtkUnstructuredGrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh) //using grid instead of unstructured grid, because unstructuredgrid defined above as protected var in a trait
 
-    val pointDataArray = tetraMeshData.mesh.pointSet.pointSequence.toArray.flatMap(_.toArray)
-    val pointDataArrayVTK = VtkHelpers.scalarArrayToVtkDataArray(Scalar.DoubleIsScalar.createArray(pointDataArray), 3)
-    //val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1) //note replaced with pointDataArrayVTK copied from Conversions
-    grid.GetPointData().SetScalars(pointDataArrayVTK)
-    grid
+  def scalarVolumeMeshFieldToVtkUnstructuredGrid[S: Scalar: ClassTag: TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
+    val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1)
+    grid.GetPointData().SetScalars(scalarData) //pointDataArrayVTK)
+    unstructuredgrid = grid
+    unstructuredgrid
   }
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
-    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(FastCachingTetrahedralMeshField(renderable.field), scalarVolumeMeshFieldToVtkPolyData(renderable.field))
+    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(FastCachingTetrahedralMeshField(renderable.field), scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field))
   }
 
 }
 
-abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends UnstructuredGridActor with TetrahedralActor[R] {
+abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends TetrahedralActor[R] {
 
   override protected def onInstantiated(): Unit = {
     mapper.SetInputData(unstructuredgrid)
@@ -220,7 +214,7 @@ abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val rende
 
 }
 
-abstract class TetrahedralActor2D[R <: TetrahedralRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with TetrahedralActor[R] with ActorLineWidth {
+abstract class TetrahedralActor2D[R <: TetrahedralRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingGridActor(viewport) with TetrahedralActor[R] with ActorLineWidth {
   override def lineWidth: LineWidthProperty = renderable.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(geometryChanged = false)
