@@ -38,5 +38,3 @@ class DataSetActor extends DataActor {
   GetProperty().SetInterpolationToGouraud()
 }
 
-
-

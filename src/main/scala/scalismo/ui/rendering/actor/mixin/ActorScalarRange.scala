@@ -18,7 +18,7 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SingleDataSetActor} //SinglePolyDataActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleDataSetActor } //SinglePolyDataActor }
 
 trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
   def scalarRange: ScalarRangeProperty

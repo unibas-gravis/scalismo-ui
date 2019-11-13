@@ -170,7 +170,6 @@ class ShapeModelTransformationsNode(override val parent: GroupNode) extends Tran
   }
 }
 
-
 class VolumeShapeModelTransformationsNode(override val parent: GroupNode) extends TransformationCollectionNode with Removeable {
   override val name: String = "Volume Shape model transformations"
 
@@ -246,8 +245,6 @@ class VolumeShapeModelTransformationsNode(override val parent: GroupNode) extend
   }
 }
 
-
-
 class ShapeModelTransformationComponentNode[T <: PointTransformation] private (override val parent: ShapeModelTransformationsNode, initialTransformation: T, override val name: String)
     extends TransformationNode[T](parent, initialTransformation, name) {
   override def remove(): Unit = {
@@ -261,9 +258,8 @@ object ShapeModelTransformationComponentNode {
   def apply(parent: ShapeModelTransformationsNode, initialTransformation: DiscreteLowRankGpPointTransformation, name: String) = new ShapeModelTransformationComponentNode(parent, initialTransformation, name)
 }
 
-
 class VolumeShapeModelTransformationComponentNode[T <: PointTransformation] private (override val parent: VolumeShapeModelTransformationsNode, initialTransformation: T, override val name: String)
-  extends TransformationNode[T](parent, initialTransformation, name) {
+    extends TransformationNode[T](parent, initialTransformation, name) {
   override def remove(): Unit = {
     parent.remove(this)
   }
@@ -287,7 +283,6 @@ object TransformationNode {
   }
 
 }
-
 
 class TransformationNode[T <: PointTransformation](override val parent: TransformationCollectionNode, initialTransformation: T, override val name: String) extends SceneNode with Grouped with Removeable {
   private var _transformation: T = initialTransformation

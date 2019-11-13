@@ -711,7 +711,6 @@ object ImageView {
 case class StatisticalMeshModelViewControls private[ui] (meshView: TriangleMeshView, shapeModelTransformationView: ShapeModelTransformationView)
 case class StatisticalVolumeMeshModelViewControls private[ui] (meshView: TetrahedralMeshView, shapeModelTransformationView: ShapeModelTransformationView)
 
-
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   def hidden_=(b: Boolean): Unit = {

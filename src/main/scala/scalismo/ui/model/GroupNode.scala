@@ -17,11 +17,11 @@
 
 package scalismo.ui.model
 
-import scalismo.statisticalmodel.{StatisticalMeshModel, StatisticalVolumeMeshModel}
+import scalismo.statisticalmodel.{ StatisticalMeshModel, StatisticalVolumeMeshModel }
 import scalismo.ui.api.StatisticalVolumeMeshModelViewControls
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.capabilities.{Removeable, Renameable}
+import scalismo.ui.model.capabilities.{ Removeable, Renameable }
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
@@ -95,7 +95,6 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
-
   }
 
   def addStatisticalVolumeMeshModel(model: StatisticalVolumeMeshModel, initialName: String): Unit = {
@@ -104,9 +103,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
-
   }
-
 
   override def remove(): Unit = parent.remove(this)
 }

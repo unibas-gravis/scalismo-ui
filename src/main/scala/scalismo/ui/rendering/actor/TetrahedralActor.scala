@@ -194,7 +194,7 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   def scalarVolumeMeshFieldToVtkUnstructuredGrid[S: Scalar: ClassTag: TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
     val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1)
     unstructuredgrid.GetPointData().SetScalars(scalarData) //pointDataArrayVTK)
-//    unstructuredgrid = grid
+    //    unstructuredgrid = grid
     unstructuredgrid
   }
 
@@ -208,7 +208,6 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   onInstantiated()
 
   rerender(geometryChanged = true)
-
 
 }
 

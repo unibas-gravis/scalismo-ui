@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,15 +20,15 @@ package scalismo.ui.view.action.popup
 import java.io.File
 
 import scalismo.io.StatismoIO
-import scalismo.io.StatismoIO.{CatalogEntry, StatismoModelType}
-import scalismo.ui.model.{GroupNode, SceneNode}
+import scalismo.io.StatismoIO.{ CatalogEntry, StatismoModelType }
+import scalismo.ui.model.{ GroupNode, SceneNode }
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.util.{FileIoMetadata, FileUtil}
+import scalismo.ui.util.{ FileIoMetadata, FileUtil }
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.action.LoadAction
 
-import scala.swing.{Action, Alignment, BoxPanel, Button, ComboBox, Dialog, FlowPanel, GridPanel, Label, Orientation}
-import scala.util.{Failure, Success, Try}
+import scala.swing.{ Action, Alignment, BoxPanel, Button, ComboBox, Dialog, FlowPanel, GridPanel, Label, Orientation }
+import scala.util.{ Failure, Success, Try }
 
 object LoadStatisticalVolumeMeshModelAction extends PopupAction.Factory {
   override def apply(context: List[SceneNode])(implicit frame: ScalismoFrame): List[PopupAction] = {
