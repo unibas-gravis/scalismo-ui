@@ -14,26 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package scalismo.ui.rendering.actor.mixin
-
-import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SingleUnstructuredGridActor }
-
-trait ActorScalarGridRange extends SingleUnstructuredGridActor with ActorEvents {
-  def scalarRange: ScalarRangeProperty
-
-  listenTo(scalarRange)
-
-  reactions += {
-    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
-  }
-
-  private def setAppearance(): Unit = {
-    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
-    mapper.Modified()
-    actorChanged()
-  }
-
-  setAppearance()
-}
+//
+//package scalismo.ui.rendering.actor.mixin
+//
+//import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
+//import scalismo.ui.rendering.actor.{ ActorEvents, SingleUnstructuredGridActor }
+//
+//trait ActorScalarGridRange extends SingleUnstructuredGridActor with ActorEvents {
+//  def scalarRange: ScalarRangeProperty
+//
+//  listenTo(scalarRange)
+//
+//  reactions += {
+//    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
+//  }
+//
+//  private def setAppearance(): Unit = {
+//    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+//    mapper.Modified()
+//    actorChanged()
+//  }
+//
+//  setAppearance()
+//}

@@ -34,7 +34,7 @@ object VectorFieldActor extends SimpleActorsFactory[VectorFieldNode] {
   }
 }
 
-trait VectorFieldActor extends SinglePolyDataActor with ActorOpacity with ActorScalarRange with ActorSceneNode {
+trait VectorFieldActor extends SingleDataSetActor with ActorOpacity with ActorScalarRange with ActorSceneNode {
   override def sceneNode: VectorFieldNode
 
   override def opacity: OpacityProperty = sceneNode.opacity

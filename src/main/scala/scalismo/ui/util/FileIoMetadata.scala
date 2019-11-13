@@ -17,6 +17,8 @@
 
 package scalismo.ui.util
 
+import scalismo.statisticalmodel.StatisticalVolumeMeshModel
+
 /**
  * Metadata for File I/O.
  *
@@ -71,6 +73,11 @@ object FileIoMetadata {
     override def fileExtensions: List[String] = List("vtk")
 
     override def description: String = "Scalar Tetrahedral Mesh Field"
+  }
+
+  val StatisticalVolumeMeshModel: FileIoMetadata = new FileIoMetadata {
+    override val description = "Statistical Volume Shape Model"
+    override val fileExtensions = List("h5")
   }
 
   val Image: FileIoMetadata = new FileIoMetadata {

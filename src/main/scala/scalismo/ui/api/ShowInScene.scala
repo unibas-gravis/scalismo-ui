@@ -18,12 +18,12 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
-import scalismo.tetramesh.{ ScalarVolumeMeshField, TetrahedralMesh, TetrahedralMesh3D }
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel, StatisticalVolumeMeshModel}
+import scalismo.tetramesh.{ScalarVolumeMeshField, TetrahedralMesh, TetrahedralMesh3D}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -200,6 +200,19 @@ object ShowInScene extends LowPriorityImplicits {
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group)
       StatisticalMeshModelViewControls(tmV, smV)
+
+    }
+  }
+
+  implicit object ShowInSceneStatisticalVolumeMeshModel extends ShowInScene[StatisticalVolumeMeshModel] {
+    type View = StatisticalVolumeMeshModelViewControls
+
+    override def showInScene(model: StatisticalVolumeMeshModel, name: String, group: Group): View = {
+
+      val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
+      val tmV = ShowTetrahedralMesh.showInScene(model.referenceMeshVolume, name, group)
+      StatisticalVolumeMeshModelViewControls(tmV, smV)
 
     }
   }

@@ -19,18 +19,17 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
 import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
-import scalismo.tetramesh.TetrahedralMesh
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{ FastCachingTetrahedralMesh, FastCachingTriangleMesh, FastCachingVertexColorMesh }
+import scalismo.ui.rendering.Caches.{ FastCachingTriangleMesh, FastCachingVertexColorMesh }
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
-import scalismo.utils.{ MeshConversion, TetraMeshConversion }
-import vtk.{ vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray, vtkUnstructuredGrid }
+import scalismo.utils.MeshConversion
+import vtk.{ vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray }
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
@@ -153,7 +152,7 @@ object MeshActor {
 
 }
 
-trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity with ActorSceneNode {
+trait MeshActor[R <: MeshRenderable] extends SingleDataSetActor with ActorOpacity with ActorSceneNode {
   def renderable: R
 
   override def opacity: OpacityProperty = renderable.opacity

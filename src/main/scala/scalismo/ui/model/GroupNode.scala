@@ -17,10 +17,11 @@
 
 package scalismo.ui.model
 
-import scalismo.statisticalmodel.StatisticalMeshModel
+import scalismo.statisticalmodel.{StatisticalMeshModel, StatisticalVolumeMeshModel}
+import scalismo.ui.api.StatisticalVolumeMeshModelViewControls
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.capabilities.{ Removeable, Renameable }
+import scalismo.ui.model.capabilities.{Removeable, Renameable}
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
@@ -49,6 +50,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
 
   val genericTransformations = new GenericTransformationsNode(this)
   val shapeModelTransformations = new ShapeModelTransformationsNode(this)
+  val volumeShapeModelTransformations = new VolumeShapeModelTransformationsNode(this)
 
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
@@ -65,6 +67,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
   override val children: List[SceneNode] = List(
     genericTransformations,
     shapeModelTransformations,
+    volumeShapeModelTransformations,
     landmarks,
     triangleMeshes,
     colorMeshes,
@@ -92,7 +95,18 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
+
   }
+
+  def addStatisticalVolumeMeshModel(model: StatisticalVolumeMeshModel, initialName: String): Unit = {
+
+    tetrahedralMeshes.add(model.referenceMeshVolume, initialName)
+    volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
+    volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
+
+
+  }
+
 
   override def remove(): Unit = parent.remove(this)
 }
