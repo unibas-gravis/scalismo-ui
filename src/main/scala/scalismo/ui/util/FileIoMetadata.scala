@@ -17,8 +17,6 @@
 
 package scalismo.ui.util
 
-import scalismo.statisticalmodel.StatisticalVolumeMeshModel
-
 /**
  * Metadata for File I/O.
  *

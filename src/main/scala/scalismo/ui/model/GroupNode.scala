@@ -18,7 +18,6 @@
 package scalismo.ui.model
 
 import scalismo.statisticalmodel.{ StatisticalMeshModel, StatisticalVolumeMeshModel }
-import scalismo.ui.api.StatisticalVolumeMeshModelViewControls
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.capabilities.{ Removeable, Renameable }

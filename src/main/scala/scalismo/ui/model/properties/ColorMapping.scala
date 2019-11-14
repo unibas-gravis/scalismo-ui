@@ -22,9 +22,6 @@ import java.awt.Color
 import scalismo.color.RGB
 
 /** Maps a range of values, determined by a lower and upper value to a color */
-
-//copied from https://github.com/unibas-gravis/scalismo-ui/pull/37/files
-
 trait ColorMapping {
 
   var lowerColor: Color
@@ -50,7 +47,6 @@ private[properties] case class LinearColorMapping(lColor: Color, uColor: Color) 
         if (value < lowerValue) lColor
         else if (value > upperValue) uColor
         else {
-          // interpolating color
           val s = (value - lowerValue) / (upperValue - lowerValue)
           val newColor = (RGB(uColor) - RGB(lColor)) * s + RGB(lColor)
           newColor.toAWTColor
@@ -65,7 +61,3 @@ private[properties] case class LinearColorMapping(lColor: Color, uColor: Color) 
 object BlueToRedColorMapping extends LinearColorMapping(Color.BLUE, Color.RED)
 
 object WhiteToBlackMapping extends LinearColorMapping(Color.WHITE, Color.BLACK)
-
-//object GreenToBlack extends LinearColorMapping(Color.GREEN, Color.BLACK)
-
-//object CyanToOrange extends LinearColorMapping(Color.CYAN, Color.ORANGE)

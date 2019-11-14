@@ -15,26 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//
-//package scalismo.ui.rendering.actor.mixin
-//
-//import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-//import scalismo.ui.rendering.actor.{ ActorEvents, SingleUnstructuredGridActor }
-//
-//trait ActorScalarGridRange extends SingleUnstructuredGridActor with ActorEvents {
-//  def scalarRange: ScalarRangeProperty
-//
-//  listenTo(scalarRange)
-//
-//  reactions += {
-//    case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
-//  }
-//
-//  private def setAppearance(): Unit = {
-//    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
-//    mapper.Modified()
-//    actorChanged()
-//  }
-//
-//  setAppearance()
-//}
+package scalismo.ui.view.util
+
+import java.awt.event.ActionEvent
+import javax.swing.JComboBox
+
+class FancyDropDown(items: Array[String])
+    extends scala.swing.Component with java.awt.event.ActionListener {
+
+  def formattedValue(dropDownValue: Int): String = dropDownValue.toString
+
+  override lazy val peer = new JComboBox(items)
+
+  def +=(item: String): Unit = peer.addItem(item)
+  def -=(item: String): Unit = peer.removeItem(item)
+  def item: String = peer.getSelectedItem.asInstanceOf[String]
+  def reset() {
+    peer.setSelectedIndex(0)
+  }
+
+  peer.addActionListener(this)
+  def actionPerformed(e: ActionEvent): Unit = {
+
+  }
+
+}

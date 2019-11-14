@@ -21,7 +21,7 @@ import java.io.File
 
 import scalismo.geometry.{ Point, Point3D, _3D }
 import scalismo.io.TetraMeshIO
-import scalismo.tetramesh.{ ScalarVolumeMeshField, TetrahedralMesh3D }
+import scalismo.tetramesh.{ ScalarVolumeMeshField }
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{ FileIoMetadata, FileUtil }

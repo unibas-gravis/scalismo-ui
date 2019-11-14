@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package scalismo.ui.view.ScalarBarWindow
+package scalismo.ui.view.properties
 
 import java.awt.event.ActionEvent
-
 import javax.swing.border.TitledBorder
+
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties._
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.properties.PropertyPanel
+import scalismo.ui.view.util.FancyDropDown
 
 import scala.swing.BorderPanel
 
-object DropDownPropertyPanel extends PropertyPanel.Factory {
+object ColorSchemePropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {
-    new DropDownPropertyPanel(frame)
+    new ColorSchemePropertyPanel(frame)
   }
 }
 
-class DropDownPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
+class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
 
   private var targets: List[HasScalarRange] = Nil
 
@@ -43,7 +43,6 @@ class DropDownPropertyPanel(override val frame: ScalismoFrame) extends BorderPan
 
   override def description: String = "ColorScheme"
 
-  // TODO change here if we want to have different schemes or more schemes
   val items = Array("Blue-Red", "White-Black")
 
   val dropDown: FancyDropDown = new FancyDropDown(items) {
@@ -67,8 +66,6 @@ class DropDownPropertyPanel(override val frame: ScalismoFrame) extends BorderPan
   }
 
   def updateColorMapping() {
-    //println("I am updating targets with: ", dropDown.item)
-
     if (dropDown.item == items(0)) {
       targets.foreach(t => {
         t.scalarRange.colorMapping = BlueToRedColorMapping
@@ -78,9 +75,6 @@ class DropDownPropertyPanel(override val frame: ScalismoFrame) extends BorderPan
         t.scalarRange.colorMapping = WhiteToBlackMapping
       })
     }
-
-    // this is to propagate the change when I change the toggle
-    // I copied this from the slider and I feel like I could make this a lot more simple
     val (fMin, fMax) = (fromSliderValue(targets.head.scalarRange.value.cappedMinimum.toInt), fromSliderValue(targets.head.scalarRange.value.cappedMaximum.toInt))
     targets.foreach(t => t.scalarRange.value = t.scalarRange.value.copy(cappedMinimum = fMin, cappedMaximum = fMax))
   }

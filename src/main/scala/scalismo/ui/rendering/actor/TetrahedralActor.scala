@@ -185,16 +185,12 @@ trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.Tetrah
 trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRenderable.ScalarTetrahedralMeshFieldRenderable] with ActorScalarRange {
 
   override def renderable: TetrahedralRenderable.ScalarTetrahedralMeshFieldRenderable
+
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
-
-  //lazy val grid: vtkUnstructuredGrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh) //using grid instead of unstructured grid, because unstructuredgrid defined above as protected var in a trait
-
-  //unstructuredgrid = TetraMeshConversion.tetrameshTovtkUnstructuredGrid(renderable.mesh)
 
   def scalarVolumeMeshFieldToVtkUnstructuredGrid[S: Scalar: ClassTag: TypeTag](tetraMeshData: ScalarVolumeMeshField[S]): vtkUnstructuredGrid = { //note copied from Conversions.scalarArrayToVtkDataArray
     val scalarData = VtkHelpers.scalarArrayToVtkDataArray(tetraMeshData.data, 1)
     unstructuredgrid.GetPointData().SetScalars(scalarData) //pointDataArrayVTK)
-    //    unstructuredgrid = grid
     unstructuredgrid
   }
 
@@ -208,7 +204,6 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   onInstantiated()
 
   rerender(geometryChanged = true)
-
 }
 
 abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends TetrahedralActor[R] {
@@ -220,7 +215,6 @@ abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val rende
   override protected def onGeometryChanged(): Unit = {
     mapper.SetInputData(unstructuredgrid)
   }
-
 }
 
 abstract class TetrahedralActor2D[R <: TetrahedralRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with TetrahedralActor[R] with ActorLineWidth {

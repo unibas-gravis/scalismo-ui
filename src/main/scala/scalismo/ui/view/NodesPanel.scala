@@ -26,7 +26,6 @@ import javax.swing.{ Icon, JPopupMenu, JTree }
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
 import scalismo.ui.model.properties.ColorProperty
-import scalismo.ui.rendering.actor.TetrahedralMeshScalarFieldActor
 import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }

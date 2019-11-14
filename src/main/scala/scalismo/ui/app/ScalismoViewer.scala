@@ -20,7 +20,7 @@ package scalismo.ui.app
 import java.io.{ File, IOException }
 
 import scalismo.geometry._3D
-import scalismo.io.{ ImageIO, LandmarkIO, MeshIO, StatismoIO }
+import scalismo.io._
 import scalismo.ui.api.ScalismoUI
 import scalismo.ui.util.FileUtil
 
@@ -73,9 +73,13 @@ object ScalismoViewer {
             MeshIO.readMesh(file) match {
               case Success(mesh) => ui.show(defaultGroup, mesh, basename)
               case Failure(_) =>
-                ImageIO.read3DScalarImageAsType[Float](file, resampleOblique = true) match {
+                TetraMeshIO.readTetrahedralMesh(file) match {
                   case Success(image) => ui.show(defaultGroup, image, basename)
-                  case Failure(t) => showErrorMessage(file, t)
+                  case Failure(_) =>
+                    ImageIO.read3DScalarImageAsType[Float](file, resampleOblique = true) match {
+                      case Success(image) => ui.show(defaultGroup, image, basename)
+                      case Failure(t) => showErrorMessage(file, t)
+                    }
                 }
             }
 

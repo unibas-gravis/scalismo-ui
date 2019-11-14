@@ -48,7 +48,6 @@ trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
     }
 
     mapper.SetLookupTable(colorTransferFun)
-
     mapper.Modified()
     actorChanged()
   }
