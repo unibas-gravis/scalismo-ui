@@ -19,7 +19,8 @@ package scalismo.ui.rendering.actor
 
 import vtk._
 
-trait DataActor extends vtkActor {
+trait DataActor extends vtkActor { //todo remove unneccesary trait DataActor
+
   val mapper: vtkMapper
 
   // to set a Blue to Red Color map
@@ -27,6 +28,7 @@ trait DataActor extends vtkActor {
   lut.SetHueRange(0.667, 0.0)
   lut.SetNumberOfColors(256)
   lut.Build()
+
 }
 
 class DataSetActor extends DataActor {
