@@ -60,4 +60,7 @@ private[properties] case class LinearColorMapping(lColor: Color, uColor: Color) 
 
 object BlueToRedColorMapping extends LinearColorMapping(Color.BLUE, Color.RED)
 
+object BlackToWhiteMapping extends LinearColorMapping(Color.BLACK, Color.WHITE)
+
 object WhiteToBlackMapping extends LinearColorMapping(Color.WHITE, Color.BLACK)
+

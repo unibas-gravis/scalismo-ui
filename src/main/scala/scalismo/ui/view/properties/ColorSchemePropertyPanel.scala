@@ -43,7 +43,7 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   override def description: String = "ColorScheme"
 
-  val items = Array("Blue-Red", "White-Black")
+  val items = Array("Blue-Red", "Black-White", "White-Black")
 
   val dropDown: FancyDropDown = new FancyDropDown(items) {
     override def actionPerformed(e: ActionEvent): Unit = {
@@ -71,6 +71,10 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
         t.scalarRange.colorMapping = BlueToRedColorMapping
       })
     } else if (dropDown.item == items(1)) {
+      targets.foreach(t => {
+        t.scalarRange.colorMapping = BlackToWhiteMapping
+      })
+    } else if (dropDown.item == items(2)) {
       targets.foreach(t => {
         t.scalarRange.colorMapping = WhiteToBlackMapping
       })
