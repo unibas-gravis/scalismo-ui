@@ -126,7 +126,7 @@ class LandmarkActor2D(override val sceneNode: LandmarkNode, viewport: ViewportPa
 
 }
 
-class LandmarkActor3D(override val sceneNode: LandmarkNode) extends SinglePolyDataActor with LandmarkActor {
+class LandmarkActor3D(override val sceneNode: LandmarkNode) extends SingleDataSetActor with LandmarkActor {
   override protected def onInstantiated(): Unit = {
     mapper.SetInputConnection(transformFilter.GetOutputPort())
   }

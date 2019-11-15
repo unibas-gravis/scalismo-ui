@@ -38,7 +38,7 @@ object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {
   }
 }
 
-trait ScalarFieldActor extends SinglePolyDataActor with ActorOpacity with ActorScalarRange with ActorSceneNode {
+trait ScalarFieldActor extends SingleDataSetActor with ActorOpacity with ActorScalarRange with ActorSceneNode {
   override def sceneNode: ScalarFieldNode
 
   override def opacity: OpacityProperty = sceneNode.opacity

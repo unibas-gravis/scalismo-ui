@@ -34,7 +34,7 @@ object PointCloudActor extends SimpleActorsFactory[PointCloudNode] {
   }
 }
 
-trait PointCloudActor extends SinglePolyDataActor with ActorOpacity with ActorColor with ActorSceneNode {
+trait PointCloudActor extends SingleDataSetActor with ActorOpacity with ActorColor with ActorSceneNode {
   override def sceneNode: PointCloudNode
 
   override def opacity: OpacityProperty = sceneNode.opacity

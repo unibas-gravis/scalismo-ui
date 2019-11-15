@@ -69,5 +69,5 @@ object BundledIcon {
   lazy val Landmark: FontIcon = FontIcon.load(FontAwesome.CROSSHAIRS)
   lazy val Transformation: FontIcon = FontIcon.load(FontAwesome.ARROW_CIRCLE_RIGHT)
   lazy val Image: FontIcon = FontIcon.load(FontAwesome.PICTURE_O)
-
+  lazy val VolumeMesh: FontIcon = FontIcon.load(FontAwesome.PAW)
 }

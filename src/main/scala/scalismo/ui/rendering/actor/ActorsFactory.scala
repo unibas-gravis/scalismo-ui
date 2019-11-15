@@ -36,6 +36,8 @@ object ActorsFactory {
     TriangleMeshActor,
     ScalarMeshFieldActor,
     VertexColorMeshActor,
+    TetrahedralMeshActor,
+    ScalarTetrahedralMeshFieldActor,
     LineMeshActor,
     PointCloudActor,
     LandmarkActor,

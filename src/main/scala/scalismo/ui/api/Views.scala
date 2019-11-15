@@ -23,7 +23,7 @@ import breeze.linalg.DenseVector
 import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
 import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh._
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
 import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
@@ -242,6 +242,116 @@ object VertexColorMeshView {
       g.peer.reactions += {
         case ChildRemoved(_, removedNode: VertexColorMeshNode) =>
           val tmv = VertexColorMeshView(removedNode)
+          f(tmv)
+      }
+    }
+  }
+
+}
+
+case class TetrahedralMeshView private[ui] (override protected[api] val peer: TetrahedralMeshNode) extends ObjectView {
+
+  type PeerType = TetrahedralMeshNode
+
+  def opacity: Double = peer.opacity.value
+
+  def opacity_=(o: Double): Unit = {
+    peer.opacity.value = o
+  }
+
+  def lineWidth: Int = peer.lineWidth.value
+
+  def lineWidth_=(width: Int): Unit = {
+    peer.lineWidth.value = width
+  }
+
+  def tetrahedralMesh: TetrahedralMesh3D = peer.source
+
+  def transformedTetrahedralMesh: TetrahedralMesh3D = peer.transformedSource
+}
+
+object TetrahedralMeshView {
+
+  implicit object FindInSceneTetrahedralMeshView$ extends FindInScene[TetrahedralMeshView] {
+    override def createView(s: SceneNode): Option[TetrahedralMeshView] = {
+      s match {
+        case peer: TetrahedralMeshNode => Some(TetrahedralMeshView(peer))
+        case _ => None
+      }
+    }
+  }
+
+  implicit object callbacksTetrahedralMeshView extends HandleCallback[TetrahedralMeshView] {
+
+    override def registerOnAdd[R](g: Group, f: TetrahedralMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.reactions += {
+        case ChildAdded(_, newNode: TetrahedralMeshNode) =>
+          val tmv = TetrahedralMeshView(newNode)
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: TetrahedralMeshView => R): Unit = {
+      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.reactions += {
+        case ChildRemoved(_, removedNode: TetrahedralMeshNode) =>
+          val tmv = TetrahedralMeshView(removedNode)
+          f(tmv)
+      }
+    }
+  }
+
+}
+
+case class ScalarTetrahedralMeshFieldView private[ui] (override protected[api] val peer: ScalarTetrahedralMeshFieldNode) extends ObjectView {
+
+  type PeerType = ScalarTetrahedralMeshFieldNode
+
+  def opacity: Double = peer.opacity.value
+
+  def opacity_=(o: Double): Unit = {
+    peer.opacity.value = o
+  }
+
+  def lineWidth: Int = peer.lineWidth.value
+
+  def lineWidth_=(width: Int): Unit = {
+    peer.lineWidth.value = width
+  }
+
+  def tetrahedralMeshField: ScalarVolumeMeshField[Float] = peer.source
+
+  def transformedTetrahedralMeshField: ScalarVolumeMeshField[Float] = peer.transformedSource
+}
+
+object ScalarTetrahedralMeshFieldView {
+
+  implicit object FindInSceneScalarTetrahedralMeshFieldView$ extends FindInScene[ScalarTetrahedralMeshFieldView] {
+    override def createView(s: SceneNode): Option[ScalarTetrahedralMeshFieldView] = {
+      s match {
+        case peer: ScalarTetrahedralMeshFieldNode => Some(ScalarTetrahedralMeshFieldView(peer))
+        case _ => None
+      }
+    }
+  }
+
+  implicit object callbacksScalarTetrahedralMeshFieldView extends HandleCallback[ScalarTetrahedralMeshFieldView] {
+
+    override def registerOnAdd[R](g: Group, f: ScalarTetrahedralMeshFieldView => R): Unit = {
+      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.reactions += {
+        case ChildAdded(_, newNode: ScalarTetrahedralMeshFieldNode) =>
+          val tmv = ScalarTetrahedralMeshFieldView(newNode)
+          f(tmv)
+      }
+    }
+
+    override def registerOnRemove[R](g: Group, f: ScalarTetrahedralMeshFieldView => R): Unit = {
+      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.reactions += {
+        case ChildRemoved(_, removedNode: ScalarTetrahedralMeshFieldNode) =>
+          val tmv = ScalarTetrahedralMeshFieldView(removedNode)
           f(tmv)
       }
     }
@@ -598,6 +708,7 @@ object ImageView {
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
 case class StatisticalMeshModelViewControls private[ui] (meshView: TriangleMeshView, shapeModelTransformationView: ShapeModelTransformationView)
+case class StatisticalVolumeMeshModelViewControls private[ui] (meshView: TetrahedralMeshView, shapeModelTransformationView: ShapeModelTransformationView)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 

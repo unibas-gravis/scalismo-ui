@@ -40,7 +40,7 @@ object ImageActor extends SimpleActorsFactory[ImageNode] {
 
 object ImageActor2D {
 
-  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SinglePolyDataActor = new ImageActor2D(node, viewport.axis, viewport.frame) with SinglePolyDataActor {
+  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SingleDataSetActor = new ImageActor2D(node, viewport.axis, viewport.frame) with SingleDataSetActor {
     override def boundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(data.points.GetBounds())
   }
 
@@ -90,7 +90,7 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends PolyDataActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
+class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends DataSetActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
 
   override def opacity: OpacityProperty = sceneNode.opacity
 

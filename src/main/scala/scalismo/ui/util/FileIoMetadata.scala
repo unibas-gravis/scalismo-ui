@@ -59,6 +59,32 @@ object FileIoMetadata {
     override def description: String = "Triangle Mesh with vertex color"
   }
 
+  val TetrahedralMeshRead: FileIoMetadata = new FileIoMetadata {
+
+    override def fileExtensions: List[String] = List("vtk", "vtu", "inp")
+
+    override def description: String = "Tetrahedral Mesh"
+  }
+
+  val TetrahedralMeshWrite: FileIoMetadata = new FileIoMetadata {
+
+    override def fileExtensions: List[String] = List("vtk", "vtu")
+
+    override def description: String = "Tetrahedral Mesh"
+  }
+
+  val ScalarTetrahedralMeshField: FileIoMetadata = new FileIoMetadata {
+
+    override def fileExtensions: List[String] = List("vtk", "vtu")
+
+    override def description: String = "Scalar Tetrahedral Mesh Field"
+  }
+
+  val StatisticalVolumeMeshModel: FileIoMetadata = new FileIoMetadata {
+    override val description = "Statistical Volume Shape Model"
+    override val fileExtensions = List("h5")
+  }
+
   val Image: FileIoMetadata = new FileIoMetadata {
     override val description = "3D Image"
     override val fileExtensions = List("nii", "vtk")

@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.statisticalmodel.StatisticalMeshModel
+import scalismo.statisticalmodel.{ StatisticalMeshModel, StatisticalVolumeMeshModel }
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.capabilities.{ Removeable, Renameable }
@@ -49,6 +49,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
 
   val genericTransformations = new GenericTransformationsNode(this)
   val shapeModelTransformations = new ShapeModelTransformationsNode(this)
+  val volumeShapeModelTransformations = new VolumeShapeModelTransformationsNode(this)
 
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
@@ -59,10 +60,13 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
   val pointClouds = new PointCloudsNode(this)
   val images = new ImagesNode(this)
   val scalarFields = new ScalarFieldsNode(this)
+  val tetrahedralMeshes = new TetrahedralMeshesNode(this)
+  val tetrahedralMeshFields = new ScalarTetrahedralMeshFieldsNode(this)
 
   override val children: List[SceneNode] = List(
     genericTransformations,
     shapeModelTransformations,
+    volumeShapeModelTransformations,
     landmarks,
     triangleMeshes,
     colorMeshes,
@@ -71,7 +75,9 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     pointClouds,
     images,
     scalarFields,
-    vectorFields
+    vectorFields,
+    tetrahedralMeshes,
+    tetrahedralMeshFields
   )
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
@@ -87,6 +93,14 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     triangleMeshes.add(model.referenceMesh, initialName)
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
+
+  }
+
+  def addStatisticalVolumeMeshModel(model: StatisticalVolumeMeshModel, initialName: String): Unit = {
+
+    tetrahedralMeshes.add(model.referenceVolumeMesh, initialName)
+    volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
+    volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
 
   }
 

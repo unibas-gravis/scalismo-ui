@@ -152,7 +152,7 @@ object MeshActor {
 
 }
 
-trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity with ActorSceneNode {
+trait MeshActor[R <: MeshRenderable] extends SingleDataSetActor with ActorOpacity with ActorSceneNode {
   def renderable: R
 
   override def opacity: OpacityProperty = renderable.opacity
