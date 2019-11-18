@@ -40,7 +40,7 @@ import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{ FastCachingTetrahedralMesh, FastCachingTetrahedralMeshField }
+import scalismo.ui.rendering.Caches.FastCachingTetrahedralMesh
 import scalismo.ui.rendering.actor.TetrahedralActor.TetrahedralRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
@@ -186,16 +186,8 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
-    if (template.isEmpty) {
-      unstructuredgrid = TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh)
-    }
-    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(FastCachingTetrahedralMeshField(renderable.field), TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field))
+    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(renderable.field, TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field))
   }
-
-  onInstantiated()
-
-  rerender(geometryChanged = true)
-
 }
 
 abstract class TetrahedralActor3D[R <: TetrahedralRenderable](override val renderable: R) extends TetrahedralActor[R] {
