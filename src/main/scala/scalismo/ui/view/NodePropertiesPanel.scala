@@ -25,7 +25,6 @@ import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged
 import scalismo.ui.view.properties._
 import scalismo.ui.view.util.CardPanel
-
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
 import scala.swing.{ BorderPanel, Component, ScrollPane }
@@ -43,6 +42,7 @@ object NodePropertiesPanel {
       props += OpacityPropertyPanel
       props += RadiusPropertyPanel
       props += LineWidthPropertyPanel
+      props += ColorSchemePropertyPanel
 
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
     }

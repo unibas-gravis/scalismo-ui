@@ -37,10 +37,6 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   private var targets: List[HasScalarRange] = Nil
 
-  private var min: Float = 0
-  private var max: Float = 100
-  private var step: Float = 1
-
   override def description: String = "ColorScheme"
 
   val items = Array("Blue-Red", "Black-White", "White-Black")
@@ -61,10 +57,6 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
     deafTo(dropDown)
   }
 
-  def fromSliderValue(v: Int): Float = {
-    v * step + min
-  }
-
   def updateColorMapping() {
     if (dropDown.item == items(0)) {
       targets.foreach(t => {
@@ -79,18 +71,8 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
         t.scalarRange.colorMapping = WhiteToBlackMapping
       })
     }
-    val (fMin, fMax) = (fromSliderValue(targets.head.scalarRange.value.cappedMinimum.toInt), fromSliderValue(targets.head.scalarRange.value.cappedMaximum.toInt))
-    targets.foreach(t => t.scalarRange.value = t.scalarRange.value.copy(cappedMinimum = fMin, cappedMaximum = fMax))
-  }
 
-  def updateUi(): Unit = {
-    deafToOwnEvents()
-    targets.foreach { t =>
-      min = t.scalarRange.value.absoluteMinimum
-      max = t.scalarRange.value.absoluteMaximum
-      step = (max - min) / 100.0f
-    }
-    listenToOwnEvents()
+    targets.foreach(t => t.scalarRange.value = t.scalarRange.value.copy())
   }
 
   override def setNodes(nodes: List[SceneNode]): Boolean = {
@@ -99,7 +81,6 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head.scalarRange)
-      updateUi()
       true
     } else false
   }
@@ -116,8 +97,4 @@ class ColorSchemePropertyPanel(override val frame: ScalismoFrame) extends Border
     }
     layout(dropDownPanel) = BorderPanel.Position.Center
   }) = BorderPanel.Position.North
-
-  reactions += {
-    case NodeProperty.event.PropertyChanged(_) => updateUi()
-  }
 }
