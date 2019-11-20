@@ -51,7 +51,7 @@ class TetrahedralMeshesNode(override val parent: GroupNode) extends SceneNodeCol
 }
 
 class TetrahedralMeshNode(override val parent: TetrahedralMeshesNode, override val source: TetrahedralMesh3D, initialName: String)
-    extends Transformable[TetrahedralMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with HasColor with Saveable {
+    extends Transformable[TetrahedralMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with HasColor with Saveable with HasPickable {
   name = initialName
 
   override def group: GroupNode = parent.parent
@@ -72,6 +72,8 @@ class TetrahedralMeshNode(override val parent: TetrahedralMeshesNode, override v
   override val lineWidth = new LineWidthProperty()
 
   override val color = new ColorProperty()
+
+  override val pickable = new PickableProperty()
 
   override def save(file: File): Try[Unit] = MeshIO.writeTetrahedralMesh(transformedSource, file)
 
