@@ -169,9 +169,11 @@ trait TetrahedralActor[R <: TetrahedralRenderable] extends SingleDataSetActor wi
 
 }
 
-trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.TetrahedralMeshRenderable] {
+trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.TetrahedralMeshRenderable] with ActorColor {
 
   override def renderable: TetrahedralRenderable.TetrahedralMeshRenderable
+
+  override def color: ColorProperty = renderable.color
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
     Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh), TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh))
