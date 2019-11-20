@@ -50,7 +50,10 @@ class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode) extends Sc
   }
 }
 
-class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshFieldsNode, override val source: ScalarVolumeMeshField[Float], initialName: String) extends Transformable[ScalarVolumeMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
+class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshFieldsNode, override val source: ScalarVolumeMeshField[Float], initialName: String)
+    extends Transformable[ScalarVolumeMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable
+    with HasOpacity with HasLineWidth with HasScalarRange {
+
   name = initialName
 
   override val opacity = new OpacityProperty()
