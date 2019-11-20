@@ -284,7 +284,7 @@ object TetrahedralMeshView {
   implicit object callbacksTetrahedralMeshView extends HandleCallback[TetrahedralMeshView] {
 
     override def registerOnAdd[R](g: Group, f: TetrahedralMeshView => R): Unit = {
-      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.listenTo(g.peer.tetrahedralMeshes)
       g.peer.reactions += {
         case ChildAdded(_, newNode: TetrahedralMeshNode) =>
           val tmv = TetrahedralMeshView(newNode)
@@ -293,7 +293,7 @@ object TetrahedralMeshView {
     }
 
     override def registerOnRemove[R](g: Group, f: TetrahedralMeshView => R): Unit = {
-      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.listenTo(g.peer.tetrahedralMeshes)
       g.peer.reactions += {
         case ChildRemoved(_, removedNode: TetrahedralMeshNode) =>
           val tmv = TetrahedralMeshView(removedNode)
@@ -339,7 +339,7 @@ object ScalarTetrahedralMeshFieldView {
   implicit object callbacksScalarTetrahedralMeshFieldView extends HandleCallback[ScalarTetrahedralMeshFieldView] {
 
     override def registerOnAdd[R](g: Group, f: ScalarTetrahedralMeshFieldView => R): Unit = {
-      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.listenTo(g.peer.tetrahedralMeshFields)
       g.peer.reactions += {
         case ChildAdded(_, newNode: ScalarTetrahedralMeshFieldNode) =>
           val tmv = ScalarTetrahedralMeshFieldView(newNode)
@@ -348,7 +348,7 @@ object ScalarTetrahedralMeshFieldView {
     }
 
     override def registerOnRemove[R](g: Group, f: ScalarTetrahedralMeshFieldView => R): Unit = {
-      g.peer.listenTo(g.peer.triangleMeshes)
+      g.peer.listenTo(g.peer.tetrahedralMeshFields)
       g.peer.reactions += {
         case ChildRemoved(_, removedNode: ScalarTetrahedralMeshFieldNode) =>
           val tmv = ScalarTetrahedralMeshFieldView(removedNode)
