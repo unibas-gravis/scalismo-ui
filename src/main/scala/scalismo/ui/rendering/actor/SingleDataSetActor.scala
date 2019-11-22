@@ -17,4 +17,5 @@
 
 package scalismo.ui.rendering.actor
 
-trait SinglePolyDataActor extends PolyDataActor with SingleActor
+trait SingleDataSetActor extends DataSetActor with SingleActor
+

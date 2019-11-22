@@ -20,9 +20,9 @@ package scalismo.ui.api
 import scalismo.common._
 import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh._
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel, StatisticalVolumeMeshModel }
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -82,6 +82,28 @@ object ShowInScene extends LowPriorityImplicits {
     override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
 
       VertexColorMeshView(group.peer.colorMeshes.add(mesh, name))
+    }
+  }
+
+  implicit def ShowTetrahedralMesh: ShowInScene[TetrahedralMesh[_3D]] {
+    type View = TetrahedralMeshView
+  } = new ShowInScene[TetrahedralMesh[_3D]] {
+    override type View = TetrahedralMeshView
+
+    override def showInScene(mesh: TetrahedralMesh[_3D], name: String, group: Group): TetrahedralMeshView = {
+      TetrahedralMeshView(group.peer.tetrahedralMeshes.add(mesh, name))
+    }
+  }
+
+  implicit def ShowTetrahedralMeshScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarVolumeMeshField[S]] {
+    type View = ScalarTetrahedralMeshFieldView
+  } = new ShowInScene[ScalarVolumeMeshField[S]] {
+    override type View = ScalarTetrahedralMeshFieldView
+
+    override def showInScene(mesh: ScalarVolumeMeshField[S], name: String, group: Group): ScalarTetrahedralMeshFieldView = {
+      val scalarConv = implicitly[Scalar[S]]
+      val smfAsFloat = mesh.copy(data = mesh.data.map[Float](x => scalarConv.toFloat(x)))
+      ScalarTetrahedralMeshFieldView(group.peer.tetrahedralMeshFields.add(smfAsFloat, name))
     }
   }
 
@@ -177,6 +199,19 @@ object ShowInScene extends LowPriorityImplicits {
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group)
       StatisticalMeshModelViewControls(tmV, smV)
+
+    }
+  }
+
+  implicit object ShowInSceneStatisticalVolumeMeshModel extends ShowInScene[StatisticalVolumeMeshModel] {
+    type View = StatisticalVolumeMeshModelViewControls
+
+    override def showInScene(model: StatisticalVolumeMeshModel, name: String, group: Group): View = {
+
+      val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
+      val tmV = ShowTetrahedralMesh.showInScene(model.referenceVolumeMesh, name, group)
+      StatisticalVolumeMeshModelViewControls(tmV, smV)
 
     }
   }

@@ -43,6 +43,7 @@ object PopupAction {
     AddRigidTransformationAction,
     GroupDelegatingAction,
     LoadStatisticalShapeModelAction,
+    LoadStatisticalVolumeMeshModelAction,
     LoadLoadableAction,
     SaveSaveableAction,
     SaveLandmarksAction,

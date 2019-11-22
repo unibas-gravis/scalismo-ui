@@ -63,6 +63,8 @@ object NodesPanel {
           case _: Scene => Some(BundledIcon.Scene)
           case _: GroupNode => Some(BundledIcon.Group)
           case n: TriangleMeshNode => Some(BundledIcon.Mesh.colored(n.color.value.darker))
+          case n: TetrahedralMeshNode => Some(BundledIcon.VolumeMesh.colored(n.color.value.darker))
+          case _: ScalarTetrahedralMeshFieldNode => Some(BundledIcon.VolumeMesh.colored(FontIcon.RainbowColor))
           case n: PointCloudNode => Some(BundledIcon.PointCloud.colored(n.color.value.darker))
           case n: LandmarkNode => Some(BundledIcon.Landmark.colored(n.color.value.darker))
           case _: ScalarMeshFieldNode => Some(BundledIcon.Mesh.colored(FontIcon.RainbowColor))

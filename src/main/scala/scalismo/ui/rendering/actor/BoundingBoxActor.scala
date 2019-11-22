@@ -37,7 +37,7 @@ object BoundingBoxActor extends SimpleActorsFactory[SlicingPosition.renderable.B
   }
 }
 
-class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor with Actors with ActorEvents {
+class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends DataSetActor with Actors with ActorEvents {
   // this actor is displaying the bounding box, but doesn't "have" one itself (i.e., doesn't affect it).
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
@@ -101,7 +101,7 @@ object BoundingBoxActor2D {
   }
 }
 
-trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
+trait BoundingBoxActor2D extends DataSetActor with ActorEvents {
 
   def slicingPosition: SlicingPosition
 
@@ -168,7 +168,7 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 }
 
 // this class draws the intersection line for a particular axis in a BoundingBoxActor2D
-class BoundingBoxIntersectionActor(axis: Axis) extends PolyDataActor {
+class BoundingBoxIntersectionActor(axis: Axis) extends DataSetActor {
   def update(bb: BoundingBox, point: Point3D, overrideIndex: Int, overrideValue: Double): Unit = {
     val min = Array(bb.xMin, bb.yMin, bb.zMin)
     val max = Array(bb.xMax, bb.yMax, bb.zMax)
