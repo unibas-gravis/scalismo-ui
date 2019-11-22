@@ -17,10 +17,6 @@
 
 package scalismo.ui.model.properties
 
-object ScalarRangeProperty {
-  val DefaultValue: ScalarRange = ScalarRange(0, 1)
-}
-
 class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[ScalarRange](initialValue) {
 
   override protected def sanitize(newValue: ScalarRange): ScalarRange = {

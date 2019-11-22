@@ -32,6 +32,7 @@ object ColorMappingPropertyPanel extends PropertyPanel.Factory {
   }
 
   // this is a var so users can override it, if needed.
+  //noinspection VarCouldBeVal (shut up IntelliJ IDEA warnings)
   var StandardMappings: List[ColorMapping] = List(ColorMapping.BlueToRed, ColorMapping.BlackToWhite, ColorMapping.WhiteToBlack)
 }
 
