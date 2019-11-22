@@ -38,11 +38,11 @@ object NodePropertiesPanel {
       val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
       props += WindowLevelPropertyPanel
       props += ColorPropertyPanel
+      props += ColorMappingPropertyPanel
       props += ScalarRangePropertyPanel
       props += OpacityPropertyPanel
       props += RadiusPropertyPanel
       props += LineWidthPropertyPanel
-      props += ColorSchemePropertyPanel
 
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
     }

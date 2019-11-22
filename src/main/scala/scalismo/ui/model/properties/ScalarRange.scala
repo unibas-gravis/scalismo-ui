@@ -17,5 +17,21 @@
 
 package scalismo.ui.model.properties
 
-//FIXME: document what these values mean
-case class ScalarRange(absoluteMinimum: Float, absoluteMaximum: Float, cappedMinimum: Float, cappedMaximum: Float)
+/**
+ * Scalar range - used for the visualization of ranges of scalar values.
+ *
+ * @param domainMinimum minimum value present in the data.
+ * @param domainMaximum maximum value present in the data.
+ * @param mappedMinimum minimum value for color mapping. This, and values below, will be mapped to the lower color.
+ * @param mappedMaximum maximum value for color mapping. This, and values above, will be mapped to the upper color.
+ * @param colorMapping  color mapping.
+ */
+case class ScalarRange(domainMinimum: Float, domainMaximum: Float, mappedMinimum: Float, mappedMaximum: Float, colorMapping: ColorMapping) {
+}
+
+object ScalarRange {
+  // convenience constructor
+  def apply(domainMinimum: Float, domainMaximum: Float, colorMapping: ColorMapping = ColorMapping.Default): ScalarRange = {
+    ScalarRange(domainMinimum, domainMaximum, domainMinimum, domainMaximum, colorMapping)
+  }
+}

@@ -30,18 +30,20 @@ trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
   }
 
   private def setAppearance(): Unit = {
-    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+    val range = scalarRange.value
 
-    val lowerValue = scalarRange.value.cappedMinimum
-    val upperValue = scalarRange.value.cappedMaximum
-    val colorMappingFunction = scalarRange.colorMapping.mappingFunction(scalarRange.scalarRange)
+    mapper.SetScalarRange(range.mappedMinimum, range.mappedMaximum)
+
+    val lowerValue = range.mappedMinimum
+    val upperValue = range.mappedMaximum
+    val colorMappingFunction = range.colorMapping.mappingFunction(range)
 
     val colorTransferFun = new vtk.vtkColorTransferFunction()
     colorTransferFun.SetRange(lowerValue, upperValue)
     colorTransferFun.SetScaleToLinear()
     colorTransferFun.SetColorSpaceToRGB()
-    val step: Double = (upperValue - lowerValue) / scalarRange.colorMapping.suggestedNumberOfColors
-    for (i <- 0 until scalarRange.colorMapping.suggestedNumberOfColors) {
+    val step: Double = (upperValue - lowerValue) / range.colorMapping.suggestedNumberOfColors
+    for (i <- 0 until range.colorMapping.suggestedNumberOfColors) {
       val value = lowerValue + i * step
       val color = colorMappingFunction(value)
       colorTransferFun.AddRGBPoint(value, color.getRed / 255.0, color.getGreen / 255.0, color.getBlue / 255.0)

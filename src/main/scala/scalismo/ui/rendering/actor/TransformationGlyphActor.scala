@@ -18,7 +18,6 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.ui.model.TransformationGlyphNode
-import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
 import scalismo.ui.model.properties.ScalarRange
 import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
 import vtk.vtkFloatArray
@@ -63,8 +62,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
     polydata.GetPointData().SetScalars(scalars)
 
     if (geometryChanged) {
-      scalarRange.value = ScalarRange(minNorm.toFloat, maxNorm.toFloat, minNorm.toFloat, maxNorm.toFloat)
-      publishEvent(PropertyChanged(scalarRange))
+      scalarRange.value = ScalarRange(minNorm.toFloat, maxNorm.toFloat, scalarRange.value.colorMapping)
     }
 
     arrow.Modified()

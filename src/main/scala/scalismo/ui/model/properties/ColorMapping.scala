@@ -24,43 +24,55 @@ import scalismo.color.RGB
 /** Maps a range of values, determined by a lower and upper value to a color */
 trait ColorMapping {
 
-  var lowerColor: Color
+  type ValueToColorFunction = Double => Color
 
-  var upperColor: Color
+  def lowerColor: Color
 
-  def mappingFunction(scalarRange: ScalarRange): (Double => Color)
+  def upperColor: Color
+
+  def mappingFunction(scalarRange: ScalarRange): ValueToColorFunction
 
   def suggestedNumberOfColors: Int
+
+  def description: String
+
+  // needed for the UI to display the description
+  override def toString: String = description
 }
 
-private[properties] case class LinearColorMapping(lColor: Color, uColor: Color) extends ColorMapping {
+object ColorMapping {
 
-  override var lowerColor: Color = lColor
-  override var upperColor: Color = uColor
+  case class LinearColorMapping(override val lowerColor: Color, override val upperColor: Color, override val description: String) extends ColorMapping {
 
-  override def mappingFunction(scalarRange: ScalarRange): (Double => Color) = {
-    value =>
-      {
+    override def mappingFunction(scalarRange: ScalarRange): ValueToColorFunction = {
+      value =>
+        {
 
-        val lowerValue = scalarRange.cappedMinimum
-        val upperValue = scalarRange.cappedMaximum
-        if (value < lowerValue) lColor
-        else if (value > upperValue) uColor
-        else {
-          val s = (value - lowerValue) / (upperValue - lowerValue)
-          val newColor = (RGB(uColor) - RGB(lColor)) * s + RGB(lColor)
-          newColor.toAWTColor
+          val lowerLimit = scalarRange.mappedMinimum
+          val upperLimit = scalarRange.mappedMaximum
+
+          // edge case: upperLimit=lowerLimit would result in division by 0 in the else branch,
+          // so we explicitly defuse that by using <= and >= instead of < and >.
+          if (value <= lowerLimit) lowerColor
+          else if (value >= upperLimit) upperColor
+          else {
+            val s = (value - lowerLimit) / (upperLimit - lowerLimit)
+            val newColor = (RGB(upperColor) - RGB(lowerColor)) * s + RGB(lowerColor)
+            newColor.toAWTColor
+          }
         }
-      }
+    }
+
+    override val suggestedNumberOfColors = 100
+
   }
 
-  override val suggestedNumberOfColors = 100
+  val BlueToRed = LinearColorMapping(Color.BLUE, Color.RED, "Blue-Red")
 
+  val BlackToWhite = LinearColorMapping(Color.BLACK, Color.WHITE, "Black-White")
+
+  val WhiteToBlack = LinearColorMapping(Color.WHITE, Color.BLACK, "White-Black")
+
+  val Default: ColorMapping = BlueToRed
 }
-
-object BlueToRedColorMapping extends LinearColorMapping(Color.BLUE, Color.RED)
-
-object BlackToWhiteMapping extends LinearColorMapping(Color.BLACK, Color.WHITE)
-
-object WhiteToBlackMapping extends LinearColorMapping(Color.WHITE, Color.BLACK)
 

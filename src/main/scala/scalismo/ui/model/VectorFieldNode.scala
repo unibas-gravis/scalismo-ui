@@ -61,7 +61,7 @@ class VectorFieldNode(
       val norms = vectors.map(_.norm)
       (norms.min.toFloat, norms.max.toFloat)
     }
-    new ScalarRangeProperty(ScalarRange(min, max, min, max))
+    new ScalarRangeProperty(ScalarRange(min, max))
   }
 
   override def group: GroupNode = parent.parent
