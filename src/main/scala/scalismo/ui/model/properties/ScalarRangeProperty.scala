@@ -17,22 +17,17 @@
 
 package scalismo.ui.model.properties
 
-object ScalarRangeProperty {
-  val DefaultValue: ScalarRange = ScalarRange(0, 1, 0, 1)
-}
-
 class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[ScalarRange](initialValue) {
-  def this() = this(ScalarRangeProperty.DefaultValue)
 
   override protected def sanitize(newValue: ScalarRange): ScalarRange = {
-    if (newValue.absoluteMaximum < newValue.absoluteMinimum) {
-      sanitize(newValue.copy(absoluteMaximum = newValue.absoluteMinimum))
-    } else if (newValue.cappedMaximum > newValue.absoluteMaximum) {
-      sanitize(newValue.copy(cappedMaximum = newValue.absoluteMaximum))
-    } else if (newValue.cappedMinimum < newValue.absoluteMinimum) {
-      sanitize(newValue.copy(cappedMinimum = newValue.absoluteMinimum))
-    } else if (newValue.cappedMaximum < newValue.cappedMinimum) {
-      sanitize(newValue.copy(cappedMinimum = newValue.cappedMaximum))
+    if (newValue.domainMaximum < newValue.domainMinimum) {
+      sanitize(newValue.copy(domainMaximum = newValue.domainMinimum))
+    } else if (newValue.mappedMaximum > newValue.domainMaximum) {
+      sanitize(newValue.copy(mappedMaximum = newValue.domainMaximum))
+    } else if (newValue.mappedMinimum < newValue.domainMinimum) {
+      sanitize(newValue.copy(mappedMinimum = newValue.domainMinimum))
+    } else if (newValue.mappedMaximum < newValue.mappedMinimum) {
+      sanitize(newValue.copy(mappedMinimum = newValue.mappedMaximum))
     } else newValue
   }
 }
@@ -40,3 +35,4 @@ class ScalarRangeProperty(initialValue: ScalarRange) extends NodeProperty[Scalar
 trait HasScalarRange {
   def scalarRange: ScalarRangeProperty
 }
+

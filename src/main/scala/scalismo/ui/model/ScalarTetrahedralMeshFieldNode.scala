@@ -59,8 +59,7 @@ class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshF
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
   override val scalarRange: ScalarRangeProperty = {
-    val (min, max) = (source.values.min, source.values.max)
-    new ScalarRangeProperty(ScalarRange(min, max, min, max))
+    new ScalarRangeProperty(ScalarRange(source.values.min, source.values.max))
   }
 
   override def group: GroupNode = parent.parent

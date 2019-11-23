@@ -18,7 +18,7 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SingleDataSetActor } //SinglePolyDataActor }
+import scalismo.ui.rendering.actor.{ ActorEvents, SingleDataSetActor }
 
 trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
   def scalarRange: ScalarRangeProperty
@@ -30,7 +30,26 @@ trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
   }
 
   private def setAppearance(): Unit = {
-    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+    val range = scalarRange.value
+
+    mapper.SetScalarRange(range.mappedMinimum, range.mappedMaximum)
+
+    val lowerValue = range.mappedMinimum
+    val upperValue = range.mappedMaximum
+    val colorMappingFunction = range.colorMapping.mappingFunction(range)
+
+    val colorTransferFun = new vtk.vtkColorTransferFunction()
+    colorTransferFun.SetRange(lowerValue, upperValue)
+    colorTransferFun.SetScaleToLinear()
+    colorTransferFun.SetColorSpaceToRGB()
+    val step: Double = (upperValue - lowerValue) / range.colorMapping.suggestedNumberOfColors
+    for (i <- 0 until range.colorMapping.suggestedNumberOfColors) {
+      val value = lowerValue + i * step
+      val color = colorMappingFunction(value)
+      colorTransferFun.AddRGBPoint(value, color.getRed / 255.0, color.getGreen / 255.0, color.getBlue / 255.0)
+    }
+
+    mapper.SetLookupTable(colorTransferFun)
     mapper.Modified()
     actorChanged()
   }
