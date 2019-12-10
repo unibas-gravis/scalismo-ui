@@ -35,7 +35,7 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
-import scalismo.mesh.{ ScalarVolumeMeshField, TetrahedralMesh }
+import scalismo.mesh.{ScalarVolumeMeshField, TetrahedralMesh}
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
@@ -44,8 +44,8 @@ import scalismo.ui.rendering.Caches.FastCachingTetrahedralMesh
 import scalismo.ui.rendering.actor.TetrahedralActor.TetrahedralRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
-import scalismo.utils.TetrahedralMeshConversion
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import scalismo.utils.{MeshConversion, TetrahedralMeshConversion}
 import vtk.vtkUnstructuredGrid
 
 object TetrahedralMeshActor extends SimpleActorsFactory[TetrahedralMeshNode] {
@@ -136,7 +136,7 @@ trait TetrahedralActor[R <: TetrahedralRenderable] extends SingleDataSetActor wi
 
   protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
-      unstructuredgrid = meshToUnstructuredGrid(None)
+      unstructuredgrid = meshToUnstructuredGrid(Some(unstructuredgrid))
       onGeometryChanged()
     }
 
@@ -176,7 +176,8 @@ trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.Tetrah
   override def color: ColorProperty = renderable.color
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
-    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh), TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh))
+    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh),
+      TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh, template))
 
   }
 }
@@ -188,7 +189,10 @@ trait TetrahedralMeshScalarFieldActor extends TetrahedralActor[TetrahedralRender
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
-    Caches.ScalarTetrahedralMeshFieldCache.getOrCreate(renderable.field, TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field))
+    Caches.ScalarTetrahedralMeshFieldCache
+      .getOrCreate(renderable.field,
+        TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field, template)
+      )
   }
 }
 

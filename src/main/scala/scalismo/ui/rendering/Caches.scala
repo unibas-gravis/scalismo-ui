@@ -42,7 +42,7 @@ object Caches {
 
   case class FastCachingTetrahedralMesh(mesh: TetrahedralMesh3D) {
     override lazy val hashCode: Int =
-      (31 + mesh.pointSet.hashCode()) * (31 + mesh.tetrahedralization.hashCode()) //* 31 + mesh.color.hashCode())
+      (31 + mesh.pointSet.hashCode()) * (31 + mesh.tetrahedralization.hashCode())
   }
 
   final val TriangleMeshCache = new Cache[FastCachingTriangleMesh, vtkPolyData]
