@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.action.ShowAboutDialogAction
 
 import scala.swing.event.Key
-import scala.swing.{ Menu, MenuItem }
+import scala.swing.{Menu, MenuItem}
 
 class HelpMenu extends Menu("Help") {
   mnemonic = Key.H
@@ -34,4 +34,3 @@ object HelpMenu {
   }
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,9 @@ object Uncertainty {
   var DefaultUncertainty: Uncertainty = Uncertainty(DefaultAxes, DefaultSigmas)
 
   def apply(distribution: MultivariateNormalDistribution): Uncertainty = {
-    val (axes, sigmas) = distribution.principalComponents.toList.map { case (a, v) => (parametricToConcrete3D(EuclideanVector[_3D](a.toArray)), Math.sqrt(v)) }.unzip
+    val (axes, sigmas) = distribution.principalComponents.toList.map {
+      case (a, v) => (parametricToConcrete3D(EuclideanVector[_3D](a.toArray)), Math.sqrt(v))
+    }.unzip
     Uncertainty(axes, sigmas)
   }
 }
@@ -58,7 +60,9 @@ case class Uncertainty(axes: List[EuclideanVector3D], sigmas: List[Double]) {
     val candidate = SquareMatrix[_3D](axes.flatMap(_.toArray).toArray)
     if (breeze.linalg.det(candidate.toBreezeMatrix) < 0) {
       // improper rotation matrix
-      SquareMatrix(candidate.data.map { f => -f })
+      SquareMatrix(candidate.data.map { f =>
+        -f
+      })
     } else candidate
   }
 }

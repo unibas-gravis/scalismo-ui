@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.{ Axis, BoundingBox }
+import scalismo.ui.model.{Axis, BoundingBox}
 import scalismo.ui.view.ViewportPanel2D
-import vtk.{ vtkCutter, vtkPlane }
+import vtk.{vtkCutter, vtkPlane}
 
 abstract class SlicingActor(val viewport: ViewportPanel2D) extends SingleDataSetActor with ActorEvents {
 

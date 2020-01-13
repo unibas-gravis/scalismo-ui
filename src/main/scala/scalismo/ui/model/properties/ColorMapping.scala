@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,25 +42,27 @@ trait ColorMapping {
 
 object ColorMapping {
 
-  case class LinearColorMapping(override val lowerColor: Color, override val upperColor: Color, override val description: String) extends ColorMapping {
+  case class LinearColorMapping(override val lowerColor: Color,
+                                override val upperColor: Color,
+                                override val description: String)
+      extends ColorMapping {
 
-    override def mappingFunction(scalarRange: ScalarRange): ValueToColorFunction = {
-      value =>
-        {
+    override def mappingFunction(scalarRange: ScalarRange): ValueToColorFunction = { value =>
+      {
 
-          val lowerLimit = scalarRange.mappedMinimum
-          val upperLimit = scalarRange.mappedMaximum
+        val lowerLimit = scalarRange.mappedMinimum
+        val upperLimit = scalarRange.mappedMaximum
 
-          // edge case: upperLimit=lowerLimit would result in division by 0 in the else branch,
-          // so we explicitly defuse that by using <= and >= instead of < and >.
-          if (value <= lowerLimit) lowerColor
-          else if (value >= upperLimit) upperColor
-          else {
-            val s = (value - lowerLimit) / (upperLimit - lowerLimit)
-            val newColor = (RGB(upperColor) - RGB(lowerColor)) * s + RGB(lowerColor)
-            newColor.toAWTColor
-          }
+        // edge case: upperLimit=lowerLimit would result in division by 0 in the else branch,
+        // so we explicitly defuse that by using <= and >= instead of < and >.
+        if (value <= lowerLimit) lowerColor
+        else if (value >= upperLimit) upperColor
+        else {
+          val s = (value - lowerLimit) / (upperLimit - lowerLimit)
+          val newColor = (RGB(upperColor) - RGB(lowerColor)) * s + RGB(lowerColor)
+          newColor.toAWTColor
         }
+      }
     }
 
     override val suggestedNumberOfColors = 100
@@ -75,4 +77,3 @@ object ColorMapping {
 
   val Default: ColorMapping = BlueToRed
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
 
 package scalismo.ui.rendering.internal
 
-import java.awt.{ Component, Point }
+import java.awt.{Component, Point}
 
-import scalismo.geometry.{ Point3D, _3D }
-import scalismo.ui.model.{ Axis, SceneNode }
+import scalismo.geometry.{_3D, Point3D}
+import scalismo.ui.model.{Axis, SceneNode}
 import scalismo.ui.rendering.RendererState
 import scalismo.ui.rendering.RendererState.PointAndNode
-import scalismo.ui.rendering.actor.mixin.{ ActorLineWidth, ActorSceneNode }
+import scalismo.ui.rendering.actor.mixin.{ActorLineWidth, ActorSceneNode}
 import scalismo.ui.rendering.internal.CoordinateAdapter.VtkPoint
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D}
 import vtk._
 
 class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel) extends RendererState {
@@ -41,7 +41,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
 
   lazy val axis: Option[Axis] = viewport match {
     case _2d: ViewportPanel2D => Some(_2d.axis)
-    case _ => None
+    case _                    => None
   }
 
   def setSize(width: Int, height: Int, panel: Component): Unit = {
@@ -68,7 +68,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
       (0 until count) foreach { _ =>
         actors.GetNextActor() match {
           case ok: ActorSceneNode with ActorLineWidth if ok.sceneNode == node => return Some(ok)
-          case _ =>
+          case _                                                              =>
         }
       }
     }
@@ -83,7 +83,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
   def propToNode(prop: vtkProp3D): Option[SceneNode] = {
     prop match {
       case n: ActorSceneNode => Some(n.sceneNode)
-      case _ => None
+      case _                 => None
     }
   }
 
@@ -111,7 +111,7 @@ class RendererStateImplementation(renderer: vtkRenderer, viewport: ViewportPanel
         case Some(Axis.X) => array(0) = viewport.frame.sceneControl.slicingPosition.x
         case Some(Axis.Y) => array(1) = viewport.frame.sceneControl.slicingPosition.y
         case Some(Axis.Z) => array(2) = viewport.frame.sceneControl.slicingPosition.z
-        case _ => //
+        case _            => //
       }
       // return None if the point found is not within the bounding box of the scene
       val pointOption = {

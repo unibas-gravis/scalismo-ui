@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry.{_3D, Point}
 
 /**
  * Represents a bounding box of a 3D object.
@@ -67,17 +67,32 @@ object BoundingBox {
     override def union(that: BoundingBox): BoundingBox = that
   }
 
-  case class Valid private[BoundingBox] (xMin: Double, xMax: Double, yMin: Double, yMax: Double, zMin: Double, zMax: Double) extends BoundingBox {
+  case class Valid private[BoundingBox] (xMin: Double,
+                                         xMax: Double,
+                                         yMin: Double,
+                                         yMax: Double,
+                                         zMin: Double,
+                                         zMax: Double)
+      extends BoundingBox {
 
     override def union(that: BoundingBox): BoundingBox = {
       if (that == Invalid) this
       else {
-        BoundingBox(Math.min(this.xMin, that.xMin), Math.max(this.xMax, that.xMax), Math.min(this.yMin, that.yMin), Math.max(this.yMax, that.yMax), Math.min(this.zMin, that.zMin), Math.max(this.zMax, that.zMax))
+        BoundingBox(
+          Math.min(this.xMin, that.xMin),
+          Math.max(this.xMax, that.xMax),
+          Math.min(this.yMin, that.yMin),
+          Math.max(this.yMax, that.yMax),
+          Math.min(this.zMin, that.zMin),
+          Math.max(this.zMax, that.zMax)
+        )
       }
     }
 
     override def contains(point: Point[_3D]): Boolean = {
-      xMin <= point(0) && xMax >= point(0) && yMin <= point(1) && yMax >= point(1) && zMin <= point(2) && zMax >= point(2)
+      xMin <= point(0) && xMax >= point(0) && yMin <= point(1) && yMax >= point(1) && zMin <= point(2) && zMax >= point(
+        2
+      )
     }
 
     override def center: Point[_3D] = Point((xMin + xMax) / 2, (yMin + yMax) / 2, (zMin + zMax) / 2)
@@ -91,4 +106,3 @@ object BoundingBox {
     if (xMin > xMax || yMin > yMax || zMin > zMax) Invalid else Valid(xMin, xMax, yMin, yMax, zMin, zMax)
   }
 }
-

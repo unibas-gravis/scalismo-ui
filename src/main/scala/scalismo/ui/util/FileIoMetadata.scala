@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ package scalismo.ui.util
  * information to UI elements like file choosers.
  */
 trait FileIoMetadata {
+
   /** The supported file extensions (no leading dots) */
   def fileExtensions: List[String]
 
@@ -101,4 +102,3 @@ object FileIoMetadata {
   }
 
 }
-

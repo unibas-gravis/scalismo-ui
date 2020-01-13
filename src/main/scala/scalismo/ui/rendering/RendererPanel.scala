@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,19 @@ import java.io.File
 
 import javax.imageio.ImageIO
 import scalismo.ui.control.BackgroundColor.event.BackgroundColorChanged
-import scalismo.ui.control.{ NodeVisibility, SlicingPosition }
+import scalismo.ui.control.{NodeVisibility, SlicingPosition}
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.{ Axis, BoundingBox, Renderable }
+import scalismo.ui.model.{Axis, BoundingBox, Renderable}
 import scalismo.ui.rendering.RendererPanel.Cameras
 import scalismo.ui.rendering.actor._
 import scalismo.ui.rendering.actor.mixin.IsImageActor
 import scalismo.ui.rendering.internal.RenderingComponent
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D}
 import vtk._
 
 import scala.collection.immutable
-import scala.swing.{ BorderPanel, Component }
+import scala.swing.{BorderPanel, Component}
 import scala.util.Try
 
 object RendererPanel {
@@ -158,18 +158,22 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       val obsolete = currentActors.filter(ra => !renderables.exists(_ eq ra.renderable))
 
       val missing = renderables.diff(currentActors.map(_.renderable))
-      val created = missing.map(r => new RenderableAndActors(r, ActorsFactory.factoryFor(r).flatMap(f => f.untypedActorsFor(r, viewport))))
+      val created = missing.map(r =>
+        new RenderableAndActors(r, ActorsFactory.factoryFor(r).flatMap(f => f.untypedActorsFor(r, viewport)))
+      )
 
       if (obsolete.nonEmpty) {
-        obsolete.foreach(ra => ra.vtkActors.foreach { actor =>
-          renderer.RemoveActor(actor)
-          actor match {
-            case dyn: ActorEvents =>
-              deafTo(dyn)
-              dyn.onDestroy()
-            case _ => // do nothing
+        obsolete.foreach(ra =>
+          ra.vtkActors.foreach { actor =>
+            renderer.RemoveActor(actor)
+            actor match {
+              case dyn: ActorEvents =>
+                deafTo(dyn)
+                dyn.onDestroy()
+              case _ => // do nothing
+            }
           }
-        })
+        )
         currentActors = currentActors diff obsolete
       }
 
@@ -177,7 +181,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
         created.foreach(_.vtkActors.foreach { actor =>
           actor match {
             case eventActor: ActorEvents => listenTo(eventActor)
-            case _ =>
+            case _                       =>
           }
           renderer.AddActor(actor)
         })
@@ -196,15 +200,17 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
           val count = actors.GetNumberOfItems()
           if (count > 1) {
             actors.InitTraversal()
-            (0 until count) map { _ => actors.GetNextActor() }
+            (0 until count) map { _ =>
+              actors.GetNextActor()
+            }
           } else immutable.IndexedSeq()
         }
 
         def prioritize(a1: vtkActor, a2: vtkActor): Boolean = {
           (a1, a2) match {
             case (_: IsImageActor, _: IsImageActor) => false
-            case (_: IsImageActor, _) => true
-            case (_, _) => false
+            case (_: IsImageActor, _)               => true
+            case (_, _)                             => false
           }
         }
 
@@ -285,7 +291,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
   listenTo(frame.scene, frame.sceneControl.nodeVisibility, frame.sceneControl.backgroundColor)
 
   reactions += {
-    case SceneChanged(_) if attached => updateAllActors()
+    case SceneChanged(_) if attached           => updateAllActors()
     case BackgroundColorChanged(_) if attached => updateBackgroundOnly()
     case ActorEvents.event.ActorChanged(_, actorGeometryChanged) if attached =>
       if (actorGeometryChanged) {
@@ -293,7 +299,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
       } else {
         render()
       }
-    case pc @ SlicingPosition.event.PointChanged(_, _, _) => slicingPositionChanged(pc)
+    case pc @ SlicingPosition.event.PointChanged(_, _, _)                                         => slicingPositionChanged(pc)
     case NodeVisibility.event.NodeVisibilityChanged(_, view) if attached && view == this.viewport => updateAllActors()
   }
 

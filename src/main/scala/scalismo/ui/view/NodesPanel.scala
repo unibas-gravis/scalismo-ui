@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,21 +19,21 @@ package scalismo.ui.view
 
 import java.awt.event._
 
-import javax.swing.event.{ TreeSelectionEvent, TreeSelectionListener }
+import javax.swing.event.{TreeSelectionEvent, TreeSelectionListener}
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
-import javax.swing.{ Icon, JPopupMenu, JTree }
+import javax.swing.{Icon, JPopupMenu, JTree}
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.{ CollapsableView, Removeable }
+import scalismo.ui.model.capabilities.{CollapsableView, Removeable}
 import scalismo.ui.model.properties.ColorProperty
-import scalismo.ui.resources.icons.{ BundledIcon, FontIcon, ScalableIcon }
+import scalismo.ui.resources.icons.{BundledIcon, FontIcon, ScalableIcon}
 import scalismo.ui.util.NodeListFilters
-import scalismo.ui.view.NodesPanel.{ SceneNodeCellRenderer, ViewNode }
-import scalismo.ui.view.action.popup.{ PopupAction, PopupActionWithOwnMenu }
+import scalismo.ui.view.NodesPanel.{SceneNodeCellRenderer, ViewNode}
+import scalismo.ui.view.action.popup.{PopupAction, PopupActionWithOwnMenu}
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable
-import scala.swing.{ BorderPanel, Component, ScrollPane }
+import scala.swing.{BorderPanel, Component, ScrollPane}
 import scala.util.Try
 
 object NodesPanel {
@@ -60,25 +60,25 @@ object NodesPanel {
       /* note: this uses the "closed" icon for leaves. */
       private def closedIcon(node: SceneNode): Option[ScalableIcon] = {
         node match {
-          case _: Scene => Some(BundledIcon.Scene)
-          case _: GroupNode => Some(BundledIcon.Group)
-          case n: TriangleMeshNode => Some(BundledIcon.Mesh.colored(n.color.value.darker))
-          case n: TetrahedralMeshNode => Some(BundledIcon.VolumeMesh.colored(n.color.value.darker))
+          case _: Scene                          => Some(BundledIcon.Scene)
+          case _: GroupNode                      => Some(BundledIcon.Group)
+          case n: TriangleMeshNode               => Some(BundledIcon.Mesh.colored(n.color.value.darker))
+          case n: TetrahedralMeshNode            => Some(BundledIcon.VolumeMesh.colored(n.color.value.darker))
           case _: ScalarTetrahedralMeshFieldNode => Some(BundledIcon.VolumeMesh.colored(FontIcon.RainbowColor))
-          case n: PointCloudNode => Some(BundledIcon.PointCloud.colored(n.color.value.darker))
-          case n: LandmarkNode => Some(BundledIcon.Landmark.colored(n.color.value.darker))
-          case _: ScalarMeshFieldNode => Some(BundledIcon.Mesh.colored(FontIcon.RainbowColor))
-          case _: ImageNode => Some(BundledIcon.Image)
-          case _: TransformationNode[_] => Some(BundledIcon.Transformation)
-          case _: SceneNodeCollection[_] => Some(BundledIcon.FolderClosed)
-          case _ => None
+          case n: PointCloudNode                 => Some(BundledIcon.PointCloud.colored(n.color.value.darker))
+          case n: LandmarkNode                   => Some(BundledIcon.Landmark.colored(n.color.value.darker))
+          case _: ScalarMeshFieldNode            => Some(BundledIcon.Mesh.colored(FontIcon.RainbowColor))
+          case _: ImageNode                      => Some(BundledIcon.Image)
+          case _: TransformationNode[_]          => Some(BundledIcon.Transformation)
+          case _: SceneNodeCollection[_]         => Some(BundledIcon.FolderClosed)
+          case _                                 => None
         }
       }
 
       private def openIcon(node: SceneNode): Option[ScalableIcon] = {
         node match {
           case _: SceneNodeCollection[_] => Some(BundledIcon.FolderOpen)
-          case _ => None
+          case _                         => None
         }
       }
 
@@ -92,7 +92,13 @@ object NodesPanel {
 
     private var recursingInGetRendererComponent = false
 
-    override def getTreeCellRendererComponent(tree: JTree, value: scala.Any, sel: Boolean, expanded: Boolean, leaf: Boolean, row: Int, hasFocus: Boolean): java.awt.Component = {
+    override def getTreeCellRendererComponent(tree: JTree,
+                                              value: scala.Any,
+                                              sel: Boolean,
+                                              expanded: Boolean,
+                                              leaf: Boolean,
+                                              row: Int,
+                                              hasFocus: Boolean): java.awt.Component = {
       val sceneNode = value.asInstanceOf[ViewNode].getUserObject
 
       Icons.forNode(sceneNode).apply()
@@ -159,7 +165,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
             val pop = new JPopupMenu()
             actions.foreach {
               case menu: PopupActionWithOwnMenu => pop.insert(menu.menuItem, pop.getComponentCount)
-              case a: PopupAction => pop.add(a.peer)
+              case a: PopupAction               => pop.add(a.peer)
             }
             pop.show(tree, x, y)
             // needed because otherwise the popup is sometimes (partly) hidden by the renderer window
@@ -224,7 +230,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
         currentNode.children().asScala.foreach { child =>
           findRecursive(child.asInstanceOf[ViewNode]) match {
             case found @ Some(_) => return found
-            case _ =>
+            case _               =>
           }
         }
         None
@@ -246,7 +252,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
   // currently selected nodes
   def getSelectedSceneNodes: List[SceneNode] = {
     tree.getSelectionPaths match {
-      case null => Nil
+      case null  => Nil
       case paths => paths.toList.map(pathToSceneNode).collect(definedOnly)
     }
   }
@@ -264,7 +270,7 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     // try to force the tree to invalidate cached node sizes
     tree.getUI match {
       case ui: BasicTreeUI => ui.setLeftChildIndent(ui.getLeftChildIndent)
-      case _ => //don't know how to handle
+      case _               => //don't know how to handle
     }
     tree.treeDidChange()
     if (preferredSize.width > size.width) {
@@ -292,8 +298,8 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     def nodeOrChildrenIfCollapsed(node: SceneNode): Seq[SceneNode] = {
       node match {
         case c: CollapsableView if c.isViewCollapsed => node.children.flatMap(nodeOrChildrenIfCollapsed)
-        case group: GroupNode if group.hidden => Nil
-        case _ => List(node)
+        case group: GroupNode if group.hidden        => Nil
+        case _                                       => List(node)
       }
     }
 
@@ -301,9 +307,11 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
 
     // remove (obsolete) children that are in view, but not in model
     // Note: don't replace the exists with contains: we're using object identity, not "normal" equality
-    viewChildren.filterNot({
-      n => modelChildren.exists(_ eq n.getUserObject)
-    }).foreach(treeModel.removeNodeFromParent(_))
+    viewChildren
+      .filterNot({ n =>
+        modelChildren.exists(_ eq n.getUserObject)
+      })
+      .foreach(treeModel.removeNodeFromParent(_))
 
     val existingNodesInView = viewChildren.map(_.getUserObject)
 
@@ -335,8 +343,8 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
   listenTo(scene, frame, ColorProperty)
 
   reactions += {
-    case ScalismoFrame.event.SelectedNodesChanged(_) => setSelectedSceneNodes(frame.selectedNodes)
-    case Scene.event.SceneChanged(_) => synchronizeWholeTree()
+    case ScalismoFrame.event.SelectedNodesChanged(_)  => setSelectedSceneNodes(frame.selectedNodes)
+    case Scene.event.SceneChanged(_)                  => synchronizeWholeTree()
     case ColorProperty.event.SomeColorPropertyChanged => repaintTree()
   }
 

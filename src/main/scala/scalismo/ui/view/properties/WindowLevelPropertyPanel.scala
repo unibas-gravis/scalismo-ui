@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,9 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 
 import javax.swing.border.TitledBorder
-import javax.swing.{ BorderFactory, JComponent }
+import javax.swing.{BorderFactory, JComponent}
 import scalismo.ui.model.properties.NodeProperty
-import scalismo.ui.model.{ ImageNode, SceneNode }
+import scalismo.ui.model.{ImageNode, SceneNode}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.properties.WindowLevelPropertyPanel.Showit
 import scalismo.ui.view.util.FancySlider
@@ -174,14 +174,16 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
   }
 
   reactions += {
-    case ValueChanged(s: Slider) if s eq windowSlider => targets.foreach { n =>
-      val updated = n.windowLevel.value.copy(window = windowSlider.value)
-      n.windowLevel.value = updated
-    }
-    case ValueChanged(s: Slider) if s eq levelSlider => targets.foreach { n =>
-      val updated = n.windowLevel.value.copy(level = levelSlider.value)
-      n.windowLevel.value = updated
-    }
+    case ValueChanged(s: Slider) if s eq windowSlider =>
+      targets.foreach { n =>
+        val updated = n.windowLevel.value.copy(window = windowSlider.value)
+        n.windowLevel.value = updated
+      }
+    case ValueChanged(s: Slider) if s eq levelSlider =>
+      targets.foreach { n =>
+        val updated = n.windowLevel.value.copy(level = levelSlider.value)
+        n.windowLevel.value = updated
+      }
     case NodeProperty.event.PropertyChanged(_) => updateUi()
   }
 

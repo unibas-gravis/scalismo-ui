@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.{ Point3D, _3D }
+import scalismo.geometry.{_3D, Point3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TriangleMeshNode] with Loadable {
   override val name: String = "Triangle Meshes"
@@ -50,7 +50,18 @@ class TriangleMeshesNode(override val parent: GroupNode) extends SceneNodeCollec
   }
 }
 
-class TriangleMeshNode(override val parent: TriangleMeshesNode, override val source: TriangleMesh[_3D], initialName: String) extends Transformable[TriangleMesh[_3D]] with InverseTransformation with Saveable with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth with HasPickable {
+class TriangleMeshNode(override val parent: TriangleMeshesNode,
+                       override val source: TriangleMesh[_3D],
+                       initialName: String)
+    extends Transformable[TriangleMesh[_3D]]
+    with InverseTransformation
+    with Saveable
+    with Renameable
+    with Removeable
+    with HasColor
+    with HasOpacity
+    with HasLineWidth
+    with HasPickable {
   name = initialName
 
   override val color = new ColorProperty()
@@ -76,4 +87,3 @@ class TriangleMeshNode(override val parent: TriangleMeshesNode, override val sou
   override def remove(): Unit = parent.remove(this)
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.view
 
-import javax.swing.{ ToolTipManager, UIDefaults, UIManager }
+import javax.swing.{ToolTipManager, UIDefaults, UIManager}
 import scalismo.ui.view.util.ScalableUI
 
 import scala.util.Try
@@ -26,6 +26,7 @@ import scala.util.Try
  * Scalismo Look and Feel.
  */
 object ScalismoLookAndFeel {
+
   /**
    * The (class name of the) default look and feel. This is automatically determined,
    * in the following order of preference: Nimbus, then System, then cross-platform.
@@ -35,7 +36,11 @@ object ScalismoLookAndFeel {
 
     def system = UIManager.getSystemLookAndFeelClassName
 
-    Stream(nimbus, system).find { laf => Try(Class.forName(laf)).isSuccess }.getOrElse(UIManager.getCrossPlatformLookAndFeelClassName)
+    Stream(nimbus, system)
+      .find { laf =>
+        Try(Class.forName(laf)).isSuccess
+      }
+      .getOrElse(UIManager.getCrossPlatformLookAndFeelClassName)
   }
 
   // this is a hacky way to get an object that can be synchronized on, with a mutable value.
@@ -71,16 +76,17 @@ object ScalismoLookAndFeel {
   }
 
   /*
-  * It's not always clear whether setting the global defaults also affects the actual LAF.
-  * I've seen some weird race conditions happening. This method returns both the global
-  * and the LAF defaults, so that changes can be applied to both as necessary.
-  */
+   * It's not always clear whether setting the global defaults also affects the actual LAF.
+   * I've seen some weird race conditions happening. This method returns both the global
+   * and the LAF defaults, so that changes can be applied to both as necessary.
+   */
   private def allDefaults: List[UIDefaults] = List(UIManager.getDefaults, UIManager.getLookAndFeel.getDefaults)
 
   private def replaceDialogIcons(): Unit = {
     import scalismo.ui.resources.icons.BundledIcon._
 
-    val replacements = List((Information, "information"), (Warning, "warning"), (Error, "error"), (Question, "question"))
+    val replacements =
+      List((Information, "information"), (Warning, "warning"), (Error, "error"), (Question, "question"))
     replacements.foreach {
       case (icon, partialName) =>
         val key = s"OptionPane.${partialName}Icon"
@@ -93,4 +99,3 @@ object ScalismoLookAndFeel {
     }
   }
 }
-

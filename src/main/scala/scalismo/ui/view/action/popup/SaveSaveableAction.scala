@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ object SaveSaveableAction extends PopupAction.Factory {
   }
 }
 
-class SaveSaveableAction(node: Saveable)(implicit val frame: ScalismoFrame) extends PopupAction(s"Save ${node.saveMetadata.description} ...", BundledIcon.Save) {
+class SaveSaveableAction(node: Saveable)(implicit val frame: ScalismoFrame)
+    extends PopupAction(s"Save ${node.saveMetadata.description} ...", BundledIcon.Save) {
   override def apply(): Unit = new SaveAction(node.save, node.saveMetadata, title).apply()
 }

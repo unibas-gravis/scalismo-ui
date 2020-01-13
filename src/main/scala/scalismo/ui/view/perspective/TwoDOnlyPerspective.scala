@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.view.perspective
 
 import scalismo.ui.model.Axis
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel2D}
 
 import scala.swing.BorderPanel
 
@@ -44,11 +44,12 @@ object TwoDOnlyPerspective {
 
 }
 
-class TwoDOnlyPerspective(override val frame: ScalismoFrame, axis: Axis, override val factory: PerspectiveFactory) extends BorderPanel with Perspective {
+class TwoDOnlyPerspective(override val frame: ScalismoFrame, axis: Axis, override val factory: PerspectiveFactory)
+    extends BorderPanel
+    with Perspective {
   val viewport = new ViewportPanel2D(frame, axis)
 
   override val viewports: List[ViewportPanel] = List(viewport)
 
   layout(viewport) = BorderPanel.Position.Center
 }
-

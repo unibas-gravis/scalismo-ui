@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui
 
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry.{_3D, Point}
 
 package object model {
   type PointCloud = IndexedSeq[Point[_3D]]

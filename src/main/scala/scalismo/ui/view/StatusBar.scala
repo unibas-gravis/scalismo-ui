@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 package scalismo.ui.view
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Cursor, Font, Component => AComponent }
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Font, Component => AComponent}
 import java.text.SimpleDateFormat
 
 import javax.swing._
@@ -30,7 +30,7 @@ import scalismo.ui.view.swing.CustomListCellRenderer
 import scalismo.ui.view.util.ScalableUI
 
 import scala.swing.event.Key
-import scala.swing.{ Action, _ }
+import scala.swing.{Action, _}
 
 object StatusBar {
 
@@ -71,22 +71,24 @@ class StatusBar extends BorderPanel {
     logPanel.visible = visible
   }
 
-  private val statusLabel: Label = new Label("Welcome to the Scalismo Viewer!", BundledIcon.Smiley.standardSized(), Alignment.Leading) {
+  private val statusLabel: Label =
+    new Label("Welcome to the Scalismo Viewer!", BundledIcon.Smiley.standardSized(), Alignment.Leading) {
 
-    import BorderFactory._
+      import BorderFactory._
 
-    private val _3 = ScalableUI.scale(3)
-    private val _2 = ScalableUI.scale(2)
-    border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3), createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
+      private val _3 = ScalableUI.scale(3)
+      private val _2 = ScalableUI.scale(2)
+      border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3),
+                                    createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
 
-    cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
+      cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
 
-    tooltip = "Click on the status bar to show the history of messages"
+      tooltip = "Click on the status bar to show the history of messages"
 
-    peer.addMouseListener(new MouseAdapter {
-      override def mouseClicked(e: MouseEvent): Unit = toggleShowLogAction.apply()
-    })
-  }
+      peer.addMouseListener(new MouseAdapter {
+        override def mouseClicked(e: MouseEvent): Unit = toggleShowLogAction.apply()
+      })
+    }
 
   private val logModel: DefaultListModel[StatusMessage] = new DefaultListModel[StatusMessage] {
     val MaxLength = 10000
@@ -102,9 +104,15 @@ class StatusBar extends BorderPanel {
   }
 
   private class StatusMessageCellRenderer extends CustomListCellRenderer {
-    override def updateListCellRendererComponent(component: AComponent, list: scala.Any, value: scala.Any, index: Int, isSelected: Boolean, cellHasFocus: Boolean): AComponent = {
+    override def updateListCellRendererComponent(component: AComponent,
+                                                 list: scala.Any,
+                                                 value: scala.Any,
+                                                 index: Int,
+                                                 isSelected: Boolean,
+                                                 cellHasFocus: Boolean): AComponent = {
       (component, value) match {
-        case (label: JLabel, message: StatusMessage) => updateLabelToShowStatusMessage(message, label, withTimestamp = true)
+        case (label: JLabel, message: StatusMessage) =>
+          updateLabelToShowStatusMessage(message, label, withTimestamp = true)
         case _ => // can't handle
       }
       component
@@ -164,7 +172,8 @@ class StatusBar extends BorderPanel {
     val options = StatusBar.uiOptions(message.kind)
     label.setForeground(options.textColor)
     label.setIcon(options.icon)
-    label.setFont(label.getFont.deriveFont(if (message.highPriority) font.getStyle | Font.BOLD else font.getStyle & ~Font.BOLD))
+    label.setFont(
+      label.getFont.deriveFont(if (message.highPriority) font.getStyle | Font.BOLD else font.getStyle & ~Font.BOLD)
+    )
   }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@ package scalismo.ui.model
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{ Landmark, Point3D, _3D }
+import scalismo.geometry.{_3D, Landmark, Point3D}
 import scalismo.io.LandmarkIO
 import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 object LandmarksNode {
 
@@ -95,7 +95,8 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
     val landmarks = nodes.map { node =>
       // landmark may have been renamed and / or transformed
       if (transformedFlag)
-        node.transformedSource.copy(id = node.name, uncertainty = Some(node.uncertainty.value.toMultivariateNormalDistribution))
+        node.transformedSource.copy(id = node.name,
+                                    uncertainty = Some(node.uncertainty.value.toMultivariateNormalDistribution))
       else
         node.source.copy(id = node.name, uncertainty = Some(node.uncertainty.value.toMultivariateNormalDistribution))
     }
@@ -108,7 +109,16 @@ class LandmarksNode(override val parent: GroupNode) extends SceneNodeCollection[
   }
 }
 
-class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) extends Transformable[Landmark[_3D]] with InverseTransformation with Removeable with Renameable with HasUncertainty with HasColor with HasOpacity with HasLineWidth with HasPickable {
+class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D])
+    extends Transformable[Landmark[_3D]]
+    with InverseTransformation
+    with Removeable
+    with Renameable
+    with HasUncertainty
+    with HasColor
+    with HasOpacity
+    with HasLineWidth
+    with HasPickable {
   name = sourceLm.id
 
   override val color = new ColorProperty(Color.BLUE)
@@ -117,10 +127,13 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) 
   override val pickable = new PickableProperty()
 
   // lazy is needed here since traits such as Transformable call source() which need uncertainty, all this at *construction time*
-  override lazy val uncertainty = new UncertaintyProperty(sourceLm.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty))
+  override lazy val uncertainty = new UncertaintyProperty(
+    sourceLm.uncertainty.map(Uncertainty.apply).getOrElse(Uncertainty.DefaultUncertainty)
+  )
 
   // when requesting the source, we make sure that the returned id is the current name (in case it was renamed), same for the uncertainty
-  override def source = Landmark(name, sourceLm.point, sourceLm.description, Some(uncertainty.value.toMultivariateNormalDistribution))
+  override def source =
+    Landmark(name, sourceLm.point, sourceLm.description, Some(uncertainty.value.toMultivariateNormalDistribution))
 
   override def remove(): Unit = parent.remove(this)
 
@@ -134,4 +147,3 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D]) 
 
   override def group: GroupNode = parent.parent
 }
-

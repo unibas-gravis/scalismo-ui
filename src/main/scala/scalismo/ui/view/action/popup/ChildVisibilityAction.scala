@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,15 @@
 package scalismo.ui.view.action.popup
 
 import java.awt.Color
-import java.awt.event.{ MouseAdapter, MouseEvent }
+import java.awt.event.{MouseAdapter, MouseEvent}
 
-import javax.swing.{ BorderFactory, Icon, JComponent }
+import javax.swing.{BorderFactory, Icon, JComponent}
 import scalismo.ui.control.NodeVisibility
-import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
-import scalismo.ui.model.{ GroupNode, SceneNode }
+import scalismo.ui.control.NodeVisibility.{Invisible, PartlyVisible, Visible}
+import scalismo.ui.model.{GroupNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.util.ScalableUI.implicits._
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 import scala.swing._
 
@@ -49,7 +49,8 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
     if (viewports.length > 1) {
       val menu: Menu = new Menu("Children visible in") {
         def updateIcon(): Unit = {
-          val state = control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
+          val state =
+            control.getVisibilityState(nodes.flatMap(_.renderables.find(_ => true)), frame.perspective.viewports)
           icon = iconFor(state)
         }
 
@@ -79,8 +80,8 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
 
   def iconFor(state: NodeVisibility.State): Icon = {
     val icon = state match {
-      case Visible => BundledIcon.Visible
-      case Invisible => BundledIcon.Invisible
+      case Visible       => BundledIcon.Visible
+      case Invisible     => BundledIcon.Invisible
       case PartlyVisible => BundledIcon.Visible.colored(Color.GRAY)
     }
     icon.standardSized()
@@ -100,7 +101,7 @@ class ChildVisibilityAction(nodes: List[GroupNode])(implicit frame: ScalismoFram
         if (e.getButton == MouseEvent.BUTTON1) {
           val toggle = currentState match {
             case Visible => false
-            case _ => true
+            case _       => true
           }
           control.setVisibility(nodes.flatMap(_.renderables), viewports, toggle)
         }

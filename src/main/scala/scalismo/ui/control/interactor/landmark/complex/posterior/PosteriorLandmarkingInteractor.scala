@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,9 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     val lmUncertainty = MultivariateNormalDistribution(uncertaintyMean, uncertaintyCovModelLm + uncertaintyCovTargetLm)
 
     // Here, we need to (inverse) transform the mouse position in order to feed an non-rotated deformation vector to the regression
-    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, lmUncertainty)))
+    val coeffs = sourceGpNode.transformation.gp.coefficients(
+      IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, lmUncertainty))
+    )
     previewGpNode.transformation = sourceGpNode.transformation.copy(coeffs)
   }
 
@@ -76,4 +78,3 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     hidePreview()
   }
 }
-

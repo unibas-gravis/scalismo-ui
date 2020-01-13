@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 
 import javax.swing.ImageIcon
-import jiconfont.icons.{ Elusive, Entypo, FontAwesome }
-import jiconfont.{ IconCode, IconFont }
+import jiconfont.icons.{Elusive, Entypo, FontAwesome}
+import jiconfont.{IconCode, IconFont}
 import scalismo.ui.view.util.Constants
 
 object FontIcon {
@@ -59,7 +59,10 @@ object FontIcon {
     override def name(): String = "generated"
   }
 
-  def load(code: IconCode, width: Int = Constants.StandardUnscaledIconSize, height: Int = Constants.StandardUnscaledIconSize, color: Color = Color.BLACK): FontIcon = {
+  def load(code: IconCode,
+           width: Int = Constants.StandardUnscaledIconSize,
+           height: Int = Constants.StandardUnscaledIconSize,
+           color: Color = Color.BLACK): FontIcon = {
     val string = Character.toString(code.getUnicode)
     val image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     val graphics: Graphics2D = image.createGraphics()

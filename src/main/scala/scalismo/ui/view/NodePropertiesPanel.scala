@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.view
 
 import java.awt.Dimension
 
-import javax.swing.{ JLabel, JTabbedPane }
+import javax.swing.{JLabel, JTabbedPane}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.NodePropertiesPanel.Tabs
 import scalismo.ui.view.NodePropertiesPanel.Tabs.event.TabChanged
@@ -27,7 +27,7 @@ import scalismo.ui.view.properties._
 import scalismo.ui.view.util.CardPanel
 import scala.collection.mutable.ArrayBuffer
 import scala.swing.event.Event
-import scala.swing.{ BorderPanel, Component, ScrollPane }
+import scala.swing.{BorderPanel, Component, ScrollPane}
 
 object NodePropertiesPanel {
 
@@ -47,12 +47,7 @@ object NodePropertiesPanel {
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
     }
 
-    List(
-      SlicingPositionPanel,
-      GaussianProcessCoefficientsPanel,
-      RigidTransformationPropertyPanel,
-      appearancePanel
-    )
+    List(SlicingPositionPanel, GaussianProcessCoefficientsPanel, RigidTransformationPropertyPanel, appearancePanel)
   }
 
   class Tab(val view: PropertyPanel) extends JLabel(view.description)
@@ -65,7 +60,7 @@ object NodePropertiesPanel {
         if (getTabCount > index) {
           getTabComponentAt(index) match {
             case tab: Tab => outer.publishEvent(TabChanged(outer, tab))
-            case _ => // do nothing
+            case _        => // do nothing
           }
         }
       }
@@ -203,7 +198,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
     // otherwise, set the content to the first active view
     active.find(_.uniqueId == cards.currentId) match {
       case Some(view) => tabs.setSelectedItem(view)
-      case None => updateCard(active.headOption)
+      case None       => updateCard(active.headOption)
     }
     tabs.enabled = active.nonEmpty
   }
@@ -211,7 +206,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
   def updateCard(panelToShow: Option[PropertyPanel]): Unit = {
     val (enableScroll, card) = panelToShow match {
       case Some(view) => (true, view)
-      case None => (false, empty)
+      case None       => (false, empty)
     }
 
     scroll.enabled = enableScroll
@@ -230,7 +225,7 @@ class NodePropertiesPanel(frame: ScalismoFrame) extends BorderPanel {
 
   reactions += {
     case ScalismoFrame.event.SelectedNodesChanged(_) => updateTabsAndCard()
-    case TabChanged(_, tab) if tabs.enabled => updateCard(Some(tab.view))
+    case TabChanged(_, tab) if tabs.enabled          => updateCard(Some(tab.view))
   }
 
   layout(tabs) = BorderPanel.Position.North

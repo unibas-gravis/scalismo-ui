@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,15 +21,15 @@ import java.awt._
 import java.awt.event.MouseEvent
 import java.awt.geom.AffineTransform
 
-import javax.swing.event.{ ChangeEvent, ChangeListener, MouseInputAdapter }
-import javax.swing.{ BorderFactory, JComponent }
+import javax.swing.event.{ChangeEvent, ChangeListener, MouseInputAdapter}
+import javax.swing.{BorderFactory, JComponent}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.view.swing.ColorPickerPanel
 import scalismo.ui.view.util.ColorChooserPanel.event.ColorChanged
 import scalismo.ui.view.util.ScalableUI.implicits._
 
 import scala.swing.event.Event
-import scala.swing.{ BorderPanel, Component, Graphics2D }
+import scala.swing.{BorderPanel, Component, Graphics2D}
 
 object ColorChooserPanel {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,24 +18,24 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
+import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{ FastCachingTriangleMesh, FastCachingVertexColorMesh }
+import scalismo.ui.rendering.Caches.{FastCachingTriangleMesh, FastCachingVertexColorMesh}
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import scalismo.utils.MeshConversion
-import vtk.{ vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray }
+import vtk.{vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray}
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
   override def actorsFor(renderable: TriangleMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new TriangleMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new TriangleMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new TriangleMeshActor2D(renderable, _2d))
     }
   }
@@ -45,7 +45,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
   override def actorsFor(renderable: ScalarMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new ScalarMeshFieldActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new ScalarMeshFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new ScalarMeshFieldActor2D(renderable, _2d))
     }
   }
@@ -54,7 +54,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
   override def actorsFor(renderable: LineMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new LineMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new LineMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new LineMeshActor2D(renderable, _2d))
     }
   }
@@ -63,7 +63,7 @@ object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
 object VertexColorMeshActor extends SimpleActorsFactory[VertexColorMeshNode] {
   override def actorsFor(renderable: VertexColorMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new VertexColorMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new VertexColorMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new VertexColorMeshActor2D(renderable, _2d))
     }
   }
@@ -208,7 +208,8 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
 
   override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
 
-    Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh), MeshConversion.meshToVtkPolyData(renderable.mesh, template))
+    Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh),
+                                         MeshConversion.meshToVtkPolyData(renderable.mesh, template))
   }
 
 }
@@ -234,7 +235,8 @@ trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRende
       pd
     }
 
-    Caches.VertexColorMeshCache.getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
+    Caches.VertexColorMeshCache
+      .getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
   }
 }
 
@@ -258,7 +260,8 @@ trait ScalarMeshFieldActor extends MeshActor[MeshRenderable.ScalarMeshFieldRende
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
   override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
-    Caches.ScalarMeshFieldCache.getOrCreate(renderable.field, MeshConversion.scalarMeshFieldToVtkPolyData(renderable.field))
+    Caches.ScalarMeshFieldCache
+      .getOrCreate(renderable.field, MeshConversion.scalarMeshFieldToVtkPolyData(renderable.field))
   }
 
 }
@@ -284,7 +287,10 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
 
 }
 
-abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with MeshActor[R] with ActorLineWidth {
+abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D)
+    extends SlicingActor(viewport)
+    with MeshActor[R]
+    with ActorLineWidth {
   override def lineWidth: LineWidthProperty = renderable.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(geometryChanged = false)
@@ -299,16 +305,28 @@ abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, view
 
 class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(MeshRenderable(node)) with TriangleMeshActor
 
-class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TriangleMeshActor
+class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with TriangleMeshActor
 
-class VertexColorMeshActor3D(node: VertexColorMeshNode) extends MeshActor3D(MeshRenderable(node)) with VertexColorMeshActor
+class VertexColorMeshActor3D(node: VertexColorMeshNode)
+    extends MeshActor3D(MeshRenderable(node))
+    with VertexColorMeshActor
 
-class VertexColorMeshActor2D(node: VertexColorMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with VertexColorMeshActor
+class VertexColorMeshActor2D(node: VertexColorMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with VertexColorMeshActor
 
-class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(MeshRenderable(node)) with ScalarMeshFieldActor
+class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode)
+    extends MeshActor3D(MeshRenderable(node))
+    with ScalarMeshFieldActor
 
-class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with ScalarMeshFieldActor
+class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with ScalarMeshFieldActor
 
 class LineMeshActor3D(node: LineMeshNode) extends MeshActor3D(MeshRenderable(node)) with LineMeshActor
 
-class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with LineMeshActor
+class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with LineMeshActor

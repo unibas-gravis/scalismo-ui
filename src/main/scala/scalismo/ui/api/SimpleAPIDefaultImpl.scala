@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 package scalismo.ui.api
 
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
-import scalismo.ui.model.{ GroupNode, Scene, SceneNode }
+import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
+import scalismo.ui.model.{GroupNode, Scene, SceneNode}
 
 trait SimpleAPIDefaultImpl {
   self: SimpleAPI =>
@@ -27,11 +27,14 @@ trait SimpleAPIDefaultImpl {
 
   override def createGroup(groupName: String): Group = Group(scene.groups.add(groupName))
 
-  override def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, defaultGroup)
+  override def show[A](a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View =
+    showInScene.showInScene(a, name, defaultGroup)
 
-  override def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View = showInScene.showInScene(a, name, group)
+  override def show[A](group: Group, a: A, name: String)(implicit showInScene: ShowInScene[A]): showInScene.View =
+    showInScene.showInScene(a, name, group)
 
-  override def addTransformation[T](g: Group, t: T, name: String)(implicit showInScene: ShowInScene[T]): showInScene.View = {
+  override def addTransformation[T](g: Group, t: T, name: String)(implicit
+                                                                  showInScene: ShowInScene[T]): showInScene.View = {
     showInScene.showInScene(t, name, g)
   }
 
@@ -78,7 +81,8 @@ trait SimpleAPIDefaultImpl {
   }
 
   private def defaultGroup: Group = {
-    val groupNode = scene.groups.find(g => g.name == "group")
+    val groupNode = scene.groups
+      .find(g => g.name == "group")
       .getOrElse(scene.groups.add("group"))
     Group(groupNode)
   }
@@ -91,7 +95,7 @@ trait SimpleAPIDefaultImpl {
 
     val head = find.createView(node) match {
       case Some(v) => if (pred(v)) Seq[V](v) else Seq[V]()
-      case None => Seq[V]()
+      case None    => Seq[V]()
     }
 
     head ++ resFromSubNodes

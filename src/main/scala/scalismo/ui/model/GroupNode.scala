@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
 
 package scalismo.ui.model
 
-import scalismo.statisticalmodel.{ StatisticalMeshModel, StatisticalVolumeMeshModel }
+import scalismo.statisticalmodel.{StatisticalMeshModel, StatisticalVolumeMeshModel}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.capabilities.{ Removeable, Renameable }
+import scalismo.ui.model.capabilities.{Removeable, Renameable}
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
@@ -35,7 +35,11 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
   override def isViewCollapsed: Boolean = true
 }
 
-class GroupNode(override val parent: GroupsNode, initialName: String, initallyHidden: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
+class GroupNode(override val parent: GroupsNode, initialName: String, initallyHidden: Boolean)
+    extends SceneNode
+    with Renameable
+    with Removeable
+    with ScalismoPublisher {
   name = initialName
 
   private var _hidden = initallyHidden
@@ -106,4 +110,3 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
 
   override def remove(): Unit = parent.remove(this)
 }
-

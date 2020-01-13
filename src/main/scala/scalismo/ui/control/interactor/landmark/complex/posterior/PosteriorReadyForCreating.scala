@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,17 +23,21 @@ import java.awt.event.MouseEvent
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.control.interactor.Recipe
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
-import scalismo.ui.control.interactor.landmark.complex.{ ComplexLandmarkingInteractor, ReadyForCreating }
+import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{Delegate, StateTransition}
+import scalismo.ui.control.interactor.landmark.complex.{ComplexLandmarkingInteractor, ReadyForCreating}
 import scalismo.ui.model.LandmarkNode
 
 object PosteriorReadyForCreating {
-  def enter[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]]: StateTransition[InteractorType, DelegateType] = new StateTransition[InteractorType, DelegateType] {
+  def enter[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]]
+    : StateTransition[InteractorType, DelegateType] = new StateTransition[InteractorType, DelegateType] {
     override def apply()(implicit parent: InteractorType) = new PosteriorReadyForCreating()
   }
 }
 
-class PosteriorReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](implicit parent: InteractorType) extends ReadyForCreating[InteractorType] {
+class PosteriorReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](
+  implicit
+  parent: InteractorType
+) extends ReadyForCreating[InteractorType] {
   def interactor: PosteriorLandmarkingInteractor = parent.asInstanceOf[PosteriorLandmarkingInteractor]
 
   override def transitionToReadyForEditing(): Unit = {

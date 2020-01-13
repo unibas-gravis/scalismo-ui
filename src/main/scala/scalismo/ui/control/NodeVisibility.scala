@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.control
 
 import scalismo.ui.control.NodeVisibility._
-import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.event.{Event, ScalismoPublisher}
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.view._
@@ -37,9 +37,7 @@ object NodeVisibility {
   type Node = RenderableSceneNode
   type Context = ViewportPanel
 
-  sealed trait State {
-
-  }
+  sealed trait State {}
 
   case object Visible extends State
 
@@ -190,6 +188,7 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
   }
 
   reactions += {
-    case PerspectivePanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined => handlePerspectiveChange(current, previous.get)
+    case PerspectivePanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined =>
+      handlePerspectiveChange(current, previous.get)
   }
 }

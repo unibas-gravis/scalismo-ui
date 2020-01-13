@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,10 @@ package scalismo.ui.util
 import scala.collection.mutable
 
 object Cache {
+
   /**
    * Global flag to debug all cache operations.
    */
-
   //noinspection VarCouldBeVal
   /* This is a global variable that can be set by developers using the library.
    * The "noinspection" comment suppresses a "var could be val" warning from IntelliJ IDEA.
@@ -44,22 +44,24 @@ class Cache[K, V] {
       case Some(h) =>
         if (debug) println("cache hit: " + ObjectId.of(key))
         h
-      case None => map.synchronized {
-        if (debug) println("cache miss: " + ObjectId.of(key))
-        map.getOrElseUpdate(key, new ValueHolder)
-      }
+      case None =>
+        map.synchronized {
+          if (debug) println("cache miss: " + ObjectId.of(key))
+          map.getOrElseUpdate(key, new ValueHolder)
+        }
     }
 
     holder.value match {
       case Some(v) => v
-      case None => holder.synchronized {
-        holder.value match {
-          case Some(v) => v
-          case None =>
-            holder.value = Some(op)
-            holder.value.get
+      case None =>
+        holder.synchronized {
+          holder.value match {
+            case Some(v) => v
+            case None =>
+              holder.value = Some(op)
+              holder.value.get
+          }
         }
-      }
     }
   }
 }

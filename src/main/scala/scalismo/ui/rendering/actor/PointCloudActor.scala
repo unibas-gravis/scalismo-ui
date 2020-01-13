@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,17 @@
 package scalismo.ui.rendering.actor
 
 import scalismo.ui.model.capabilities.Transformable
-import scalismo.ui.model.properties.{ ColorProperty, LineWidthProperty, NodeProperty, OpacityProperty }
-import scalismo.ui.model.{ BoundingBox, PointCloudNode }
-import scalismo.ui.rendering.actor.mixin.{ ActorColor, ActorLineWidth, ActorOpacity, ActorSceneNode }
+import scalismo.ui.model.properties.{ColorProperty, LineWidthProperty, NodeProperty, OpacityProperty}
+import scalismo.ui.model.{BoundingBox, PointCloudNode}
+import scalismo.ui.rendering.actor.mixin.{ActorColor, ActorLineWidth, ActorOpacity, ActorSceneNode}
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
-import vtk.{ vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
+import vtk.{vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource}
 
 object PointCloudActor extends SimpleActorsFactory[PointCloudNode] {
   override def actorsFor(renderable: PointCloudNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new PointCloudActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new PointCloudActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new PointCloudActor2D(renderable, _2d))
     }
   }
@@ -70,7 +70,7 @@ trait PointCloudActor extends SingleDataSetActor with ActorOpacity with ActorCol
   listenTo(sceneNode, sceneNode.radius)
 
   reactions += {
-    case Transformable.event.GeometryChanged(_) => rerender(true)
+    case Transformable.event.GeometryChanged(_)                         => rerender(true)
     case NodeProperty.event.PropertyChanged(p) if p eq sceneNode.radius => rerender(true)
   }
 
@@ -80,7 +80,10 @@ trait PointCloudActor extends SingleDataSetActor with ActorOpacity with ActorCol
 
 }
 
-class PointCloudActor2D(override val sceneNode: PointCloudNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with PointCloudActor with ActorLineWidth {
+class PointCloudActor2D(override val sceneNode: PointCloudNode, viewport: ViewportPanel2D)
+    extends SlicingActor(viewport)
+    with PointCloudActor
+    with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(false)
@@ -99,4 +102,3 @@ class PointCloudActor3D(override val sceneNode: PointCloudNode) extends PointClo
   }
 
 }
-
