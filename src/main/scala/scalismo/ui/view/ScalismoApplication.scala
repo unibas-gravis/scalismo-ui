@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,9 @@ import scala.swing.SimpleSwingApplication
  * @param lookAndFeelClassName Swing Look and Feel. By default, the value of [[ScalismoLookAndFeel.DefaultLookAndFeelClassName]] is used.
  *
  */
-class ScalismoApplication(frame: => ScalismoFrame, lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName) extends SimpleSwingApplication {
+class ScalismoApplication(frame: => ScalismoFrame,
+                          lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName)
+    extends SimpleSwingApplication {
 
   override lazy val top: ScalismoFrame = EdtUtil.onEdtWait(frame)
 
@@ -58,7 +60,9 @@ object ScalismoApplication {
    * @param lookAndFeelClassName Swing Look and Feel. By default, the value of [[ScalismoLookAndFeel.DefaultLookAndFeelClassName]] is used.
    * @return
    */
-  def apply(frame: => ScalismoFrame = new ScalismoFrame, args: Array[String] = new Array(0), lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName): ScalismoApplication = {
+  def apply(frame: => ScalismoFrame = new ScalismoFrame,
+            args: Array[String] = new Array(0),
+            lookAndFeelClassName: String = ScalismoLookAndFeel.DefaultLookAndFeelClassName): ScalismoApplication = {
     val application = new ScalismoApplication(frame, lookAndFeelClassName)
     application.main(args)
     application

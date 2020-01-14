@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@ import scalismo.ui.model.Scene
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
+import scalismo.ui.view.{ScalismoFrame, ScalismoLookAndFeel}
 
 class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 
@@ -76,4 +76,3 @@ object ScalismoUI {
   // TODO: This should be a better and more distinguishable one, e.g., the logo without the background, or a more "stylized" version
   private[ScalismoUI] val appIcon: Image = BundledIcon.AppIcon
 }
-

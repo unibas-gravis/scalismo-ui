@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{ DiscreteDomain, DiscreteField, DiscreteScalarField }
-import scalismo.geometry.{ EuclideanVector, Landmark, Point, _3D }
+import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
+import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
 import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
+import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
 import scalismo.ui.model.properties.ScalarRange
@@ -47,7 +47,7 @@ sealed trait ObjectView {
   private def findBelongingGroup(node: SceneNode): GroupNode = {
     node match {
       case groupNode: GroupNode => groupNode
-      case _ => findBelongingGroup(node.parent)
+      case _                    => findBelongingGroup(node.parent)
     }
   }
 }
@@ -106,7 +106,7 @@ object PointCloudView {
     override def createView(s: SceneNode): Option[PointCloudView] = {
       s match {
         case node: PointCloudNode => Some(PointCloudView(node))
-        case _ => None
+        case _                    => None
       }
     }
   }
@@ -165,7 +165,7 @@ object TriangleMeshView {
     override def createView(s: SceneNode): Option[TriangleMeshView] = {
       s match {
         case peer: TriangleMeshNode => Some(TriangleMeshView(peer))
-        case _ => None
+        case _                      => None
       }
     }
   }
@@ -221,7 +221,7 @@ object VertexColorMeshView {
     override def createView(s: SceneNode): Option[VertexColorMeshView] = {
       s match {
         case peer: VertexColorMeshNode => Some(VertexColorMeshView(peer))
-        case _ => None
+        case _                         => None
       }
     }
   }
@@ -276,7 +276,7 @@ object TetrahedralMeshView {
     override def createView(s: SceneNode): Option[TetrahedralMeshView] = {
       s match {
         case peer: TetrahedralMeshNode => Some(TetrahedralMeshView(peer))
-        case _ => None
+        case _                         => None
       }
     }
   }
@@ -304,7 +304,8 @@ object TetrahedralMeshView {
 
 }
 
-case class ScalarTetrahedralMeshFieldView private[ui] (override protected[api] val peer: ScalarTetrahedralMeshFieldNode) extends ObjectView {
+case class ScalarTetrahedralMeshFieldView private[ui] (override protected[api] val peer: ScalarTetrahedralMeshFieldNode)
+    extends ObjectView {
 
   type PeerType = ScalarTetrahedralMeshFieldNode
 
@@ -331,7 +332,7 @@ object ScalarTetrahedralMeshFieldView {
     override def createView(s: SceneNode): Option[ScalarTetrahedralMeshFieldView] = {
       s match {
         case peer: ScalarTetrahedralMeshFieldNode => Some(ScalarTetrahedralMeshFieldView(peer))
-        case _ => None
+        case _                                    => None
       }
     }
   }
@@ -392,7 +393,7 @@ object LineMeshView {
     override def createView(s: SceneNode): Option[LineMeshView] = {
       s match {
         case peer: LineMeshNode => Some(LineMeshView(peer))
-        case _ => None
+        case _                  => None
       }
     }
   }
@@ -448,7 +449,7 @@ object LandmarkView {
     override def createView(s: SceneNode): Option[LandmarkView] = {
       s match {
         case peer: LandmarkNode => Some(LandmarkView(peer))
-        case _ => None
+        case _                  => None
       }
     }
   }
@@ -508,7 +509,7 @@ object ScalarMeshFieldView {
     override def createView(s: SceneNode): Option[ScalarMeshFieldView] = {
       s match {
         case node: ScalarMeshFieldNode => Some(ScalarMeshFieldView(node))
-        case _ => None
+        case _                         => None
       }
     }
   }
@@ -568,7 +569,7 @@ object ScalarFieldView {
     override def createView(s: SceneNode): Option[ScalarFieldView] = {
       s match {
         case node: ScalarFieldNode => Some(ScalarFieldView(node))
-        case _ => None
+        case _                     => None
       }
     }
   }
@@ -620,7 +621,7 @@ object VectorFieldView {
     override def createView(s: SceneNode): Option[VectorFieldView] = {
       s match {
         case node: VectorFieldNode => Some(VectorFieldView(node))
-        case _ => None
+        case _                     => None
       }
     }
   }
@@ -678,7 +679,7 @@ object ImageView {
     override def createView(s: SceneNode): Option[ImageView] = {
       s match {
         case imageNode: ImageNode => Some(ImageView(imageNode))
-        case _ => None
+        case _                    => None
       }
     }
   }
@@ -707,8 +708,12 @@ object ImageView {
 }
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class StatisticalMeshModelViewControls private[ui] (meshView: TriangleMeshView, shapeModelTransformationView: ShapeModelTransformationView)
-case class StatisticalVolumeMeshModelViewControls private[ui] (meshView: TetrahedralMeshView, shapeModelTransformationView: ShapeModelTransformationView)
+case class StatisticalMeshModelViewControls private[ui] (meshView: TriangleMeshView,
+                                                         shapeModelTransformationView: ShapeModelTransformationView)
+case class StatisticalVolumeMeshModelViewControls private[ui] (
+  meshView: TetrahedralMeshView,
+  shapeModelTransformationView: ShapeModelTransformationView
+)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
@@ -727,14 +732,16 @@ object Group {
     override def createView(s: SceneNode): Option[Group] = {
       s match {
         case node: GroupNode => Some(Group(node))
-        case _ => None
+        case _               => None
       }
     }
   }
 
 }
 
-case class TransformationView private[ui] (override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]) extends ObjectView {
+case class TransformationView private[ui] (
+  override protected[api] val peer: TransformationNode[Point[_3D] => Point[_3D]]
+) extends ObjectView {
   def transformation: Point[_3D] => Point[_3D] = peer.transformation
 
   def transformation_=(t: Point[_3D] => Point[_3D]): Unit = {
@@ -762,7 +769,9 @@ object TransformationView {
 
 }
 
-case class RigidTransformationView private[ui] (override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]) extends ObjectView {
+case class RigidTransformationView private[ui] (
+  override protected[api] val peer: TransformationNode[RigidTransformation[_3D]]
+) extends ObjectView {
 
   override type PeerType = TransformationNode[RigidTransformation[_3D]]
 
@@ -781,7 +790,9 @@ object RigidTransformationView {
       // here we need a two step process due to type erasure to find the right type.
       s match {
         // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
-        case value: ShapeModelTransformationComponentNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] => None
+        case value: ShapeModelTransformationComponentNode[_]
+            if value.transformation.isInstanceOf[RigidTransformation[_]] =>
+          None
         case value: TransformationNode[_] if value.transformation.isInstanceOf[RigidTransformation[_]] =>
           Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]))
         case _ => None
@@ -795,7 +806,6 @@ object RigidTransformationView {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildAdded(_, newNode: TransformationNode[_]) =>
-
           if (newNode.transformation.isInstanceOf[RigidTransformation[_]]) {
             val tmv = RigidTransformationView(newNode.asInstanceOf[TransformationNode[RigidTransformation[_3D]]])
             f(tmv)
@@ -818,7 +828,9 @@ object RigidTransformationView {
 
 }
 
-case class DiscreteLowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]) extends ObjectView {
+case class DiscreteLowRankGPTransformationView private[ui] (
+  override protected[api] val peer: TransformationNode[DiscreteLowRankGpPointTransformation]
+) extends ObjectView {
 
   override type PeerType = TransformationNode[DiscreteLowRankGpPointTransformation]
 
@@ -832,9 +844,12 @@ case class DiscreteLowRankGPTransformationView private[ui] (override protected[a
 
   val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
-  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = peer.transformation.dgp
+  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] =
+    peer.transformation.dgp
 
-  def discreteLowRankGaussianProcess_=(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): Unit = {
+  def discreteLowRankGaussianProcess_=(
+    dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]
+  ): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
 }
@@ -847,9 +862,15 @@ object DiscreteLowRankGPTransformationView {
       // here we need a two step process due to type erasure to find the right type.
       s match {
         // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
-        case value: ShapeModelTransformationComponentNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] => None
+        case value: ShapeModelTransformationComponentNode[_]
+            if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
+          None
         case value: TransformationNode[_] if value.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation] =>
-          Some(DiscreteLowRankGPTransformationView(s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]))
+          Some(
+            DiscreteLowRankGPTransformationView(
+              s.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]
+            )
+          )
         case _ => None
       }
     }
@@ -861,9 +882,10 @@ object DiscreteLowRankGPTransformationView {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildAdded(_, newNode: TransformationNode[_]) =>
-
           if (newNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-            val tmv = DiscreteLowRankGPTransformationView(newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+            val tmv = DiscreteLowRankGPTransformationView(
+              newNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]
+            )
             f(tmv)
           }
 
@@ -875,7 +897,9 @@ object DiscreteLowRankGPTransformationView {
       g.peer.reactions += {
         case ChildRemoved(_, removedNode: TransformationNode[_]) =>
           if (removedNode.transformation.isInstanceOf[DiscreteLowRankGpPointTransformation]) {
-            val tmv = DiscreteLowRankGPTransformationView(removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]])
+            val tmv = DiscreteLowRankGPTransformationView(
+              removedNode.asInstanceOf[TransformationNode[DiscreteLowRankGpPointTransformation]]
+            )
             f(tmv)
           }
       }
@@ -884,7 +908,9 @@ object DiscreteLowRankGPTransformationView {
 
 }
 
-case class LowRankGPTransformationView private[ui] (override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]) extends ObjectView {
+case class LowRankGPTransformationView private[ui] (
+  override protected[api] val peer: TransformationNode[LowRankGpPointTransformation]
+) extends ObjectView {
 
   override type PeerType = TransformationNode[LowRankGpPointTransformation]
 
@@ -897,26 +923,36 @@ case class LowRankGPTransformationView private[ui] (override protected[api] val 
   }
 }
 
-case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D], shapeTransformation: DiscreteLowRankGpPointTransformation)
+case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D],
+                                    shapeTransformation: DiscreteLowRankGpPointTransformation)
 
 object ShapeModelTransformation {
-  def apply(poseTransformation: RigidTransformation[_3D], gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]): ShapeModelTransformation = {
+  def apply(
+    poseTransformation: RigidTransformation[_3D],
+    gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]
+  ): ShapeModelTransformation = {
     ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gp))
   }
 }
 
-case class ShapeModelTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationsNode) extends ObjectView {
+case class ShapeModelTransformationView private[ui] (override protected[api] val peer: ShapeModelTransformationsNode)
+    extends ObjectView {
 
   override type PeerType = ShapeModelTransformationsNode
 
-  def shapeTransformationView: DiscreteLowRankGPTransformationView = peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
-    case Some(sv) => sv
-    case None => throw new Exception("There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView.")
-  }
+  def shapeTransformationView: DiscreteLowRankGPTransformationView =
+    peer.gaussianProcessTransformation.map(DiscreteLowRankGPTransformationView(_)) match {
+      case Some(sv) => sv
+      case None =>
+        throw new Exception(
+          "There is no Gaussian Process (shape) transformation associated with this ShapeModelTransformationView."
+        )
+    }
 
   def poseTransformationView: RigidTransformationView = peer.poseTransformation.map(RigidTransformationView(_)) match {
     case Some(sv) => sv
-    case None => throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
+    case None =>
+      throw new Exception("There is no rigid (pose) transformation associated with this ShapeModelTransformationView.")
   }
 
   def hasShapeTransformation: Boolean = peer.gaussianProcessTransformation.isDefined
@@ -932,7 +968,7 @@ object ShapeModelTransformationView {
 
       s match {
         case value: ShapeModelTransformationsNode => Some(ShapeModelTransformationView(value))
-        case _ => None
+        case _                                    => None
       }
     }
   }
@@ -942,14 +978,16 @@ object ShapeModelTransformationView {
     override def registerOnAdd[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildAdded(_, _: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+        case ChildAdded(_, _: TransformationNode[_]) =>
+          f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
       }
     }
 
     override def registerOnRemove[R](g: Group, f: ShapeModelTransformationView => R): Unit = {
       g.peer.listenTo(g.peer.shapeModelTransformations)
       g.peer.reactions += {
-        case ChildRemoved(_, _: TransformationNode[_]) => f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
+        case ChildRemoved(_, _: TransformationNode[_]) =>
+          f(ShapeModelTransformationView(g.peer.shapeModelTransformations))
       }
     }
   }

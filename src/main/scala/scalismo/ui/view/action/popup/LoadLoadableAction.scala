@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,8 @@ object LoadLoadableAction extends PopupAction.Factory {
   }
 }
 
-class LoadLoadableAction(l: Loadable)(implicit val frame: ScalismoFrame) extends PopupAction(s"Load ${l.loadMetadata.description} ...", BundledIcon.Load) with GroupDelegatingAction {
+class LoadLoadableAction(l: Loadable)(implicit val frame: ScalismoFrame)
+    extends PopupAction(s"Load ${l.loadMetadata.description} ...", BundledIcon.Load)
+    with GroupDelegatingAction {
   override def apply(): Unit = new LoadAction(l.load, l.loadMetadata, title).apply()
 }

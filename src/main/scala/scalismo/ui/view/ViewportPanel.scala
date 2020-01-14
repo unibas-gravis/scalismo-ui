@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +18,18 @@
 package scalismo.ui.view
 
 import javax.swing.border.TitledBorder
-import javax.swing.{ BorderFactory, SwingConstants }
+import javax.swing.{BorderFactory, SwingConstants}
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.event.ScalismoPublisher
-import scalismo.ui.model.{ Axis, BoundingBox, Scene }
-import scalismo.ui.rendering.{ RendererPanel, RendererState }
+import scalismo.ui.model.{Axis, BoundingBox, Scene}
+import scalismo.ui.rendering.{RendererPanel, RendererState}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.action.SaveAction
-import scalismo.ui.view.util.{ AxisColor, ScalableUI }
+import scalismo.ui.view.util.{AxisColor, ScalableUI}
 
 import scala.swing._
-import scala.swing.event.{ Event, ValueChanged }
+import scala.swing.event.{Event, ValueChanged}
 
 object ViewportPanel {
 
@@ -155,7 +155,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
   // constructor
   border match {
     case titled: TitledBorder => titled.setTitleColor(AxisColor.forAxis(axis).darker())
-    case _ => // unexpected, can't handle
+    case _                    => // unexpected, can't handle
   }
 
   rendererPanel.border = BorderFactory.createLineBorder(AxisColor.forAxis(axis), ScalableUI.scale(3))
@@ -196,11 +196,10 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
 
   reactions += {
     case SlicingPosition.event.PointChanged(_, _, current) => updateSliderValue(current)
-    case SlicingPosition.event.BoundingBoxChanged(s) => updateSliderMinMax(s.boundingBox)
+    case SlicingPosition.event.BoundingBoxChanged(s)       => updateSliderMinMax(s.boundingBox)
     case SlicingPosition.event.PerspectiveChanged(s) =>
       updateSliderMinMax(s.boundingBox)
       updateSliderValue(s.point)
     case ValueChanged(s) if s eq positionSlider => sliderValueChanged()
   }
 }
-

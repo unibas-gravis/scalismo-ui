@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.model.capabilities
 
 import scalismo.ui.event.Event
-import scalismo.ui.model.{ GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode }
+import scalismo.ui.model.{GenericTransformationsNode, PointTransformation, ShapeModelTransformationsNode}
 
 object Transformable {
 
@@ -37,9 +37,12 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
 
   private def shapeModelTransformationsNode: ShapeModelTransformationsNode = group.shapeModelTransformations
 
-  private def combinedTransform = shapeModelTransformationsNode.combinedTransformation.map(smT => genericTransformationsNode.combinedTransformation compose smT) getOrElse {
-    genericTransformationsNode.combinedTransformation
-  }
+  private def combinedTransform =
+    shapeModelTransformationsNode.combinedTransformation.map(smT =>
+      genericTransformationsNode.combinedTransformation compose smT
+    ) getOrElse {
+      genericTransformationsNode.combinedTransformation
+    }
 
   private var _transformedSource = transform(source, combinedTransform)
 
@@ -56,7 +59,7 @@ trait Transformable[T] extends RenderableSceneNode with Grouped {
   listenTo(shapeModelTransformationsNode)
 
   reactions += {
-    case GenericTransformationsNode.event.TransformationsChanged(_) => updateTransformedSource()
+    case GenericTransformationsNode.event.TransformationsChanged(_)              => updateTransformedSource()
     case ShapeModelTransformationsNode.event.ShapeModelTransformationsChanged(_) => updateTransformedSource()
   }
 }

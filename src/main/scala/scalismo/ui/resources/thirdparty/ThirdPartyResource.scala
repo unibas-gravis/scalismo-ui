@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,19 @@ import scalismo.ui.resources.thirdparty.spray.Spray
 import scalismo.ui.resources.thirdparty.vtk.Vtk
 
 object ThirdPartyResource {
-  val All: List[ThirdPartyResource] = List(Vtk, Jogl, Jhdf, Breeze, NiftiJio, Spire, Spray, InterpreterPane, JavaGraphics, JIconFont, FontAwesome, Elusive, Entypo).sortBy(_.name.toLowerCase)
+  val All: List[ThirdPartyResource] = List(Vtk,
+                                           Jogl,
+                                           Jhdf,
+                                           Breeze,
+                                           NiftiJio,
+                                           Spire,
+                                           Spray,
+                                           InterpreterPane,
+                                           JavaGraphics,
+                                           JIconFont,
+                                           FontAwesome,
+                                           Elusive,
+                                           Entypo).sortBy(_.name.toLowerCase)
 }
 
 abstract class ThirdPartyResource {

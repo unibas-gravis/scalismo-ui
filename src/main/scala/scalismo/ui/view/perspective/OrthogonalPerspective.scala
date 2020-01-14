@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,17 @@
 package scalismo.ui.view.perspective
 
 import scalismo.ui.model.Axis
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 
 import scala.swing.GridPanel
 
-class OrthogonalPerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory) extends GridPanel(2, 2) with Perspective {
-  override val viewports: List[ViewportPanel] = List(new ViewportPanel3D(frame), new ViewportPanel2D(frame, Axis.X), new ViewportPanel2D(frame, Axis.Y), new ViewportPanel2D(frame, Axis.Z))
+class OrthogonalPerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory)
+    extends GridPanel(2, 2)
+    with Perspective {
+  override val viewports: List[ViewportPanel] = List(new ViewportPanel3D(frame),
+                                                     new ViewportPanel2D(frame, Axis.X),
+                                                     new ViewportPanel2D(frame, Axis.Y),
+                                                     new ViewportPanel2D(frame, Axis.Z))
   contents ++= viewports
 }
 

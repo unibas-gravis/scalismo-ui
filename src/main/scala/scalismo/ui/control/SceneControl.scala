@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 package scalismo.ui.control
 
-import scalismo.ui.model.{ Renderable, Scene }
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.model.{Renderable, Scene}
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 /**
  * This class is in a bit of an awkward position, as it conceptually sits

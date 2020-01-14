@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 
 package scalismo.ui.rendering
 
-import scalismo.common.{ DiscreteDomain, DiscreteScalarField }
+import scalismo.common.{DiscreteDomain, DiscreteScalarField}
 import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.ui.util.Cache
-import vtk.{ vtkPolyData, vtkStructuredPoints, vtkUnstructuredGrid }
+import vtk.{vtkPolyData, vtkStructuredPoints, vtkUnstructuredGrid}
 
 object Caches {
 

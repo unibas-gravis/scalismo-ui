@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,9 @@ import scalismo.image.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[ImageNode] with Loadable {
   override val name: String = "Images"
@@ -49,7 +49,14 @@ class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[Ima
   }
 }
 
-class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage[_3D, Float], initialName: String) extends RenderableSceneNode with Grouped with Renameable with Saveable with Removeable with HasWindowLevel with HasOpacity {
+class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage[_3D, Float], initialName: String)
+    extends RenderableSceneNode
+    with Grouped
+    with Renameable
+    with Saveable
+    with Removeable
+    with HasWindowLevel
+    with HasOpacity {
   name = initialName
 
   val (minimumValue, maximumValue) = {
@@ -71,7 +78,7 @@ class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage
     ext match {
       case "vtk" => ImageIO.writeVTK(source, file)
       case "nii" => ImageIO.writeNifti(source, file)
-      case _ => Failure(new Exception(s"File $file: unsupported file extension"))
+      case _     => Failure(new Exception(s"File $file: unsupported file extension"))
     }
 
   }

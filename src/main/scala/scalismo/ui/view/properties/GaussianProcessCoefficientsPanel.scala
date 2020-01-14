@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,19 @@
 
 package scalismo.ui.view.properties
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
+import java.awt.event.{MouseAdapter, MouseEvent}
 
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.Gaussian
 import javax.swing.JSlider
-import scalismo.ui.model.{ LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode }
+import scalismo.ui.model.{LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 
 import scala.collection.mutable
-import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
-import scala.swing.event.{ ButtonClicked, ValueChanged }
+import scala.swing.event.{ButtonClicked, ValueChanged}
 
 object GaussianProcessCoefficientsPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new GaussianProcessCoefficientsPanel(frame)
@@ -70,7 +70,8 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
           }
         })
       }
-      max = (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
+      max =
+        (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
       min = -max
       name = index.toString
       value = 0
@@ -107,25 +108,23 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
       var changed = false;
       {
         count until entries.length
-      }.reverse.foreach {
-        idx =>
-          changed = true
-          val e = entries(idx)
-          GaussianProcessCoefficientsPanel.this.deafTo(e.slider)
-          peer.remove(e.value.peer)
-          peer.remove(e.slider.peer)
-          peer.remove(e.label.peer)
-          entries.remove(idx)
+      }.reverse.foreach { idx =>
+        changed = true
+        val e = entries(idx)
+        GaussianProcessCoefficientsPanel.this.deafTo(e.slider)
+        peer.remove(e.value.peer)
+        peer.remove(e.slider.peer)
+        peer.remove(e.label.peer)
+        entries.remove(idx)
       }
-      entries.length until count foreach {
-        idx =>
-          changed = true
-          val e = Entry(idx)
-          add(e.label, (0, idx + 1))
-          add(e.slider, (1, idx + 1))
-          add(e.value, (2, idx + 1))
-          entries.insert(idx, e)
-          GaussianProcessCoefficientsPanel.this.listenTo(e.slider)
+      entries.length until count foreach { idx =>
+        changed = true
+        val e = Entry(idx)
+        add(e.label, (0, idx + 1))
+        add(e.slider, (1, idx + 1))
+        add(e.value, (2, idx + 1))
+        entries.insert(idx, e)
+        GaussianProcessCoefficientsPanel.this.listenTo(e.slider)
       }
       if (changed) revalidate()
     }
@@ -188,7 +187,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
       val index = slider.name.toInt
       val value = slider.value * GaussianProcessCoefficientsPanel.CoefficientValueStep
       setCoefficient(index, value)
-    case ButtonClicked(`reset`) => resetValues()
+    case ButtonClicked(`reset`)  => resetValues()
     case ButtonClicked(`random`) => randomizeValues()
 
     case TransformationNode.event.TransformationChanged(_) =>
@@ -205,7 +204,10 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
     // we have to account for type erasure, that's why we need the collect
-    singleMatch[TransformationNode[_ <: PointTransformation]](nodes).collect { case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] => tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]] } match {
+    singleMatch[TransformationNode[_ <: PointTransformation]](nodes).collect {
+      case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] =>
+        tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]]
+    } match {
       case None => false
       case Some(tn) =>
         node = Some(tn)

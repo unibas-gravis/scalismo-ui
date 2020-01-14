@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,10 @@
 
 package scalismo.ui.rendering.internal
 
-import java.util.{ Timer, TimerTask }
+import java.util.{Timer, TimerTask}
 
 object DeferredRendering {
+
   /**
    * Delay (in milliseconds) before actually rendering. Render requests
    * are grouped and delayed by (at most) this amount of time.
@@ -29,7 +30,7 @@ object DeferredRendering {
   //noinspection VarCouldBeVal
   /* This is a global variable that can be set by developers using the library.
    * The "noinspection" comment suppresses a "var could be val" warning from IntelliJ IDEA.
-  */
+   */
   var DelayMs = 25
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@ package scalismo.ui.view.menu
 
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.action.{ ShowBackgroundColorDialogAction, ShowDisplayScalingDialogAction }
+import scalismo.ui.view.action.{ShowBackgroundColorDialogAction, ShowDisplayScalingDialogAction}
 import scalismo.ui.view.perspective.PerspectiveFactory
-import scalismo.ui.view.{ PerspectivePanel, ScalismoFrame }
+import scalismo.ui.view.{PerspectivePanel, ScalismoFrame}
 
-import scala.swing.event.{ ButtonClicked, Key }
-import scala.swing.{ Menu, MenuItem, RadioMenuItem }
+import scala.swing.event.{ButtonClicked, Key}
+import scala.swing.{Menu, MenuItem, RadioMenuItem}
 
 class ViewMenu extends Menu("View") {
   mnemonic = Key.V
@@ -32,11 +32,13 @@ class ViewMenu extends Menu("View") {
 
 object ViewMenu {
 
-  class ShowDisplayScalingDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowDisplayScalingDialogAction) {
+  class ShowDisplayScalingDialogItem(implicit val frame: ScalismoFrame)
+      extends MenuItem(new ShowDisplayScalingDialogAction) {
     mnemonic = Key.D
   }
 
-  class ShowBackgroundColorDialogItem(implicit val frame: ScalismoFrame) extends MenuItem(new ShowBackgroundColorDialogAction) {
+  class ShowBackgroundColorDialogItem(implicit val frame: ScalismoFrame)
+      extends MenuItem(new ShowBackgroundColorDialogAction) {
     mnemonic = Key.B
   }
 
@@ -46,7 +48,9 @@ object ViewMenu {
 
     private val panel = frame.perspective
 
-    private class PerspectiveMenuItem(val factory: PerspectiveFactory) extends RadioMenuItem(factory.perspectiveName) with ScalismoPublisher {
+    private class PerspectiveMenuItem(val factory: PerspectiveFactory)
+        extends RadioMenuItem(factory.perspectiveName)
+        with ScalismoPublisher {
 
       def updateUi(): Unit = {
         selected = panel.perspective == factory
@@ -55,7 +59,7 @@ object ViewMenu {
       listenTo(panel)
 
       reactions += {
-        case ButtonClicked(_) => panel.perspective = factory
+        case ButtonClicked(_)                                   => panel.perspective = factory
         case PerspectivePanel.event.PerspectiveChanged(_, _, _) => updateUi()
       }
 
@@ -69,4 +73,3 @@ object ViewMenu {
   }
 
 }
-

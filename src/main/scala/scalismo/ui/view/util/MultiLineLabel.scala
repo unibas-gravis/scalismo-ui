@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.view.util
 
 import java.awt.Color
 
-import javax.swing.{ BorderFactory, UIManager }
+import javax.swing.{BorderFactory, UIManager}
 
 import scala.swing.TextArea
 

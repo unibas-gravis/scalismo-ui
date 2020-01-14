@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,4 @@ import vtk.vtkActor
  *
  * See the [[scalismo.ui.rendering.RendererPanel]] implementation for more details.
  */
-trait IsImageActor extends vtkActor {
-
-}
+trait IsImageActor extends vtkActor {}

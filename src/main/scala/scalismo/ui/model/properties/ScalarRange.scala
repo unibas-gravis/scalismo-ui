@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,17 @@ package scalismo.ui.model.properties
  * @param mappedMaximum maximum value for color mapping. This, and values above, will be mapped to the upper color.
  * @param colorMapping  color mapping.
  */
-case class ScalarRange(domainMinimum: Float, domainMaximum: Float, mappedMinimum: Float, mappedMaximum: Float, colorMapping: ColorMapping) {
-}
+case class ScalarRange(domainMinimum: Float,
+                       domainMaximum: Float,
+                       mappedMinimum: Float,
+                       mappedMaximum: Float,
+                       colorMapping: ColorMapping) {}
 
 object ScalarRange {
   // convenience constructor
-  def apply(domainMinimum: Float, domainMaximum: Float, colorMapping: ColorMapping = ColorMapping.Default): ScalarRange = {
+  def apply(domainMinimum: Float,
+            domainMaximum: Float,
+            colorMapping: ColorMapping = ColorMapping.Default): ScalarRange = {
     ScalarRange(domainMinimum, domainMaximum, domainMinimum, domainMaximum, colorMapping)
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 package scalismo.ui.view.dialog
 
 import java.awt.Font
-import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
+import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 
 import javax.swing.BorderFactory
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.util.{ Constants, FancySlider, ScalableUI }
+import scalismo.ui.view.util.{Constants, FancySlider, ScalableUI}
 
 import scala.swing._
 import scala.swing.event.ValueChanged
@@ -45,7 +45,9 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
       if (factor != ScalableUI.scaleFactor) {
         ScalableUI.scaleFactor = factor
-        Dialog.showMessage(frame.componentForDialogs, "Please restart the application to see your changes applied.", "Display Scaling was changed")
+        Dialog.showMessage(frame.componentForDialogs,
+                           "Please restart the application to see your changes applied.",
+                           "Display Scaling was changed")
       }
       dispose()
     }

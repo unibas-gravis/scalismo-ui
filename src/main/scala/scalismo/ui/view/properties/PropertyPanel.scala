@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import scalismo.ui.view.util.CardPanel
  * a [[scalismo.ui.model.SceneNode]].
  */
 trait PropertyPanel extends CardPanel.ComponentWithUniqueId with NodeListFilters {
+
   /** human-readable description, used in tabs. */
   def description: String
 

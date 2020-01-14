@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,8 @@ object ColorMappingPropertyPanel extends PropertyPanel.Factory {
 
   // this is a var so users can override it, if needed.
   //noinspection VarCouldBeVal (shut up IntelliJ IDEA warnings)
-  var StandardMappings: List[ColorMapping] = List(ColorMapping.BlueToRed, ColorMapping.BlackToWhite, ColorMapping.WhiteToBlack)
+  var StandardMappings: List[ColorMapping] =
+    List(ColorMapping.BlueToRed, ColorMapping.BlackToWhite, ColorMapping.WhiteToBlack)
 }
 
 class ColorMappingPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
@@ -60,7 +61,9 @@ class ColorMappingPropertyPanel(override val frame: ScalismoFrame) extends Borde
     items ++= targets.map(_.scalarRange.value.colorMapping)
     combo.items = items.distinct
     // select the active mapping. If there are multiple in use, tough luck - show the one from the first target.
-    targets.headOption.foreach { t => combo.selection.item = t.scalarRange.value.colorMapping }
+    targets.headOption.foreach { t =>
+      combo.selection.item = t.scalarRange.value.colorMapping
+    }
     listenToOwnEvents()
   }
 
@@ -91,9 +94,10 @@ class ColorMappingPropertyPanel(override val frame: ScalismoFrame) extends Borde
   listenToOwnEvents()
 
   reactions += {
-    case SelectionChanged(_) => targets.foreach { t =>
-      t.scalarRange.value = t.scalarRange.value.copy(colorMapping = combo.selection.item)
-    }
+    case SelectionChanged(_) =>
+      targets.foreach { t =>
+        t.scalarRange.value = t.scalarRange.value.copy(colorMapping = combo.selection.item)
+      }
     case NodeProperty.event.PropertyChanged(_) => updateUi()
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.view.perspective
 
 import scalismo.ui.view.util.CardPanel
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 trait Perspective extends CardPanel.ComponentWithUniqueId {
   def factory: PerspectiveFactory
@@ -32,6 +32,4 @@ trait Perspective extends CardPanel.ComponentWithUniqueId {
   override def toString: String = factory.perspectiveName
 }
 
-object Perspective {
-
-}
+object Perspective {}

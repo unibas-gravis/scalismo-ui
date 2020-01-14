@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 package scalismo.ui.view.dialog
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Cursor, Font }
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Font}
 import java.net.URI
 
 import javax.swing._
@@ -27,12 +27,12 @@ import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.AboutDialog._
 import scalismo.ui.view.dialog.AboutDialog.scaled._
-import scalismo.ui.view.util.{ LinkLabel, MultiLineLabel, ScalableUI }
+import scalismo.ui.view.util.{LinkLabel, MultiLineLabel, ScalableUI}
 
-import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
-import scala.swing.{ Action, _ }
+import scala.swing.{Action, _}
 import scala.util.Try
 
 object AboutDialog {
@@ -52,20 +52,20 @@ object AboutDialog {
     private lazy val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
     private lazy val objectName = "scalismo.ui.BuildInfo$"
 
-    def proxy(fieldName: String): String = Try {
-      val moduleSymbol = runtimeMirror.moduleSymbol(
-        Class.forName(objectName)
-      )
+    def proxy(fieldName: String): String =
+      Try {
+        val moduleSymbol = runtimeMirror.moduleSymbol(Class.forName(objectName))
 
-      val targetMethod = moduleSymbol.typeSignature
-        .members
-        .filter(x => x.isMethod && x.name.toString == fieldName)
-        .head
-        .asMethod
+        val targetMethod = moduleSymbol.typeSignature.members
+          .filter(x => x.isMethod && x.name.toString == fieldName)
+          .head
+          .asMethod
 
-      runtimeMirror.reflect(runtimeMirror.reflectModule(moduleSymbol).instance)
-        .reflectMethod(targetMethod)().toString
-    }.getOrElse("???")
+        runtimeMirror
+          .reflect(runtimeMirror.reflectModule(moduleSymbol).instance)
+          .reflectMethod(targetMethod)()
+          .toString
+      }.getOrElse("???")
 
     // proxied fields
     def version: String = proxy("version")
@@ -82,12 +82,12 @@ object AboutDialog {
     import ScalableUI.implicits.scalableInt
 
     /* scaled versions of pixel sizes.
-    * Defined separately (instead of just using a base, and a multiplier / divisor)
-    * because they're mostly small values, and the scale factor is generally also a small value
-    * (between 1 and 2) -- so (for example) 3.scaled * 2 is not necessarily equal to (3 * 2).scaled .
-    *
-    * Defined as methods in subpackage to avoid code duplication (in other words: all components should use one of
-    * the values defined here, not a literal value)
+     * Defined separately (instead of just using a base, and a multiplier / divisor)
+     * because they're mostly small values, and the scale factor is generally also a small value
+     * (between 1 and 2) -- so (for example) 3.scaled * 2 is not necessarily equal to (3 * 2).scaled .
+     *
+     * Defined as methods in subpackage to avoid code duplication (in other words: all components should use one of
+     * the values defined here, not a literal value)
      */
 
     def s_3: Int = 3.scaled
@@ -103,7 +103,8 @@ object AboutDialog {
     def s_128: Int = 128.scaled
   }
 
-  class BoldLabel(text: String, icon: Icon = EmptyIcon, alignment: Alignment.Value = Alignment.Center) extends Label(text, icon, alignment) {
+  class BoldLabel(text: String, icon: Icon = EmptyIcon, alignment: Alignment.Value = Alignment.Center)
+      extends Label(text, icon, alignment) {
     font = font.deriveFont(font.getStyle | Font.BOLD)
   }
 
@@ -112,7 +113,12 @@ object AboutDialog {
     private val dim = s_128
     private val scaledIcon = ScalableUI.resizeIcon(logo, dim, dim)
 
-    private val image = new LinkLabel("", new URI("https://github.com/unibas-gravis/scalismo"), scaledIcon, Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
+    private val image = new LinkLabel("",
+                                      new URI("https://github.com/unibas-gravis/scalismo"),
+                                      scaledIcon,
+                                      Alignment.Left,
+                                      preventLinkStyle = true,
+                                      preventTooltip = true) {
       peer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
     }
 
@@ -155,7 +161,8 @@ object AboutDialog {
   }
 
   class ThirdPartyPanel(frame: ScalismoFrame) extends BorderPanel {
-    val description = "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
+    val description =
+      "The scalismo library, and the user interface, use a number of third-party open source resources. These dependencies are listed below."
 
     private val descriptionBorder = BorderFactory.createEmptyBorder(s_10, 0, s_10, 0)
     private val thanksBorder = BorderFactory.createEmptyBorder(s_10, 0, 0, 0)
@@ -202,19 +209,19 @@ object AboutDialog {
 
       this.weightx = x match {
         case c if c == lastColumnIndex => 1
-        case _ => 0
+        case _                         => 0
       }
 
       this.weighty = y match {
         case r if r == lastRowIndex => 1
-        case _ => 0
+        case _                      => 0
       }
 
       this.fill = (x, y) match {
         case (h, v) if h == lastColumnIndex && v == lastRowIndex => Fill.Both
-        case (h, _) if h == lastColumnIndex => Fill.Horizontal
-        case (_, v) if v == lastRowIndex => Fill.Vertical
-        case (_, _) => Fill.None
+        case (h, _) if h == lastColumnIndex                      => Fill.Horizontal
+        case (_, v) if v == lastRowIndex                         => Fill.Vertical
+        case (_, _)                                              => Fill.None
       }
 
       // update state for next add()
@@ -236,20 +243,21 @@ object AboutDialog {
     ThirdPartyResource.All.foreach { tp =>
       val name = tp.homepage match {
         case Some(url) => new LinkLabel(tp.name, new URI(url))
-        case None => new Label(tp.name)
+        case None      => new Label(tp.name)
       }
       val author = new Label(tp.authors)
       val license = tp.licenseText match {
-        case Some(licenseText) => new Label(tp.licenseName) {
-          tooltip = "Show License"
-          foreground = Color.BLUE.darker()
-          peer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
-          peer.addMouseListener(new MouseAdapter {
-            override def mouseClicked(e: MouseEvent): Unit = {
-              popupLicense(frame, tp.name, licenseText)
-            }
-          })
-        }
+        case Some(licenseText) =>
+          new Label(tp.licenseName) {
+            tooltip = "Show License"
+            foreground = Color.BLUE.darker()
+            peer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR))
+            peer.addMouseListener(new MouseAdapter {
+              override def mouseClicked(e: MouseEvent): Unit = {
+                popupLicense(frame, tp.name, licenseText)
+              }
+            })
+          }
         case None => new Label(tp.licenseName)
       }
 
@@ -259,7 +267,9 @@ object AboutDialog {
     }
 
     // table footer (dummy row to fill space on resize)
-    (0 to lastColumnIndex).foreach { _ => add(new Label("")) }
+    (0 to lastColumnIndex).foreach { _ =>
+      add(new Label(""))
+    }
   }
 
   def popupLicense(frame: ScalismoFrame, productName: String, licenseText: String): Unit = {
@@ -346,10 +356,16 @@ class AboutDialog(implicit frame: ScalismoFrame) extends Dialog(frame) {
       }
 
       layout(west) = BorderPanel.Position.West
-      layout(new LinkLabel("Copyright (c) Graphics and Vision Research Group, University of Basel", new URI("http://gravis.cs.unibas.ch/"), alignment = Alignment.Left, preventLinkStyle = true, preventTooltip = true) {
-        private val b = s_10
-        border = BorderFactory.createEmptyBorder(b, b, b, b)
-      }) = BorderPanel.Position.North
+      layout(
+        new LinkLabel("Copyright (c) Graphics and Vision Research Group, University of Basel",
+                      new URI("http://gravis.cs.unibas.ch/"),
+                      alignment = Alignment.Left,
+                      preventLinkStyle = true,
+                      preventTooltip = true) {
+          private val b = s_10
+          border = BorderFactory.createEmptyBorder(b, b, b, b)
+        }
+      ) = BorderPanel.Position.North
     }
 
     val tabsPane = new TabbedPane

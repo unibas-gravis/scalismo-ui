@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,4 @@ package scalismo.ui.model
  * properties (or aspects, if you want) of a node, in
  * the sense of "it has (or can have) something".
  */
-
-package object properties {
-
-}
+package object properties {}

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
 package scalismo.ui.view.action.popup
 
 import java.awt.Color
-import java.awt.event.{ MouseAdapter, MouseEvent }
+import java.awt.event.{MouseAdapter, MouseEvent}
 
-import javax.swing.{ BorderFactory, Icon, JComponent }
+import javax.swing.{BorderFactory, Icon, JComponent}
 import scalismo.ui.control.NodeVisibility
-import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
+import scalismo.ui.control.NodeVisibility.{Invisible, PartlyVisible, Visible}
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.util.ScalableUI.implicits._
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 import scala.swing._
 
@@ -79,8 +79,8 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
 
   def iconFor(state: NodeVisibility.State): Icon = {
     val icon = state match {
-      case Visible => BundledIcon.Visible
-      case Invisible => BundledIcon.Invisible
+      case Visible       => BundledIcon.Visible
+      case Invisible     => BundledIcon.Invisible
       case PartlyVisible => BundledIcon.Visible.colored(Color.GRAY)
     }
     icon.standardSized()
@@ -100,7 +100,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
         if (e.getButton == MouseEvent.BUTTON1) {
           val toggle = currentState match {
             case Visible => false
-            case _ => true
+            case _       => true
           }
           control.setVisibility(nodes, viewports, toggle)
         }

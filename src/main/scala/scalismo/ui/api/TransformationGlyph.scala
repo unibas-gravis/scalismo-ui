@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.api
 
 import scalismo.common.UnstructuredPointsDomain3D
-import scalismo.geometry.{ Point, _3D }
+import scalismo.geometry.{_3D, Point}
 
 /**
  * A dummy class used only in the api to be able to show the transformation glyphs using a uniform syntax

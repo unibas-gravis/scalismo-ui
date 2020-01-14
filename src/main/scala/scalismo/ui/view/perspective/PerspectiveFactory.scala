@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,12 @@ import scalismo.ui.view.ScalismoFrame
  * before a frame is actually created.
  */
 object PerspectiveFactory {
-  final val BuiltinFactories: List[PerspectiveFactory] = List(
-    OrthogonalPerspective,
-    ThreeDOnlyPerspective,
-    ThreeDTwicePerspective,
-    TwoDOnlyPerspective.X,
-    TwoDOnlyPerspective.Y,
-    TwoDOnlyPerspective.Z
-  )
+  final val BuiltinFactories: List[PerspectiveFactory] = List(OrthogonalPerspective,
+                                                              ThreeDOnlyPerspective,
+                                                              ThreeDTwicePerspective,
+                                                              TwoDOnlyPerspective.X,
+                                                              TwoDOnlyPerspective.Y,
+                                                              TwoDOnlyPerspective.Z)
 
   private var _factories: List[PerspectiveFactory] = BuiltinFactories
 
@@ -52,13 +50,16 @@ object PerspectiveFactory {
   }
 
   val defaultPerspective: PerspectiveFactory = {
-    val userPreferred = GlobalSettings.get[String](GlobalSettings.Keys.PerspectiveName).flatMap { name => factories.find(_.perspectiveName == name) }
+    val userPreferred = GlobalSettings.get[String](GlobalSettings.Keys.PerspectiveName).flatMap { name =>
+      factories.find(_.perspectiveName == name)
+    }
     userPreferred.getOrElse(factories.head)
   }
 
 }
 
 trait PerspectiveFactory {
+
   /**
    * Name of the perspective. This *MUST* be globally unique.
    *

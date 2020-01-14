@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,16 @@ import java.awt.Color
 import scalismo.geometry.Point3D
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.control.SlicingPosition.renderable.BoundingBoxRenderable
-import scalismo.ui.model.{ Axis, BoundingBox }
+import scalismo.ui.model.{Axis, BoundingBox}
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.util.AxisColor
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import vtk._
 
 object BoundingBoxActor extends SimpleActorsFactory[SlicingPosition.renderable.BoundingBoxRenderable] {
   override def actorsFor(renderable: BoundingBoxRenderable, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new BoundingBoxActor3D(renderable.source))
+      case _: ViewportPanel3D   => Some(new BoundingBoxActor3D(renderable.source))
       case _2d: ViewportPanel2D => Some(new SingleBoundingBoxActor2D(renderable.source, _2d.axis))
     }
   }
@@ -74,14 +74,16 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends DataSetActor 
 
   reactions += {
     case SlicingPosition.event.BoundingBoxChanged(_) => update()
-    case SlicingPosition.event.VisibilityChanged(_) => update()
+    case SlicingPosition.event.VisibilityChanged(_)  => update()
   }
 
   update()
 
 }
 
-class SingleBoundingBoxActor2D(override val slicingPosition: SlicingPosition, override val axis: Axis) extends BoundingBoxActor2D with Actors {
+class SingleBoundingBoxActor2D(override val slicingPosition: SlicingPosition, override val axis: Axis)
+    extends BoundingBoxActor2D
+    with Actors {
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
   override lazy val intersectionActors: List[BoundingBoxIntersectionActor] = {
@@ -159,7 +161,7 @@ trait BoundingBoxActor2D extends DataSetActor with ActorEvents {
 
   reactions += {
     case SlicingPosition.event.BoundingBoxChanged(_) => update()
-    case SlicingPosition.event.VisibilityChanged(_) => update()
+    case SlicingPosition.event.VisibilityChanged(_)  => update()
     case SlicingPosition.event.PointChanged(_, _, _) => update()
   }
 
@@ -219,4 +221,3 @@ class BoundingBoxIntersectionActor(axis: Axis) extends DataSetActor {
   SetPickable(0)
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,9 +30,9 @@ import java.awt.Color
 object Constants {
 
   /* Note: the following line suppresses "var could be a val" warnings from IntelliJ IDEA.
-  * //noinspection VarCouldBeVal
-  * It is prepended to all definitions, because they are intentionally vars instead of vals.
-  */
+   * //noinspection VarCouldBeVal
+   * It is prepended to all definitions, because they are intentionally vars instead of vals.
+   */
 
   /**
    * This is the color value that is used as the basic background color when presenting color selections.

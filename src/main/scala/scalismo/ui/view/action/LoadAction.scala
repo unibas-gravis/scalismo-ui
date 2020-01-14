@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,14 +26,18 @@ import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.dialog.ErrorDialog
 import scalismo.ui.view.util.EnhancedFileChooser
 
-import scala.swing.{ Action, Component, FileChooser }
-import scala.util.{ Failure, Success, Try }
+import scala.swing.{Action, Component, FileChooser}
+import scala.util.{Failure, Success, Try}
 
 object LoadAction {
   val DefaultName = "Load ..."
 }
 
-class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val name: String = LoadAction.DefaultName, val multiSelect: Boolean = true)(implicit val frame: ScalismoFrame) extends Action(name) {
+class LoadAction(val load: File => Try[Unit],
+                 val metadata: FileIoMetadata,
+                 val name: String = LoadAction.DefaultName,
+                 val multiSelect: Boolean = true)(implicit val frame: ScalismoFrame)
+    extends Action(name) {
   private lazy val chooserTitle = {
     if (name != LoadAction.DefaultName) name
     else "Load " + metadata.description
@@ -57,7 +61,7 @@ class LoadAction(val load: File => Try[Unit], val metadata: FileIoMetadata, val 
   def tryLoad(file: File): Unit = {
     val ok = load(file)
     ok match {
-      case Success(_) => onSuccess(file)
+      case Success(_)  => onSuccess(file)
       case Failure(ex) => onFailure(file, ex)
     }
   }

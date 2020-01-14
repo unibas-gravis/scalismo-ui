@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasLineWidth, LineWidthProperty, NodeProperty }
+import scalismo.ui.model.properties.{HasLineWidth, LineWidthProperty, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.FancySlider
 
@@ -85,7 +85,7 @@ class LineWidthPropertyPanel(override val frame: ScalismoFrame) extends BorderPa
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(_) => targets.foreach(_.lineWidth.value = slider.value)
+    case ValueChanged(_)                       => targets.foreach(_.lineWidth.value = slider.value)
   }
 
 }

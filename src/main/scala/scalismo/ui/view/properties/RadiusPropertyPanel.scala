@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasRadius, NodeProperty }
+import scalismo.ui.model.properties.{HasRadius, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.FloatSlider
 
@@ -41,7 +41,8 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   private var targets: List[HasRadius] = Nil
 
-  private val slider = new FloatSlider(RadiusPropertyPanel.MinValue, RadiusPropertyPanel.MaxValue, RadiusPropertyPanel.StepSize)
+  private val slider =
+    new FloatSlider(RadiusPropertyPanel.MinValue, RadiusPropertyPanel.MaxValue, RadiusPropertyPanel.StepSize)
 
   layout(new BorderPanel {
     private val sliderPanel = new BorderPanel {
@@ -85,7 +86,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(_) => targets.foreach(_.radius.value = slider.floatValue)
+    case ValueChanged(_)                       => targets.foreach(_.radius.value = slider.floatValue)
   }
 
 }

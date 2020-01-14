@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@ import java.awt.Color
 import javax.swing.BorderFactory
 import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ ColorMapping, HasScalarRange, NodeProperty }
+import scalismo.ui.model.properties.{ColorMapping, HasScalarRange, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.util.{ FancySlider, MultiLineLabel }
+import scalismo.ui.view.util.{FancySlider, MultiLineLabel}
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
@@ -70,7 +70,9 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     colorizeSliderValue(this, ColorMapping.Default.upperColor)
   }
 
-  private val mismatchMessage = new MultiLineLabel("Scalar range domain mismatch. Please multi-select only nodes with matching domains.")
+  private val mismatchMessage = new MultiLineLabel(
+    "Scalar range domain mismatch. Please multi-select only nodes with matching domains."
+  )
 
   {
     val northedPanel: BorderPanel = new BorderPanel {

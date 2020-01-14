@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,22 +18,28 @@
 package scalismo.ui.control.interactor.landmark.complex
 
 import java.awt.Cursor
-import java.awt.event.{ MouseEvent, MouseWheelEvent }
+import java.awt.event.{MouseEvent, MouseWheelEvent}
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
-import scalismo.ui.model.{ LandmarkNode, StatusMessage }
+import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{Delegate, StateTransition}
+import scalismo.ui.model.{LandmarkNode, StatusMessage}
 
 object Editing {
-  def enter[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode): StateTransition[IT, DT] = editAxis(lm, 0)
+  def enter[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode): StateTransition[IT, DT] =
+    editAxis(lm, 0)
 
-  def editAxis[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode, axisIndex: Int): StateTransition[IT, DT] = new StateTransition[IT, DT] {
-    override def apply()(implicit parent: IT): Delegate[IT] = new Editing[IT](lm, axisIndex)
-  }
+  def editAxis[IT <: ComplexLandmarkingInteractor[IT], DT <: Delegate[IT]](lm: LandmarkNode,
+                                                                           axisIndex: Int): StateTransition[IT, DT] =
+    new StateTransition[IT, DT] {
+      override def apply()(implicit parent: IT): Delegate[IT] = new Editing[IT](lm, axisIndex)
+    }
 }
 
-class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode, axisIndex: Int)(implicit override val parent: ComplexLandmarkingInteractor[IT]) extends ComplexLandmarkingInteractor.Delegate[IT] {
+class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode, axisIndex: Int)(
+  implicit
+  override val parent: ComplexLandmarkingInteractor[IT]
+) extends ComplexLandmarkingInteractor.Delegate[IT] {
   override def onLandmarkCreationToggled(): Unit = cancel()
 
   override def mouseExited(e: MouseEvent): Verdict = {
@@ -50,7 +56,9 @@ class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode
       e.canvas.setCursor(Cursor.getPredefinedCursor(cursorList(nextAxisIndex)))
       transitionToEditAxis(landmarkNode, nextAxisIndex)
     } else if (e.getButton == MouseEvent.BUTTON3) {
-      val cursor = if (parent.isLandmarkCreationEnabled) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
+      val cursor =
+        if (parent.isLandmarkCreationEnabled) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR)
+        else Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
       e.canvas.setCursor(cursor)
       cancel()
     }
@@ -106,7 +114,12 @@ class Editing[IT <: ComplexLandmarkingInteractor[IT]](landmarkNode: LandmarkNode
   }
 
   def showStatus(): Unit = {
-    parent.frame.status.set(StatusMessage(s"You are editing axis ${axisIndex + 1} of landmark ${landmarkNode.name}", kind = StatusMessage.Information, highPriority = true, log = false))
+    parent.frame.status.set(
+      StatusMessage(s"You are editing axis ${axisIndex + 1} of landmark ${landmarkNode.name}",
+                    kind = StatusMessage.Information,
+                    highPriority = true,
+                    log = false)
+    )
   }
 
   def clearStatus(): Unit = {
