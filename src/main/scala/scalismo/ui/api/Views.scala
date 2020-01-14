@@ -20,8 +20,9 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField}
-import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
+import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
+import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField, NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
@@ -558,9 +559,9 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
     peer.opacity.value = o
   }
 
-  def scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.source
+  def scalarField: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float] = peer.source
 
-  def transformedScalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = peer.transformedSource
+  def transformedScalarField: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float] = peer.transformedSource
 }
 
 object ScalarFieldView {
@@ -612,7 +613,7 @@ case class VectorFieldView private[ui] (override protected[api] val peer: Vector
     peer.opacity.value = o
   }
 
-  def vectorField[A]: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] = peer.source
+  def vectorField[A]: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]] = peer.source
 }
 
 object VectorFieldView {
@@ -844,11 +845,11 @@ case class DiscreteLowRankGPTransformationView private[ui] (
 
   val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
-  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]] =
+  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]] =
     peer.transformation.dgp
 
   def discreteLowRankGaussianProcess_=(
-    dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]
+    dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]]
   ): Unit = {
     peer.transformation = DiscreteLowRankGpPointTransformation(dgp)
   }
@@ -929,9 +930,10 @@ case class ShapeModelTransformation(poseTransformation: RigidTransformation[_3D]
 object ShapeModelTransformation {
   def apply(
     poseTransformation: RigidTransformation[_3D],
-    gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]
+    gp: DiscreteLowRankGaussianProcess[_3D, TriangleMesh, EuclideanVector[_3D]]
   ): ShapeModelTransformation = {
-    ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gp))
+    val gpUnstructuredPoints = gp.interpolate(NearestNeighborInterpolator()).discretize(UnstructuredPointsDomain(gp.domain.pointSet))
+    ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
   }
 }
 

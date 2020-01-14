@@ -20,7 +20,7 @@ package scalismo.ui.model
 import java.awt.Color
 import java.io.File
 
-import scalismo.geometry.{_3D, Landmark, Point3D}
+import scalismo.geometry.{Landmark, Point, Point3D, _3D}
 import scalismo.io.LandmarkIO
 import scalismo.ui.model.LandmarksNode.NameGenerator
 import scalismo.ui.model.capabilities._
@@ -141,7 +141,7 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D])
     untransformed.copy(point = transformation(untransformed.point))
   }
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     source.point
   }
 

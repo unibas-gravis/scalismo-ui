@@ -18,8 +18,8 @@
 package scalismo.ui.model
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, NearestNeighborInterpolator}
-import scalismo.geometry.{_3D, EuclideanVector, Point}
+import scalismo.common.{DiscreteDomain, NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.geometry.{EuclideanVector, Point, _3D}
 import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess}
 
 // This used to be a case class, but since it is extended by the discrete version, it can no longer be.
@@ -48,12 +48,12 @@ object LowRankGpPointTransformation {
 }
 
 class DiscreteLowRankGpPointTransformation private (
-  val dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+  val dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
   gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]],
   coefficients: DenseVector[Double]
 ) extends LowRankGpPointTransformation(gp, coefficients) {
 
-  protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+  protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                      coefficients: DenseVector[Double]) = {
     this(dgp, dgp.interpolate(NearestNeighborInterpolator[_3D, EuclideanVector[_3D]]()), coefficients)
   }
@@ -65,10 +65,10 @@ class DiscreteLowRankGpPointTransformation private (
 
 object DiscreteLowRankGpPointTransformation {
   def apply(
-    dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]
+    dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]]
   ): DiscreteLowRankGpPointTransformation = apply(dgp, DenseVector.zeros[Double](dgp.rank))
 
-  def apply(dgp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+  def apply(dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
             coefficients: DenseVector[Double]): DiscreteLowRankGpPointTransformation =
     new DiscreteLowRankGpPointTransformation(dgp, coefficients)
 }

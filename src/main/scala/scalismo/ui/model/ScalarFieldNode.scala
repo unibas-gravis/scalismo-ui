@@ -17,8 +17,8 @@
 
 package scalismo.ui.model
 
-import scalismo.common.{DiscreteDomain, DiscreteScalarField, Scalar}
-import scalismo.geometry.{_3D, Point3D}
+import scalismo.common.{CanWarp, DiscreteDomain, DiscreteScalarField, Scalar, UnstructuredPointsDomain}
+import scalismo.geometry.{Point, Point3D, _3D}
 import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
 
@@ -27,7 +27,7 @@ import scala.reflect.ClassTag
 class ScalarFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add[S: Scalar: ClassTag](scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], S],
+  def add[S: Scalar: ClassTag](scalarField: DiscreteScalarField[_3D, UnstructuredPointsDomain, S],
                                name: String): ScalarFieldNode = {
     val scalar = implicitly[Scalar[S]]
     val node = new ScalarFieldNode(this, scalarField.map(s => scalar.toFloat(s)), name)
@@ -37,9 +37,10 @@ class ScalarFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 }
 
 class ScalarFieldNode(override val parent: ScalarFieldsNode,
-                      override val source: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float],
+                      override val source: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float],
                       initialName: String)
-    extends Transformable[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float]]
+                     (implicit canWarp : CanWarp[_3D, UnstructuredPointsDomain])
+    extends Transformable[DiscreteScalarField[_3D, UnstructuredPointsDomain, Float]]
     with InverseTransformation
     with Removeable
     with Renameable
@@ -62,16 +63,16 @@ class ScalarFieldNode(override val parent: ScalarFieldsNode,
 
   override def remove(): Unit = parent.remove(this)
 
-  override def transform(untransformed: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float],
-                         transformation: PointTransformation): DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = {
+  override def transform(untransformed: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float],
+                         transformation: PointTransformation): DiscreteScalarField[_3D, UnstructuredPointsDomain, Float] = {
 
-    val newDomain = untransformed.domain.transform(transformation)
+    val newDomain = canWarp.transform(untransformed.domain, transformation)
     DiscreteScalarField(newDomain, untransformed.data)
   }
 
-  override def inverseTransform(point: Point3D): Point3D = {
-    val id = transformedSource.domain.findClosestPoint(point).id
-    source.domain.point(id)
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
+    val id = transformedSource.domain.pointSet.findClosestPoint(point).id
+    source.domain.pointSet.point(id)
   }
 
 }

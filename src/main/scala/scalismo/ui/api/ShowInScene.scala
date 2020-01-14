@@ -17,17 +17,13 @@
 
 package scalismo.ui.api
 
+import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
 import scalismo.common._
-import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{
-  DiscreteLowRankGaussianProcess,
-  LowRankGaussianProcess,
-  StatisticalMeshModel,
-  StatisticalVolumeMeshModel
-}
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel, StatisticalVolumeMeshModel}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -46,14 +42,14 @@ trait LowPriorityImplicits {
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
   implicit def showInSceneScalarField[A: Scalar: ClassTag]
-    : ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
+    : ShowInScene[DiscreteScalarField[_3D, UnstructuredPointsDomain, A]] {
       type View = ScalarFieldView
     } =
-    new ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
+    new ShowInScene[DiscreteScalarField[_3D, UnstructuredPointsDomain, A]] {
 
       override type View = ScalarFieldView
 
-      override def showInScene(sf: DiscreteScalarField[_3D, DiscreteDomain[_3D], A],
+      override def showInScene(sf: DiscreteScalarField[_3D, UnstructuredPointsDomain, A],
                                name: String,
                                group: Group): ScalarFieldView = {
         ScalarFieldView(group.peer.scalarFields.add(sf, name))
@@ -112,7 +108,7 @@ object ShowInScene extends LowPriorityImplicits {
                              name: String,
                              group: Group): ScalarTetrahedralMeshFieldView = {
       val scalarConv = implicitly[Scalar[S]]
-      val smfAsFloat = mesh.copy(data = mesh.data.map[Float](x => scalarConv.toFloat(x)))
+      val smfAsFloat = DiscreteField(mesh.domain, data = mesh.data.map(x => scalarConv.toFloat(x)))
       ScalarTetrahedralMeshFieldView(group.peer.tetrahedralMeshFields.add(smfAsFloat, name))
     }
   }
@@ -141,7 +137,7 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = PointCloudView
 
     override def showInScene(domain: UnstructuredPointsDomain[_3D], name: String, group: Group): PointCloudView = {
-      ShowInScenePointCloudFromIndexedSeq.showInScene(domain.pointSequence, name, group)
+      ShowInScenePointCloudFromIndexedSeq.showInScene(domain.pointSet.pointSequence, name, group)
     }
   }
 
@@ -152,17 +148,17 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
       val scalarConv = implicitly[Scalar[S]]
-      val smfAsFloat = scalarMeshField.copy(data = scalarMeshField.data.map[Float](x => scalarConv.toFloat(x)))
+      val smfAsFloat = DiscreteField(scalarMeshField.domain, scalarMeshField.data.map(x => scalarConv.toFloat(x)))
       ScalarMeshFieldView(group.peer.scalarMeshFields.add(smfAsFloat, name))
     }
   }
 
   implicit object ShowInSceneDiscreteFieldOfVectors
-      extends ShowInScene[DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]] {
+      extends ShowInScene[DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]]] {
 
     override type View = VectorFieldView
 
-    override def showInScene(df: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    override def showInScene(df: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                              name: String,
                              group: Group): VectorFieldView = {
       VectorFieldView(group.peer.vectorFields.add(df, name))
@@ -206,9 +202,12 @@ object ShowInScene extends LowPriorityImplicits {
     type View = StatisticalMeshModelViewControls
 
     override def showInScene(model: StatisticalMeshModel, name: String, group: Group): View = {
+      val gpUnstructuredPoints = model.gp
+        .interpolate(NearestNeighborInterpolator())
+        .discretize(UnstructuredPointsDomain(model.referenceMesh.pointSet))
 
       val shapeModelTransform =
-        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group)
       StatisticalMeshModelViewControls(tmV, smV)
@@ -220,9 +219,12 @@ object ShowInScene extends LowPriorityImplicits {
     type View = StatisticalVolumeMeshModelViewControls
 
     override def showInScene(model: StatisticalVolumeMeshModel, name: String, group: Group): View = {
+      val gpUnstructuredPoints = model.gp
+        .interpolate(NearestNeighborInterpolator())
+        .discretize(UnstructuredPointsDomain(model.referenceVolumeMesh.pointSet))
 
       val shapeModelTransform =
-        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowTetrahedralMesh.showInScene(model.referenceVolumeMesh, name, group)
       StatisticalVolumeMeshModelViewControls(tmV, smV)
@@ -261,11 +263,11 @@ object ShowInScene extends LowPriorityImplicits {
   }
 
   implicit object CreateDiscreteLowRankGPTransformation
-      extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]]] {
+      extends ShowInScene[DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]]] {
 
     override type View = DiscreteLowRankGPTransformationView
 
-    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+    override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                              name: String,
                              group: Group): View = {
 

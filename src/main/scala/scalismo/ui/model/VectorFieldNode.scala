@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.common.{DiscreteDomain, DiscreteField}
+import scalismo.common.{DiscreteDomain, DiscreteField, UnstructuredPointsDomain}
 import scalismo.geometry._
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -27,7 +27,7 @@ import scala.collection.immutable
 class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[VectorFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add(vectorField: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], name: String): VectorFieldNode = {
+  def add(vectorField: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]], name: String): VectorFieldNode = {
     val node = new VectorFieldNode(this, vectorField, name)
     add(node)
     node
@@ -41,7 +41,7 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 }
 
 class VectorFieldNode(override val parent: VectorFieldsNode,
-                      val source: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+                      val source: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                       initialName: String)
     extends RenderableSceneNode
     with Removeable

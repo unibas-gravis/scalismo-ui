@@ -19,7 +19,7 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.Point3D
+import scalismo.geometry.{Point, Point3D, _3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.VertexColorMesh3D
 import scalismo.ui.model.capabilities._
@@ -68,7 +68,7 @@ class VertexColorMeshNode(override val parent: VertexColorMeshesNode,
 
   override def remove(): Unit = parent.remove(this)
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     val id = transformedSource.shape.pointSet.findClosestPoint(point).id
     source.shape.pointSet.point(id)
   }

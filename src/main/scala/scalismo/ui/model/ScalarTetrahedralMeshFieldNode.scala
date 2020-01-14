@@ -19,9 +19,11 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.Point3D
+import scalismo.common.{CanWarp, DiscreteField, UnstructuredPointsDomain}
+import scalismo.common.DiscreteField.ScalarVolumeMeshField
+import scalismo.geometry.{Point, Point3D, _3D}
 import scalismo.io.MeshIO
-import scalismo.mesh.ScalarVolumeMeshField
+import scalismo.mesh.TetrahedralMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{FileIoMetadata, FileUtil}
@@ -55,6 +57,7 @@ class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode)
 class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshFieldsNode,
                                      override val source: ScalarVolumeMeshField[Float],
                                      initialName: String)
+                                    (implicit canWarp : CanWarp[_3D, TetrahedralMesh])
     extends Transformable[ScalarVolumeMeshField[Float]]
     with InverseTransformation
     with Saveable
@@ -76,14 +79,14 @@ class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshF
 
   override def remove(): Unit = parent.remove(this)
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     val id = transformedSource.mesh.pointSet.findClosestPoint(point).id
     source.mesh.pointSet.point(id)
   }
 
   override def transform(untransformed: ScalarVolumeMeshField[Float],
                          transformation: PointTransformation): ScalarVolumeMeshField[Float] = {
-    untransformed.copy(mesh = untransformed.mesh.transform(transformation))
+    DiscreteField(canWarp.transform(untransformed.mesh, transformation), untransformed.data)
   }
 
   override def save(file: File): Try[Unit] = MeshIO.writeScalarVolumeMeshField(transformedSource, file)

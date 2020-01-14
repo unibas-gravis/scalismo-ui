@@ -209,7 +209,7 @@ object Recipe {
         val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(point)
         pointAndNode match {
           case PointAndNode(Some(p3d), Some(img: ImageNode)) =>
-            val ptId = img.source.domain.findClosestPoint(p3d)
+            val ptId = img.source.domain.pointSet.findClosestPoint(p3d)
             val pt = ptId.point
             val intensity = img.source(ptId.id)
 

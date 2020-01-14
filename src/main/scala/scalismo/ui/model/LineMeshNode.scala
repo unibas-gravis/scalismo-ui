@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.geometry.{_3D, Point3D}
+import scalismo.geometry.{Point, Point3D, _3D}
 import scalismo.mesh.LineMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -46,7 +46,7 @@ class LineMeshNode(override val parent: LineMeshesNode, override val source: Lin
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     val id = transformedSource.pointSet.findClosestPoint(point).id
     source.pointSet.point(id)
   }

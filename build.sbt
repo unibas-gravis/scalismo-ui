@@ -26,7 +26,7 @@ lazy val root = (project in file("."))
       case _             => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "0.18-M1",
+      "ch.unibas.cs.gravis" %% "scalismo" % "develop-6ce1cce5e721e902f6bda0485c4458f7700387a3",
       "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "de.sciss" %% "swingplus" % "0.2.2",

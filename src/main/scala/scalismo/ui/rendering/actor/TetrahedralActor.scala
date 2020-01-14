@@ -34,8 +34,9 @@
 
 package scalismo.ui.rendering.actor
 
+import scalismo.common.DiscreteField.ScalarVolumeMeshField
 import scalismo.geometry._3D
-import scalismo.mesh.{ScalarVolumeMeshField, TetrahedralMesh}
+import scalismo.mesh.TetrahedralMesh
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
