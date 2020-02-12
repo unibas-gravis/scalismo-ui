@@ -18,16 +18,12 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{
-  DiscreteLowRankGaussianProcess,
-  LowRankGaussianProcess,
-  StatisticalMeshModel,
-  StatisticalVolumeMeshModel
-}
+import scalismo.statisticalmodel.experimental.StatisticalVolumeMeshModel
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
