@@ -716,6 +716,10 @@ case class StatisticalVolumeMeshModelViewControls private[ui] (
   shapeModelTransformationView: ShapeModelTransformationView
 )
 
+// Note this class does not extend Object view, as there is not really a corresponding node to this concept
+case class PointDistributionModelViewControls[D, DDomain[D] <: DiscreteDomain[D]] private[ui] (referenceView: ShowInScene[DDomain[D]]#View,   shapeModelTransformationView: ShapeModelTransformationView)
+
+
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
   def hidden_=(b: Boolean): Unit = {
