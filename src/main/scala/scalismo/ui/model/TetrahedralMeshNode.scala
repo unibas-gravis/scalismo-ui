@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,13 @@ import scalismo.io.MeshIO
 import scalismo.mesh.TetrahedralMesh3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
-class TetrahedralMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[TetrahedralMeshNode] with Loadable {
+class TetrahedralMeshesNode(override val parent: GroupNode)
+    extends SceneNodeCollection[TetrahedralMeshNode]
+    with Loadable {
   override val name: String = "Tetrahedral Meshes"
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.TetrahedralMeshRead
@@ -50,8 +52,18 @@ class TetrahedralMeshesNode(override val parent: GroupNode) extends SceneNodeCol
   }
 }
 
-class TetrahedralMeshNode(override val parent: TetrahedralMeshesNode, override val source: TetrahedralMesh3D, initialName: String)
-    extends Transformable[TetrahedralMesh3D] with InverseTransformation with Removeable with Renameable with HasLineWidth with HasOpacity with HasColor with Saveable with HasPickable {
+class TetrahedralMeshNode(override val parent: TetrahedralMeshesNode,
+                          override val source: TetrahedralMesh3D,
+                          initialName: String)
+    extends Transformable[TetrahedralMesh3D]
+    with InverseTransformation
+    with Removeable
+    with Renameable
+    with HasLineWidth
+    with HasOpacity
+    with HasColor
+    with Saveable
+    with HasPickable {
   name = initialName
 
   override def group: GroupNode = parent.parent

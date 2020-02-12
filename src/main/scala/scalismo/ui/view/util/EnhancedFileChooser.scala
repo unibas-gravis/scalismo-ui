@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
 
 package scalismo.ui.view.util
 
-import java.awt.event.{ MouseAdapter, MouseEvent, MouseMotionAdapter }
-import java.awt.{ BorderLayout, Color, Point, Component => AComponent }
+import java.awt.event.{MouseAdapter, MouseEvent, MouseMotionAdapter}
+import java.awt.{BorderLayout, Color, Point, Component => AComponent}
 import java.io.File
 
 import javax.swing._
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 
-import scala.swing.{ BorderPanel, Component, FileChooser, Label }
+import scala.swing.{BorderPanel, Component, FileChooser, Label}
 import scala.util.Failure
 
 object EnhancedFileChooser {
@@ -55,9 +55,10 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     if (dirs.nonEmpty) {
       val old = lastUsedDirectories.diff(dirs)
       val current = Seq(dirs, old).flatten.take(EnhancedFileChooser.MaxDirs)
-      GlobalSettings.setList[String](GlobalSettings.Keys.LastUsedDirectories, current.map(_.getAbsolutePath).toList) match {
+      GlobalSettings
+        .setList[String](GlobalSettings.Keys.LastUsedDirectories, current.map(_.getAbsolutePath).toList) match {
         case Failure(x) => x.printStackTrace()
-        case _ => /* ok */
+        case _          => /* ok */
       }
     }
   }
@@ -121,7 +122,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
           addMouseMotionListener(new MouseMotionAdapter {
             override def mouseMoved(e: MouseEvent): Unit = {
               affectedItem(e.getPoint) match {
-                case None => setToolTipText(null)
+                case None    => setToolTipText(null)
                 case Some(f) => setToolTipText(f.tooltip)
               }
             }
@@ -153,7 +154,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
       val cp = dialog.getContentPane
       leftComponent match {
         case Some(c) => cp.add(c.peer, BorderLayout.WEST)
-        case None =>
+        case None    =>
       }
       if (dialog.getPreferredSize.getWidth > dialog.getSize.getWidth) {
         dialog.setSize(dialog.getPreferredSize)

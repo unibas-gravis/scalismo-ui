@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.view.action.popup
 
-import scalismo.ui.model.{ LandmarkNode, SceneNode }
+import scalismo.ui.model.{LandmarkNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 
@@ -27,7 +27,8 @@ object CenterOnLandmarkAction extends PopupAction.Factory {
   }
 }
 
-class CenterOnLandmarkAction(node: LandmarkNode)(implicit val frame: ScalismoFrame) extends PopupAction("Center slices here", BundledIcon.Center) {
+class CenterOnLandmarkAction(node: LandmarkNode)(implicit val frame: ScalismoFrame)
+    extends PopupAction("Center slices here", BundledIcon.Center) {
   override def apply(): Unit = {
     frame.sceneControl.slicingPosition.point = node.transformedSource.point
   }

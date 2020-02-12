@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.settings
 
-import java.io.{ File, PrintWriter }
+import java.io.{File, PrintWriter}
 
 import scala.io.Codec
 
@@ -61,20 +61,23 @@ class SettingsFile(directory: File, name: String) {
     val oldLines = readFile().zipWithIndex
     var position: Option[Int] = None
     val prefix = s"$key="
-    val newLines = oldLines.filter({
-      case (l, p) =>
-        if (l.startsWith(prefix)) {
-          if (position.isEmpty) {
-            position = Some(p)
+    val newLines = oldLines
+      .filter({
+        case (l, p) =>
+          if (l.startsWith(prefix)) {
+            if (position.isEmpty) {
+              position = Some(p)
+            }
+            false
+          } else {
+            true
           }
-          false
-        } else {
-          true
-        }
-    }).map(_._1).zipWithIndex
+      })
+      .map(_._1)
+      .zipWithIndex
     val (before, after) = position match {
       case Some(index) => (newLines.filter(_._2 < index).map(_._1), newLines.filter(_._2 >= index).map(_._1))
-      case None => (newLines.map(_._1), Nil)
+      case None        => (newLines.map(_._1), Nil)
     }
     val inserted = vals.map(s => s"$prefix$s")
     val all = List(before, inserted, after).flatten
@@ -109,7 +112,9 @@ object SettingsFile {
       }
     }
 
-    implicit val stringCodec: Codec[String] = Codec({ s: String => s })
+    implicit val stringCodec: Codec[String] = Codec({ s: String =>
+      s
+    })
 
     implicit val booleanCodec: Codec[Boolean] = Codec(java.lang.Boolean.parseBoolean)
 

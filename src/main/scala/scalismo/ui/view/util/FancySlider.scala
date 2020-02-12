@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ package scalismo.ui.view.util
 import java.awt.Color
 
 import scala.swing.event.ValueChanged
-import scala.swing.{ Label, Slider }
+import scala.swing.{Label, Slider}
 
 class FancySlider extends Slider {
   // intended to be overwritten in subclasses if needed

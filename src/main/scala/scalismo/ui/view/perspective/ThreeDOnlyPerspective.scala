@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,13 @@
 
 package scalismo.ui.view.perspective
 
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel3D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel3D}
 
 import scala.swing.BorderPanel
 
-class ThreeDOnlyPerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory) extends BorderPanel with Perspective {
+class ThreeDOnlyPerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory)
+    extends BorderPanel
+    with Perspective {
   val viewport = new ViewportPanel3D(frame)
 
   override val viewports: List[ViewportPanel] = List(viewport)

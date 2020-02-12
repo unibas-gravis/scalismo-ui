@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
 
 package scalismo.ui.app
 
-import java.io.{ File, IOException }
+import java.io.{File, IOException}
 
 import scalismo.geometry._3D
-import scalismo.io.{ ImageIO, LandmarkIO, MeshIO, StatismoIO }
+import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatismoIO}
 import scalismo.ui.api.ScalismoUI
 import scalismo.ui.util.FileUtil
 
-import scala.util.{ Failure, Success }
+import scala.util.{Failure, Success}
 
 /**
  * scalismo Viewer is a simple viewer to visualize 3D Shape Models, images, meshes, ...
@@ -66,7 +66,7 @@ object ScalismoViewer {
           case "stl" =>
             MeshIO.readMesh(file) match {
               case Success(mesh) => ui.show(defaultGroup, mesh, basename)
-              case Failure(t) => showErrorMessage(file, t)
+              case Failure(t)    => showErrorMessage(file, t)
             }
 
           case "vtk" =>
@@ -75,26 +75,26 @@ object ScalismoViewer {
               case Failure(_) =>
                 ImageIO.read3DScalarImageAsType[Float](file, resampleOblique = true) match {
                   case Success(image) => ui.show(defaultGroup, image, basename)
-                  case Failure(t) => showErrorMessage(file, t)
+                  case Failure(t)     => showErrorMessage(file, t)
                 }
             }
 
           case "nii" =>
             ImageIO.read3DScalarImageAsType[Float](file) match {
               case Success(image) => ui.show(defaultGroup, image, basename)
-              case Failure(t) => showErrorMessage(file, t)
+              case Failure(t)     => showErrorMessage(file, t)
             }
 
           case "json" =>
             LandmarkIO.readLandmarksJson[_3D](file) match {
               case Success(lms) => ui.show(defaultGroup, lms, basename)
-              case Failure(t) => showErrorMessage(file, t)
+              case Failure(t)   => showErrorMessage(file, t)
             }
 
           case "csv" =>
             LandmarkIO.readLandmarksCsv[_3D](file) match {
               case Success(lms) => ui.show(defaultGroup, lms, basename)
-              case Failure(t) => showErrorMessage(file, t)
+              case Failure(t)   => showErrorMessage(file, t)
             }
 
           case _ =>

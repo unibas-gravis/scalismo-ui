@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 
 package scalismo.ui.control
 
-import scalismo.geometry.{ Point, Point3D }
+import scalismo.geometry.{Point, Point3D}
 import scalismo.ui.control.SlicingPosition.event
 import scalismo.ui.control.SlicingPosition.renderable.BoundingBoxRenderable
-import scalismo.ui.event.{ Event, ScalismoPublisher }
-import scalismo.ui.model.{ BoundingBox, Renderable, Scene }
+import scalismo.ui.event.{Event, ScalismoPublisher}
+import scalismo.ui.model.{BoundingBox, Renderable, Scene}
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view._
 
@@ -147,8 +147,8 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   reactions += {
     case PerspectivePanel.event.PerspectiveChanged(_, _, _) => perspectiveChanged()
-    case ViewportPanel.event.BoundingBoxChanged(_) => updateBoundingBox()
-    case ViewportPanel.event.Detached(vp) => deafTo(vp)
+    case ViewportPanel.event.BoundingBoxChanged(_)          => updateBoundingBox()
+    case ViewportPanel.event.Detached(vp)                   => deafTo(vp)
   }
 
   def initialize(): Unit = {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.model
 
 import scalismo.geometry.Point3D
-import scalismo.ui.model.capabilities.{ InverseTransformation, Removeable, Renameable, Transformable }
+import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
 
 class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollection[PointCloudNode] {
@@ -31,7 +31,15 @@ class PointCloudsNode(override val parent: GroupNode) extends SceneNodeCollectio
   }
 }
 
-class PointCloudNode(override val parent: PointCloudsNode, override val source: PointCloud, initialName: String) extends Transformable[PointCloud] with InverseTransformation with Removeable with Renameable with HasColor with HasOpacity with HasRadius with HasLineWidth {
+class PointCloudNode(override val parent: PointCloudsNode, override val source: PointCloud, initialName: String)
+    extends Transformable[PointCloud]
+    with InverseTransformation
+    with Removeable
+    with Renameable
+    with HasColor
+    with HasOpacity
+    with HasRadius
+    with HasLineWidth {
   name = initialName
 
   override val color = new ColorProperty()
@@ -53,4 +61,3 @@ class PointCloudNode(override val parent: PointCloudsNode, override val source: 
   }
 
 }
-

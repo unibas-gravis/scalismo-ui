@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,13 @@ import java.awt.Font
 
 import javax.swing.border.TitledBorder
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.{ Axis, Scene, SceneNode }
+import scalismo.ui.model.{Axis, Scene, SceneNode}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{ AxisColor, FancySlider }
+import scalismo.ui.view.util.{AxisColor, FancySlider}
 
-import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
-import scala.swing.event.{ ButtonClicked, ValueChanged }
+import scala.swing.event.{ButtonClicked, ValueChanged}
 
 object SlicingPositionPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new SlicingPositionPanel(frame)
@@ -177,7 +177,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   }
 
   reactions += {
-    case SlicingPosition.event.VisibilityChanged(_) => updateUi()
+    case SlicingPosition.event.VisibilityChanged(_)  => updateUi()
     case SlicingPosition.event.BoundingBoxChanged(_) => updateUi()
     case SlicingPosition.event.PointChanged(_, _, _) => updateUi()
     case ValueChanged(slider: Slider) =>

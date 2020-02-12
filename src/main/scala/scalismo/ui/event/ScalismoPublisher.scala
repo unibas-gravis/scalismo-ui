@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,8 +60,8 @@ trait ScalismoPublisher extends Publisher {
     // make sure that each listener is notified, even if the
     // listeners change during the handling.
     val copy = listeners.map(l => l)
-    copy.foreach {
-      l => if (l.isDefinedAt(e)) l(e)
+    copy.foreach { l =>
+      if (l.isDefinedAt(e)) l(e)
     }
   }
 }

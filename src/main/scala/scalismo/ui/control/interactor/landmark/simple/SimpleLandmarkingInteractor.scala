@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 package scalismo.ui.control.interactor.landmark.simple
 
 import java.awt.event.MouseEvent
-import java.awt.{ Color, Cursor }
+import java.awt.{Color, Cursor}
 
 import javax.swing.SwingUtilities
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor, Recipe }
+import scalismo.ui.control.interactor.{DefaultInteractor, Interactor, Recipe}
 import scalismo.ui.model.properties.Uncertainty
-import scalismo.ui.model.{ LandmarkNode, SceneNode }
+import scalismo.ui.model.{LandmarkNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 
@@ -72,7 +72,8 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
 
   // set the cursor to a crosshair if we're in landmarking mode
   override def mouseEntered(e: MouseEvent): Verdict = {
-    val cursor = if (landmarkingButton.selected) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
+    val cursor =
+      if (landmarkingButton.selected) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
     e.canvas.setCursor(cursor)
     super.mouseEntered(e)
   }
@@ -81,7 +82,7 @@ trait SimpleLandmarkingInteractorTrait extends Interactor {
     if (landmarkingButton.selected) {
       def exceptLandmarks(node: SceneNode) = node match {
         case _: LandmarkNode => false
-        case _ => true
+        case _               => true
       }
 
       Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, exceptLandmarks)

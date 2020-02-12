@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.settings
 
 import scalismo.ui.settings.SettingsFile.Codec
 
-import scala.reflect.runtime.universe.{ TypeTag, typeOf }
+import scala.reflect.runtime.universe.{typeOf, TypeTag}
 import scala.util._
 
 /**
@@ -47,7 +47,8 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    */
   def get[A: TypeTag: Codec](key: String): Option[A] = {
     typeOf[A] match {
-      case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
+      case t if t <:< typeOf[Seq[_]] =>
+        throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
       case _ => /* ok */
     }
 
@@ -84,7 +85,8 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    */
   def set[A: TypeTag: Codec](key: String, value: A): Try[Unit] = {
     typeOf[A] match {
-      case t if t <:< typeOf[Seq[_]] => throw new IllegalArgumentException("Use the setList() method to set multi-valued settings.")
+      case t if t <:< typeOf[Seq[_]] =>
+        throw new IllegalArgumentException("Use the setList() method to set multi-valued settings.")
       case _ => /* ok */
     }
     setList(key, List(value))
@@ -100,10 +102,9 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    * @tparam A type of the setting's values.
    * @return Failure on error, Success otherwise
    */
-
   def setList[A: TypeTag: Codec](key: String, values: List[A]): Try[Unit] = {
     Try(doSet(key, values.map(v => implicitly[Codec[A]].toString(v)))) match {
-      case Success(_) => Success(())
+      case Success(_)    => Success(())
       case Failure(oops) => Failure(oops)
     }
   }

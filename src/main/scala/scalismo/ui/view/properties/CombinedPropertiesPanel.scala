@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,18 +32,24 @@ import scala.swing.BorderPanel
  * @param description human-readable name
  * @param delegates   property panels to be combined.
  */
-class CombinedPropertiesPanel(override val frame: ScalismoFrame, override val description: String, delegates: PropertyPanel*) extends BorderPanel with PropertyPanel {
+class CombinedPropertiesPanel(override val frame: ScalismoFrame,
+                              override val description: String,
+                              delegates: PropertyPanel*)
+    extends BorderPanel
+    with PropertyPanel {
 
   /*
-  * This will return true if *any* of the delegates returns true,
-  * and false only if *no* delegate returns true.
-  * In other words: The panel is functional if a non-empty subset
-  * of its delegates is functional. Non-functional delegates are hidden.
-  */
+   * This will return true if *any* of the delegates returns true,
+   * and false only if *no* delegate returns true.
+   * In other words: The panel is functional if a non-empty subset
+   * of its delegates is functional. Non-functional delegates are hidden.
+   */
   override def setNodes(nodes: List[SceneNode]): Boolean = {
-    val ok = delegates.map(d => delegatedSetNodes(d, nodes)).foldLeft(false)({
-      (x, y) => x || y
-    })
+    val ok = delegates
+      .map(d => delegatedSetNodes(d, nodes))
+      .foldLeft(false)({ (x, y) =>
+        x || y
+      })
     revalidate()
     ok
   }
@@ -56,11 +62,10 @@ class CombinedPropertiesPanel(override val frame: ScalismoFrame, override val de
 
   // constructor
 
-  delegates.reverse.foldLeft(this: BorderPanel)({
-    (panel, comp) =>
-      val child = new BorderPanel
-      child layout comp = BorderPanel.Position.Center
-      panel layout child = BorderPanel.Position.North
-      child
+  delegates.reverse.foldLeft(this: BorderPanel)({ (panel, comp) =>
+    val child = new BorderPanel
+    child.layout(comp) = BorderPanel.Position.Center
+    panel.layout(child) = BorderPanel.Position.North
+    child
   })
 }

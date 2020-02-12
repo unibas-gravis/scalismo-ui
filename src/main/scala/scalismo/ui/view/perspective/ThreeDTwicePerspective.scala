@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,15 @@
 
 package scalismo.ui.view.perspective
 
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel3D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel3D}
 
 import scala.swing.GridPanel
 
-class ThreeDTwicePerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory) extends GridPanel(1, 2) with Perspective {
-  override val viewports: List[ViewportPanel] = List(new ViewportPanel3D(frame, "Left"), new ViewportPanel3D(frame, "Right"))
+class ThreeDTwicePerspective(override val frame: ScalismoFrame, override val factory: PerspectiveFactory)
+    extends GridPanel(1, 2)
+    with Perspective {
+  override val viewports: List[ViewportPanel] =
+    List(new ViewportPanel3D(frame, "Left"), new ViewportPanel3D(frame, "Right"))
 
   contents ++= viewports
 }

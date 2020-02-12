@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,21 @@
 
 package scalismo.ui.view.dialog
 
-import java.io.{ PrintWriter, StringWriter }
+import java.io.{PrintWriter, StringWriter}
 
-import javax.swing.{ BorderFactory, JComponent, UIManager }
+import javax.swing.{BorderFactory, JComponent, UIManager}
 import scalismo.ui.resources.icons.ScalableIcon
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{ MultiLineLabel, ScalableUI }
+import scalismo.ui.view.util.{MultiLineLabel, ScalableUI}
 
 import scala.swing._
 import scala.swing.event.Key
 
 object ErrorDialog {
-  def show(exception: Throwable, title: String = "Error", additionalMessage: String = "", iconOverride: Option[ScalableIcon] = None)(implicit frame: ScalismoFrame): Unit = {
+  def show(exception: Throwable,
+           title: String = "Error",
+           additionalMessage: String = "",
+           iconOverride: Option[ScalableIcon] = None)(implicit frame: ScalismoFrame): Unit = {
     val dialog = new ErrorDialog(exception, title, additionalMessage, iconOverride)
     dialog.pack()
     dialog.centerOnScreen()
@@ -37,7 +40,10 @@ object ErrorDialog {
   }
 }
 
-class ErrorDialog(exception: Throwable, title: String, additionalMessage: String, iconOverride: Option[ScalableIcon])(implicit val frame: ScalismoFrame) extends Dialog(frame) {
+class ErrorDialog(exception: Throwable, title: String, additionalMessage: String, iconOverride: Option[ScalableIcon])(
+  implicit
+  val frame: ScalismoFrame
+) extends Dialog(frame) {
   modal = true
 
   peer.setTitle(title)
@@ -58,15 +64,15 @@ class ErrorDialog(exception: Throwable, title: String, additionalMessage: String
   }
 
   private val placeHolderAdditionalLabelOption: Option[Label] = additionalMessage match {
-    case null => None
+    case null                    => None
     case s if s.trim.length == 0 => None
-    case text => Some(new Label(text, icon, Alignment.Right))
+    case text                    => Some(new Label(text, icon, Alignment.Right))
   }
 
   private val messageLabel = {
     val fullText = placeHolderAdditionalLabelOption match {
       case Some(label) => s"${label.text}\n\n${placeHolderMessageLabel.text}"
-      case None => ""
+      case None        => ""
     }
     new MultiLineLabel(fullText)
   }

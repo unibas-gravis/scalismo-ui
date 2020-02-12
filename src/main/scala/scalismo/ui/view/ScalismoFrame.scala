@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,20 @@ package scalismo.ui.view
 
 import java.awt.Dimension
 
-import javax.swing.{ SwingUtilities, WindowConstants }
+import javax.swing.{SwingUtilities, WindowConstants}
 import scalismo.ui.control.SceneControl
 import scalismo.ui.control.interactor.Interactor
 import scalismo.ui.control.interactor.landmark.simple.SimpleLandmarkingInteractor
-import scalismo.ui.event.{ Event, ScalismoPublisher }
-import scalismo.ui.model.{ Scene, SceneNode }
+import scalismo.ui.event.{Event, ScalismoPublisher}
+import scalismo.ui.model.{Scene, SceneNode}
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view.ScalismoFrame.event.SelectedNodesChanged
 import scalismo.ui.view.menu.FileMenu.CloseFrameItem
 import scalismo.ui.view.menu.HelpMenu.ShowAboutDialogItem
-import scalismo.ui.view.menu.ViewMenu.{ PerspectiveMenu, ShowBackgroundColorDialogItem, ShowDisplayScalingDialogItem }
-import scalismo.ui.view.menu.{ FileMenu, HelpMenu, ViewMenu }
+import scalismo.ui.view.menu.ViewMenu.{PerspectiveMenu, ShowBackgroundColorDialogItem, ShowDisplayScalingDialogItem}
+import scalismo.ui.view.menu.{FileMenu, HelpMenu, ViewMenu}
 
-import scala.swing.{ BorderPanel, Component, MainFrame, MenuBar }
+import scala.swing.{BorderPanel, Component, MainFrame, MenuBar}
 
 object ScalismoFrame {
 
@@ -69,7 +69,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   /* This is the component that is returned as the parent component when creating a dialog.
    * Normally, this should not be null. However, it seems like there is a bug on Linux where
    * dialogs sometimes show up empty if this value is NOT null, so for now we return null
-  */
+   */
   def componentForDialogs: Component = {
     contents.headOption.orNull
     //null
@@ -104,8 +104,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
     menuBar.contents ++= Seq(fileMenu, viewMenu, helpMenu)
   }
 
-  def setupToolbar(): Unit = {
-  }
+  def setupToolbar(): Unit = {}
 
   /**
    * Sets up the main content.

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,13 @@ import scalismo.io.MeshIO
 import scalismo.mesh.ScalarMeshField
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
-class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarMeshFieldNode] with Loadable {
+class ScalarMeshFieldsNode(override val parent: GroupNode)
+    extends SceneNodeCollection[ScalarMeshFieldNode]
+    with Loadable {
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.ScalarMeshField
 
@@ -52,7 +54,17 @@ class ScalarMeshFieldsNode(override val parent: GroupNode) extends SceneNodeColl
 
 }
 
-class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override val source: ScalarMeshField[Float], initialName: String) extends Transformable[ScalarMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable with HasOpacity with HasLineWidth with HasScalarRange {
+class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode,
+                          override val source: ScalarMeshField[Float],
+                          initialName: String)
+    extends Transformable[ScalarMeshField[Float]]
+    with InverseTransformation
+    with Saveable
+    with Removeable
+    with Renameable
+    with HasOpacity
+    with HasLineWidth
+    with HasScalarRange {
   name = initialName
 
   override val opacity = new OpacityProperty()
@@ -70,7 +82,8 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override va
     source.mesh.pointSet.point(id)
   }
 
-  override def transform(untransformed: ScalarMeshField[Float], transformation: PointTransformation): ScalarMeshField[Float] = {
+  override def transform(untransformed: ScalarMeshField[Float],
+                         transformation: PointTransformation): ScalarMeshField[Float] = {
     untransformed.copy(mesh = untransformed.mesh.transform(transformation))
   }
 
@@ -79,4 +92,3 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode, override va
   override def saveMetadata: FileIoMetadata = FileIoMetadata.ScalarMeshField
 
 }
-

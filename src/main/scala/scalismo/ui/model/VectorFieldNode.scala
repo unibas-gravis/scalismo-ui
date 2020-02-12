@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.common.{ DiscreteDomain, DiscreteField }
+import scalismo.common.{DiscreteDomain, DiscreteField}
 import scalismo.geometry._
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -40,13 +40,16 @@ class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
   }
 }
 
-class VectorFieldNode(
-  override val parent: VectorFieldsNode,
-  val source: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
-  initialName: String
-)
-    extends RenderableSceneNode with Removeable with Renameable with Grouped
-    with HasOpacity with HasLineWidth with HasScalarRange {
+class VectorFieldNode(override val parent: VectorFieldsNode,
+                      val source: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+                      initialName: String)
+    extends RenderableSceneNode
+    with Removeable
+    with Renameable
+    with Grouped
+    with HasOpacity
+    with HasLineWidth
+    with HasScalarRange {
 
   name = initialName
 
@@ -69,4 +72,3 @@ class VectorFieldNode(
   override def remove(): Unit = parent.remove(this)
 
 }
-

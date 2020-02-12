@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@ package scalismo.ui.view.properties
 import breeze.linalg.DenseVector
 import javax.swing.border.TitledBorder
 import scalismo.geometry._3D
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
+import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
 import scalismo.ui.model._
 import scalismo.ui.view.ScalismoFrame
 
 import scala.swing.GridBagPanel.Fill
 import scala.swing._
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 object RigidTransformationPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {
@@ -89,9 +89,15 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
         else Failure[Seq[T]](fs.head.exception) // Only keep the first failure
       }
 
-      val valuesTry = flatten(textFields.map(f => Try {
-        java.lang.Double.parseDouble(f.text)
-      }).toList)
+      val valuesTry = flatten(
+        textFields
+          .map(f =>
+            Try {
+              java.lang.Double.parseDouble(f.text)
+            }
+          )
+          .toList
+      )
       valuesTry match {
         case Success(values) =>
           val params = DenseVector(values.toArray)
@@ -124,7 +130,10 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
     // we have to account for type erasure, that's why we need the collect
-    val supported = allMatch[TransformationNode[_ <: PointTransformation]](nodes).collect { case tn if tn.transformation.isInstanceOf[RigidTransformation[_3D]] => tn.asInstanceOf[TransformationNode[RigidTransformation[_3D]]] }
+    val supported = allMatch[TransformationNode[_ <: PointTransformation]](nodes).collect {
+      case tn if tn.transformation.isInstanceOf[RigidTransformation[_3D]] =>
+        tn.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]
+    }
     if (supported.nonEmpty) {
       targets = supported
       listenTo(targets.head)

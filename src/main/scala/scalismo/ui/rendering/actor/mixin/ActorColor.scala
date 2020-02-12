@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 
 package scalismo.ui.rendering.actor.mixin
 
-import scalismo.ui.model.properties.{ ColorProperty, NodeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SingleActor }
+import scalismo.ui.model.properties.{ColorProperty, NodeProperty}
+import scalismo.ui.rendering.actor.{ActorEvents, SingleActor}
 import scalismo.ui.rendering.util.VtkUtil
 
 trait ActorColor extends SingleActor with ActorEvents {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,16 +19,16 @@ package scalismo.ui.rendering.actor
 
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model.{ BoundingBox, VectorFieldNode }
+import scalismo.ui.model.{BoundingBox, VectorFieldNode}
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import vtk._
 
 object VectorFieldActor extends SimpleActorsFactory[VectorFieldNode] {
   override def actorsFor(renderable: VectorFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _: ViewportPanel3D => Some(new VectorFieldActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new VectorFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new VectorFieldActor2D(renderable, _2d))
     }
   }
@@ -97,7 +97,7 @@ trait VectorFieldActor extends SingleDataSetActor with ActorOpacity with ActorSc
 
   reactions += {
     case Transformable.event.GeometryChanged(_) => rerender(true)
-    case NodeProperty.event.PropertyChanged(_) => rerender(false)
+    case NodeProperty.event.PropertyChanged(_)  => rerender(false)
   }
 
   onInstantiated()
@@ -113,7 +113,10 @@ class VectorFieldActor3D(override val sceneNode: VectorFieldNode) extends Vector
 
 }
 
-class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: ViewportPanel2D) extends SlicingActor(viewport) with VectorFieldActor with ActorLineWidth {
+class VectorFieldActor2D(override val sceneNode: VectorFieldNode, viewport: ViewportPanel2D)
+    extends SlicingActor(viewport)
+    with VectorFieldActor
+    with ActorLineWidth {
   override def lineWidth: LineWidthProperty = sceneNode.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(false)

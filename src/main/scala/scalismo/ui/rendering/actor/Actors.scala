@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,10 @@ trait Actors {
   def vtkActors: List[vtkActor]
 
   def boundingBox: BoundingBox = {
-    vtkActors.map { a => VtkUtil.bounds2BoundingBox(a.GetBounds()) }.fold(BoundingBox.Invalid)((bb1, bb2) => bb1.union(bb2))
+    vtkActors
+      .map { a =>
+        VtkUtil.bounds2BoundingBox(a.GetBounds())
+      }
+      .fold(BoundingBox.Invalid)((bb1, bb2) => bb1.union(bb2))
   }
 }
-

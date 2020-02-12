@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
 
 package scalismo.ui.control.interactor
 
-import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
+import java.awt.event.{InputEvent, KeyEvent, MouseEvent, MouseWheelEvent}
 
 import scalismo.ui.control.interactor.Interactor.Verdict.Pass
-import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
+import scalismo.ui.control.interactor.Interactor.{PimpedEvent, Verdict}
 import scalismo.ui.rendering.internal.GLJPanelWithViewport
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 import scala.language.implicitConversions
 
@@ -39,6 +39,7 @@ object Interactor {
   }
 
   class PimpedEvent[E <: InputEvent](val event: E) extends AnyVal {
+
     /** The low-level JComponent where stuff is actually rendered. */
     def canvas: GLJPanelWithViewport = event.getSource.asInstanceOf[GLJPanelWithViewport]
 

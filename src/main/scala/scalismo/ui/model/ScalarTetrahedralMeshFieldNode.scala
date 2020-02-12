@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +24,13 @@ import scalismo.io.MeshIO
 import scalismo.mesh.ScalarVolumeMeshField
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
-class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarTetrahedralMeshFieldNode] with Loadable {
+class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode)
+    extends SceneNodeCollection[ScalarTetrahedralMeshFieldNode]
+    with Loadable {
   override val name: String = "Scalar Tetrahedral Mesh Fields"
 
   override def loadMetadata: FileIoMetadata = FileIoMetadata.ScalarTetrahedralMeshField
@@ -50,9 +52,17 @@ class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode) extends Sc
   }
 }
 
-class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshFieldsNode, override val source: ScalarVolumeMeshField[Float], initialName: String)
-    extends Transformable[ScalarVolumeMeshField[Float]] with InverseTransformation with Saveable with Removeable with Renameable
-    with HasOpacity with HasLineWidth with HasScalarRange {
+class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshFieldsNode,
+                                     override val source: ScalarVolumeMeshField[Float],
+                                     initialName: String)
+    extends Transformable[ScalarVolumeMeshField[Float]]
+    with InverseTransformation
+    with Saveable
+    with Removeable
+    with Renameable
+    with HasOpacity
+    with HasLineWidth
+    with HasScalarRange {
 
   name = initialName
 
@@ -71,7 +81,8 @@ class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshF
     source.mesh.pointSet.point(id)
   }
 
-  override def transform(untransformed: ScalarVolumeMeshField[Float], transformation: PointTransformation): ScalarVolumeMeshField[Float] = {
+  override def transform(untransformed: ScalarVolumeMeshField[Float],
+                         transformation: PointTransformation): ScalarVolumeMeshField[Float] = {
     untransformed.copy(mesh = untransformed.mesh.transform(transformation))
   }
 
@@ -80,4 +91,3 @@ class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshF
   override def saveMetadata: FileIoMetadata = FileIoMetadata.ScalarTetrahedralMeshField
 
 }
-

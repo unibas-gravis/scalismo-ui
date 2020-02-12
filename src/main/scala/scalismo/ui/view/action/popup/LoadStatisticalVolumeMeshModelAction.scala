@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,9 @@ package scalismo.ui.view.action.popup
 import java.io.File
 
 import scalismo.io.StatisticalModelIO
-import scalismo.ui.model.{ GroupNode, SceneNode }
+import scalismo.ui.model.{GroupNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
+import scalismo.ui.util.{FileIoMetadata, FileUtil}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.action.LoadAction
 

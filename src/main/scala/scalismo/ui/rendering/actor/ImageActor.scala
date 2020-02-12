@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,13 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry.Point3D
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.properties.{ NodeProperty, OpacityProperty }
-import scalismo.ui.model.{ Axis, BoundingBox, ImageNode }
+import scalismo.ui.model.properties.{NodeProperty, OpacityProperty}
+import scalismo.ui.model.{Axis, BoundingBox, ImageNode}
 import scalismo.ui.rendering.Caches
 import scalismo.ui.rendering.actor.ImageActor2D.InstanceData
-import scalismo.ui.rendering.actor.mixin.{ ActorOpacity, ActorSceneNode, IsImageActor }
+import scalismo.ui.rendering.actor.mixin.{ActorOpacity, ActorSceneNode, IsImageActor}
 import scalismo.ui.rendering.util.VtkUtil
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import scalismo.utils.ImageConversion
 import vtk._
 
@@ -40,9 +40,10 @@ object ImageActor extends SimpleActorsFactory[ImageNode] {
 
 object ImageActor2D {
 
-  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SingleDataSetActor = new ImageActor2D(node, viewport.axis, viewport.frame) with SingleDataSetActor {
-    override def boundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(data.points.GetBounds())
-  }
+  def apply(node: ImageNode, viewport: ViewportPanel2D): ImageActor2D with SingleDataSetActor =
+    new ImageActor2D(node, viewport.axis, viewport.frame) with SingleDataSetActor {
+      override def boundingBox: BoundingBox = VtkUtil.bounds2BoundingBox(data.points.GetBounds())
+    }
 
   def apply(node: ImageNode, axis: Axis, frame: ScalismoFrame) = new ImageActor2D(node, axis, frame)
 
@@ -50,7 +51,8 @@ object ImageActor2D {
   final val NotInitialized: Int = -2
 
   class InstanceData(node: ImageNode, axis: Axis) {
-    val points: vtkStructuredPoints = Caches.ImageCache.getOrCreate(node.source, ImageConversion.imageToVtkStructuredPoints(node.source))
+    val points: vtkStructuredPoints =
+      Caches.ImageCache.getOrCreate(node.source, ImageConversion.imageToVtkStructuredPoints(node.source))
     lazy val (min, max, exmax, eymax, ezmax) = {
       val b = points.GetBounds()
       val t = points.GetExtent()
@@ -90,7 +92,12 @@ object ImageActor2D {
 
 }
 
-class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame) extends DataSetActor with IsImageActor with ActorOpacity with ActorEvents with ActorSceneNode {
+class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axis: Axis, frame: ScalismoFrame)
+    extends DataSetActor
+    with IsImageActor
+    with ActorOpacity
+    with ActorEvents
+    with ActorSceneNode {
 
   override def opacity: OpacityProperty = sceneNode.opacity
 
@@ -173,13 +180,16 @@ class ImageActor2D private[ImageActor2D] (override val sceneNode: ImageNode, axi
 
   reactions += {
     case SlicingPosition.event.PointChanged(_, _, current) => update(current, geometryChanged = false)
-    case NodeProperty.event.PropertyChanged(_) => updateWindowLevel()
+    case NodeProperty.event.PropertyChanged(_)             => updateWindowLevel()
   }
 }
 
 class ImageActor3D(node: ImageNode, viewport: ViewportPanel3D) extends Actors {
-  override val vtkActors: List[ImageActor2D] = Axis.All.map { axis => ImageActor2D(node, axis, viewport.frame) }
+  override val vtkActors: List[ImageActor2D] = Axis.All.map { axis =>
+    ImageActor2D(node, axis, viewport.frame)
+  }
 
   // the actors all return the same bounding box, so we just take the first
-  override def boundingBox: BoundingBox = vtkActors.headOption.map(a => VtkUtil.bounds2BoundingBox(a.data.points.GetBounds())).getOrElse(BoundingBox.Invalid)
+  override def boundingBox: BoundingBox =
+    vtkActors.headOption.map(a => VtkUtil.bounds2BoundingBox(a.data.points.GetBounds())).getOrElse(BoundingBox.Invalid)
 }
