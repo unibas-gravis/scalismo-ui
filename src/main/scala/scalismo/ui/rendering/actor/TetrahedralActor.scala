@@ -178,8 +178,10 @@ trait TetrahedralMeshActor extends TetrahedralActor[TetrahedralRenderable.Tetrah
   override def color: ColorProperty = renderable.color
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
-    Caches.TetrahedralMeshCache.getOrCreate(FastCachingTetrahedralMesh(renderable.mesh),
-      TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh, template))
+    Caches.TetrahedralMeshCache.getOrCreate(
+      FastCachingTetrahedralMesh(renderable.mesh),
+      TetrahedralMeshConversion.tetrahedralMeshToVTKUnstructuredGrid(renderable.mesh, template)
+    )
   }
 }
 
@@ -194,8 +196,7 @@ trait TetrahedralMeshScalarFieldActor
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
     Caches.ScalarTetrahedralMeshFieldCache
       .getOrCreate(renderable.field,
-        TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field, template)
-      )
+                   TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field, template))
   }
 }
 
