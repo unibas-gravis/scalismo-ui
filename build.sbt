@@ -83,7 +83,7 @@ lazy val root = (project in file("."))
   .settings(
     organizationName := "University of Basel, Graphics and Vision Research Group",
     startYear := Some(2016),
-    licenses += ("GPLv3", new URL("http://www.gnu.org/licenses/gpl-3.0.en.html")),
+    licenses += ("GPL-3.0", url("http://www.gnu.org/licenses/gpl-3.0.en.html")),
     headerLicense := Some(HeaderLicense.GPLv3("2016", "University of Basel, Graphics and Vision Research Group"))
   )
 
