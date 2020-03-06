@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.control.interactor
 
-import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent }
+import java.awt.event.{KeyEvent, MouseEvent, MouseWheelEvent}
 
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
@@ -67,7 +67,9 @@ object DelegatingInteractor {
 
   import scala.language.implicitConversions
 
-  implicit def asInteractorType[InteractorType <: DelegatingInteractor[InteractorType]](interactor: DelegatingInteractor[InteractorType]): InteractorType = {
+  implicit def asInteractorType[InteractorType <: DelegatingInteractor[InteractorType]](
+    interactor: DelegatingInteractor[InteractorType]
+  ): InteractorType = {
     interactor.asInstanceOf[InteractorType]
   }
 }

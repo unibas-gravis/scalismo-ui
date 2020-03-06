@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,18 @@
 
 package scalismo.ui.view.properties
 
-import java.awt.{ Color, Dimension, Graphics }
+import java.awt.{Color, Dimension, Graphics}
 
 import javax.swing.JPanel
-import javax.swing.border.{ LineBorder, TitledBorder }
+import javax.swing.border.{LineBorder, TitledBorder}
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasColor, HasOpacity, NodeProperty, OpacityProperty }
+import scalismo.ui.model.properties.{HasColor, HasOpacity, NodeProperty, OpacityProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ColorChooserPanel.event.ColorChanged
 import scalismo.ui.view.util.ScalableUI.implicits._
-import scalismo.ui.view.util.{ ColorChooserPanel, Constants, ScalableUI }
+import scalismo.ui.view.util.{ColorChooserPanel, Constants, ScalableUI}
 
-import scala.swing.{ BorderPanel, Component }
+import scala.swing.{BorderPanel, Component}
 
 object ColorPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.view.action.popup
 
-import scalismo.ui.model.{ GenericTransformationsNode, GenericTransformationsNode$, PointTransformation, SceneNode }
+import scalismo.ui.model.{GenericTransformationsNode, PointTransformation, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 
@@ -27,7 +27,9 @@ object AddRigidTransformationAction extends PopupAction.Factory {
   }
 }
 
-class AddRigidTransformationAction(node: GenericTransformationsNode)(implicit val frame: ScalismoFrame) extends PopupAction("Add rigid transformation", BundledIcon.Transformation) with GroupDelegatingAction {
+class AddRigidTransformationAction(node: GenericTransformationsNode)(implicit val frame: ScalismoFrame)
+    extends PopupAction("Add rigid transformation", BundledIcon.Transformation)
+    with GroupDelegatingAction {
   override def apply(): Unit = {
     node.add(PointTransformation.RigidIdentity, "rigid")
   }

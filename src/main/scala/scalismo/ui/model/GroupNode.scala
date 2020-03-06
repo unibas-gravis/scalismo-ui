@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
 
 package scalismo.ui.model
 
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
 import scalismo.statisticalmodel.StatisticalMeshModel
+import scalismo.statisticalmodel.experimental.StatisticalVolumeMeshModel
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
-import scalismo.ui.model.capabilities.{ Removeable, Renameable }
+import scalismo.ui.model.capabilities.{Removeable, Renameable}
 
 class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNode] {
   override val name = "Groups"
 
-  def add(name: String, ghost: Boolean = false): GroupNode = {
-    val node = new GroupNode(this, name, ghost)
+  def add(name: String, hidden: Boolean = false): GroupNode = {
+    val node = new GroupNode(this, name, hidden)
     add(node)
     node
   }
@@ -36,17 +36,25 @@ class GroupsNode(override val parent: Scene) extends SceneNodeCollection[GroupNo
   override def isViewCollapsed: Boolean = true
 }
 
-class GroupNode(override val parent: GroupsNode, initialName: String, private var _isGhost: Boolean) extends SceneNode with Renameable with Removeable with ScalismoPublisher {
+class GroupNode(override val parent: GroupsNode, initialName: String, initallyHidden: Boolean)
+    extends SceneNode
+    with Renameable
+    with Removeable
+    with ScalismoPublisher {
   name = initialName
 
-  def isGhost_=(b: Boolean): Unit = {
-    _isGhost = b
+  private var _hidden = initallyHidden
+
+  def hidden_=(b: Boolean): Unit = {
+    _hidden = b
     scene.publishEvent(SceneChanged(scene))
   }
-  def isGhost = _isGhost
+
+  def hidden: Boolean = _hidden
 
   val genericTransformations = new GenericTransformationsNode(this)
   val shapeModelTransformations = new ShapeModelTransformationsNode(this)
+  val volumeShapeModelTransformations = new VolumeShapeModelTransformationsNode(this)
 
   val landmarks = new LandmarksNode(this)
   val triangleMeshes = new TriangleMeshesNode(this)
@@ -57,10 +65,13 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
   val pointClouds = new PointCloudsNode(this)
   val images = new ImagesNode(this)
   val scalarFields = new ScalarFieldsNode(this)
+  val tetrahedralMeshes = new TetrahedralMeshesNode(this)
+  val tetrahedralMeshFields = new ScalarTetrahedralMeshFieldsNode(this)
 
   override val children: List[SceneNode] = List(
     genericTransformations,
     shapeModelTransformations,
+    volumeShapeModelTransformations,
     landmarks,
     triangleMeshes,
     colorMeshes,
@@ -69,7 +80,9 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
     pointClouds,
     images,
     scalarFields,
-    vectorFields
+    vectorFields,
+    tetrahedralMeshes,
+    tetrahedralMeshFields
   )
 
   // this is a convenience method to add a statistical model as a (gp, mesh) combination.
@@ -88,6 +101,13 @@ class GroupNode(override val parent: GroupsNode, initialName: String, private va
 
   }
 
+  def addStatisticalVolumeMeshModel(model: StatisticalVolumeMeshModel, initialName: String): Unit = {
+
+    tetrahedralMeshes.add(model.referenceVolumeMesh, initialName)
+    volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
+    volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
+
+  }
+
   override def remove(): Unit = parent.remove(this)
 }
-

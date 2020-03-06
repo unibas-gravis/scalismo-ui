@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@ import scalismo.ui.view.dialog.BackgroundColorDialog
 
 import scala.swing.Action
 
-class ShowBackgroundColorDialogAction(name: String = "Background Color")(implicit val frame: ScalismoFrame) extends Action(name) {
+class ShowBackgroundColorDialogAction(name: String = "Background Color")(implicit val frame: ScalismoFrame)
+    extends Action(name) {
   icon = BundledIcon.Background.standardSized()
 
   override def apply(): Unit = {

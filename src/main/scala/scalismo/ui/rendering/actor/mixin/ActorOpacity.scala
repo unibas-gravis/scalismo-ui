@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.rendering.actor.mixin
 
 import scalismo.ui.model.properties._
-import scalismo.ui.rendering.actor.{ ActorEvents, SingleActor }
+import scalismo.ui.rendering.actor.{ActorEvents, SingleActor}
 
 trait ActorOpacity extends SingleActor with ActorEvents {
   def opacity: OpacityProperty
@@ -29,7 +29,7 @@ trait ActorOpacity extends SingleActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq opacity => setAppearance()
   }
 
-  private def setAppearance() = {
+  private def setAppearance(): Unit = {
     GetProperty().SetOpacity(opacity.value)
     actorChanged()
   }

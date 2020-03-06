@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 package scalismo.ui.rendering.internal
 
 import java.util.concurrent.locks.ReentrantLock
-import javax.media.opengl.awt.GLJPanel
-import javax.media.opengl.{ GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile }
 
+import javax.media.opengl.awt.GLJPanel
+import javax.media.opengl.{GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile}
 import scalismo.ui.view.ViewportPanel
 import vtk._
 
 /**
- * This is essentially a Scala re-implementation based on [[vtk.rendering.jogl.vtkJoglPanelComponent]].
+ * This is essentially a Scala re-implementation based on `vtk.rendering.jogl.vtkJoglPanelComponent`.
  * It includes a couple of bugfixes and extensions.
  */
 class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkComponent[GLJPanel] {
@@ -115,18 +115,18 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
 
   ////// helper methods
 
-  private def executeLocked(block: => Unit) = {
+  private def executeLocked(block: => Unit): Unit = {
     lock.lock()
     block
     lock.unlock()
   }
 
-  private def executeInterruptibly(block: => Unit) = {
+  private def executeInterruptibly(block: => Unit): Unit = {
     try {
       lock.lockInterruptibly()
       block
     } catch {
-      case e: InterruptedException => // nothing we can do
+      case _: InterruptedException => // nothing we can do
     } finally {
       lock.unlock()
     }
@@ -139,10 +139,10 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
     camera = null
     interactor = null
     /* ORIGINAL COMMENT FROM vtk.rendering.vtkAbstractComponent.java:
-     * removing the renderWindow is let to the superclass
-     * because in the very special case of an AWT component
-     * under Linux, destroying renderWindow crashes.
-     */
+   * removing the renderWindow is let to the superclass
+   * because in the very special case of an AWT component
+   * under Linux, destroying renderWindow crashes.
+   */
   }
 
   override def getActiveCamera: vtkCamera = camera

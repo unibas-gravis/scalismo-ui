@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.model.capabilities
 
-import scalismo.ui.model.{ Renderable, SceneNode }
+import scalismo.ui.model.{Renderable, SceneNode}
 
 /**
  * A renderable node is -- by design -- a leaf node,
@@ -29,10 +29,4 @@ trait RenderableSceneNode extends SceneNode with Renderable {
   final override def renderables: List[RenderableSceneNode] = List(this)
 
   final override def children: List[SceneNode] = Nil
-}
-
-object RenderableSceneNode {
-
-  import scala.language.implicitConversions
-
 }

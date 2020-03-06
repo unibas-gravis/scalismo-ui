@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
 
 package scalismo.ui.view.util
 
-import java.awt.{ Dimension, Font, GraphicsEnvironment, Transparency }
-import javax.swing.plaf.FontUIResource
-import javax.swing.{ Icon, ImageIcon, UIDefaults, UIManager }
+import java.awt.{Dimension, Font, GraphicsEnvironment, Transparency}
 
+import javax.swing.plaf.FontUIResource
+import javax.swing.{Icon, ImageIcon, UIDefaults, UIManager}
 import scalismo.ui.resources.icons.ScalableIcon
 import scalismo.ui.settings.GlobalSettings
 
@@ -92,7 +92,8 @@ object ScalableUI {
     } else {
       sourceIcon match {
         case icon: ScalableIcon => icon.resize(width, height)
-        case icon: ImageIcon => new ImageIcon(icon.getImage.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
+        case icon: ImageIcon =>
+          new ImageIcon(icon.getImage.getScaledInstance(width, height, java.awt.Image.SCALE_SMOOTH))
         case icon: Icon =>
           val (w, h) = (icon.getIconWidth, icon.getIconHeight)
           val ge = GraphicsEnvironment.getLocalGraphicsEnvironment

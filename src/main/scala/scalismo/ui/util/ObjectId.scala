@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 package scalismo.ui.util
 
 object ObjectId {
-  def of[T](thing: T) = {
+  def of[T](thing: T): String = {
     if (thing == null) "null" else thing.getClass.getName + "@" + thing.hashCode()
   }
 }

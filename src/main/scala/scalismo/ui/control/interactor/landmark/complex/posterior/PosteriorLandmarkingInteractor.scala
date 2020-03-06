@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@ import scalismo.ui.model._
 
 trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[PosteriorLandmarkingInteractor] {
 
-  implicit val theFrame = frame
   private lazy val nodeVisibility = frame.sceneControl.nodeVisibility
 
   def previewNode: TriangleMeshNode
@@ -48,7 +47,7 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
   def updatePreview(modelLm: LandmarkNode, targetLm: LandmarkNode, mousePosition: Point3D): Unit = {
 
     targetUncertaintyGroup.genericTransformations.foreach(_.remove())
-    targetUncertaintyGroup.genericTransformations.add((p: Point[_3D]) => mousePosition, "mousePosition")
+    targetUncertaintyGroup.genericTransformations.add((_: Point[_3D]) => mousePosition, "mousePosition")
 
     val lmPointAndId = {
       previewNode.source.pointSet.findClosestPoint(modelLm.source.point)
@@ -60,16 +59,18 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     val lmUncertainty = MultivariateNormalDistribution(uncertaintyMean, uncertaintyCovModelLm + uncertaintyCovTargetLm)
 
     // Here, we need to (inverse) transform the mouse position in order to feed an non-rotated deformation vector to the regression
-    val coeffs = sourceGpNode.transformation.gp.coefficients(IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, lmUncertainty)))
+    val coeffs = sourceGpNode.transformation.gp.coefficients(
+      IndexedSeq((lmPointAndId.point, inversePoseTransform(mousePosition) - lmPointAndId.point, lmUncertainty))
+    )
     previewGpNode.transformation = sourceGpNode.transformation.copy(coeffs)
   }
 
   def showPreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, true)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = true)
   }
 
   def hidePreview(): Unit = {
-    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, false)
+    nodeVisibility.setVisibility(previewNode, frame.perspective.viewports, show = false)
   }
 
   def initialize(): Unit = {
@@ -77,4 +78,3 @@ trait PosteriorLandmarkingInteractor extends ComplexLandmarkingInteractor[Poster
     hidePreview()
   }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
  */
 
 package scalismo.ui.api
-
-import scalismo.ui.view.ScalismoFrame
 
 /**
  * This typeclass needs to be implemented if callbacks should be allowed for a view V

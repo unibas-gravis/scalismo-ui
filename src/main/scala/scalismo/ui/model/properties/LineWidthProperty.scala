@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,7 @@ package scalismo.ui.model.properties
 object LineWidthProperty {
   val DefaultValue: Int = 1
 
-  // this is a var so it can be changed if needed, but that is not recommended.
-  var MaxValue: Int = 7
+  val MaxValue: Int = 7
 }
 
 class LineWidthProperty(initialValue: Int) extends NodeProperty[Int](initialValue) {

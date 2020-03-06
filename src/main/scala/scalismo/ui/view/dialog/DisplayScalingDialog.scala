@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 package scalismo.ui.view.dialog
 
 import java.awt.Font
-import java.awt.event.{ KeyAdapter, KeyEvent, MouseAdapter, MouseEvent }
-import javax.swing.BorderFactory
+import java.awt.event.{KeyAdapter, KeyEvent, MouseAdapter, MouseEvent}
 
+import javax.swing.BorderFactory
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.util.{ Constants, FancySlider, ScalableUI }
+import scalismo.ui.view.util.{Constants, FancySlider, ScalableUI}
 
 import scala.swing._
 import scala.swing.event.ValueChanged
@@ -45,24 +45,27 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
       if (factor != ScalableUI.scaleFactor) {
         ScalableUI.scaleFactor = factor
-        Dialog.showMessage(frame.componentForDialogs, "Please restart the application to see your changes applied.", "Display Scaling was changed")
+        Dialog.showMessage(frame.componentForDialogs,
+                           "Please restart the application to see your changes applied.",
+                           "Display Scaling was changed")
       }
       dispose()
     }
   })
 
-  val initialScale = Math.round(ScalableUI.scaleFactor * 100)
+  private val initialScale = Math.round(ScalableUI.scaleFactor * 100)
 
-  val example = new Label("This is an example of how the User Interface would look at the chosen setting.") {
-    val b = Constants.DefaultFontSize
-    border = BorderFactory.createEmptyBorder(b, b, b, b)
-  }
-  val main = new BorderPanel {
-    val b = 5.scaled
+  val example: Label = new Label("This is an example of how the User Interface would look at the chosen setting.") {
+    private val b = Constants.DefaultFontSize
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
 
-  val scaleSlider = new FancySlider {
+  val main: BorderPanel = new BorderPanel {
+    private val b = 5.scaled
+    border = BorderFactory.createEmptyBorder(b, b, b, b)
+  }
+
+  private class ScaleSlider extends FancySlider {
     min = 25
     max = 400
     value = initialScale
@@ -71,6 +74,8 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
     def sliderLabels: List[Component] = List(minLabel, maxLabel, valueLabel)
   }
+
+  private val scaleSlider = new ScaleSlider()
 
   // when the user is done sliding, re-pack the window
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,23 +19,23 @@ package scalismo.ui.rendering.actor
 
 import scalismo.geometry._3D
 import scalismo.mesh.{LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D}
+import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
-import scalismo.ui.model._
 import scalismo.ui.rendering.Caches
-import scalismo.ui.rendering.Caches.{FastCachingVertexColorMesh, FastCachingTriangleMesh}
+import scalismo.ui.rendering.Caches.{FastCachingTriangleMesh, FastCachingVertexColorMesh}
 import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import scalismo.utils.MeshConversion
-import vtk.{vtkPolyData, vtkUnsignedCharArray}
+import vtk.{vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray}
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {
 
   override def actorsFor(renderable: TriangleMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new TriangleMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new TriangleMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new TriangleMeshActor2D(renderable, _2d))
     }
   }
@@ -45,7 +45,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 
   override def actorsFor(renderable: ScalarMeshFieldNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new ScalarMeshFieldActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new ScalarMeshFieldActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new ScalarMeshFieldActor2D(renderable, _2d))
     }
   }
@@ -54,7 +54,7 @@ object ScalarMeshFieldActor extends SimpleActorsFactory[ScalarMeshFieldNode] {
 object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
   override def actorsFor(renderable: LineMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new LineMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new LineMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new LineMeshActor2D(renderable, _2d))
     }
   }
@@ -63,12 +63,11 @@ object LineMeshActor extends SimpleActorsFactory[LineMeshNode] {
 object VertexColorMeshActor extends SimpleActorsFactory[VertexColorMeshNode] {
   override def actorsFor(renderable: VertexColorMeshNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new VertexColorMeshActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new VertexColorMeshActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new VertexColorMeshActor2D(renderable, _2d))
     }
   }
 }
-
 
 object MeshActor {
 
@@ -110,9 +109,8 @@ object MeshActor {
 
       override def lineWidth: LineWidthProperty = node.lineWidth
 
-      def colorMesh = node.transformedSource
+      def colorMesh: VertexColorMesh3D = node.transformedSource
     }
-
 
     class ScalarMeshFieldRenderable(override val node: ScalarMeshFieldNode) extends MeshRenderable {
 
@@ -154,7 +152,7 @@ object MeshActor {
 
 }
 
-trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpacity with ActorSceneNode {
+trait MeshActor[R <: MeshRenderable] extends SingleDataSetActor with ActorOpacity with ActorSceneNode {
   def renderable: R
 
   override def opacity: OpacityProperty = renderable.opacity
@@ -168,7 +166,7 @@ trait MeshActor[R <: MeshRenderable] extends SinglePolyDataActor with ActorOpaci
   // this is invoked from within the rerender method, if the geometry has changed.
   protected def onGeometryChanged(): Unit
 
-  protected def rerender(geometryChanged: Boolean) = {
+  protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
       polydata = meshToPolyData(Some(polydata))
       onGeometryChanged()
@@ -210,35 +208,37 @@ trait TriangleMeshActor extends MeshActor[MeshRenderable.TriangleMeshRenderable]
 
   override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
 
-    Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh), MeshConversion.meshToVtkPolyData(renderable.mesh, template))
+    Caches.TriangleMeshCache.getOrCreate(FastCachingTriangleMesh(renderable.mesh),
+                                         MeshConversion.meshToVtkPolyData(renderable.mesh, template))
   }
 
 }
 
 trait VertexColorMeshActor extends MeshActor[MeshRenderable.VertexColorMeshRenderable] {
 
-    override def renderable: MeshRenderable.VertexColorMeshRenderable
+  override def renderable: MeshRenderable.VertexColorMeshRenderable
 
-    override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
+  override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
 
-      def colorMeshToVtkPd(colorMesh : VertexColorMesh3D) : vtkPolyData = {
+    def colorMeshToVtkPd(colorMesh: VertexColorMesh3D): vtkPolyData = {
 
-        val pd = MeshConversion.meshToVtkPolyData(colorMesh.shape)
-        val vtkColors = new vtkUnsignedCharArray()
-        vtkColors.SetNumberOfComponents(3);
-        vtkColors.SetName("RGB")
+      val pd = MeshConversion.meshToVtkPolyData(colorMesh.shape)
+      val vtkColors = new vtkUnsignedCharArray()
+      vtkColors.SetNumberOfComponents(3)
+      vtkColors.SetName("RGB")
 
-        for (id <- colorMesh.shape.pointSet.pointIds) {
-          val color = colorMesh.color(id)
-          vtkColors.InsertNextTuple3((color.r * 255).toShort, (color.g * 255).toShort, (color.b * 255).toShort)
-        }
-        pd.GetPointData().SetScalars(vtkColors)
-        pd
+      for (id <- colorMesh.shape.pointSet.pointIds) {
+        val color = colorMesh.color(id)
+        vtkColors.InsertNextTuple3((color.r * 255).toShort, (color.g * 255).toShort, (color.b * 255).toShort)
       }
-      Caches.VertexColorMeshCache.getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
+      pd.GetPointData().SetScalars(vtkColors)
+      pd
     }
-}
 
+    Caches.VertexColorMeshCache
+      .getOrCreate(FastCachingVertexColorMesh(renderable.colorMesh), colorMeshToVtkPd(renderable.colorMesh))
+  }
+}
 
 trait LineMeshActor extends MeshActor[MeshRenderable.LineMeshRenderable] with ActorColor with ActorLineWidth {
   override def renderable: MeshRenderable.LineMeshRenderable
@@ -250,7 +250,7 @@ trait LineMeshActor extends MeshActor[MeshRenderable.LineMeshRenderable] with Ac
     MeshConversion.lineMeshToVTKPolyData(renderable.mesh, template)
   }
 
-  override def lineWidth = renderable.lineWidth
+  override def lineWidth: LineWidthProperty = renderable.lineWidth
 
 }
 
@@ -260,19 +260,17 @@ trait ScalarMeshFieldActor extends MeshActor[MeshRenderable.ScalarMeshFieldRende
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
   override protected def meshToPolyData(template: Option[vtkPolyData]): vtkPolyData = {
-    Caches.ScalarMeshFieldCache.getOrCreate(renderable.field, MeshConversion.scalarMeshFieldToVtkPolyData(renderable.field))
+    Caches.ScalarMeshFieldCache
+      .getOrCreate(renderable.field, MeshConversion.scalarMeshFieldToVtkPolyData(renderable.field))
   }
 
 }
-
-
-
 
 abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) extends MeshActor[R] {
 
   // not declaring this as lazy causes all sorts of weird VTK errors, probably because the methods which use
   // it are invoked from the superclass constructor (at which time this class is not necessarily fully initialized)(?)
-  lazy val normals = new vtk.vtkPolyDataNormals() {
+  private lazy val normals: vtkPolyDataNormals = new vtk.vtkPolyDataNormals() {
     ComputePointNormalsOn()
     ComputeCellNormalsOff()
   }
@@ -281,7 +279,7 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
     mapper.SetInputConnection(normals.GetOutputPort())
   }
 
-  override protected def onGeometryChanged() = {
+  override protected def onGeometryChanged(): Unit = {
     normals.RemoveAllInputs()
     normals.SetInputData(polydata)
     normals.Update()
@@ -289,7 +287,10 @@ abstract class MeshActor3D[R <: MeshRenderable](override val renderable: R) exte
 
 }
 
-abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D) extends SlicingActor(viewport) with MeshActor[R] with ActorLineWidth {
+abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, viewport: ViewportPanel2D)
+    extends SlicingActor(viewport)
+    with MeshActor[R]
+    with ActorLineWidth {
   override def lineWidth: LineWidthProperty = renderable.lineWidth
 
   override protected def onSlicingPositionChanged(): Unit = rerender(geometryChanged = false)
@@ -304,16 +305,28 @@ abstract class MeshActor2D[R <: MeshRenderable](override val renderable: R, view
 
 class TriangleMeshActor3D(node: TriangleMeshNode) extends MeshActor3D(MeshRenderable(node)) with TriangleMeshActor
 
-class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with TriangleMeshActor
+class TriangleMeshActor2D(node: TriangleMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with TriangleMeshActor
 
-class VertexColorMeshActor3D(node: VertexColorMeshNode) extends MeshActor3D(MeshRenderable(node)) with VertexColorMeshActor
+class VertexColorMeshActor3D(node: VertexColorMeshNode)
+    extends MeshActor3D(MeshRenderable(node))
+    with VertexColorMeshActor
 
-class VertexColorMeshActor2D(node: VertexColorMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with VertexColorMeshActor
+class VertexColorMeshActor2D(node: VertexColorMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with VertexColorMeshActor
 
-class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode) extends MeshActor3D(MeshRenderable(node)) with ScalarMeshFieldActor
+class ScalarMeshFieldActor3D(node: ScalarMeshFieldNode)
+    extends MeshActor3D(MeshRenderable(node))
+    with ScalarMeshFieldActor
 
-class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with ScalarMeshFieldActor
+class ScalarMeshFieldActor2D(node: ScalarMeshFieldNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with ScalarMeshFieldActor
 
 class LineMeshActor3D(node: LineMeshNode) extends MeshActor3D(MeshRenderable(node)) with LineMeshActor
 
-class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D) extends MeshActor2D(MeshRenderable(node), viewport) with LineMeshActor
+class LineMeshActor2D(node: LineMeshNode, viewport: ViewportPanel2D)
+    extends MeshActor2D(MeshRenderable(node), viewport)
+    with LineMeshActor

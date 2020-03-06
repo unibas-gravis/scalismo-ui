@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
 
 package scalismo.ui.view
 
-import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.event.{Event, ScalismoPublisher}
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.perspective.{ Perspective, PerspectiveFactory }
+import scalismo.ui.view.perspective.{Perspective, PerspectiveFactory}
 import scalismo.ui.view.util.CardPanel
 
 import scala.swing.BorderPanel
@@ -29,7 +29,10 @@ object PerspectivePanel {
 
   object event {
 
-    case class PerspectiveChanged(panel: PerspectivePanel, currentPerspective: Perspective, previousPerspective: Option[Perspective]) extends Event
+    case class PerspectiveChanged(panel: PerspectivePanel,
+                                  currentPerspective: Perspective,
+                                  previousPerspective: Option[Perspective])
+        extends Event
 
   }
 

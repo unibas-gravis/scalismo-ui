@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.view.action.popup
 
 import java.io.File
 
-import scalismo.ui.model.{ GroupNode, LandmarksNode, LandmarkNode, SceneNode }
+import scalismo.ui.model.{LandmarkNode, LandmarksNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.ScalismoFrame
@@ -36,8 +36,9 @@ object SaveLandmarksAction extends PopupAction.Factory {
       if (landmarksNodeOpt.isEmpty) {
         Nil
       } else {
-        if (landmarksNodeOpt.get.children.length > 0) {
-          List(new SaveLandmarksAction(landmarksNodeOpt.get.children), new SaveLandmarksAction(landmarksNodeOpt.get.children, false))
+        if (landmarksNodeOpt.get.children.nonEmpty) {
+          List(new SaveLandmarksAction(landmarksNodeOpt.get.children),
+               new SaveLandmarksAction(landmarksNodeOpt.get.children, false))
         } else Nil
       }
     } else {
@@ -54,8 +55,13 @@ object SaveLandmarksAction extends PopupAction.Factory {
 }
 
 // the companion object took care of the safety checks, like making sure the list is not empty etc.
-class SaveLandmarksAction private (nodes: List[LandmarkNode], transformedFlag: Boolean = true)(implicit val frame: ScalismoFrame) extends PopupAction(s"Save${if (transformedFlag) " transformed" else " original"} ${FileIoMetadata.Landmarks.description} ...", BundledIcon.Save) {
-  val landmarks = nodes.head.parent
+class SaveLandmarksAction private (nodes: List[LandmarkNode], transformedFlag: Boolean = true)(implicit
+                                                                                               val frame: ScalismoFrame)
+    extends PopupAction(
+      s"Save${if (transformedFlag) " transformed" else " original"} ${FileIoMetadata.Landmarks.description} ...",
+      BundledIcon.Save
+    ) {
+  private val landmarks = nodes.head.parent
 
   def doSave(file: File): Try[Unit] = {
     landmarks.saveNodes(nodes, file, transformedFlag)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,10 @@
 
 package scalismo.ui.model
 
-import java.io.File
-
-import scalismo.geometry.{ Point3D, _3D }
-import scalismo.io.MeshIO
-import scalismo.mesh.{ LineMesh, TriangleMesh }
+import scalismo.geometry.{_3D, Point3D}
+import scalismo.mesh.LineMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
-import scalismo.ui.util.{ FileIoMetadata, FileUtil }
-
-import scala.util.{ Failure, Success, Try }
 
 class LineMeshesNode(override val parent: GroupNode) extends SceneNodeCollection[LineMeshNode] {
   override val name: String = "Line Meshes"
@@ -38,7 +32,14 @@ class LineMeshesNode(override val parent: GroupNode) extends SceneNodeCollection
   }
 }
 
-class LineMeshNode(override val parent: LineMeshesNode, override val source: LineMesh[_3D], initialName: String) extends Transformable[LineMesh[_3D]] with InverseTransformation with Renameable with Removeable with HasColor with HasOpacity with HasLineWidth {
+class LineMeshNode(override val parent: LineMeshesNode, override val source: LineMesh[_3D], initialName: String)
+    extends Transformable[LineMesh[_3D]]
+    with InverseTransformation
+    with Renameable
+    with Removeable
+    with HasColor
+    with HasOpacity
+    with HasLineWidth {
   name = initialName
 
   override val color = new ColorProperty()
@@ -59,4 +60,3 @@ class LineMeshNode(override val parent: LineMeshesNode, override val source: Lin
   override def remove(): Unit = parent.remove(this)
 
 }
-

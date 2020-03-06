@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,16 @@
 package scalismo.ui.view.action.popup
 
 import java.awt.Color
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.{ BorderFactory, Icon, JComponent }
+import java.awt.event.{MouseAdapter, MouseEvent}
 
+import javax.swing.{BorderFactory, Icon, JComponent}
 import scalismo.ui.control.NodeVisibility
-import scalismo.ui.control.NodeVisibility.{ Invisible, PartlyVisible, Visible }
+import scalismo.ui.control.NodeVisibility.{Invisible, PartlyVisible, Visible}
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel }
+import scalismo.ui.view.util.ScalableUI.implicits._
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel}
 
 import scala.swing._
 
@@ -42,12 +43,12 @@ object VisibilityAction extends PopupAction.Factory {
 }
 
 class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: ScalismoFrame) extends PopupActionWithOwnMenu {
-  val control = frame.sceneControl.nodeVisibility
+  private val control = frame.sceneControl.nodeVisibility
 
   override def menuItem: JComponent = {
     val viewports = frame.perspective.viewports
     if (viewports.length > 1) {
-      val menu = new Menu("Visible in") {
+      val menu: Menu = new Menu("Visible in") {
         def updateIcon(): Unit = {
           icon = iconFor(control.getVisibilityState(nodes, frame.perspective.viewports))
         }
@@ -78,18 +79,18 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
 
   def iconFor(state: NodeVisibility.State): Icon = {
     val icon = state match {
-      case Visible => BundledIcon.Visible
-      case Invisible => BundledIcon.Invisible
+      case Visible       => BundledIcon.Visible
+      case Invisible     => BundledIcon.Invisible
       case PartlyVisible => BundledIcon.Visible.colored(Color.GRAY)
     }
     icon.standardSized()
   }
 
   class ViewportVisibilityItem(viewports: List[ViewportPanel], name: String) extends Label(name) {
-    val tb = 2
-    val lr = 12
+    private val tb = 2.scaled
+    private val lr = 12.scaled
 
-    def currentState = control.getVisibilityState(nodes, viewports)
+    def currentState: NodeVisibility.State = control.getVisibilityState(nodes, viewports)
 
     border = BorderFactory.createEmptyBorder(tb, lr, tb, lr)
     icon = iconFor(currentState)
@@ -99,7 +100,7 @@ class VisibilityAction(nodes: List[RenderableSceneNode])(implicit frame: Scalism
         if (e.getButton == MouseEvent.BUTTON1) {
           val toggle = currentState match {
             case Visible => false
-            case _ => true
+            case _       => true
           }
           control.setVisibility(nodes, viewports, toggle)
         }

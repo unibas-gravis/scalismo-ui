@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,9 @@
 
 package scalismo.ui.model
 
-import scalismo.ui.control.SceneControl
 import scalismo.ui.event.Event
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.SceneNode.event.ChildrenChanged
-import scalismo.ui.view.ScalismoFrame
 
 object Scene {
 
@@ -51,7 +49,7 @@ class Scene extends SceneNode {
   override val children: List[SceneNode] = List(groups)
 
   reactions += {
-    case ChildrenChanged(node) => publishEvent(SceneChanged(this))
+    case ChildrenChanged(_) => publishEvent(SceneChanged(this))
   }
 
 }

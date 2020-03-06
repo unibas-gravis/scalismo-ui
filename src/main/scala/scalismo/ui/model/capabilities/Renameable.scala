@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
 package scalismo.ui.model.capabilities
 
 trait Renameable {
-  private var _name: String = null
+  private var _name: String = _ // default: null
 
-  def name = if (_name == null) "(null)" else _name
+  def name: String = if (_name == null) "(null)" else _name
 
-  def name_=(newValue: String) = {
+  def name_=(newValue: String): Unit = {
     _name = newValue
   }
 }

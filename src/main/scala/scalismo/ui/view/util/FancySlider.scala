@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,23 +20,21 @@ package scalismo.ui.view.util
 import java.awt.Color
 
 import scala.swing.event.ValueChanged
-import scala.swing.{ Label, Slider }
+import scala.swing.{Label, Slider}
 
 class FancySlider extends Slider {
   // intended to be overwritten in subclasses if needed
   def formattedValue(sliderValue: Int): String = sliderValue.toString
 
-  // The labels are protected so that subclasses can override properties like color etc.
-  // When setting the visible property of a label to false, it won't be shown on the slider (duh! :-) )
-  protected val minLabel = new Label {
+  val minLabel: Label = new Label {
     foreground = Color.GRAY
   }
 
-  protected val maxLabel = new Label {
+  val maxLabel: Label = new Label {
     foreground = Color.GRAY
   }
 
-  protected val valueLabel = new Label {
+  val valueLabel: Label = new Label {
     foreground = Color.BLACK
   }
 

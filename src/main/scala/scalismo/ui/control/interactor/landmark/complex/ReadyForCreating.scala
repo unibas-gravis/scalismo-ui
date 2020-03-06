@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,16 +23,21 @@ import java.awt.event.MouseEvent
 import scalismo.ui.control.interactor.Interactor.Verdict
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.control.interactor.Recipe
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
+import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{Delegate, StateTransition}
 import scalismo.ui.model._
 
 object ReadyForCreating {
-  def enter[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]]: StateTransition[InteractorType, DelegateType] = new StateTransition[InteractorType, DelegateType] {
-    override def apply()(implicit parent: InteractorType): Delegate[InteractorType] = new ReadyForCreating[InteractorType]()
+  def enter[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]]
+    : StateTransition[InteractorType, DelegateType] = new StateTransition[InteractorType, DelegateType] {
+    override def apply()(implicit parent: InteractorType): Delegate[InteractorType] =
+      new ReadyForCreating[InteractorType]()
   }
 }
 
-class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](implicit override val parent: ComplexLandmarkingInteractor[InteractorType]) extends ComplexLandmarkingInteractor.Delegate[InteractorType] {
+class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[InteractorType]](
+  implicit
+  override val parent: ComplexLandmarkingInteractor[InteractorType]
+) extends ComplexLandmarkingInteractor.Delegate[InteractorType] {
   override def onLandmarkCreationToggled(): Unit = {
     if (!parent.isLandmarkCreationEnabled) {
       transitionToReadyForEditing()
@@ -41,9 +46,10 @@ class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[Interactor
 
   override def mouseMoved(e: MouseEvent): Verdict = {
     def exceptLandmarks(node: SceneNode) = node match {
-      case nope: LandmarkNode => false
-      case _ => true
+      case _: LandmarkNode => false
+      case _               => true
     }
+
     Recipe.HighlightOutlineOfPickableObject.mouseMoved(e, exceptLandmarks)
   }
 
@@ -69,4 +75,3 @@ class ReadyForCreating[InteractorType <: ComplexLandmarkingInteractor[Interactor
   }
 
 }
-

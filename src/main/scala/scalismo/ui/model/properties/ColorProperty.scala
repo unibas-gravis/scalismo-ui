@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ package scalismo.ui.model.properties
 
 import java.awt.Color
 
-import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.event.{Event, ScalismoPublisher}
 
 object ColorProperty extends ScalismoPublisher {
   val DefaultValue: Color = Color.WHITE
@@ -27,8 +27,8 @@ object ColorProperty extends ScalismoPublisher {
   object event {
 
     /* this is a simple "shortcut" event that gets published whenever *any* color property is changed.
-    * It's used for keeping the Nodes View updated, without that view having to listen to all colorable objects
-    */
+     * It's used for keeping the Nodes View updated, without that view having to listen to all colorable objects
+     */
     case object SomeColorPropertyChanged extends Event
 
   }
@@ -38,7 +38,7 @@ object ColorProperty extends ScalismoPublisher {
 class ColorProperty(initialValue: Color) extends NodeProperty[Color](initialValue) {
   def this() = this(ColorProperty.DefaultValue)
 
-  override def value_=(newValue: Color) = {
+  override def value_=(newValue: Color): Unit = {
     super.value_=(newValue)
     ColorProperty.publishEvent(ColorProperty.event.SomeColorPropertyChanged)
   }

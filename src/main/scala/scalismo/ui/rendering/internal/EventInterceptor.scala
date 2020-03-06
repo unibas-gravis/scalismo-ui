@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.rendering.internal
 
-import java.awt.event.{ KeyEvent, MouseEvent, MouseWheelEvent, MouseWheelListener }
+import java.awt.event.{KeyEvent, MouseEvent, MouseWheelEvent, MouseWheelListener}
 
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.view.ScalismoFrame

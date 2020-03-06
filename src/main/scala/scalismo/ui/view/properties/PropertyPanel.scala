@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,10 @@ import scalismo.ui.view.util.CardPanel
 
 /**
  * A PropertyPanel is a UI component to show or manipulate aspects of
- * [[SceneNode]]s.
+ * a [[scalismo.ui.model.SceneNode]].
  */
 trait PropertyPanel extends CardPanel.ComponentWithUniqueId with NodeListFilters {
+
   /** human-readable description, used in tabs. */
   def description: String
 
@@ -70,7 +71,7 @@ object PropertyPanel {
 
     import scala.language.implicitConversions
 
-    implicit def factoryAsConstructor(factory: Factory): (ScalismoFrame => PropertyPanel) = {
+    implicit def factoryAsConstructor(factory: Factory): ScalismoFrame => PropertyPanel = {
       factory.create
     }
   }

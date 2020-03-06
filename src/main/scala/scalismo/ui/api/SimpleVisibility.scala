@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ package scalismo.ui.api
  * Trait to be mixed with ObjectView instances in order to provide visibility changing functionality
  *
  */
-
 sealed trait Viewport {
   val name: String
 }
@@ -52,8 +51,8 @@ case object _3DMain extends Viewport {
 
 object Viewport {
 
-  val all = Seq(xView, yView, zView, _3DMain, _3DLeft, _3DRight)
-  val none = Seq()
+  val all: Seq[Viewport] = Seq(xView, yView, zView, _3DMain, _3DLeft, _3DRight)
+  val none: Seq[Viewport] = Seq()
   val xOnly: Seq[Viewport] = Seq(xView)
   val yOnly: Seq[Viewport] = Seq(yView)
   val zOnly: Seq[Viewport] = Seq(zView)

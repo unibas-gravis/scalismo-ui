@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,29 @@
 
 package scalismo.ui.view
 
-import scala.swing.{ Action, Button, Component, Orientable }
+import javax.swing.JButton
+
+import scala.swing.{Action, Button, Component, Orientable}
 
 class ToolBar extends Component with Orientable.Wrapper {
   override lazy val peer = new javax.swing.JToolBar with SuperMixin
 
-  def add(c: Component) = {
+  def add(c: Component): Unit = {
     peer.add(c.peer)
     peer.repaint()
     peer.revalidate()
   }
 
-  def remove(c: Component) = {
+  def remove(c: Component): Unit = {
     peer.remove(c.peer)
     peer.repaint()
     peer.revalidate()
   }
 
   /**
-   * Convenience method to directly add an [[Action]] to a ToolBar.
+   * Convenience method to directly add a `scala.swing.Action` to a ToolBar.
    *
-   * This method will create a [[Button]] bound to the specified action,
+   * This method will create a `scala.swing.Button` bound to the specified action,
    * add it to the toolbar, and return that button.
    *
    * @param action the action to be added
@@ -46,17 +48,17 @@ class ToolBar extends Component with Orientable.Wrapper {
   def add(action: Action): Button = {
     val jb = peer.add(action.peer)
     new Button {
-      override lazy val peer = jb
+      override lazy val peer: JButton = jb
     }
   }
 
   def floatable: Boolean = peer.isFloatable
 
-  def floatable_=(b: Boolean) = peer.setFloatable(b)
+  def floatable_=(b: Boolean): Unit = peer.setFloatable(b)
 
   def rollover: Boolean = peer.isRollover
 
-  def rollover_=(b: Boolean) = peer.setRollover(b)
+  def rollover_=(b: Boolean): Unit = peer.setRollover(b)
 
   // constructor
   floatable = false

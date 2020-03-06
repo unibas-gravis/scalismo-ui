@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@ object RemoveRemoveablesAction extends PopupAction.Factory {
   }
 }
 
-class RemoveRemoveablesAction(nodes: List[Removeable], description: String = "Remove") extends PopupAction(description, BundledIcon.Remove) {
+class RemoveRemoveablesAction(nodes: List[Removeable], description: String = "Remove")
+    extends PopupAction(description, BundledIcon.Remove) {
   override def apply(): Unit = {
     nodes.foreach(_.remove())
   }

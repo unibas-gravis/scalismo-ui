@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
 
 package scalismo.ui.model
 
-import scalismo.common.{ DiscreteDomain, DiscreteScalarField, Scalar }
-import scalismo.geometry.{ Point3D, _3D }
-import scalismo.ui.model.capabilities.{ InverseTransformation, Removeable, Renameable, Transformable }
+import scalismo.common.{DiscreteDomain, DiscreteScalarField, Scalar}
+import scalismo.geometry.{_3D, Point3D}
+import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
 
 import scala.reflect.ClassTag
@@ -27,7 +27,8 @@ import scala.reflect.ClassTag
 class ScalarFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[ScalarFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add[S: Scalar: ClassTag](scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], S], name: String): ScalarFieldNode = {
+  def add[S: Scalar: ClassTag](scalarField: DiscreteScalarField[_3D, DiscreteDomain[_3D], S],
+                               name: String): ScalarFieldNode = {
     val scalar = implicitly[Scalar[S]]
     val node = new ScalarFieldNode(this, scalarField.map(s => scalar.toFloat(s)), name)
     add(node)
@@ -36,11 +37,16 @@ class ScalarFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 }
 
 class ScalarFieldNode(override val parent: ScalarFieldsNode,
-  override val source: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float],
-  initialName: String)
+                      override val source: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float],
+                      initialName: String)
     extends Transformable[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float]]
-    with InverseTransformation with Removeable with Renameable
-    with HasOpacity with HasRadius with HasLineWidth with HasScalarRange {
+    with InverseTransformation
+    with Removeable
+    with Renameable
+    with HasOpacity
+    with HasRadius
+    with HasLineWidth
+    with HasScalarRange {
 
   name = initialName
 
@@ -49,7 +55,7 @@ class ScalarFieldNode(override val parent: ScalarFieldsNode,
   override val lineWidth = new LineWidthProperty()
   override val scalarRange: ScalarRangeProperty = {
     val (min, max) = (source.values.min, source.values.max)
-    new ScalarRangeProperty(ScalarRange(min, max, min, max))
+    new ScalarRangeProperty(ScalarRange(min, max))
   }
 
   override def group: GroupNode = parent.parent
@@ -57,7 +63,7 @@ class ScalarFieldNode(override val parent: ScalarFieldsNode,
   override def remove(): Unit = parent.remove(this)
 
   override def transform(untransformed: DiscreteScalarField[_3D, DiscreteDomain[_3D], Float],
-    transformation: PointTransformation): DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = {
+                         transformation: PointTransformation): DiscreteScalarField[_3D, DiscreteDomain[_3D], Float] = {
 
     val newDomain = untransformed.domain.transform(transformation)
     DiscreteScalarField(newDomain, untransformed.data)
@@ -69,4 +75,3 @@ class ScalarFieldNode(override val parent: ScalarFieldsNode,
   }
 
 }
-

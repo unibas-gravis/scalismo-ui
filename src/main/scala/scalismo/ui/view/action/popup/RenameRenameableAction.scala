@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@ object RenameRenameableAction extends PopupAction.Factory {
   }
 }
 
-class RenameRenameableAction(node: Renameable)(implicit val frame: ScalismoFrame) extends PopupAction("Rename ...", BundledIcon.Name) {
+class RenameRenameableAction(node: Renameable)(implicit val frame: ScalismoFrame)
+    extends PopupAction("Rename ...", BundledIcon.Name) {
   def callback(newName: Option[String]): Unit = {
     newName.foreach(node.name = _)
   }

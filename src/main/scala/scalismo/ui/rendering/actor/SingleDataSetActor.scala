@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,4 @@
 
 package scalismo.ui.rendering.actor
 
-import vtk.{ vtkActor, vtkLookupTable, vtkPolyDataMapper }
-
-class PolyDataActor extends vtkActor {
-  val mapper: vtkPolyDataMapper = new vtkPolyDataMapper
-
-  // to set a Blue to Red Color map
-  val lut = new vtkLookupTable()
-  lut.SetHueRange(0.667, 0.0)
-  lut.SetNumberOfColors(256)
-  lut.Build()
-  mapper.SetLookupTable(lut)
-
-  SetMapper(mapper)
-  GetProperty().SetInterpolationToGouraud()
-
-}
+trait SingleDataSetActor extends DataSetActor with SingleActor

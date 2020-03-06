@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,19 +19,21 @@ package scalismo.ui.model
 
 import scalismo.ui.model.capabilities.CollapsableView
 
-import scala.collection.{ immutable, mutable }
+import scala.collection.{immutable, mutable}
 
 object SceneNodeCollection {
 
   import scala.language.implicitConversions
 
-  implicit def collectionAsChildNodeSeq[ChildNode <: SceneNode](collection: SceneNodeCollection[ChildNode]): immutable.Seq[ChildNode] = collection.children
+  implicit def collectionAsChildNodeSeq[ChildNode <: SceneNode](
+    collection: SceneNodeCollection[ChildNode]
+  ): immutable.Seq[ChildNode] = collection.children
 }
 
 trait SceneNodeCollection[ChildNode <: SceneNode] extends SceneNode with CollapsableView {
-  private var _items = mutable.ListBuffer.empty[ChildNode]
+  private val _items = mutable.ListBuffer.empty[ChildNode]
 
-  override final def children: List[ChildNode] = _items.toList
+  final override def children: List[ChildNode] = _items.toList
 
   protected def add(child: ChildNode): Unit = {
     require(child.parent == this)

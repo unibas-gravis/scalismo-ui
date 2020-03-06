@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import scalismo.ui.model.SceneNode
 import scala.reflect.ClassTag
 
 trait NodeListFilters {
+
   /**
    * This is a helper method which will filter a list of nodes, and return those which are of a given type T.
    *
@@ -55,7 +56,6 @@ trait NodeListFilters {
    * @tparam T the type you're interested in
    * @return Some[T] if the list consisted of a single item of type T, or None otherwise
    */
-
   final def singleMatch[T: ClassTag](nodes: List[SceneNode]): Option[T] = {
     val candidates = allMatch(nodes)
     if (candidates.length == 1) {

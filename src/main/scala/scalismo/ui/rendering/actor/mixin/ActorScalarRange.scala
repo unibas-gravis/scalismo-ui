@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
 
 package scalismo.ui.rendering.actor.mixin
 
-import scalismo.ui.model.properties.{ NodeProperty, ScalarRangeProperty }
-import scalismo.ui.rendering.actor.{ ActorEvents, SinglePolyDataActor }
+import scalismo.ui.model.properties.{NodeProperty, ScalarRangeProperty}
+import scalismo.ui.rendering.actor.{ActorEvents, SingleDataSetActor}
 
-trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
+trait ActorScalarRange extends SingleDataSetActor with ActorEvents {
   def scalarRange: ScalarRangeProperty
 
   listenTo(scalarRange)
@@ -29,12 +29,30 @@ trait ActorScalarRange extends SinglePolyDataActor with ActorEvents {
     case NodeProperty.event.PropertyChanged(p) if p eq scalarRange => setAppearance()
   }
 
-  private def setAppearance() = {
-    mapper.SetScalarRange(scalarRange.value.cappedMinimum, scalarRange.value.cappedMaximum)
+  private def setAppearance(): Unit = {
+    val range = scalarRange.value
+
+    mapper.SetScalarRange(range.mappedMinimum, range.mappedMaximum)
+
+    val lowerValue = range.mappedMinimum
+    val upperValue = range.mappedMaximum
+    val colorMappingFunction = range.colorMapping.mappingFunction(range)
+
+    val colorTransferFun = new vtk.vtkColorTransferFunction()
+    colorTransferFun.SetRange(lowerValue, upperValue)
+    colorTransferFun.SetScaleToLinear()
+    colorTransferFun.SetColorSpaceToRGB()
+    val step: Double = (upperValue - lowerValue) / range.colorMapping.suggestedNumberOfColors
+    for (i <- 0 until range.colorMapping.suggestedNumberOfColors) {
+      val value = lowerValue + i * step
+      val color = colorMappingFunction(value)
+      colorTransferFun.AddRGBPoint(value, color.getRed / 255.0, color.getGreen / 255.0, color.getBlue / 255.0)
+    }
+
+    mapper.SetLookupTable(colorTransferFun)
     mapper.Modified()
     actorChanged()
   }
 
   setAppearance()
-
 }

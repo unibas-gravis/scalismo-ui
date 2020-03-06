@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,9 +19,7 @@ package scalismo.ui.rendering.internal
 
 import javax.media.opengl.GLCapabilitiesImmutable
 import javax.media.opengl.awt.GLJPanel
-
 import scalismo.ui.view.ViewportPanel
 
-class GLJPanelWithViewport(val viewport: ViewportPanel, capabilities: GLCapabilitiesImmutable) extends GLJPanel(capabilities) {
-
-}
+class GLJPanelWithViewport(val viewport: ViewportPanel, capabilities: GLCapabilitiesImmutable)
+    extends GLJPanel(capabilities) {}

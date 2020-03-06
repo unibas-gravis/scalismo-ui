@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,11 @@ trait SimplePluginAPI {
     onDeactivated()
   }
 
-  def message(message: String) = {
+  def message(message: String): Unit = {
     ui.frame.status.set(StatusMessage(message))
   }
 
-  def message(message: StatusMessage) = {
+  def message(message: StatusMessage): Unit = {
     ui.frame.status.set(StatusMessage(message.text, message.kind))
   }
 

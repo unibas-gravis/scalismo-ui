@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,26 @@
 
 package scalismo.ui.view.properties
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import javax.swing.JSlider
+import java.awt.event.{MouseAdapter, MouseEvent}
 
 import breeze.linalg.DenseVector
 import breeze.stats.distributions.Gaussian
-import scalismo.ui.model.{ LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode }
+import javax.swing.JSlider
+import scalismo.ui.model.{LowRankGpPointTransformation, PointTransformation, SceneNode, TransformationNode}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
 
 import scala.collection.mutable
-import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
-import scala.swing.event.{ ButtonClicked, ValueChanged }
+import scala.swing.event.{ButtonClicked, ValueChanged}
 
 object GaussianProcessCoefficientsPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new GaussianProcessCoefficientsPanel(frame)
 
-  var MaxAbsoluteCoefficientValue: Float = 3.0f
-  var CoefficientValueStep: Float = 0.1f
+  val MaxAbsoluteCoefficientValue: Float = 3.0f
+
+  val CoefficientValueStep: Float = 0.1f
 }
 
 class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
@@ -45,7 +46,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   val random = new Button("Random")
   listenTo(reset, random)
 
-  val buttons = {
+  private val buttons = {
     val panel = new GridPanel(1, 2)
     panel.contents ++= Seq(reset, random)
     panel
@@ -55,11 +56,11 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private case class Entry(index: Int) {
     val label = new Label(index.toString)
-    val slider = new Slider {
-      override lazy val peer = new JSlider with SuperMixin {
+    val slider: Slider = new Slider {
+      override lazy val peer: JSlider with SuperMixin = new JSlider with SuperMixin {
         // this tries to jump directly to the value the user clicked.
         addMouseListener(new MouseAdapter() {
-          override def mousePressed(e: MouseEvent) = {
+          override def mousePressed(e: MouseEvent): Unit = {
             val p = e.getPoint
             val percent = p.x / getWidth.toDouble
             val range = getMaximum - getMinimum
@@ -69,7 +70,8 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
           }
         })
       }
-      max = (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
+      max =
+        (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
       min = -max
       name = index.toString
       value = 0
@@ -79,10 +81,10 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   }
 
   private class Table extends GridBagPanel {
-    var entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
+    val entries: mutable.Buffer[Entry] = new mutable.ArrayBuffer
 
     // need to redefine because add() is protected in superclass
-    def add(comp: Component, position: (Int, Int)) = {
+    def add(comp: Component, position: (Int, Int)): Unit = {
       val const = pair2Constraints(position)
       const.ipadx = 10.scaled
       if (position._1 == 0) {
@@ -106,25 +108,23 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
       var changed = false;
       {
         count until entries.length
-      }.reverse.foreach {
-        idx =>
-          changed = true
-          val e = entries(idx)
-          GaussianProcessCoefficientsPanel.this.deafTo(e.slider)
-          peer.remove(e.value.peer)
-          peer.remove(e.slider.peer)
-          peer.remove(e.label.peer)
-          entries.remove(idx)
+      }.reverse.foreach { idx =>
+        changed = true
+        val e = entries(idx)
+        GaussianProcessCoefficientsPanel.this.deafTo(e.slider)
+        peer.remove(e.value.peer)
+        peer.remove(e.slider.peer)
+        peer.remove(e.label.peer)
+        entries.remove(idx)
       }
-      entries.length until count foreach {
-        idx =>
-          changed = true
-          val e = Entry(idx)
-          add(e.label, (0, idx + 1))
-          add(e.slider, (1, idx + 1))
-          add(e.value, (2, idx + 1))
-          entries.insert(idx, e)
-          GaussianProcessCoefficientsPanel.this.listenTo(e.slider)
+      entries.length until count foreach { idx =>
+        changed = true
+        val e = Entry(idx)
+        add(e.label, (0, idx + 1))
+        add(e.slider, (1, idx + 1))
+        add(e.value, (2, idx + 1))
+        entries.insert(idx, e)
+        GaussianProcessCoefficientsPanel.this.listenTo(e.slider)
       }
       if (changed) revalidate()
     }
@@ -134,13 +134,13 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   def labelFormat(value: Double) = f"$value%1.1f"
 
-  def resetValues() = {
+  def resetValues(): Unit = {
     node.foreach { n =>
       n.transformation = n.transformation.copy(coefficients = DenseVector.zeros[Double](n.transformation.gp.rank))
     }
   }
 
-  private def setCoefficient(index: Int, value: Double) = {
+  private def setCoefficient(index: Int, value: Double): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       if (coeffs(index) != value) {
@@ -150,7 +150,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
     }
   }
 
-  def randomizeValues() = {
+  def randomizeValues(): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices.foreach { index =>
@@ -163,7 +163,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
 
   private val table = new Table
 
-  def updateDisplayedCoefficients() = {
+  def updateDisplayedCoefficients(): Unit = {
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices foreach { i =>
@@ -187,14 +187,14 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
       val index = slider.name.toInt
       val value = slider.value * GaussianProcessCoefficientsPanel.CoefficientValueStep
       setCoefficient(index, value)
-    case ButtonClicked(`reset`) => resetValues()
+    case ButtonClicked(`reset`)  => resetValues()
     case ButtonClicked(`random`) => randomizeValues()
 
     case TransformationNode.event.TransformationChanged(_) =>
       updateDisplayedCoefficients()
   }
 
-  def cleanup() = {
+  def cleanup(): Unit = {
     node.foreach { n =>
       deafTo(n)
       node = None
@@ -204,7 +204,10 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   override def setNodes(nodes: List[SceneNode]): Boolean = {
     cleanup()
     // we have to account for type erasure, that's why we need the collect
-    singleMatch[TransformationNode[_ <: PointTransformation]](nodes).collect { case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] => tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]] } match {
+    singleMatch[TransformationNode[_ <: PointTransformation]](nodes).collect {
+      case tn if tn.transformation.isInstanceOf[LowRankGpPointTransformation] =>
+        tn.asInstanceOf[TransformationNode[LowRankGpPointTransformation]]
+    } match {
       case None => false
       case Some(tn) =>
         node = Some(tn)

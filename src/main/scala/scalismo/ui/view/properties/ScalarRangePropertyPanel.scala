@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +18,14 @@
 package scalismo.ui.view.properties
 
 import java.awt.Color
-import javax.swing.border.TitledBorder
 
+import javax.swing.BorderFactory
+import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasScalarRange, NodeProperty }
+import scalismo.ui.model.properties.{ColorMapping, HasScalarRange, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.FancySlider
+import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
+import scalismo.ui.view.util.{FancySlider, MultiLineLabel}
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
@@ -35,21 +37,27 @@ object ScalarRangePropertyPanel extends PropertyPanel.Factory {
 }
 
 class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
-  override def description: String = "Scalar Range"
+  override def description: String = "Scalar Range Mapping Thresholds"
 
   private var targets: List[HasScalarRange] = Nil
   private var min: Float = 0
   private var max: Float = 100
   private var step: Float = 1
 
+  private def colorizeSliderValue(slider: FancySlider, color: Color): Unit = {
+    // Setting the color of the displayed text may result in poor readability for certain colors, so we
+    // create an "underline" showing the color instead.
+    slider.valueLabel.border = BorderFactory.createMatteBorder(0, 0, 3.scaled, 0, color)
+  }
+
   private val minimumSlider = new FancySlider {
     min = 0
     max = 100
     value = 0
 
-    valueLabel.foreground = Color.BLUE.darker()
-
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
+
+    colorizeSliderValue(this, ColorMapping.Default.lowerColor)
   }
 
   private val maximumSlider = new FancySlider {
@@ -57,17 +65,22 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     max = 100
     value = 100
 
-    valueLabel.foreground = Color.RED.darker()
-
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
+
+    colorizeSliderValue(this, ColorMapping.Default.upperColor)
   }
 
+  private val mismatchMessage = new MultiLineLabel(
+    "Scalar range domain mismatch. Please multi-select only nodes with matching domains."
+  )
+
   {
-    val northedPanel = new BorderPanel {
-      val slidersPanel = new BorderPanel {
+    val northedPanel: BorderPanel = new BorderPanel {
+      private val slidersPanel = new BorderPanel {
         border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
         layout(minimumSlider) = BorderPanel.Position.North
-        layout(maximumSlider) = BorderPanel.Position.Center
+        layout(maximumSlider) = BorderPanel.Position.South
+        layout(mismatchMessage) = BorderPanel.Position.Center
       }
       layout(slidersPanel) = BorderPanel.Position.Center
     }
@@ -76,11 +89,11 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(minimumSlider, maximumSlider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(minimumSlider, maximumSlider)
   }
 
@@ -100,25 +113,36 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     v * step + min
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
-    targets.foreach { t =>
-      min = t.scalarRange.value.absoluteMinimum
-      max = t.scalarRange.value.absoluteMaximum
+
+    // either show sliders, or information
+    mismatchMessage.visible = targets.isEmpty
+    minimumSlider.visible = targets.nonEmpty
+    maximumSlider.visible = targets.nonEmpty
+
+    targets.headOption.foreach { t =>
+      val range = t.scalarRange.value
+      min = range.domainMinimum
+      max = range.domainMaximum
       step = (max - min) / 100.0f
 
       // this is an ugly workaround to make sure (min, max) values are properly displayed
-      def reinitSlider(s: FancySlider) = {
+      def reinitSlider(s: FancySlider): Unit = {
         s.min = 1
         s.min = 0
         s.max = 99
         s.max = 100
       }
+
       reinitSlider(minimumSlider)
       reinitSlider(maximumSlider)
 
-      minimumSlider.value = toSliderValue(t.scalarRange.value.cappedMinimum)
-      maximumSlider.value = toSliderValue(t.scalarRange.value.cappedMaximum)
+      minimumSlider.value = toSliderValue(range.mappedMinimum)
+      maximumSlider.value = toSliderValue(range.mappedMaximum)
+
+      colorizeSliderValue(minimumSlider, range.colorMapping.lowerColor)
+      colorizeSliderValue(maximumSlider, range.colorMapping.upperColor)
 
     }
     listenToOwnEvents()
@@ -128,8 +152,20 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     cleanup()
     val supported = allMatch[HasScalarRange](nodes)
     if (supported.nonEmpty) {
-      targets = supported
-      listenTo(targets.head.scalarRange)
+
+      // check if all nodes have the same scalar range domain
+      val ranges = supported.map(_.scalarRange.value)
+      val minima = ranges.map(_.domainMinimum).distinct.length
+      val maxima = ranges.map(_.domainMaximum).distinct.length
+
+      if (minima == 1 && maxima == 1) {
+        targets = supported
+      } else {
+        // can't show a single set of sliders for multiple domains.
+        // However, we'll still show the UI, with a message instead.
+        targets = Nil
+      }
+      targets.foreach(t => listenTo(t.scalarRange))
       updateUi()
       true
     } else false
@@ -155,7 +191,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   def propagateSliderChanges(): Unit = {
     val (fMin, fMax) = (fromSliderValue(minimumSlider.value), fromSliderValue(maximumSlider.value))
-    targets.foreach(t => t.scalarRange.value = t.scalarRange.value.copy(cappedMinimum = fMin, cappedMaximum = fMax))
+    targets.foreach(t => t.scalarRange.value = t.scalarRange.value.copy(mappedMinimum = fMin, mappedMaximum = fMax))
   }
 
 }

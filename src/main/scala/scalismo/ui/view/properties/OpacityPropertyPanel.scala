@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,8 @@
 package scalismo.ui.view.properties
 
 import javax.swing.border.TitledBorder
-
 import scalismo.ui.model.SceneNode
-import scalismo.ui.model.properties.{ HasOpacity, NodeProperty }
+import scalismo.ui.model.properties.{HasOpacity, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.FancySlider
 
@@ -48,7 +47,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
   }
 
   layout(new BorderPanel {
-    val sliderPanel = new BorderPanel {
+    private val sliderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
       layout(slider) = BorderPanel.Position.Center
     }
@@ -57,15 +56,15 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   listenToOwnEvents()
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(slider)
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(slider)
   }
 
-  def updateUi() = {
+  def updateUi(): Unit = {
     deafToOwnEvents()
     targets.headOption.foreach(t => slider.value = (t.opacity.value * 100.0f).toInt)
     listenToOwnEvents()
@@ -89,7 +88,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(c) => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
+    case ValueChanged(_)                       => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
   }
 
 }

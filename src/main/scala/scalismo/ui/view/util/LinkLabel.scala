@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,14 @@
 
 package scalismo.ui.view.util
 
-import java.awt.event.{ MouseAdapter, MouseEvent }
-import java.awt.{ Color, Cursor, Desktop }
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Desktop}
 import java.net.URI
+
 import javax.swing.Icon
 
 import scala.swing.Swing.EmptyIcon
-import scala.swing.{ Alignment, Label }
+import scala.swing.{Alignment, Label}
 
 object LinkLabel {
 
@@ -36,7 +37,13 @@ object LinkLabel {
   }
 }
 
-class LinkLabel(text: String, uri: URI, icon: Icon = EmptyIcon, alignment: Alignment.Value = Alignment.Center, preventLinkStyle: Boolean = false, preventTooltip: Boolean = false) extends Label(text, icon, alignment) {
+class LinkLabel(text: String,
+                uri: URI,
+                icon: Icon = EmptyIcon,
+                alignment: Alignment.Value = Alignment.Center,
+                preventLinkStyle: Boolean = false,
+                preventTooltip: Boolean = false)
+    extends Label(text, icon, alignment) {
   if (!preventTooltip) {
     tooltip = uri.toString
   }

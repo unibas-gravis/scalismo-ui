@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,16 @@
 package scalismo.ui.view.properties
 
 import java.awt.Font
+
 import javax.swing.border.TitledBorder
-
 import scalismo.ui.control.SlicingPosition
-import scalismo.ui.model.{ Axis, Scene, SceneNode }
+import scalismo.ui.model.{Axis, Scene, SceneNode}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{ AxisColor, FancySlider }
+import scalismo.ui.view.util.{AxisColor, FancySlider}
 
-import scala.swing.GridBagPanel.{ Anchor, Fill }
+import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
-import scala.swing.event.{ ButtonClicked, ValueChanged }
+import scala.swing.event.{ButtonClicked, ValueChanged}
 
 object SlicingPositionPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new SlicingPositionPanel(frame)
@@ -39,11 +39,12 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   private var slicingPosition: Option[SlicingPosition] = None
 
   private[SlicingPositionPanel] class AxisControl(axis: Axis) {
-    val nameLabel = new Label(axis.toString) {
+    val nameLabel: Label = new Label(axis.toString) {
       foreground = AxisColor.forAxis(axis).darker()
       font = font.deriveFont(font.getStyle | Font.BOLD)
     }
-    val slider = new FancySlider {
+
+    val slider: FancySlider = new FancySlider {
 
       min = 0
       max = 0
@@ -68,7 +69,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       }
     })
 
-    val control = new BorderPanel {
+    val control: BorderPanel = new BorderPanel {
       layout(minus) = BorderPanel.Position.West
       layout(slider) = BorderPanel.Position.Center
       layout(plus) = BorderPanel.Position.East
@@ -78,7 +79,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       slider.value
     }
 
-    def update() = {
+    def update(): Unit = {
       val sp = slicingPosition.get
       val (min, max, value) = axis match {
         case Axis.X => (sp.boundingBox.xMin, sp.boundingBox.xMax, sp.x)
@@ -98,7 +99,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
   private def axisControls = Seq(x, y, z)
 
-  val position = new GridBagPanel {
+  private class PositionPanel extends GridBagPanel {
     border = new TitledBorder(null, "Position", TitledBorder.LEADING, 0, null, null)
 
     def add(comp: Component, position: (Int, Int)): Unit = {
@@ -119,13 +120,16 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       add(axis.control, (1, row))
     }
   }
+
+  private val position = new PositionPanel()
+
   position.add(x, 1)
   position.add(y, 2)
   position.add(z, 3)
 
   val slicesVisible = new CheckBox("Show bounding box and slices")
 
-  val visibilityPanel = new BorderPanel {
+  private val visibilityPanel = new BorderPanel {
     border = new TitledBorder(null, "Visibility", TitledBorder.LEADING, 0, null, null)
     layout(slicesVisible) = BorderPanel.Position.Center
   }
@@ -149,7 +153,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
     }
   }
 
-  def cleanup() = {
+  def cleanup(): Unit = {
     slicingPosition.foreach(sp => deafTo(sp))
     slicingPosition = None
   }
@@ -164,16 +168,16 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
     }
   }
 
-  def deafToOwnEvents() = {
+  def deafToOwnEvents(): Unit = {
     deafTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
-  def listenToOwnEvents() = {
+  def listenToOwnEvents(): Unit = {
     listenTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
   reactions += {
-    case SlicingPosition.event.VisibilityChanged(_) => updateUi()
+    case SlicingPosition.event.VisibilityChanged(_)  => updateUi()
     case SlicingPosition.event.BoundingBoxChanged(_) => updateUi()
     case SlicingPosition.event.PointChanged(_, _, _) => updateUi()
     case ValueChanged(slider: Slider) =>

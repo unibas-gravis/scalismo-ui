@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
 package scalismo.ui.control
 
 import scalismo.ui.control.NodeVisibility._
-import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.event.{Event, ScalismoPublisher}
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.view._
 import scalismo.ui.view.perspective.Perspective
 
 import scala.collection.mutable
-import scala.language.implicitConversions
+//import scala.language.implicitConversions
 
 /**
  * This class controls the visibility of nodes in the various viewports of a frame.
@@ -37,9 +37,7 @@ object NodeVisibility {
   type Node = RenderableSceneNode
   type Context = ViewportPanel
 
-  sealed trait State {
-
-  }
+  sealed trait State {}
 
   case object Visible extends State
 
@@ -175,7 +173,7 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
     setVisibility(List(node), List(viewport), show)
   }
 
-  private def handlePerspectiveChange(current: Perspective, previous: Perspective) = {
+  private def handlePerspectiveChange(current: Perspective, previous: Perspective): Unit = {
     // We keep it simple here, and only hide items if they have been completely hidden before.
     // anything else would just be guesswork.
 
@@ -190,6 +188,7 @@ class NodeVisibility(frame: ScalismoFrame) extends ScalismoPublisher {
   }
 
   reactions += {
-    case PerspectivePanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined => handlePerspectiveChange(current, previous.get)
+    case PerspectivePanel.event.PerspectiveChanged(_, current, previous) if previous.isDefined =>
+      handlePerspectiveChange(current, previous.get)
   }
 }

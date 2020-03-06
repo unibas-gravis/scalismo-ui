@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,17 +18,16 @@
 package scalismo.ui.api
 
 import scalismo.common._
-import scalismo.geometry.{ Landmark, Point, EuclideanVector, _3D }
+import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteScalarImage
-import scalismo.mesh.{ LineMesh, ScalarMeshField, TriangleMesh, VertexColorMesh3D }
-import scalismo.registration.{ RigidTransformation, RigidTransformationSpace }
-import scalismo.statisticalmodel.{ DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel }
+import scalismo.mesh._
+import scalismo.registration.RigidTransformation
+import scalismo.statisticalmodel.experimental.StatisticalVolumeMeshModel
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, StatisticalMeshModel}
 import scalismo.ui.model._
-import scalismo.ui.view.ScalismoFrame
 
 import scala.annotation.implicitNotFound
 import scala.reflect.ClassTag
-import scala.util.Try
 
 @implicitNotFound(msg = "Don't know how to handle object (no implicit defined for ${A})")
 trait ShowInScene[-A] {
@@ -42,12 +41,17 @@ trait LowPriorityImplicits {
 
   def apply[A](implicit a: ShowInScene[A]): ShowInScene[A] = a
 
-  implicit def showInSceneScalarField[A: Scalar: ClassTag] =
+  implicit def showInSceneScalarField[A: Scalar: ClassTag]
+    : ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
+      type View = ScalarFieldView
+    } =
     new ShowInScene[DiscreteScalarField[_3D, DiscreteDomain[_3D], A]] {
 
       override type View = ScalarFieldView
 
-      override def showInScene(sf: DiscreteScalarField[_3D, DiscreteDomain[_3D], A], name: String, group: Group): ScalarFieldView = {
+      override def showInScene(sf: DiscreteScalarField[_3D, DiscreteDomain[_3D], A],
+                               name: String,
+                               group: Group): ScalarFieldView = {
         ScalarFieldView(group.peer.scalarFields.add(sf, name))
       }
     }
@@ -55,7 +59,7 @@ trait LowPriorityImplicits {
   implicit object CreateGenericTransformation extends ShowInScene[Point[_3D] => Point[_3D]] {
     override type View = TransformationView
 
-    override def showInScene(t: (Point[_3D]) => Point[_3D], name: String, group: Group): View = {
+    override def showInScene(t: Point[_3D] => Point[_3D], name: String, group: Group): View = {
       TransformationView(group.peer.genericTransformations.add(t, name))
     }
   }
@@ -74,12 +78,38 @@ trait LowPriorityImplicits {
 
 object ShowInScene extends LowPriorityImplicits {
 
-  implicit def ShowVertexColorMesh = new ShowInScene[VertexColorMesh3D] {
+  implicit def ShowVertexColorMesh: ShowInScene[VertexColorMesh3D] {
+    type View = VertexColorMeshView
+  } = new ShowInScene[VertexColorMesh3D] {
     override type View = VertexColorMeshView
 
     override def showInScene(mesh: VertexColorMesh3D, name: String, group: Group): VertexColorMeshView = {
 
       VertexColorMeshView(group.peer.colorMeshes.add(mesh, name))
+    }
+  }
+
+  implicit def ShowTetrahedralMesh: ShowInScene[TetrahedralMesh[_3D]] {
+    type View = TetrahedralMeshView
+  } = new ShowInScene[TetrahedralMesh[_3D]] {
+    override type View = TetrahedralMeshView
+
+    override def showInScene(mesh: TetrahedralMesh[_3D], name: String, group: Group): TetrahedralMeshView = {
+      TetrahedralMeshView(group.peer.tetrahedralMeshes.add(mesh, name))
+    }
+  }
+
+  implicit def ShowTetrahedralMeshScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarVolumeMeshField[S]] {
+    type View = ScalarTetrahedralMeshFieldView
+  } = new ShowInScene[ScalarVolumeMeshField[S]] {
+    override type View = ScalarTetrahedralMeshFieldView
+
+    override def showInScene(mesh: ScalarVolumeMeshField[S],
+                             name: String,
+                             group: Group): ScalarTetrahedralMeshFieldView = {
+      val scalarConv = implicitly[Scalar[S]]
+      val smfAsFloat = mesh.copy(data = mesh.data.map[Float](x => scalarConv.toFloat(x)))
+      ScalarTetrahedralMeshFieldView(group.peer.tetrahedralMeshFields.add(smfAsFloat, name))
     }
   }
 
@@ -111,7 +141,9 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowScalarField[S: Scalar: ClassTag] = new ShowInScene[ScalarMeshField[S]] {
+  implicit def ShowScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarMeshField[S]] {
+    type View = ScalarMeshFieldView
+  } = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
 
     override def showInScene(scalarMeshField: ScalarMeshField[S], name: String, group: Group): ScalarMeshFieldView = {
@@ -126,12 +158,16 @@ object ShowInScene extends LowPriorityImplicits {
 
     override type View = VectorFieldView
 
-    override def showInScene(df: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]], name: String, group: Group): VectorFieldView = {
+    override def showInScene(df: DiscreteField[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
+                             name: String,
+                             group: Group): VectorFieldView = {
       VectorFieldView(group.peer.vectorFields.add(df, name))
     }
   }
 
-  implicit def ShowImage[S: Scalar: ClassTag] = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar: ClassTag]: ShowInScene[DiscreteScalarImage[_3D, S]] {
+    type View = ImageView
+  } = new ShowInScene[DiscreteScalarImage[_3D, S]] {
     override type View = ImageView
 
     override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {
@@ -167,7 +203,8 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(model: StatisticalMeshModel, name: String, group: Group): View = {
 
-      val shapeModelTransform = ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+      val shapeModelTransform =
+        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group)
       StatisticalMeshModelViewControls(tmV, smV)
@@ -175,10 +212,26 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
+  implicit object ShowInSceneStatisticalVolumeMeshModel extends ShowInScene[StatisticalVolumeMeshModel] {
+    type View = StatisticalVolumeMeshModelViewControls
+
+    override def showInScene(model: StatisticalVolumeMeshModel, name: String, group: Group): View = {
+
+      val shapeModelTransform =
+        ShapeModelTransformation(PointTransformation.RigidIdentity, DiscreteLowRankGpPointTransformation(model.gp))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
+      val tmV = ShowTetrahedralMesh.showInScene(model.referenceVolumeMesh, name, group)
+      StatisticalVolumeMeshModelViewControls(tmV, smV)
+
+    }
+  }
+
   implicit object ShowInSceneTransformationGlyph extends ShowInScene[TransformationGlyph] {
     override type View = VectorFieldView
 
-    override def showInScene(transformationGlyph: TransformationGlyph, name: String, group: Group): ShowInSceneTransformationGlyph.View = {
+    override def showInScene(transformationGlyph: TransformationGlyph,
+                             name: String,
+                             group: Group): ShowInSceneTransformationGlyph.View = {
       VectorFieldView(group.peer.vectorFields.addTransformationGlyph(transformationGlyph.points.toIndexedSeq, name))
     }
   }
@@ -191,12 +244,13 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object CreateLowRankGPTransformation
-      extends ShowInScene[LowRankGaussianProcess[_3D, EuclideanVector[_3D]]] {
+  implicit object CreateLowRankGPTransformation extends ShowInScene[LowRankGaussianProcess[_3D, EuclideanVector[_3D]]] {
 
     override type View = LowRankGPTransformationView
 
-    override def showInScene(gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]], name: String, group: Group): View = {
+    override def showInScene(gp: LowRankGaussianProcess[_3D, EuclideanVector[_3D]],
+                             name: String,
+                             group: Group): View = {
       val gpNode = group.peer.genericTransformations.add(LowRankGpPointTransformation(gp), name)
       LowRankGPTransformationView(gpNode)
     }
@@ -208,8 +262,8 @@ object ShowInScene extends LowPriorityImplicits {
     override type View = DiscreteLowRankGPTransformationView
 
     override def showInScene(gp: DiscreteLowRankGaussianProcess[_3D, DiscreteDomain[_3D], EuclideanVector[_3D]],
-      name: String,
-      group: Group): View = {
+                             name: String,
+                             group: Group): View = {
 
       val gpNode = group.peer.genericTransformations.add(DiscreteLowRankGpPointTransformation(gp), name)
       DiscreteLowRankGPTransformationView(gpNode)
@@ -221,8 +275,8 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(transform: ShapeModelTransformation, name: String, group: Group): View = {
       val t = for {
-        pose <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
-        shape <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
+        _ <- group.peer.shapeModelTransformations.addPoseTransformation(transform.poseTransformation)
+        _ <- group.peer.shapeModelTransformations.addGaussianProcessTransformation(transform.shapeTransformation)
       } yield ShapeModelTransformationView(group.peer.shapeModelTransformations)
       t.get
     }

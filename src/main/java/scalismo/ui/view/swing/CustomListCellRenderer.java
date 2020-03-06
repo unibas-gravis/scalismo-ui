@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import java.awt.*;
  * This cannot be directly done in Scala, because it produces some weird type errors, so we
  * resort to an abstract method with a well-defined signature that can be overridden in Scala.
  *
- * @see scalismo.ui.view.StatusBar.StatusMessageCellRenderer for an example.
+ * See <tt>scalismo.ui.view.StatusBar.StatusMessageCellRenderer</tt> for an example.
  */
 public abstract class CustomListCellRenderer extends DefaultListCellRenderer {
     @Override

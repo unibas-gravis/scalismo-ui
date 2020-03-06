@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.model.properties
 
-import scalismo.ui.event.{ Event, ScalismoPublisher }
+import scalismo.ui.event.{Event, ScalismoPublisher}
 import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
 
 object NodeProperty {
@@ -40,13 +40,13 @@ class NodeProperty[V](initialValue: => V) extends ScalismoPublisher {
    * @param possiblyNotSane a value, possibly not a sane one
    * @return the sanitized version of the value
    */
-  protected def sanitize(possiblyNotSane: V) = possiblyNotSane
+  protected def sanitize(possiblyNotSane: V): V = possiblyNotSane
 
   private var _value: V = sanitize(initialValue)
 
   def value: V = _value
 
-  def value_=(newValue: V) = {
+  def value_=(newValue: V): Unit = {
     _value = sanitize(newValue)
     publishEvent(PropertyChanged(this))
   }

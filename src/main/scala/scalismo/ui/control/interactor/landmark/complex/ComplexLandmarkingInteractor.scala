@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,49 +18,54 @@
 package scalismo.ui.control.interactor.landmark.complex
 
 import java.awt.event.MouseEvent
-import java.awt.{ Color, Cursor }
+import java.awt.{Color, Cursor}
 
 import scalismo.geometry._
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.control.interactor.Interactor.Verdict
-import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{ Delegate, StateTransition }
-import scalismo.ui.control.interactor.{ DefaultInteractor, DelegatedInteractor, DelegatingInteractor }
+import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor.{Delegate, StateTransition}
+import scalismo.ui.control.interactor.{DefaultInteractor, DelegatedInteractor, DelegatingInteractor}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model._
-import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
+import scalismo.ui.model.capabilities.{Grouped, InverseTransformation}
 import scalismo.ui.model.properties.Uncertainty
 import scalismo.ui.resources.icons.BundledIcon
-import scalismo.ui.view.{ ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 
 import scala.swing.ToggleButton
 import scala.swing.event.ButtonClicked
 
 object ComplexLandmarkingInteractor {
 
-  trait Delegate[InteractorType <: ComplexLandmarkingInteractor[InteractorType]] extends DelegatedInteractor[ComplexLandmarkingInteractor[InteractorType]] {
+  trait Delegate[InteractorType <: ComplexLandmarkingInteractor[InteractorType]]
+      extends DelegatedInteractor[ComplexLandmarkingInteractor[InteractorType]] {
     def onLandmarkCreationToggled()
 
   }
 
-  trait StateTransition[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[InteractorType]] {
+  trait StateTransition[InteractorType <: ComplexLandmarkingInteractor[InteractorType], DelegateType <: Delegate[
+    InteractorType
+  ]] {
     def apply()(implicit parent: InteractorType): Delegate[InteractorType]
   }
 
-  class Instance(override val frame: ScalismoFrame) extends DefaultInteractor with ComplexLandmarkingInteractor[Instance] {
-
-  }
+  class Instance(override val frame: ScalismoFrame)
+      extends DefaultInteractor
+      with ComplexLandmarkingInteractor[Instance] {}
 
 }
 
-trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteractor[InteractorType]] extends DelegatingInteractor[ComplexLandmarkingInteractor[InteractorType]] with ScalismoPublisher {
+trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteractor[InteractorType]]
+    extends DelegatingInteractor[ComplexLandmarkingInteractor[InteractorType]]
+    with ScalismoPublisher {
 
   implicit lazy val myself: InteractorType = this.asInstanceOf[InteractorType]
 
-  private lazy val landmarkingButton = new ToggleButton {
+  private lazy val landmarkingButton: ToggleButton = new ToggleButton {
     selected = true
-    val myIcon = BundledIcon.Landmark
+    private val myIcon = BundledIcon.Landmark
 
-    def updateUi() = {
+    def updateUi(): Unit = {
       val onOff = if (selected) "ON" else "OFF"
       tooltip = s"Toggle landmarking (currently $onOff)"
       val iconColor = if (selected) Color.GREEN.darker else Color.DARK_GRAY
@@ -74,7 +79,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     updateUi()
   }
 
-  override protected def initialDelegate = {
+  override protected def initialDelegate: Delegate[InteractorType] = {
     if (isLandmarkCreationEnabled) {
       ReadyForCreating.enter()
     } else {
@@ -92,7 +97,8 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
 
   // set the cursor to a crosshair if we're in landmarking mode
   override def mouseEntered(e: MouseEvent): Verdict = {
-    val cursor = if (landmarkingButton.selected) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
+    val cursor =
+      if (landmarkingButton.selected) Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR) else Cursor.getDefaultCursor
     e.canvas.setCursor(cursor)
     super.mouseEntered(e)
   }
@@ -105,7 +111,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
     val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
     pointAndNode.nodeOption.flatMap { node =>
       val contextOption: Option[(Point3D, GroupNode)] = node match {
-        case skip: LandmarkNode => None
+        case _: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           Some((ok.inverseTransform(pointAndNode.pointOption.get), ok.group))
         case ok: ImageNode =>
@@ -120,18 +126,22 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
           val axes: List[EuclideanVector3D] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
           val sigmas = params.map(_._2).getOrElse(sigmasForLandmarkUncertainty(group))
           val uncertainty = Uncertainty(axes, sigmas)
-          val landmark = new Landmark[_3D]("dummy", point, uncertainty = Some(uncertainty.toMultivariateNormalDistribution))
+          val landmark =
+            new Landmark[_3D]("dummy", point, uncertainty = Some(uncertainty.toMultivariateNormalDistribution))
           Some((landmark, group))
         case _ => None
       }
     }
   }
 
-  def uncertaintyParametersFor(node: SceneNode, group: GroupNode, point: Point3D, viewport: ViewportPanel): Option[(List[EuclideanVector3D], List[Double])] = {
+  def uncertaintyParametersFor(node: SceneNode,
+                               group: GroupNode,
+                               point: Point3D,
+                               viewport: ViewportPanel): Option[(List[EuclideanVector3D], List[Double])] = {
     val meshOption: Option[TriangleMesh[_3D]] = node match {
-      case m: TriangleMeshNode => Some(m.source)
+      case m: TriangleMeshNode    => Some(m.source)
       case m: ScalarMeshFieldNode => Some(m.source.mesh)
-      case _ => None
+      case _                      => None
     }
 
     meshOption.flatMap { mesh =>
@@ -151,10 +161,12 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
               val v2: EuclideanVector3D = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id).copy(x = 0)
               (v1, v2, EuclideanVector3D(0, -v2.z, v2.y))
           }
-          val axes = List(planeNormal, meshNormal, meshTangential).map { v => v * (1 / v.norm): EuclideanVector3D }
+          val axes = List(planeNormal, meshNormal, meshTangential).map { v =>
+            v * (1 / v.norm): EuclideanVector3D
+          }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
-        case _3d: ViewportPanel3D =>
+        case _: ViewportPanel3D =>
           val meshNormal = mesh.vertexNormals(mesh.pointSet.findClosestPoint(point).id)
           val firstPerp = {
             /* There is an infinite number of perpendicular vectors, any one will do.
@@ -165,7 +177,9 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
             if (candidate.norm2 != 0) candidate else meshNormal.crossproduct(EuclideanVector3D(0, 1, 0))
           }
           val secondPerp = meshNormal.crossproduct(firstPerp)
-          val axes = List(meshNormal, firstPerp, secondPerp).map { v => v * (1 / v.norm): EuclideanVector3D }
+          val axes = List(meshNormal, firstPerp, secondPerp).map { v =>
+            v * (1 / v.norm): EuclideanVector3D
+          }
           val sigmas = sigmasForLandmarkUncertainty(group)
           Some((axes, sigmas))
       }

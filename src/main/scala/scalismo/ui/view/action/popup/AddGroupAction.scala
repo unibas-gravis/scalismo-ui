@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 package scalismo.ui.view.action.popup
 
-import scalismo.ui.model.{ Scene, SceneNode }
+import scalismo.ui.model.{Scene, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.action.AskForInputAction
@@ -28,7 +28,8 @@ object AddGroupAction extends PopupAction.Factory {
   }
 }
 
-class AddGroupAction(node: Scene)(implicit val frame: ScalismoFrame) extends PopupAction("Add Group ...", BundledIcon.Group) {
+class AddGroupAction(node: Scene)(implicit val frame: ScalismoFrame)
+    extends PopupAction("Add Group ...", BundledIcon.Group) {
   def callback(newName: Option[String]): Unit = {
     newName.foreach(n => node.groups.add(n))
   }

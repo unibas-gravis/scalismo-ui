@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ class FloatSlider(val minFloat: Float, val maxFloat: Float, val stepFloat: Float
     minFloat + stepFloat * i
   }
 
-  def floatValue = i2f(value)
+  def floatValue: Float = i2f(value)
 
-  def floatValue_=(newValue: Float) = value = f2i(newValue)
+  def floatValue_=(newValue: Float): Unit = value = f2i(newValue)
 
   min = 0
   max = ((maxFloat - minFloat) / stepFloat).toInt
@@ -41,4 +41,3 @@ class FloatSlider(val minFloat: Float, val maxFloat: Float, val stepFloat: Float
     f"${i2f(sliderValue)}%1.1f"
   }
 }
-

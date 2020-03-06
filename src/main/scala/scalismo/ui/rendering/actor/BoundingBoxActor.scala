@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +22,30 @@ import java.awt.Color
 import scalismo.geometry.Point3D
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.control.SlicingPosition.renderable.BoundingBoxRenderable
-import scalismo.ui.model.{ Axis, BoundingBox }
+import scalismo.ui.model.{Axis, BoundingBox}
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.util.AxisColor
-import scalismo.ui.view.{ ViewportPanel, ViewportPanel2D, ViewportPanel3D }
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import vtk._
 
 object BoundingBoxActor extends SimpleActorsFactory[SlicingPosition.renderable.BoundingBoxRenderable] {
   override def actorsFor(renderable: BoundingBoxRenderable, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new BoundingBoxActor3D(renderable.source))
+      case _: ViewportPanel3D   => Some(new BoundingBoxActor3D(renderable.source))
       case _2d: ViewportPanel2D => Some(new SingleBoundingBoxActor2D(renderable.source, _2d.axis))
     }
   }
 }
 
-class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor with Actors with ActorEvents {
+class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends DataSetActor with Actors with ActorEvents {
   // this actor is displaying the bounding box, but doesn't "have" one itself (i.e., doesn't affect it).
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
-  val sliceActors = Axis.All.map(axis => BoundingBoxActor2D(axis, slicingPosition))
+  private val sliceActors = Axis.All.map(axis => BoundingBoxActor2D(axis, slicingPosition))
 
   override def vtkActors: List[vtkActor] = this :: sliceActors
 
-  def update() = {
+  def update(): Unit = {
     val points = new vtkPoints()
     val bb = slicingPosition.boundingBox
     points.InsertNextPoint(bb.xMin, bb.yMin, bb.zMin)
@@ -74,17 +74,19 @@ class BoundingBoxActor3D(slicingPosition: SlicingPosition) extends PolyDataActor
 
   reactions += {
     case SlicingPosition.event.BoundingBoxChanged(_) => update()
-    case SlicingPosition.event.VisibilityChanged(_) => update()
+    case SlicingPosition.event.VisibilityChanged(_)  => update()
   }
 
   update()
 
 }
 
-class SingleBoundingBoxActor2D(override val slicingPosition: SlicingPosition, override val axis: Axis) extends BoundingBoxActor2D with Actors {
+class SingleBoundingBoxActor2D(override val slicingPosition: SlicingPosition, override val axis: Axis)
+    extends BoundingBoxActor2D
+    with Actors {
   override def boundingBox: BoundingBox = BoundingBox.Invalid
 
-  override lazy val intersectionActors = {
+  override lazy val intersectionActors: List[BoundingBoxIntersectionActor] = {
     Axis.All.filterNot(_ == axis).map { iAxis =>
       new BoundingBoxIntersectionActor(iAxis)
     }
@@ -101,7 +103,7 @@ object BoundingBoxActor2D {
   }
 }
 
-trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
+trait BoundingBoxActor2D extends DataSetActor with ActorEvents {
 
   def slicingPosition: SlicingPosition
 
@@ -109,7 +111,7 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 
   def intersectionActors: List[BoundingBoxIntersectionActor] = Nil
 
-  def update() = {
+  def update(): Unit = {
     // this is a (minimally) more expensive way to construct what will end up being
     // a rectangle anyway, but it's extremely concise and much more understandable than manual construction.
 
@@ -159,7 +161,7 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 
   reactions += {
     case SlicingPosition.event.BoundingBoxChanged(_) => update()
-    case SlicingPosition.event.VisibilityChanged(_) => update()
+    case SlicingPosition.event.VisibilityChanged(_)  => update()
     case SlicingPosition.event.PointChanged(_, _, _) => update()
   }
 
@@ -168,8 +170,8 @@ trait BoundingBoxActor2D extends PolyDataActor with ActorEvents {
 }
 
 // this class draws the intersection line for a particular axis in a BoundingBoxActor2D
-class BoundingBoxIntersectionActor(axis: Axis) extends PolyDataActor {
-  def update(bb: BoundingBox, point: Point3D, overrideIndex: Int, overrideValue: Double) = {
+class BoundingBoxIntersectionActor(axis: Axis) extends DataSetActor {
+  def update(bb: BoundingBox, point: Point3D, overrideIndex: Int, overrideValue: Double): Unit = {
     val min = Array(bb.xMin, bb.yMin, bb.zMin)
     val max = Array(bb.xMax, bb.yMax, bb.zMax)
 
@@ -219,4 +221,3 @@ class BoundingBoxIntersectionActor(axis: Axis) extends PolyDataActor {
   SetPickable(0)
 
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,11 @@
 
 package scalismo.ui.control
 
-import scalismo.geometry.{ Point, Point3D }
+import scalismo.geometry.{Point, Point3D}
 import scalismo.ui.control.SlicingPosition.event
 import scalismo.ui.control.SlicingPosition.renderable.BoundingBoxRenderable
-import scalismo.ui.event.{ Event, ScalismoPublisher }
-import scalismo.ui.model.{ BoundingBox, Renderable, Scene }
+import scalismo.ui.event.{Event, ScalismoPublisher}
+import scalismo.ui.model.{BoundingBox, Renderable, Scene}
 import scalismo.ui.settings.GlobalSettings
 import scalismo.ui.view._
 
@@ -51,9 +51,9 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   private var _visible = GlobalSettings.get[Boolean](GlobalSettings.Keys.SlicingPositionShow).getOrElse(false)
 
-  def visible = _visible
+  def visible: Boolean = _visible
 
-  def visible_=(newVisible: Boolean) = {
+  def visible_=(newVisible: Boolean): Unit = {
     if (_visible != newVisible) {
       _visible = newVisible
       GlobalSettings.set(GlobalSettings.Keys.SlicingPositionShow, newVisible)
@@ -65,11 +65,11 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   private var _point: Point3D = Point3D(0, 0, 0)
 
-  def point = {
+  def point: Point3D = {
     _point
   }
 
-  def point_=(np: Point3D) = {
+  def point_=(np: Point3D): Unit = {
     if (_point != np) {
       val prev = _point
       _point = np
@@ -77,27 +77,27 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
     }
   }
 
-  def x = point(0)
+  def x: Double = point(0)
 
-  def y = point(1)
+  def y: Double = point(1)
 
-  def z = point(2)
+  def z: Double = point(2)
 
-  def x_=(nv: Float) = {
+  def x_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
     if (x != sv) {
       point_=(Point(sv, y, z))
     }
   }
 
-  def y_=(nv: Float) = {
+  def y_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.yMin, nv), boundingBox.yMax)
     if (y != sv) {
       point = Point(x, sv, z)
     }
   }
 
-  def z_=(nv: Float) = {
+  def z_=(nv: Float): Unit = {
     val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
     if (z != sv) {
       point = Point(x, y, sv)
@@ -113,7 +113,7 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   private var _boundingBox: BoundingBox = BoundingBox.Invalid
 
-  def boundingBox = _boundingBox
+  def boundingBox: BoundingBox = _boundingBox
 
   private def boundingBox_=(nb: BoundingBox): Unit = {
     if (_boundingBox != nb) {
@@ -147,8 +147,8 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   reactions += {
     case PerspectivePanel.event.PerspectiveChanged(_, _, _) => perspectiveChanged()
-    case ViewportPanel.event.BoundingBoxChanged(_) => updateBoundingBox()
-    case ViewportPanel.event.Detached(vp) => deafTo(vp)
+    case ViewportPanel.event.BoundingBoxChanged(_)          => updateBoundingBox()
+    case ViewportPanel.event.Detached(vp)                   => deafTo(vp)
   }
 
   def initialize(): Unit = {
@@ -161,8 +161,8 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   def renderablesFor(viewport: ViewportPanel): List[Renderable] = {
     viewport match {
-      case _3d: ViewportPanel3D => List(boundingBoxRenderable)
-      case _2d: ViewportPanel2D => List(boundingBoxRenderable)
+      case _: ViewportPanel3D => List(boundingBoxRenderable)
+      case _: ViewportPanel2D => List(boundingBoxRenderable)
     }
   }
 }

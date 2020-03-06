@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 package scalismo.ui.control.interactor
 
 import java.awt.Point
-import java.awt.event.{ InputEvent, KeyEvent, MouseEvent, MouseWheelEvent }
+import java.awt.event.{InputEvent, KeyEvent, MouseEvent, MouseWheelEvent}
 
-import scalismo.ui.control.interactor.Interactor.Verdict.{ Block, Pass }
-import scalismo.ui.control.interactor.Interactor.{ PimpedEvent, Verdict }
-import scalismo.ui.model.capabilities.{ Grouped, InverseTransformation }
+import scalismo.ui.control.interactor.Interactor.Verdict.{Block, Pass}
+import scalismo.ui.control.interactor.Interactor.{PimpedEvent, Verdict}
+import scalismo.ui.model.capabilities.{Grouped, InverseTransformation}
 import scalismo.ui.model.properties.Uncertainty
-import scalismo.ui.model.{ ImageNode, LandmarkNode, SceneNode, StatusMessage }
+import scalismo.ui.model.{ImageNode, LandmarkNode, SceneNode, StatusMessage}
 import scalismo.ui.rendering.RendererState.PointAndNode
 import scalismo.ui.view.ViewportPanel2D
 
@@ -75,7 +75,7 @@ object Recipe {
 
           val newHighlighted = state.pointAndNodeAtPosition(e.getPoint).nodeOption match {
             case Some(node) if state.isHighlightable(node) && approve(node) => Some(node)
-            case _ => None
+            case _                                                          => None
           }
 
           if (newHighlighted != highlighted) {
@@ -98,7 +98,7 @@ object Recipe {
     def mouseClicked(e: MouseEvent, uncertainty: Uncertainty = Uncertainty.DefaultUncertainty): Verdict = {
       val pointAndNode = e.viewport.rendererState.pointAndNodeAtPosition(e.getPoint)
       pointAndNode.nodeOption.foreach {
-        case skip: LandmarkNode => None
+        case _: LandmarkNode => None
         case ok: Grouped with InverseTransformation =>
           val name = ok.group.landmarks.nameGenerator.nextName()
           val point = ok.inverseTransform(pointAndNode.pointOption.get)
@@ -144,8 +144,8 @@ object Recipe {
   object Block2DRotation {
     def mousePressed(e: MouseEvent): Verdict = {
       e.viewport match {
-        case _2d: ViewportPanel2D if e.getButton == MouseEvent.BUTTON1 => Block
-        case _ => Pass
+        case _: ViewportPanel2D if e.getButton == MouseEvent.BUTTON1 => Block
+        case _                                                       => Pass
       }
     }
 
@@ -177,7 +177,7 @@ object Recipe {
       if (active) {
         e.viewport.rendererState.pointAndNodeAtPosition(point).pointOption match {
           case Some(position) => e.viewport.frame.sceneControl.slicingPosition.point = position
-          case _ =>
+          case _              =>
         }
       }
       Pass
@@ -213,7 +213,8 @@ object Recipe {
             val pt = ptId.point
             val intensity = img.source(ptId.id)
 
-            val message = StatusMessage(f"${img.name}(${pt.x}%2.2f,${pt.y}%2.2f,${pt.z}%2.2f) = $intensity%2.2f", log = false)
+            val message =
+              StatusMessage(f"${img.name}(${pt.x}%2.2f,${pt.y}%2.2f,${pt.z}%2.2f) = $intensity%2.2f", log = false)
             e.viewport.frame.status.set(message)
 
           case _ =>

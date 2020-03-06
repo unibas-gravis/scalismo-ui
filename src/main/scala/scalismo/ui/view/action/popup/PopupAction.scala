@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,7 @@
 
 package scalismo.ui.view.action.popup
 
-import javax.swing.{ Icon, JComponent }
-
+import javax.swing.{Icon, JComponent}
 import scalismo.ui.model.SceneNode
 import scalismo.ui.util.NodeListFilters
 import scalismo.ui.view.ScalismoFrame
@@ -37,12 +36,14 @@ object PopupAction {
 
   val BuiltinFactories: List[Factory] = List(
     // the order here also defines the order in the popup menu, so arrange entries as needed
+    ChildVisibilityAction,
     VisibilityAction,
     CenterOnLandmarkAction,
     AddGroupAction,
     AddRigidTransformationAction,
     GroupDelegatingAction,
     LoadStatisticalShapeModelAction,
+    LoadStatisticalVolumeMeshModelAction,
     LoadLoadableAction,
     SaveSaveableAction,
     SaveLandmarksAction,
@@ -54,11 +55,11 @@ object PopupAction {
 
   def factories: List[Factory] = _factories
 
-  def addFactory(factory: Factory) = {
+  def addFactory(factory: Factory): Unit = {
     _factories = factory :: _factories
   }
 
-  def removeFactory(factory: Factory) = {
+  def removeFactory(factory: Factory): Unit = {
     _factories = _factories.filter(_ != factory)
   }
 

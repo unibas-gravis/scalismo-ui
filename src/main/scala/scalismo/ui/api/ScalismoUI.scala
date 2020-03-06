@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,11 @@ package scalismo.ui.api
 
 import java.awt.Image
 
-import scalismo.ui.control.interactor.{ DefaultInteractor, Interactor }
-import scalismo.ui.model.{ GroupNode, SceneNode }
-import scalismo.ui.model.SceneNode.event.{ ChildAdded, ChildRemoved }
+import scalismo.ui.model.Scene
 import scalismo.ui.model.capabilities.RenderableSceneNode
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.EdtUtil
-import scalismo.ui.view.perspective.Perspective
-import scalismo.ui.view.{ ScalismoFrame, ScalismoLookAndFeel }
+import scalismo.ui.view.{ScalismoFrame, ScalismoLookAndFeel}
 
 class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 
@@ -41,23 +38,23 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
     frame
   }
 
-  protected[api] val scene = fr.scene
-  protected[api] val frame = fr
+  protected[api] val scene: Scene = fr.scene
+  protected[api] val frame: ScalismoFrame = fr
 
-  override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]) = {
+  override def setVisibility[V <: ObjectView](view: V, visibleViewports: Seq[Viewport]): Unit = {
 
     def setVisible(isVisible: Boolean, viewportName: String): Unit = {
-      frame.perspective.viewports.filter(_.name == viewportName).headOption.foreach { viewPort =>
+      frame.perspective.viewports.find(_.name == viewportName).foreach { viewPort =>
         val visib = frame.sceneControl.nodeVisibility
         visib.setVisibility(view.peer.asInstanceOf[RenderableSceneNode], viewPort, isVisible)
       }
     }
 
-    visibleViewports.foreach(v => setVisible(true, v.name))
+    visibleViewports.foreach(v => setVisible(isVisible = true, v.name))
 
     //set invisible in other viewports
     val viewsNotInConfig = frame.perspective.viewports.filterNot(v => visibleViewports.exists(_.name == v.name))
-    viewsNotInConfig.foreach(v => setVisible(false, v.name))
+    viewsNotInConfig.foreach(v => setVisible(isVisible = false, v.name))
 
   }
 
@@ -79,4 +76,3 @@ object ScalismoUI {
   // TODO: This should be a better and more distinguishable one, e.g., the logo without the background, or a more "stylized" version
   private[ScalismoUI] val appIcon: Image = BundledIcon.AppIcon
 }
-

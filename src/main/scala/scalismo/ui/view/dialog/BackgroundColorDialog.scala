@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ColorChooserPanel
 import scalismo.ui.view.util.ScalableUI.implicits._
 
-import scala.swing.{ Action, Alignment, BorderPanel, Button, Dialog, FlowPanel, GridPanel, Label, TextField }
+import scala.swing.{Action, Alignment, BorderPanel, Button, Dialog, FlowPanel, GridPanel, Label, TextField}
 
 class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(frame) {
 
@@ -34,13 +34,11 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
   private val presetsPanel = {
     val pixels = 32.scaled
 
-    val presets: List[(Color, String)] = List(
-      (Color.WHITE, "White"),
-      (new Color(230, 230, 230), "Gray 10%"),
-      (new Color(192, 192, 192), "Gray 25%"),
-      (new Color(128, 128, 128), "Gray 50%"),
-      (Color.BLACK, "Black")
-    )
+    val presets: List[(Color, String)] = List((Color.WHITE, "White"),
+                                              (new Color(230, 230, 230), "Gray 10%"),
+                                              (new Color(192, 192, 192), "Gray 25%"),
+                                              (new Color(128, 128, 128), "Gray 50%"),
+                                              (Color.BLACK, "Black"))
 
     new GridPanel(presets.length, 1) {
       border = BorderFactory.createTitledBorder("Presets")
@@ -85,7 +83,10 @@ class BackgroundColorDialog(implicit val frame: ScalismoFrame) extends Dialog(fr
         val hex = Integer.parseInt(check, 16)
         colorChooser.color = new Color(hex)
       } else {
-        JOptionPane.showMessageDialog(BackgroundColorDialog.this.peer, "Color codes must be exactly 6 hex digits.", "Invalid input", JOptionPane.ERROR_MESSAGE)
+        JOptionPane.showMessageDialog(BackgroundColorDialog.this.peer,
+                                      "Color codes must be exactly 6 hex digits.",
+                                      "Invalid input",
+                                      JOptionPane.ERROR_MESSAGE)
       }
     }
   })

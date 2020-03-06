@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group 
+ * Copyright (C) 2016  University of Basel, Graphics and Vision Research Group
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,15 @@
 
 package scalismo.ui.rendering.actor
 
-import scalismo.ui.model.properties.NodeProperty.event.PropertyChanged
-import scalismo.ui.model.properties.{ ScalarRangeProperty, ScalarRange }
-import scalismo.ui.model.{ VectorFieldNode, TransformationGlyphNode }
-import scalismo.ui.view.{ ViewportPanel2D, ViewportPanel3D, ViewportPanel }
+import scalismo.ui.model.TransformationGlyphNode
+import scalismo.ui.model.properties.ScalarRange
+import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import vtk.vtkFloatArray
 
 object TransformationGlyphActor extends SimpleActorsFactory[TransformationGlyphNode] {
   override def actorsFor(renderable: TransformationGlyphNode, viewport: ViewportPanel): Option[Actors] = {
     viewport match {
-      case _3d: ViewportPanel3D => Some(new TransformationGlyphActor3D(renderable))
+      case _: ViewportPanel3D   => Some(new TransformationGlyphActor3D(renderable))
       case _2d: ViewportPanel2D => Some(new TransformationGlyphActor2D(renderable, _2d))
     }
   }
@@ -36,7 +35,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
 
   override def sceneNode: TransformationGlyphNode
 
-  override def rerender(geometryChanged: Boolean) = {
+  override def rerender(geometryChanged: Boolean): Unit = {
 
     sceneNode.transformedSource
 
@@ -48,10 +47,10 @@ trait TransformationGlyphActor extends VectorFieldActor {
       SetNumberOfComponents(3)
     }
 
-    var maxNorm = 0.0;
+    var maxNorm = 0.0
     var minNorm = Double.MaxValue
 
-    for ((vector, i) <- sceneNode.transformedSource.values.zipWithIndex) {
+    for ((vector, _) <- sceneNode.transformedSource.values.zipWithIndex) {
       val norm = vector.norm
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
       scalars.InsertNextValue(norm)
@@ -63,8 +62,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
     polydata.GetPointData().SetScalars(scalars)
 
     if (geometryChanged) {
-      scalarRange.value = ScalarRange(minNorm.toFloat, maxNorm.toFloat, minNorm.toFloat, maxNorm.toFloat)
-      publishEvent(PropertyChanged(scalarRange))
+      scalarRange.value = ScalarRange(minNorm.toFloat, maxNorm.toFloat, scalarRange.value.colorMapping)
     }
 
     arrow.Modified()
@@ -76,5 +74,10 @@ trait TransformationGlyphActor extends VectorFieldActor {
 
 }
 
-class TransformationGlyphActor3D(override val sceneNode: TransformationGlyphNode) extends VectorFieldActor3D(sceneNode) with TransformationGlyphActor
-class TransformationGlyphActor2D(override val sceneNode: TransformationGlyphNode, viewport: ViewportPanel2D) extends VectorFieldActor2D(sceneNode, viewport) with TransformationGlyphActor
+class TransformationGlyphActor3D(override val sceneNode: TransformationGlyphNode)
+    extends VectorFieldActor3D(sceneNode)
+    with TransformationGlyphActor
+
+class TransformationGlyphActor2D(override val sceneNode: TransformationGlyphNode, viewport: ViewportPanel2D)
+    extends VectorFieldActor2D(sceneNode, viewport)
+    with TransformationGlyphActor
