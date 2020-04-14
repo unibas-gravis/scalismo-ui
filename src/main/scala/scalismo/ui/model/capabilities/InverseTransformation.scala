@@ -17,7 +17,7 @@
 
 package scalismo.ui.model.capabilities
 
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 
 /**
  * Indicates that this node can perform
