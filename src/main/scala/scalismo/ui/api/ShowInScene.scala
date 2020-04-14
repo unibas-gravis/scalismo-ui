@@ -19,12 +19,16 @@ package scalismo.ui.api
 
 import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
 import scalismo.common._
-import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
-import scalismo.image.DiscreteScalarImage
+import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteScalarImage.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, PointDistributionModel, StatisticalMeshModel}
+import scalismo.statisticalmodel.{
+  DiscreteLowRankGaussianProcess,
+  LowRankGaussianProcess,
+  PointDistributionModel,
+  StatisticalMeshModel
+}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -233,6 +237,7 @@ object ShowInScene extends LowPriorityImplicits {
       val shapeModelTransform =
         ShapeModelTransformation(PointTransformation.RigidIdentity,
                                  DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
+
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowInSceneMesh.showInScene(model.referenceMesh, name, group)
       StatisticalMeshModelViewControls(tmV, smV)
@@ -240,7 +245,8 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object ShowInSceneStatisticalVolumeMeshModel extends ShowInScene[PointDistributionModel[_3D, TetrahedralMesh]] {
+  implicit object ShowInSceneStatisticalVolumeMeshModel
+      extends ShowInScene[PointDistributionModel[_3D, TetrahedralMesh]] {
     type View = StatisticalVolumeMeshModelViewControls
 
     override def showInScene(model: PointDistributionModel[_3D, TetrahedralMesh], name: String, group: Group): View = {

@@ -18,7 +18,7 @@
 package scalismo.ui.model
 
 import scalismo.common.{DiscreteDomain, DiscreteField, DomainWarp, Scalar, UnstructuredPointsDomain}
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.registration.Transformation
 import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
@@ -39,8 +39,7 @@ class ScalarFieldsNode(override val parent: GroupNode) extends SceneNodeCollecti
 
 class ScalarFieldNode(override val parent: ScalarFieldsNode,
                       override val source: DiscreteField[_3D, UnstructuredPointsDomain, Float],
-                      initialName: String)
-                     (implicit canWarp : DomainWarp[_3D, UnstructuredPointsDomain])
+                      initialName: String)(implicit canWarp: DomainWarp[_3D, UnstructuredPointsDomain])
     extends Transformable[DiscreteField[_3D, UnstructuredPointsDomain, Float]]
     with InverseTransformation
     with Removeable
@@ -66,7 +65,6 @@ class ScalarFieldNode(override val parent: ScalarFieldsNode,
 
   override def transform(untransformed: DiscreteField[_3D, UnstructuredPointsDomain, Float],
                          transformation: PointTransformation): DiscreteField[_3D, UnstructuredPointsDomain, Float] = {
-
     val newDomain = canWarp.transform(untransformed.domain, Transformation(transformation))
     DiscreteField(newDomain, untransformed.data)
   }

@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
 

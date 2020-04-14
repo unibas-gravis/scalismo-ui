@@ -102,7 +102,9 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     val unstructuredPointsGp = model.gp
       .interpolate(NearestNeighborInterpolator())
       .discretize(UnstructuredPointsDomain(model.referenceMesh.pointSet))
-    shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(unstructuredPointsGp))
+    shapeModelTransformations.addGaussianProcessTransformation(
+      DiscreteLowRankGpPointTransformation(unstructuredPointsGp)
+    )
 
   }
 
@@ -113,7 +115,9 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     val unstructuredPointsGp = model.gp
       .interpolate(NearestNeighborInterpolator())
       .discretize(UnstructuredPointsDomain(model.reference.pointSet))
-    volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(unstructuredPointsGp))
+    volumeShapeModelTransformations.addGaussianProcessTransformation(
+      DiscreteLowRankGpPointTransformation(unstructuredPointsGp)
+    )
 
   }
 

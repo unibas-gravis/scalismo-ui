@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.mesh.LineMesh
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._

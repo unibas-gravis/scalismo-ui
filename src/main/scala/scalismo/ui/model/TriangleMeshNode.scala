@@ -19,7 +19,7 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities._

@@ -21,7 +21,7 @@ import java.io.File
 
 import scalismo.common.{DiscreteField, DomainWarp}
 import scalismo.common.DiscreteField.ScalarMeshField
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.registration.Transformation
@@ -59,8 +59,7 @@ class ScalarMeshFieldsNode(override val parent: GroupNode)
 
 class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode,
                           override val source: ScalarMeshField[Float],
-                          initialName: String)
-                         (implicit canWarp : DomainWarp[_3D, TriangleMesh])
+                          initialName: String)(implicit canWarp: DomainWarp[_3D, TriangleMesh])
     extends Transformable[ScalarMeshField[Float]]
     with InverseTransformation
     with Saveable

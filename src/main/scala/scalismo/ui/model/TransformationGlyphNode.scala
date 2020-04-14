@@ -18,7 +18,7 @@
 package scalismo.ui.model
 
 import scalismo.common.{DiscreteDomain, DiscreteField, UnstructuredPointsDomain}
-import scalismo.geometry.{EuclideanVector, EuclideanVector3D, Point, Point3D, _3D}
+import scalismo.geometry.{_3D, EuclideanVector, EuclideanVector3D, Point, Point3D}
 import scalismo.ui.model.capabilities._
 
 class TransformationGlyphNode(override val parent: VectorFieldsNode, val points: PointCloud, initialName: String)

@@ -22,7 +22,7 @@ import java.awt.Color
 import breeze.linalg.DenseVector
 import scalismo.common.DiscreteField.{DiscreteImage, ScalarMeshField, ScalarVolumeMeshField}
 import scalismo.common.{DiscreteDomain, DiscreteField, NearestNeighborInterpolator, UnstructuredPointsDomain}
-import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
+import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
 import scalismo.registration.RigidTransformation
@@ -717,8 +717,10 @@ case class StatisticalVolumeMeshModelViewControls private[ui] (
 )
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class PointDistributionModelViewControls[D, DDomain[D] <: DiscreteDomain[D]] private[ui] (referenceView: ShowInScene[DDomain[D]]#View,   shapeModelTransformationView: ShapeModelTransformationView)
-
+case class PointDistributionModelViewControls[D, DDomain[D] <: DiscreteDomain[D]] private[ui] (
+  referenceView: ShowInScene[DDomain[D]]#View,
+  shapeModelTransformationView: ShapeModelTransformationView
+)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
@@ -849,7 +851,8 @@ case class DiscreteLowRankGPTransformationView private[ui] (
 
   val transformation: DiscreteLowRankGpPointTransformation = peer.transformation
 
-  def discreteLowRankGaussianProcess: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]] =
+  def discreteLowRankGaussianProcess
+    : DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]] =
     peer.transformation.dgp
 
   def discreteLowRankGaussianProcess_=(
@@ -936,7 +939,8 @@ object ShapeModelTransformation {
     poseTransformation: RigidTransformation[_3D],
     gp: DiscreteLowRankGaussianProcess[_3D, TriangleMesh, EuclideanVector[_3D]]
   ): ShapeModelTransformation = {
-    val gpUnstructuredPoints = gp.interpolate(NearestNeighborInterpolator()).discretize(UnstructuredPointsDomain(gp.domain.pointSet))
+    val gpUnstructuredPoints =
+      gp.interpolate(NearestNeighborInterpolator()).discretize(UnstructuredPointsDomain(gp.domain.pointSet))
     ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
   }
 }

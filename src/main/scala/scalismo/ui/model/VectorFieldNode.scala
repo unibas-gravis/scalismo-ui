@@ -27,7 +27,8 @@ import scala.collection.immutable
 class VectorFieldsNode(override val parent: GroupNode) extends SceneNodeCollection[VectorFieldNode] {
   override val name: String = "Scalar fields"
 
-  def add(vectorField: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]], name: String): VectorFieldNode = {
+  def add(vectorField: DiscreteField[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
+          name: String): VectorFieldNode = {
     val node = new VectorFieldNode(this, vectorField, name)
     add(node)
     node
