@@ -20,8 +20,8 @@ package scalismo.ui.api
 import java.awt.Color
 
 import breeze.linalg.DenseVector
-import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
-import scalismo.common.{DiscreteDomain, DiscreteField, DiscreteScalarField, NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.common.DiscreteField.{DiscreteImage, ScalarMeshField, ScalarVolumeMeshField}
+import scalismo.common.{DiscreteDomain, DiscreteField, NearestNeighborInterpolator, UnstructuredPointsDomain}
 import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
 import scalismo.image.DiscreteScalarImage
 import scalismo.mesh._
@@ -559,9 +559,9 @@ case class ScalarFieldView private[ui] (override protected[api] val peer: Scalar
     peer.opacity.value = o
   }
 
-  def scalarField: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float] = peer.source
+  def scalarField: DiscreteField[_3D, UnstructuredPointsDomain, Float] = peer.source
 
-  def transformedScalarField: DiscreteScalarField[_3D, UnstructuredPointsDomain, Float] = peer.transformedSource
+  def transformedScalarField: DiscreteField[_3D, UnstructuredPointsDomain, Float] = peer.transformedSource
 }
 
 object ScalarFieldView {
@@ -671,7 +671,7 @@ case class ImageView private[ui] (override protected[api] val peer: ImageNode) e
     peer.windowLevel.value = peer.windowLevel.value.copy(level = w)
   }
 
-  def image: DiscreteScalarImage[_3D, Float] = peer.source
+  def image: DiscreteImage[_3D, Float] = peer.source
 }
 
 object ImageView {

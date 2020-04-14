@@ -55,7 +55,7 @@ class DiscreteLowRankGpPointTransformation private (
 
   protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                      coefficients: DenseVector[Double]) = {
-    this(dgp, dgp.interpolate(NearestNeighborInterpolator[_3D, EuclideanVector[_3D]]()), coefficients)
+    this(dgp, dgp.interpolate(NearestNeighborInterpolator()), coefficients)
   }
 
   // no need to re-interpolate if the gp didn't change

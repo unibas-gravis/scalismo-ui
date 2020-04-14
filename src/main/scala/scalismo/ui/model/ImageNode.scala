@@ -19,8 +19,10 @@ package scalismo.ui.model
 
 import java.io.File
 
+import scalismo.common.DiscreteField.DiscreteImage
 import scalismo.geometry._3D
 import scalismo.image.DiscreteScalarImage
+import scalismo.image.DiscreteScalarImage.DiscreteScalarImage
 import scalismo.io.ImageIO
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._

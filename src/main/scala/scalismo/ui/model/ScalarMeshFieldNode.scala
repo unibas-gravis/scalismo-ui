@@ -19,11 +19,12 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.common.{CanWarp, DiscreteField}
+import scalismo.common.{DiscreteField, DomainWarp}
 import scalismo.common.DiscreteField.ScalarMeshField
 import scalismo.geometry.{Point, Point3D, _3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
+import scalismo.registration.Transformation
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
 import scalismo.ui.util.{FileIoMetadata, FileUtil}
@@ -59,7 +60,7 @@ class ScalarMeshFieldsNode(override val parent: GroupNode)
 class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode,
                           override val source: ScalarMeshField[Float],
                           initialName: String)
-                         (implicit canWarp : CanWarp[_3D, TriangleMesh])
+                         (implicit canWarp : DomainWarp[_3D, TriangleMesh])
     extends Transformable[ScalarMeshField[Float]]
     with InverseTransformation
     with Saveable
@@ -87,7 +88,7 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode,
 
   override def transform(untransformed: ScalarMeshField[Float],
                          transformation: PointTransformation): ScalarMeshField[Float] = {
-    DiscreteField(canWarp.transform(untransformed.mesh, transformation), untransformed.data)
+    DiscreteField(canWarp.transform(untransformed.mesh, Transformation(transformation)), untransformed.data)
   }
 
   override def save(file: File): Try[Unit] = MeshIO.writeScalarMeshField[Float](transformedSource, file)
