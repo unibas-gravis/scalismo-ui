@@ -19,16 +19,11 @@ package scalismo.ui.api
 
 import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
 import scalismo.common._
-import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
-import scalismo.image.DiscreteScalarImage.DiscreteScalarImage
+import scalismo.geometry.{EuclideanVector, Landmark, Point, _3D}
+import scalismo.image.DiscreteImage
 import scalismo.mesh._
-import scalismo.registration.RigidTransformation
-import scalismo.statisticalmodel.{
-  DiscreteLowRankGaussianProcess,
-  LowRankGaussianProcess,
-  PointDistributionModel,
-  StatisticalMeshModel
-}
+import scalismo.transformations.{RigidTransformation, Rotation, RotationThenTranslation}
+import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess, PointDistributionModel, StatisticalMeshModel}
 import scalismo.ui.model._
 
 import scala.annotation.implicitNotFound
@@ -170,12 +165,12 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowImage[S: Scalar: ClassTag]: ShowInScene[DiscreteScalarImage[_3D, S]] {
+  implicit def ShowImage[S: Scalar: ClassTag]: ShowInScene[DiscreteImage[_3D, S]] {
     type View = ImageView
-  } = new ShowInScene[DiscreteScalarImage[_3D, S]] {
+  } = new ShowInScene[DiscreteImage[_3D, S]] {
     override type View = ImageView
 
-    override def showInScene(image: DiscreteScalarImage[_3D, S], name: String, group: Group): ImageView = {
+    override def showInScene(image: DiscreteImage[_3D, S], name: String, group: Group): ImageView = {
       val scalarConv = implicitly[Scalar[S]]
       val floatImage = image.map(x => scalarConv.toFloat(x))
       ImageView(group.peer.images.add(floatImage, name))
@@ -274,10 +269,10 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object CreateRigidTransformation extends ShowInScene[RigidTransformation[_3D]] {
+  implicit object CreateRigidTransformation extends ShowInScene[RotationThenTranslation[_3D]] {
     override type View = RigidTransformationView
 
-    override def showInScene(t: RigidTransformation[_3D], name: String, group: Group): View = {
+    override def showInScene(t: RotationThenTranslation[_3D], name: String, group: Group): View = {
       RigidTransformationView(group.peer.genericTransformations.add(t, name))
     }
   }

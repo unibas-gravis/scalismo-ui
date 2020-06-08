@@ -19,8 +19,8 @@ package scalismo.ui.view.properties
 
 import breeze.linalg.DenseVector
 import javax.swing.border.TitledBorder
-import scalismo.geometry._3D
-import scalismo.registration.{RigidTransformation, RigidTransformationSpace}
+import scalismo.geometry.{_3D, EuclideanVector3D}
+import scalismo.transformations.{Rotation3D, RotationThenTranslation, Translation3D}
 import scalismo.ui.model._
 import scalismo.ui.view.ScalismoFrame
 
@@ -37,7 +37,7 @@ object RigidTransformationPropertyPanel extends PropertyPanel.Factory {
 class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel with PropertyPanel {
   override def description: String = "Parameters"
 
-  private var targets: List[TransformationNode[RigidTransformation[_3D]]] = Nil
+  private var targets: List[TransformationNode[RotationThenTranslation[_3D]]] = Nil
 
   private val textFields = Array.fill(6)(new TextField())
   val labels = List("T1", "T2", "T3", "R1", "R2", "R3")
@@ -102,7 +102,12 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
         case Success(values) =>
           val params = DenseVector(values.toArray)
           targets.foreach { node =>
-            node.transformation = RigidTransformationSpace[_3D]().transformForParameters(params)
+            {
+              val currentTransform = node.transformation
+              val newRotation = Rotation3D(values(3), values(4), values(5), currentTransform.rotation.center)
+              val newTranslation = Translation3D(EuclideanVector3D(values(0), values(1), values(2)))
+              node.transformation = RotationThenTranslation(newRotation, newTranslation)
+            }
           }
         case _ =>
       }
@@ -131,8 +136,8 @@ class RigidTransformationPropertyPanel(override val frame: ScalismoFrame) extend
     cleanup()
     // we have to account for type erasure, that's why we need the collect
     val supported = allMatch[TransformationNode[_ <: PointTransformation]](nodes).collect {
-      case tn if tn.transformation.isInstanceOf[RigidTransformation[_3D]] =>
-        tn.asInstanceOf[TransformationNode[RigidTransformation[_3D]]]
+      case tn if tn.transformation.isInstanceOf[RotationThenTranslation[_3D]] =>
+        tn.asInstanceOf[TransformationNode[RotationThenTranslation[_3D]]]
     }
     if (supported.nonEmpty) {
       targets = supported
