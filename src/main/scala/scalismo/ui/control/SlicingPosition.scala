@@ -83,21 +83,21 @@ class SlicingPosition(val scene: Scene, val frame: ScalismoFrame) extends Scalis
 
   def z: Double = point(2)
 
-  def x_=(nv: Float): Unit = {
+  def x_=(nv: Double): Unit = {
     val sv = Math.min(Math.max(boundingBox.xMin, nv), boundingBox.xMax)
     if (x != sv) {
       point_=(Point(sv, y, z))
     }
   }
 
-  def y_=(nv: Float): Unit = {
+  def y_=(nv: Double): Unit = {
     val sv = Math.min(Math.max(boundingBox.yMin, nv), boundingBox.yMax)
     if (y != sv) {
       point = Point(x, sv, z)
     }
   }
 
-  def z_=(nv: Float): Unit = {
+  def z_=(nv: Double): Unit = {
     val sv = Math.min(Math.max(boundingBox.zMin, nv), boundingBox.zMax)
     if (z != sv) {
       point = Point(x, y, sv)
