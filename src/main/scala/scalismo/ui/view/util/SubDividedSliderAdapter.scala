@@ -21,15 +21,15 @@ import scala.swing.Slider
 
 class SubDividedSliderAdapter(private val _slider: Slider, private val factor: Double = 100.0) {
 
-  def slider = _slider
+  def slider: Slider = _slider
 
-  def up = {
+  def up(): Unit = {
     if (_slider.value < _slider.max) {
       _slider.value = _slider.value + 1
     }
   }
 
-  def down = {
+  def down(): Unit = {
     if (_slider.value > _slider.min) {
       _slider.value = _slider.value - 1
     }
