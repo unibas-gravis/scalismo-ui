@@ -121,18 +121,16 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
   override def name: String = axis.toString
 
-  private val SubDivisions: Double = 100.0
-
   private lazy val positionSlider = new SubDividedSliderAdapter(new Slider {
     peer.setOrientation(SwingConstants.VERTICAL)
   })
 
   lazy val positionPlusButton = new Button(new Action("+") {
-    override def apply(): Unit = positionSlider.up
+    override def apply(): Unit = positionSlider.up()
   })
 
   lazy val positionMinusButton = new Button(new Action("-") {
-    override def apply(): Unit = positionSlider.down
+    override def apply(): Unit = positionSlider.down()
   })
 
   private lazy val sliderPanel = new BorderPanel {

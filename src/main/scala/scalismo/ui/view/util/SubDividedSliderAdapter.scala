@@ -17,28 +17,53 @@
 
 package scalismo.ui.view.util
 
-import scala.swing.Slider
+import javax.swing.JComponent
+import scalismo.ui.event.ScalismoPublisher
 
-class SubDividedSliderAdapter(private val _slider: Slider, private val factor: Double = 100.0) {
+import scala.swing.{Component, Slider}
+import scala.swing.event.ValueChanged
 
-  def slider: Slider = _slider
+class SubDividedSliderAdapter(val slider: Slider, val factor: Double = 100.0) extends Component with ScalismoPublisher {
+
+  override lazy val peer: JComponent = slider.peer
 
   def up(): Unit = {
-    if (_slider.value < _slider.max) {
-      _slider.value = _slider.value + 1
+    if (slider.value < slider.max) {
+      slider.value = slider.value + 1
     }
   }
 
   def down(): Unit = {
-    if (_slider.value > _slider.min) {
-      _slider.value = _slider.value - 1
+    if (slider.value > slider.min) {
+      slider.value = slider.value - 1
     }
   }
 
-  def min: Double = _slider.min / factor
-  def min_=(v: Double) { _slider.min = Math.floor(v * factor).toInt }
-  def max: Double = _slider.max / factor
-  def max_=(v: Double) { _slider.max = Math.ceil(v * factor).toInt }
-  def value: Double = _slider.value / factor
-  def value_=(v: Double) { _slider.value = Math.round(v * factor).toInt }
+  def min: Double = slider.min / factor
+
+  def min_=(v: Double) {
+    slider.min = Math.floor(v * factor).toInt
+  }
+
+  def max: Double = slider.max / factor
+
+  def max_=(v: Double) {
+    slider.max = Math.ceil(v * factor).toInt
+  }
+
+  def value: Double = slider.value / factor
+
+  def value_=(v: Double) {
+    slider.value = Math.round(v * factor).toInt
+  }
+
+  def listenToOwnEvents() = listenTo(slider)
+
+  def deafToOwnEvents() = deafTo(slider)
+
+  reactions += {
+    case ValueChanged(s: Slider) if s == slider => publishEvent(new ValueChanged(SubDividedSliderAdapter.this))
+  }
+
+  listenToOwnEvents()
 }
