@@ -21,7 +21,7 @@ import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{HasOpacity, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.FancySlider
+import scalismo.ui.view.util.{TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
@@ -38,7 +38,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   private var targets: List[HasOpacity] = Nil
 
-  private val slider = new FancySlider {
+  private val slider = new TypedSlider[Int](showLabels = true) {
     min = 0
     max = 100
     value = 100
@@ -49,7 +49,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
   layout(new BorderPanel {
     private val sliderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
-      layout(slider) = BorderPanel.Position.Center
+      layout(slider.slider) = BorderPanel.Position.Center
     }
     layout(sliderPanel) = BorderPanel.Position.Center
   }) = BorderPanel.Position.North
@@ -88,7 +88,7 @@ class OpacityPropertyPanel(override val frame: ScalismoFrame) extends BorderPane
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(_)                       => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
+    case TypedSliderValueChanged(_)            => targets.foreach(_.opacity.value = slider.value.toFloat / 100.0f)
   }
 
 }

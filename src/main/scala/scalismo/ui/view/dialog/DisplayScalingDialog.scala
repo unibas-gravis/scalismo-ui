@@ -24,7 +24,7 @@ import javax.swing.BorderFactory
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.util.{Constants, FancySlider, ScalableUI}
+import scalismo.ui.view.util.{Constants, ScalableUI, TypedSlider}
 
 import scala.swing._
 import scala.swing.event.ValueChanged
@@ -65,7 +65,7 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
     border = BorderFactory.createEmptyBorder(b, b, b, b)
   }
 
-  private class ScaleSlider extends FancySlider {
+  private class ScaleSlider extends TypedSlider[Int](showLabels = true) {
     min = 25
     max = 400
     value = initialScale
@@ -79,13 +79,13 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
 
   // when the user is done sliding, re-pack the window
 
-  scaleSlider.peer.addMouseListener(new MouseAdapter {
+  scaleSlider.slider.peer.addMouseListener(new MouseAdapter {
     override def mouseReleased(e: MouseEvent): Unit = {
       pack()
     }
   })
 
-  scaleSlider.peer.addKeyListener(new KeyAdapter {
+  scaleSlider.slider.peer.addKeyListener(new KeyAdapter {
     override def keyReleased(e: KeyEvent): Unit = {
       pack()
     }
@@ -118,7 +118,7 @@ class DisplayScalingDialog(implicit val frame: ScalismoFrame) extends Dialog(fra
     case ValueChanged(_) => updateLayout()
   }
 
-  main.layout(scaleSlider) = BorderPanel.Position.North
+  main.layout(scaleSlider.slider) = BorderPanel.Position.North
   main.layout(example) = BorderPanel.Position.Center
   main.layout(new GridPanel(1, 2) {
     contents ++= Seq(cancel, ok)

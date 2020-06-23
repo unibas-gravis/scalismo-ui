@@ -20,7 +20,7 @@ package scalismo.ui.view.util
 import java.awt.Color
 
 import scala.swing.event.ValueChanged
-import scala.swing.{Label, Slider}
+import scala.swing.{Label, Reactor, Slider}
 
 class FancySlider extends Slider {
   // intended to be overwritten in subclasses if needed
@@ -55,4 +55,44 @@ class FancySlider extends Slider {
   reactions += {
     case ValueChanged(c) if c eq this => updateLabels()
   }
+}
+
+class FancySliderDecorator(override val slider: Slider, override val factor: Double)
+    extends SubDividedSliderAdapter(slider, factor) {
+
+  // intended to be overwritten in subclasses if needed
+  def formattedValue(sliderValue: Double): String = sliderValue.toInt.toString
+
+  val minLabel: Label = new Label {
+    foreground = Color.GRAY
+  }
+
+  val maxLabel: Label = new Label {
+    foreground = Color.GRAY
+  }
+
+  val valueLabel: Label = new Label {
+    foreground = Color.BLACK
+  }
+
+  protected def updateLabels(): Unit = {
+    if (slider.paintLabels) {
+      val texts = Seq(min, max, value) map formattedValue
+      val tuples = texts.zip(Seq(minLabel, maxLabel, valueLabel))
+      val needsUpdate = tuples.exists { case (v, l) => l.text != v }
+      if (needsUpdate) {
+        tuples.foreach { case (v, l) => l.text = v }
+        slider.labels =
+          Seq((slider.min, minLabel), (slider.max, maxLabel), (slider.value, valueLabel)).filter(_._2.visible).toMap
+      }
+    }
+  }
+
+  listenTo(slider)
+
+  reactions += {
+    case ValueChanged(c) if c eq slider => updateLabels()
+  }
+
+  slider.paintLabels = true
 }

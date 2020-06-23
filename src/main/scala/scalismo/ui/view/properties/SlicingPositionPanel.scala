@@ -23,7 +23,7 @@ import javax.swing.border.TitledBorder
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.model.{Axis, Scene, SceneNode}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{AxisColor, FancySlider}
+import scalismo.ui.view.util.{AxisColor, TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
@@ -44,38 +44,23 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       font = font.deriveFont(font.getStyle | Font.BOLD)
     }
 
-    val slider: FancySlider = new FancySlider {
-
-      min = 0
-      max = 0
-      value = 0
-
-      //override def formattedValue(sliderValue: Int): String = slicingPosition.map(s => s.precision.format(s.precision.fromInt(sliderValue))).getOrElse("?")
-    }
+    val slider = new TypedSlider[Int](true, 0.01)
 
     val minus = new Button(new Action("-") {
-      override def apply(): Unit = {
-        if (slider.value > slider.min) {
-          slider.value = slider.value - 1
-        }
-      }
+      override def apply(): Unit = slider.down()
     })
 
     val plus = new Button(new Action("+") {
-      override def apply(): Unit = {
-        if (slider.value < slider.max) {
-          slider.value = slider.value + 1
-        }
-      }
+      override def apply(): Unit = slider.up()
     })
 
     val control: BorderPanel = new BorderPanel {
       layout(minus) = BorderPanel.Position.West
-      layout(slider) = BorderPanel.Position.Center
+      layout(slider.slider) = BorderPanel.Position.Center
       layout(plus) = BorderPanel.Position.East
     }
 
-    def value: Float = {
+    def value: Double = {
       slider.value
     }
 
@@ -86,9 +71,9 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
         case Axis.Y => (sp.boundingBox.yMin, sp.boundingBox.yMax, sp.y)
         case Axis.Z => (sp.boundingBox.zMin, sp.boundingBox.zMax, sp.z)
       }
-      slider.min = Math.floor(min).toInt
-      slider.max = Math.ceil(max).toInt
-      slider.value = Math.round(value).toInt
+      slider.min = min
+      slider.max = max
+      slider.value = value
     }
 
   }
@@ -177,15 +162,12 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   }
 
   reactions += {
-    case SlicingPosition.event.VisibilityChanged(_)  => updateUi()
-    case SlicingPosition.event.BoundingBoxChanged(_) => updateUi()
-    case SlicingPosition.event.PointChanged(_, _, _) => updateUi()
-    case ValueChanged(slider: Slider) =>
-      slider match {
-        case x.slider => slicingPosition.foreach(_.x = x.value)
-        case y.slider => slicingPosition.foreach(_.y = y.value)
-        case z.slider => slicingPosition.foreach(_.z = z.value)
-      }
+    case SlicingPosition.event.VisibilityChanged(_)         => updateUi()
+    case SlicingPosition.event.BoundingBoxChanged(_)        => updateUi()
+    case SlicingPosition.event.PointChanged(_, _, _)        => updateUi()
+    case TypedSliderValueChanged(s) if s eq x.slider        => slicingPosition.foreach(_.x = x.value)
+    case TypedSliderValueChanged(s) if s eq y.slider        => slicingPosition.foreach(_.y = y.value)
+    case TypedSliderValueChanged(s) if s eq z.slider        => slicingPosition.foreach(_.z = z.value)
     case ButtonClicked(cb: CheckBox) if cb == slicesVisible => slicingPosition.foreach(_.visible = cb.selected)
   }
 
