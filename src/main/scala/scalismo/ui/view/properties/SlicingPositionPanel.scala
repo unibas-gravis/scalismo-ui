@@ -23,7 +23,7 @@ import javax.swing.border.TitledBorder
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.model.{Axis, Scene, SceneNode}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.{AxisColor, FancySliderDecorator}
+import scalismo.ui.view.util.{AxisColor, TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing._
@@ -44,14 +44,7 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
       font = font.deriveFont(font.getStyle | Font.BOLD)
     }
 
-    val slider = new FancySliderDecorator(new Slider {
-
-      min = 0
-      max = 0
-      value = 0
-
-      //override def formattedValue(sliderValue: Int): String = slicingPosition.map(s => s.precision.format(s.precision.fromInt(sliderValue))).getOrElse("?")
-    }, 100.0)
+    val slider = new TypedSlider[Int](true, 0.01)
 
     val minus = new Button(new Action("-") {
       override def apply(): Unit = slider.down()
@@ -161,23 +154,20 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
   }
 
   def deafToOwnEvents(): Unit = {
-    deafTo(x.slider.slider, y.slider.slider, z.slider.slider, slicesVisible)
+    deafTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
   def listenToOwnEvents(): Unit = {
-    listenTo(x.slider.slider, y.slider.slider, z.slider.slider, slicesVisible)
+    listenTo(x.slider, y.slider, z.slider, slicesVisible)
   }
 
   reactions += {
-    case SlicingPosition.event.VisibilityChanged(_)  => updateUi()
-    case SlicingPosition.event.BoundingBoxChanged(_) => updateUi()
-    case SlicingPosition.event.PointChanged(_, _, _) => updateUi()
-    case ValueChanged(slider: Slider) =>
-      slider match {
-        case x.slider => slicingPosition.foreach(_.x = x.value)
-        case y.slider => slicingPosition.foreach(_.y = y.value)
-        case z.slider => slicingPosition.foreach(_.z = z.value)
-      }
+    case SlicingPosition.event.VisibilityChanged(_)         => updateUi()
+    case SlicingPosition.event.BoundingBoxChanged(_)        => updateUi()
+    case SlicingPosition.event.PointChanged(_, _, _)        => updateUi()
+    case TypedSliderValueChanged(s) if s eq x.slider        => slicingPosition.foreach(_.x = x.value)
+    case TypedSliderValueChanged(s) if s eq y.slider        => slicingPosition.foreach(_.y = y.value)
+    case TypedSliderValueChanged(s) if s eq z.slider        => slicingPosition.foreach(_.z = z.value)
     case ButtonClicked(cb: CheckBox) if cb == slicesVisible => slicingPosition.foreach(_.visible = cb.selected)
   }
 

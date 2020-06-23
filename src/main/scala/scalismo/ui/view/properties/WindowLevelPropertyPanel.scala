@@ -26,12 +26,11 @@ import scalismo.ui.model.properties.NodeProperty
 import scalismo.ui.model.{ImageNode, SceneNode}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.properties.WindowLevelPropertyPanel.Showit
-import scalismo.ui.view.util.FancySlider
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
+import scalismo.ui.view.util.{TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.Swing.EmptyIcon
 import scala.swing._
-import scala.swing.event.ValueChanged
 
 object WindowLevelPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = new WindowLevelPropertyPanel(frame)
@@ -109,8 +108,8 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
 
   var targets: List[ImageNode] = Nil
 
-  val levelSlider = new FancySlider
-  val windowSlider = new FancySlider
+  val levelSlider = new TypedSlider[Int](showLabels = true)
+  val windowSlider = new TypedSlider[Int](showLabels = true)
 
   val showit = new Showit
 
@@ -174,12 +173,12 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
   }
 
   reactions += {
-    case ValueChanged(s: Slider) if s eq windowSlider =>
+    case TypedSliderValueChanged(s) if s eq windowSlider =>
       targets.foreach { n =>
         val updated = n.windowLevel.value.copy(window = windowSlider.value)
         n.windowLevel.value = updated
       }
-    case ValueChanged(s: Slider) if s eq levelSlider =>
+    case TypedSliderValueChanged(s) if s eq levelSlider =>
       targets.foreach { n =>
         val updated = n.windowLevel.value.copy(level = levelSlider.value)
         n.windowLevel.value = updated
@@ -222,9 +221,9 @@ class WindowLevelPropertyPanel(override val frame: ScalismoFrame) extends Border
         }
 
         add(new Label("Level", EmptyIcon, Alignment.Leading), next)
-        add(levelSlider, next)
+        add(levelSlider.slider, next)
         add(new Label("Window", EmptyIcon, Alignment.Leading), next)
-        add(windowSlider, next)
+        add(windowSlider.slider, next)
       }
 
       private val showitWrap = new BorderPanel {

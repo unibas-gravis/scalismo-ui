@@ -25,7 +25,7 @@ import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{ColorMapping, HasScalarRange, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
 import scalismo.ui.view.util.ScalableUI.implicits.scalableInt
-import scalismo.ui.view.util.{FancySlider, MultiLineLabel}
+import scalismo.ui.view.util.{MultiLineLabel, TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.BorderPanel
 import scala.swing.event.ValueChanged
@@ -44,13 +44,13 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
   private var max: Float = 100
   private var step: Float = 1
 
-  private def colorizeSliderValue(slider: FancySlider, color: Color): Unit = {
+  private def colorizeSliderValue(slider: TypedSlider[Int], color: Color): Unit = {
     // Setting the color of the displayed text may result in poor readability for certain colors, so we
     // create an "underline" showing the color instead.
     slider.valueLabel.border = BorderFactory.createMatteBorder(0, 0, 3.scaled, 0, color)
   }
 
-  private val minimumSlider = new FancySlider {
+  private val minimumSlider = new TypedSlider[Int](showLabels = true) {
     min = 0
     max = 100
     value = 0
@@ -60,7 +60,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     colorizeSliderValue(this, ColorMapping.Default.lowerColor)
   }
 
-  private val maximumSlider = new FancySlider {
+  private val maximumSlider = new TypedSlider[Int](showLabels = true) {
     min = 0
     max = 100
     value = 100
@@ -78,8 +78,8 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
     val northedPanel: BorderPanel = new BorderPanel {
       private val slidersPanel = new BorderPanel {
         border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
-        layout(minimumSlider) = BorderPanel.Position.North
-        layout(maximumSlider) = BorderPanel.Position.South
+        layout(minimumSlider.slider) = BorderPanel.Position.North
+        layout(maximumSlider.slider) = BorderPanel.Position.South
         layout(mismatchMessage) = BorderPanel.Position.Center
       }
       layout(slidersPanel) = BorderPanel.Position.Center
@@ -118,8 +118,8 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
     // either show sliders, or information
     mismatchMessage.visible = targets.isEmpty
-    minimumSlider.visible = targets.nonEmpty
-    maximumSlider.visible = targets.nonEmpty
+    minimumSlider.slider.visible = targets.nonEmpty
+    maximumSlider.slider.visible = targets.nonEmpty
 
     targets.headOption.foreach { t =>
       val range = t.scalarRange.value
@@ -128,7 +128,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
       step = (max - min) / 100.0f
 
       // this is an ugly workaround to make sure (min, max) values are properly displayed
-      def reinitSlider(s: FancySlider): Unit = {
+      def reinitSlider(s: TypedSlider[Int]): Unit = {
         s.min = 1
         s.min = 0
         s.max = 99
@@ -178,7 +178,7 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(slider) =>
+    case TypedSliderValueChanged(slider) =>
       deafToOwnEvents()
       if (maximumSlider.value < minimumSlider.value) {
         if (slider eq minimumSlider) maximumSlider.value = minimumSlider.value

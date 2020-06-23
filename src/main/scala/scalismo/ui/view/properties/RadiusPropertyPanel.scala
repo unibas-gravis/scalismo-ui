@@ -21,10 +21,9 @@ import javax.swing.border.TitledBorder
 import scalismo.ui.model.SceneNode
 import scalismo.ui.model.properties.{HasRadius, NodeProperty}
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.util.FloatSlider
+import scalismo.ui.view.util.{TypedSlider, TypedSliderValueChanged}
 
 import scala.swing.BorderPanel
-import scala.swing.event.ValueChanged
 
 object RadiusPropertyPanel extends PropertyPanel.Factory {
   override def create(frame: ScalismoFrame): PropertyPanel = {
@@ -42,12 +41,15 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
   private var targets: List[HasRadius] = Nil
 
   private val slider =
-    new FloatSlider(RadiusPropertyPanel.MinValue, RadiusPropertyPanel.MaxValue, RadiusPropertyPanel.StepSize)
+    new TypedSlider[Float](stepSize = RadiusPropertyPanel.StepSize) {
+      min = RadiusPropertyPanel.MinValue
+      max = RadiusPropertyPanel.MaxValue
+    }
 
   layout(new BorderPanel {
     private val sliderPanel = new BorderPanel {
       border = new TitledBorder(null, description, TitledBorder.LEADING, 0, null, null)
-      layout(slider) = BorderPanel.Position.Center
+      layout(slider.slider) = BorderPanel.Position.Center
     }
     layout(sliderPanel) = BorderPanel.Position.Center
   }) = BorderPanel.Position.North
@@ -64,7 +66,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   def updateUi(): Unit = {
     deafToOwnEvents()
-    targets.headOption.foreach(t => slider.floatValue = t.radius.value.toFloat)
+    targets.headOption.foreach(t => slider.value = t.radius.value)
     listenToOwnEvents()
   }
 
@@ -86,7 +88,7 @@ class RadiusPropertyPanel(override val frame: ScalismoFrame) extends BorderPanel
 
   reactions += {
     case NodeProperty.event.PropertyChanged(_) => updateUi()
-    case ValueChanged(_)                       => targets.foreach(_.radius.value = slider.floatValue)
+    case TypedSliderValueChanged(_)            => targets.foreach(_.radius.value = slider.value)
   }
 
 }

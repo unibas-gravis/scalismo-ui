@@ -26,7 +26,7 @@ import scalismo.ui.rendering.{RendererPanel, RendererState}
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.action.SaveAction
-import scalismo.ui.view.util.{AxisColor, ScalableUI, SubDividedSliderAdapter}
+import scalismo.ui.view.util.{AxisColor, ScalableUI, TypedSlider, TypedSliderValueChanged}
 
 import scala.swing._
 import scala.swing.event.{Event, ValueChanged}
@@ -121,9 +121,9 @@ class ViewportPanel3D(frame: ScalismoFrame, override val name: String = "3D") ex
 class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPanel(frame) {
   override def name: String = axis.toString
 
-  private lazy val positionSlider = new SubDividedSliderAdapter(new Slider {
-    peer.setOrientation(SwingConstants.VERTICAL)
-  })
+  private lazy val positionSlider = new TypedSlider[Int](true, 0.01) {
+    slider.peer.setOrientation(SwingConstants.VERTICAL)
+  }
 
   lazy val positionPlusButton = new Button(new Action("+") {
     override def apply(): Unit = positionSlider.up()
@@ -152,7 +152,7 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
 
   rendererPanel.border = BorderFactory.createLineBorder(AxisColor.forAxis(axis), ScalableUI.scale(3))
 
-  listenTo(frame.sceneControl.slicingPosition, positionSlider.slider)
+  listenTo(frame.sceneControl.slicingPosition, positionSlider)
 
   def updateSliderValue(p: scalismo.geometry.Point3D): Unit = {
     val v = axis match {
@@ -160,9 +160,9 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
       case Axis.Y => p.y
       case Axis.Z => p.z
     }
-    deafTo(positionSlider.slider)
+    deafTo(positionSlider)
     positionSlider.value = v
-    listenTo(positionSlider.slider)
+    listenTo(positionSlider)
   }
 
   def updateSliderMinMax(b: BoundingBox): Unit = {
@@ -171,10 +171,10 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
       case Axis.Y => (b.yMin, b.yMax)
       case Axis.Z => (b.zMin, b.zMax)
     }
-    deafTo(positionSlider.slider)
+    deafTo(positionSlider)
     positionSlider.min = min
     positionSlider.max = max
-    listenTo(positionSlider.slider)
+    listenTo(positionSlider)
   }
 
   def sliderValueChanged(): Unit = {
@@ -192,6 +192,6 @@ class ViewportPanel2D(frame: ScalismoFrame, val axis: Axis) extends ViewportPane
     case SlicingPosition.event.PerspectiveChanged(s) =>
       updateSliderMinMax(s.boundingBox)
       updateSliderValue(s.point)
-    case ValueChanged(s) if s eq positionSlider.slider => sliderValueChanged()
+    case TypedSliderValueChanged(s) if s eq positionSlider => sliderValueChanged()
   }
 }
