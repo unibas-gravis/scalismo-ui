@@ -198,14 +198,14 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit def showInScenePointDistributionModelMesh[PointRepr[D] <: DiscreteDomain[D]](
-    implicit showRef: ShowInScene[PointRepr[_3D]]
-  ): ShowInScene[PointDistributionModel[_3D, PointRepr]] = {
+  implicit def showInScenePointDistributionModel[DDomain[D] <: DiscreteDomain[D]](
+    implicit showRef: ShowInScene[DDomain[_3D]]
+  ): ShowInScene[PointDistributionModel[_3D, DDomain]] = {
 
-    new ShowInScene[PointDistributionModel[_3D, PointRepr]] {
-      type View = PointDistributionModelViewControls[_3D, PointRepr]
+    new ShowInScene[PointDistributionModel[_3D, DDomain]] {
+      type View = PointDistributionModelViewControls[_3D, DDomain]
 
-      override def showInScene(model: PointDistributionModel[_3D, PointRepr], name: String, group: Group): View = {
+      override def showInScene(model: PointDistributionModel[_3D, DDomain], name: String, group: Group): View = {
         val gpUnstructuredPoints = model.gp
           .interpolate(NearestNeighborInterpolator())
           .discretize(UnstructuredPointsDomain(model.reference.pointSet.points.toIndexedSeq))
@@ -214,7 +214,7 @@ object ShowInScene extends LowPriorityImplicits {
           ShapeModelTransformation(PointTransformation.RigidIdentity,
                                    DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
         val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
-        val tmV: ShowInScene[PointRepr[_3D]]#View = showRef.showInScene(model.reference, name, group)
+        val tmV: ShowInScene[DDomain[_3D]]#View = showRef.showInScene(model.reference, name, group)
         PointDistributionModelViewControls(tmV, smV)
 
       }

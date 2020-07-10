@@ -64,7 +64,7 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
   }
 
   override def selectedFiles: Seq[File] = {
-    val r = super.selectedFiles
+    val r = super.selectedFiles.toSeq
     lastUsedDirectories = r
     r
   }
@@ -75,9 +75,9 @@ class EnhancedFileChooser(dir: File) extends FileChooser(dir) {
     r
   }
 
-  override def selectedFiles_=(files: File*): Unit = {
-    lastUsedDirectories = files
-    super.selectedFiles_=(files: _*)
+  override def selectedFiles_=(files: scala.collection.Seq[File]): Unit = {
+    lastUsedDirectories = files.toSeq
+    super.selectedFiles_=(files)
   }
 
   override def selectedFile_=(file: File): Unit = {
