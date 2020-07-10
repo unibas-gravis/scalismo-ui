@@ -20,7 +20,7 @@ package scalismo.ui.api
 import java.awt.Color
 
 import scalismo.geometry._3D
-import scalismo.registration.RigidTransformation
+import scalismo.transformations.RigidTransformation
 import scalismo.ui.control.interactor.landmark.complex.ComplexLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.complex.posterior.PosteriorLandmarkingInteractor
 import scalismo.ui.control.interactor.landmark.simple

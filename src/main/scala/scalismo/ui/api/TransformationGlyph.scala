@@ -17,7 +17,7 @@
 
 package scalismo.ui.api
 
-import scalismo.common.UnstructuredPointsDomain3D
+import scalismo.common.UnstructuredPointsDomain
 import scalismo.geometry.{_3D, Point}
 
 /**
@@ -26,5 +26,6 @@ import scalismo.geometry.{_3D, Point}
 case class TransformationGlyph(points: IndexedSeq[Point[_3D]])
 
 object TransformationGlyph {
-  def apply(domain: UnstructuredPointsDomain3D): TransformationGlyph = new TransformationGlyph(domain.pointSequence)
+  def apply(domain: UnstructuredPointsDomain[_3D]): TransformationGlyph =
+    new TransformationGlyph(domain.pointSet.pointSequence)
 }

@@ -19,7 +19,7 @@ package scalismo.ui.model
 
 import java.io.File
 
-import scalismo.geometry.{_3D, Point3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TriangleMesh
 import scalismo.ui.model.capabilities._
@@ -69,7 +69,7 @@ class TriangleMeshNode(override val parent: TriangleMeshesNode,
   override val lineWidth = new LineWidthProperty()
   override val pickable = new PickableProperty()
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     val id = transformedSource.pointSet.findClosestPoint(point).id
     source.pointSet.point(id)
   }

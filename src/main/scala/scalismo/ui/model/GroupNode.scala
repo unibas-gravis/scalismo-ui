@@ -17,8 +17,10 @@
 
 package scalismo.ui.model
 
-import scalismo.statisticalmodel.StatisticalMeshModel
-import scalismo.statisticalmodel.experimental.StatisticalVolumeMeshModel
+import scalismo.common.{NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.geometry._3D
+import scalismo.mesh.TetrahedralMesh
+import scalismo.statisticalmodel.{PointDistributionModel, StatisticalMeshModel}
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.Scene.event.SceneChanged
 import scalismo.ui.model.capabilities.{Removeable, Renameable}
@@ -97,15 +99,25 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
 
     triangleMeshes.add(model.referenceMesh, initialName)
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
-    shapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
+    val unstructuredPointsGp = model.gp
+      .interpolate(NearestNeighborInterpolator())
+      .discretize(UnstructuredPointsDomain(model.referenceMesh.pointSet))
+    shapeModelTransformations.addGaussianProcessTransformation(
+      DiscreteLowRankGpPointTransformation(unstructuredPointsGp)
+    )
 
   }
 
-  def addStatisticalVolumeMeshModel(model: StatisticalVolumeMeshModel, initialName: String): Unit = {
+  def addStatisticalVolumeMeshModel(model: PointDistributionModel[_3D, TetrahedralMesh], initialName: String): Unit = {
 
-    tetrahedralMeshes.add(model.referenceVolumeMesh, initialName)
+    tetrahedralMeshes.add(model.reference, initialName)
     volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
-    volumeShapeModelTransformations.addGaussianProcessTransformation(DiscreteLowRankGpPointTransformation(model.gp))
+    val unstructuredPointsGp = model.gp
+      .interpolate(NearestNeighborInterpolator())
+      .discretize(UnstructuredPointsDomain(model.reference.pointSet))
+    volumeShapeModelTransformations.addGaussianProcessTransformation(
+      DiscreteLowRankGpPointTransformation(unstructuredPointsGp)
+    )
 
   }
 

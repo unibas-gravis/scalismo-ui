@@ -17,9 +17,10 @@
 
 package scalismo.ui.rendering
 
-import scalismo.common.{DiscreteDomain, DiscreteScalarField}
+import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
+import scalismo.common.{DiscreteDomain, DiscreteField, UnstructuredPointsDomain}
 import scalismo.geometry._3D
-import scalismo.image.DiscreteScalarImage
+import scalismo.image.DiscreteImage
 import scalismo.mesh._
 import scalismo.ui.util.Cache
 import vtk.{vtkPolyData, vtkStructuredPoints, vtkUnstructuredGrid}
@@ -46,9 +47,9 @@ object Caches {
   }
 
   final val TriangleMeshCache = new Cache[FastCachingTriangleMesh, vtkPolyData]
-  final val ImageCache = new Cache[DiscreteScalarImage[_3D, _], vtkStructuredPoints]
+  final val ImageCache = new Cache[DiscreteImage[_3D, _], vtkStructuredPoints]
   final val ScalarMeshFieldCache = new Cache[ScalarMeshField[Float], vtkPolyData]
-  final val ScalarFieldCache = new Cache[DiscreteScalarField[_3D, DiscreteDomain[_3D], Float], vtkPolyData]
+  final val ScalarFieldCache = new Cache[DiscreteField[_3D, UnstructuredPointsDomain, Float], vtkPolyData]
   final val VertexColorMeshCache = new Cache[FastCachingVertexColorMesh, vtkPolyData]
   final val TetrahedralMeshCache = new Cache[FastCachingTetrahedralMesh, vtkUnstructuredGrid]
   final val ScalarTetrahedralMeshFieldCache = new Cache[ScalarVolumeMeshField[Float], vtkUnstructuredGrid]
