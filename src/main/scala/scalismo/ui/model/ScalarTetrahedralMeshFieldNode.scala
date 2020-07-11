@@ -21,7 +21,7 @@ import java.io.File
 
 import scalismo.common.{DiscreteField, DomainWarp, UnstructuredPointsDomain}
 import scalismo.common.DiscreteField.ScalarVolumeMeshField
-import scalismo.geometry.{Point, Point3D, _3D}
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.io.MeshIO
 import scalismo.mesh.TetrahedralMesh
 import scalismo.transformations.Transformation

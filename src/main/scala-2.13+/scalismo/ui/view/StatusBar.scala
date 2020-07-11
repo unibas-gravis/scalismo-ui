@@ -79,7 +79,7 @@ class StatusBar extends BorderPanel {
       private val _3 = ScalableUI.scale(3)
       private val _2 = ScalableUI.scale(2)
       border = createCompoundBorder(createEmptyBorder(0, _3, _3, _3),
-        createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
+                                    createCompoundBorder(createEtchedBorder(), createEmptyBorder(_2, _2, _2, _2)))
 
       cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
 
