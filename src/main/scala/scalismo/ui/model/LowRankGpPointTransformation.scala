@@ -18,7 +18,8 @@
 package scalismo.ui.model
 
 import breeze.linalg.DenseVector
-import scalismo.common.{DiscreteDomain, NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.common.interpolation.NearestNeighborInterpolator3D
+import scalismo.common.{DiscreteDomain, UnstructuredPointsDomain}
 import scalismo.geometry.{_3D, EuclideanVector, Point}
 import scalismo.statisticalmodel.{DiscreteLowRankGaussianProcess, LowRankGaussianProcess}
 
@@ -55,7 +56,7 @@ class DiscreteLowRankGpPointTransformation private (
 
   protected def this(dgp: DiscreteLowRankGaussianProcess[_3D, UnstructuredPointsDomain, EuclideanVector[_3D]],
                      coefficients: DenseVector[Double]) = {
-    this(dgp, dgp.interpolate(NearestNeighborInterpolator()), coefficients)
+    this(dgp, dgp.interpolate(NearestNeighborInterpolator3D()), coefficients)
   }
 
   // no need to re-interpolate if the gp didn't change

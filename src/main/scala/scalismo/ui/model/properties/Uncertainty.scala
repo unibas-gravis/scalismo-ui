@@ -44,7 +44,7 @@ object Uncertainty {
   }
 }
 
-case class Uncertainty(axes: List[EuclideanVector3D], sigmas: List[Double]) {
+case class Uncertainty(axes: List[EuclideanVector[_3D]], sigmas: List[Double]) {
   require(axes.length == 3 && sigmas.length == 3)
 
   // FIXME: require that axes are perpendicular and have a norm of 1

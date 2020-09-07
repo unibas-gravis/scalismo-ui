@@ -21,10 +21,9 @@ import scalismo.geometry.{_3D, Point3D}
 import scalismo.transformations.{
   RigidTransformation,
   RotationSpace3D,
-  RotationThenTranslation,
-  RotationThenTranslationSpace3D,
-  TranslationSpace3D,
-  TranslationThenRotation3D
+  TranslationAfterRotation,
+  TranslationAfterRotationSpace3D,
+  TranslationSpace3D
 }
 
 /**
@@ -32,8 +31,8 @@ import scalismo.transformations.{
  * "a function that can transform 3D points to other 3D points".
  */
 object PointTransformation {
-  val RigidIdentity: RotationThenTranslation[_3D] =
-    RotationThenTranslationSpace3D(Point3D(0, 0, 0)).identityTransformation
+  val RigidIdentity: TranslationAfterRotation[_3D] =
+    TranslationAfterRotationSpace3D(Point3D(0, 0, 0)).identityTransformation
 
   val Identity: PointTransformation = { p =>
     p

@@ -19,10 +19,11 @@ package scalismo.ui.api
 
 import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
 import scalismo.common._
+import scalismo.common.interpolation.NearestNeighborInterpolator3D
 import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteImage
 import scalismo.mesh._
-import scalismo.transformations.{RigidTransformation, Rotation, RotationThenTranslation}
+import scalismo.transformations.{RigidTransformation, Rotation, TranslationAfterRotation}
 import scalismo.statisticalmodel.{
   DiscreteLowRankGaussianProcess,
   LowRankGaussianProcess,
@@ -212,7 +213,7 @@ object ShowInScene extends LowPriorityImplicits {
 
       override def showInScene(model: PointDistributionModel[_3D, DDomain], name: String, group: Group): View = {
         val gpUnstructuredPoints = model.gp
-          .interpolate(NearestNeighborInterpolator())
+          .interpolate(NearestNeighborInterpolator3D())
           .discretize(UnstructuredPointsDomain(model.reference.pointSet.points.toIndexedSeq))
 
         val shapeModelTransform =
@@ -231,7 +232,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(model: StatisticalMeshModel, name: String, group: Group): View = {
       val gpUnstructuredPoints = model.gp
-        .interpolate(NearestNeighborInterpolator())
+        .interpolate(NearestNeighborInterpolator3D())
         .discretize(UnstructuredPointsDomain(model.referenceMesh.pointSet))
 
       val shapeModelTransform =
@@ -251,7 +252,7 @@ object ShowInScene extends LowPriorityImplicits {
 
     override def showInScene(model: PointDistributionModel[_3D, TetrahedralMesh], name: String, group: Group): View = {
       val gpUnstructuredPoints = model.gp
-        .interpolate(NearestNeighborInterpolator())
+        .interpolate(NearestNeighborInterpolator3D())
         .discretize(UnstructuredPointsDomain(model.reference.pointSet))
 
       val shapeModelTransform =
@@ -274,10 +275,10 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit object CreateRigidTransformation extends ShowInScene[RotationThenTranslation[_3D]] {
+  implicit object CreateRigidTransformation extends ShowInScene[TranslationAfterRotation[_3D]] {
     override type View = RigidTransformationView
 
-    override def showInScene(t: RotationThenTranslation[_3D], name: String, group: Group): View = {
+    override def showInScene(t: TranslationAfterRotation[_3D], name: String, group: Group): View = {
       RigidTransformationView(group.peer.genericTransformations.add(t, name))
     }
   }

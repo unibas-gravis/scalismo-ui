@@ -18,7 +18,7 @@
 package scalismo.ui.model
 
 import scalismo.geometry._3D
-import scalismo.transformations.{RigidTransformation, RotationThenTranslation}
+import scalismo.transformations.{RigidTransformation, TranslationAfterRotation}
 import scalismo.ui.event.Event
 import scalismo.ui.model.capabilities.{Grouped, Removeable}
 
@@ -103,7 +103,7 @@ class ShapeModelTransformationsNode(override val parent: GroupNode)
   override val name: String = "Shape model transformations"
 
   private def isPoseDefined: Boolean = {
-    children.exists(tr => tr.transformation.isInstanceOf[RotationThenTranslation[_3D]])
+    children.exists(tr => tr.transformation.isInstanceOf[TranslationAfterRotation[_3D]])
   }
 
   private def isShapeDefined: Boolean = {
@@ -111,9 +111,9 @@ class ShapeModelTransformationsNode(override val parent: GroupNode)
   }
 
   def addPoseTransformation(
-    transformation: RotationThenTranslation[_3D],
+    transformation: TranslationAfterRotation[_3D],
     name: String = "pose"
-  ): Try[ShapeModelTransformationComponentNode[RotationThenTranslation[_3D]]] = {
+  ): Try[ShapeModelTransformationComponentNode[TranslationAfterRotation[_3D]]] = {
 
     if (isPoseDefined) {
       Failure(
@@ -146,10 +146,10 @@ class ShapeModelTransformationsNode(override val parent: GroupNode)
     }
   }
 
-  def poseTransformation: Option[ShapeModelTransformationComponentNode[RotationThenTranslation[_3D]]] =
+  def poseTransformation: Option[ShapeModelTransformationComponentNode[TranslationAfterRotation[_3D]]] =
     children
       .find(_.transformation.isInstanceOf[RigidTransformation[_3D]])
-      .map(_.asInstanceOf[ShapeModelTransformationComponentNode[RotationThenTranslation[_3D]]])
+      .map(_.asInstanceOf[ShapeModelTransformationComponentNode[TranslationAfterRotation[_3D]]])
 
   def gaussianProcessTransformation
     : Option[ShapeModelTransformationComponentNode[DiscreteLowRankGpPointTransformation]] =
@@ -304,7 +304,7 @@ class ShapeModelTransformationComponentNode[T <: PointTransformation] private (
 }
 
 object ShapeModelTransformationComponentNode {
-  def apply(parent: ShapeModelTransformationsNode, initialTransformation: RotationThenTranslation[_3D], name: String) =
+  def apply(parent: ShapeModelTransformationsNode, initialTransformation: TranslationAfterRotation[_3D], name: String) =
     new ShapeModelTransformationComponentNode(parent, initialTransformation, name)
 
   def apply(parent: ShapeModelTransformationsNode,

@@ -17,7 +17,8 @@
 
 package scalismo.ui.model
 
-import scalismo.common.{NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.common.UnstructuredPointsDomain
+import scalismo.common.interpolation.NearestNeighborInterpolator3D
 import scalismo.geometry._3D
 import scalismo.mesh.TetrahedralMesh
 import scalismo.statisticalmodel.{PointDistributionModel, StatisticalMeshModel}
@@ -100,7 +101,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     triangleMeshes.add(model.referenceMesh, initialName)
     shapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     val unstructuredPointsGp = model.gp
-      .interpolate(NearestNeighborInterpolator())
+      .interpolate(NearestNeighborInterpolator3D())
       .discretize(UnstructuredPointsDomain(model.referenceMesh.pointSet))
     shapeModelTransformations.addGaussianProcessTransformation(
       DiscreteLowRankGpPointTransformation(unstructuredPointsGp)
@@ -113,7 +114,7 @@ class GroupNode(override val parent: GroupsNode, initialName: String, initallyHi
     tetrahedralMeshes.add(model.reference, initialName)
     volumeShapeModelTransformations.addPoseTransformation(PointTransformation.RigidIdentity)
     val unstructuredPointsGp = model.gp
-      .interpolate(NearestNeighborInterpolator())
+      .interpolate(NearestNeighborInterpolator3D())
       .discretize(UnstructuredPointsDomain(model.reference.pointSet))
     volumeShapeModelTransformations.addGaussianProcessTransformation(
       DiscreteLowRankGpPointTransformation(unstructuredPointsGp)

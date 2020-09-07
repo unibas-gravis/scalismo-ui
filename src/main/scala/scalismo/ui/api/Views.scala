@@ -21,12 +21,13 @@ import java.awt.Color
 
 import breeze.linalg.DenseVector
 import scalismo.common.DiscreteField.{ScalarMeshField, ScalarVolumeMeshField}
-import scalismo.common.{DiscreteDomain, DiscreteField, NearestNeighborInterpolator, UnstructuredPointsDomain}
+import scalismo.common.interpolation.NearestNeighborInterpolator3D
+import scalismo.common.{DiscreteDomain, DiscreteField, UnstructuredPointsDomain}
 import scalismo.geometry.{_3D, EuclideanVector, Landmark, Point}
 import scalismo.image.DiscreteImage
 import scalismo.mesh._
 import scalismo.statisticalmodel.DiscreteLowRankGaussianProcess
-import scalismo.transformations.{RigidTransformation, RotationThenTranslation}
+import scalismo.transformations.TranslationAfterRotation
 import scalismo.ui.model.SceneNode.event.{ChildAdded, ChildRemoved}
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Removeable
@@ -777,14 +778,14 @@ object TransformationView {
 }
 
 case class RigidTransformationView private[ui] (
-  override protected[api] val peer: TransformationNode[RotationThenTranslation[_3D]]
+  override protected[api] val peer: TransformationNode[TranslationAfterRotation[_3D]]
 ) extends ObjectView {
 
-  override type PeerType = TransformationNode[RotationThenTranslation[_3D]]
+  override type PeerType = TransformationNode[TranslationAfterRotation[_3D]]
 
-  def transformation: RotationThenTranslation[_3D] = peer.transformation
+  def transformation: TranslationAfterRotation[_3D] = peer.transformation
 
-  def transformation_=(transform: RotationThenTranslation[_3D]): Unit = {
+  def transformation_=(transform: TranslationAfterRotation[_3D]): Unit = {
     peer.transformation = transform
   }
 }
@@ -798,10 +799,10 @@ object RigidTransformationView {
       s match {
         // filter out Rigid transformations that are part of a StatisticalShapeMoodelTransformation
         case value: ShapeModelTransformationComponentNode[_]
-            if value.transformation.isInstanceOf[RotationThenTranslation[_]] =>
+            if value.transformation.isInstanceOf[TranslationAfterRotation[_]] =>
           None
-        case value: TransformationNode[_] if value.transformation.isInstanceOf[RotationThenTranslation[_]] =>
-          Some(RigidTransformationView(s.asInstanceOf[TransformationNode[RotationThenTranslation[_3D]]]))
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[TranslationAfterRotation[_]] =>
+          Some(RigidTransformationView(s.asInstanceOf[TransformationNode[TranslationAfterRotation[_3D]]]))
         case _ => None
       }
     }
@@ -813,8 +814,8 @@ object RigidTransformationView {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildAdded(_, newNode: TransformationNode[_]) =>
-          if (newNode.transformation.isInstanceOf[RotationThenTranslation[_]]) {
-            val tmv = RigidTransformationView(newNode.asInstanceOf[TransformationNode[RotationThenTranslation[_3D]]])
+          if (newNode.transformation.isInstanceOf[TranslationAfterRotation[_]]) {
+            val tmv = RigidTransformationView(newNode.asInstanceOf[TransformationNode[TranslationAfterRotation[_3D]]])
             f(tmv)
           }
 
@@ -825,9 +826,9 @@ object RigidTransformationView {
       g.peer.listenTo(g.peer.genericTransformations)
       g.peer.reactions += {
         case ChildRemoved(_, removedNode: TransformationNode[_]) =>
-          if (removedNode.transformation.isInstanceOf[RotationThenTranslation[_]]) {
+          if (removedNode.transformation.isInstanceOf[TranslationAfterRotation[_]]) {
             val tmv =
-              RigidTransformationView(removedNode.asInstanceOf[TransformationNode[RotationThenTranslation[_3D]]])
+              RigidTransformationView(removedNode.asInstanceOf[TransformationNode[TranslationAfterRotation[_3D]]])
             f(tmv)
           }
       }
@@ -932,16 +933,16 @@ case class LowRankGPTransformationView private[ui] (
   }
 }
 
-case class ShapeModelTransformation(poseTransformation: RotationThenTranslation[_3D],
+case class ShapeModelTransformation(poseTransformation: TranslationAfterRotation[_3D],
                                     shapeTransformation: DiscreteLowRankGpPointTransformation)
 
 object ShapeModelTransformation {
   def apply(
-    poseTransformation: RotationThenTranslation[_3D],
+    poseTransformation: TranslationAfterRotation[_3D],
     gp: DiscreteLowRankGaussianProcess[_3D, TriangleMesh, EuclideanVector[_3D]]
   ): ShapeModelTransformation = {
     val gpUnstructuredPoints =
-      gp.interpolate(NearestNeighborInterpolator()).discretize(UnstructuredPointsDomain(gp.domain.pointSet))
+      gp.interpolate(NearestNeighborInterpolator3D()).discretize(UnstructuredPointsDomain(gp.domain.pointSet))
     ShapeModelTransformation(poseTransformation, DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
   }
 }
