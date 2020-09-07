@@ -17,7 +17,7 @@
 
 package scalismo.ui.model
 
-import scalismo.geometry.Point3D
+import scalismo.geometry.{_3D, Point, Point3D}
 import scalismo.ui.model.capabilities.{InverseTransformation, Removeable, Renameable, Transformable}
 import scalismo.ui.model.properties._
 
@@ -55,7 +55,7 @@ class PointCloudNode(override val parent: PointCloudsNode, override val source: 
     untransformed.map(transformation)
   }
 
-  override def inverseTransform(point: Point3D): Point3D = {
+  override def inverseTransform(point: Point[_3D]): Point[_3D] = {
     val closest = transformedSource.map(_ - point).zipWithIndex.minBy(_._1.norm2)._2
     source(closest)
   }

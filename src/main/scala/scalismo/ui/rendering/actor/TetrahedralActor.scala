@@ -34,8 +34,9 @@
 
 package scalismo.ui.rendering.actor
 
+import scalismo.common.DiscreteField.ScalarVolumeMeshField
 import scalismo.geometry._3D
-import scalismo.mesh.{ScalarVolumeMeshField, TetrahedralMesh}
+import scalismo.mesh.TetrahedralMesh
 import scalismo.ui.model._
 import scalismo.ui.model.capabilities.Transformable
 import scalismo.ui.model.properties._
@@ -46,6 +47,7 @@ import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
 import scalismo.utils.{TetrahedralMeshConversion}
+
 import vtk.vtkUnstructuredGrid
 
 object TetrahedralMeshActor extends SimpleActorsFactory[TetrahedralMeshNode] {
@@ -138,7 +140,7 @@ trait TetrahedralActor[R <: TetrahedralRenderable] extends SingleDataSetActor wi
 
   protected def rerender(geometryChanged: Boolean): Unit = {
     if (geometryChanged) {
-      unstructuredgrid = meshToUnstructuredGrid(Some(unstructuredgrid))
+      unstructuredgrid = meshToUnstructuredGrid(None)
       onGeometryChanged()
     }
 
@@ -194,6 +196,7 @@ trait TetrahedralMeshScalarFieldActor
   override def scalarRange: ScalarRangeProperty = renderable.scalarRange
 
   override protected def meshToUnstructuredGrid(template: Option[vtkUnstructuredGrid]): vtkUnstructuredGrid = {
+
     Caches.ScalarTetrahedralMeshFieldCache
       .getOrCreate(renderable.field,
                    TetrahedralMeshConversion.scalarVolumeMeshFieldToVtkUnstructuredGrid(renderable.field, template))

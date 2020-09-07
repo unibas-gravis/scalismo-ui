@@ -22,10 +22,10 @@ package scalismo.ui.api
  */
 protected[api] trait HandleCallback[V] {
   // calls function f if a node with type A has been added to the group g
-  def registerOnAdd[R](g: Group, f: V => R)
+  def registerOnAdd[R](g: Group, f: V => R): Unit
 
   // calls function f if a node with type A has been removed from the group g
-  def registerOnRemove[R](g: Group, f: V => R)
+  def registerOnRemove[R](g: Group, f: V => R): Unit
 
 }
 

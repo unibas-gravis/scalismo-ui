@@ -17,7 +17,7 @@
 
 package scalismo.ui.rendering.actor
 
-import scalismo.common.UnstructuredPointsDomain
+import scalismo.common.{ScalarMeshField, UnstructuredPoints, UnstructuredPointsDomain}
 import scalismo.geometry._3D
 import scalismo.mesh._
 import scalismo.ui.model.capabilities.Transformable
@@ -50,7 +50,7 @@ trait ScalarFieldActor extends SingleDataSetActor with ActorOpacity with ActorSc
   lazy val sphere = new vtkSphereSource
 
   def transformedPoints: vtkPoints = new vtkPoints {
-    sceneNode.transformedSource.domain.points.foreach { point =>
+    sceneNode.transformedSource.domain.pointSet.points.foreach { point =>
       InsertNextPoint(point(0), point(1), point(2))
     }
   }
@@ -59,7 +59,7 @@ trait ScalarFieldActor extends SingleDataSetActor with ActorOpacity with ActorSc
     // Hack alert! We create a triangle mesh with empty cells and built from it a scalarMeshData.
     // In this way we can use the conversion utilities and have colors for free
 
-    val meshDomain = UnstructuredPointsDomain[_3D](sceneNode.source.domain.points.toIndexedSeq)
+    val meshDomain = UnstructuredPoints(sceneNode.source.domain.pointSet.points.toIndexedSeq)
     val mesh = TriangleMesh3D(meshDomain, TriangleList(IndexedSeq[TriangleCell]()))
     val smf = ScalarMeshField(mesh, sceneNode.source.data)
     MeshConversion.scalarMeshFieldToVtkPolyData(smf)

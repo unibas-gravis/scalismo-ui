@@ -123,7 +123,7 @@ trait ComplexLandmarkingInteractor[InteractorType <: ComplexLandmarkingInteracto
       contextOption.flatMap {
         case (point, group) =>
           val params = uncertaintyParametersFor(node, group, point, e.viewport)
-          val axes: List[EuclideanVector3D] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
+          val axes: List[EuclideanVector[_3D]] = params.map(_._1).getOrElse(Uncertainty.DefaultAxes)
           val sigmas = params.map(_._2).getOrElse(sigmasForLandmarkUncertainty(group))
           val uncertainty = Uncertainty(axes, sigmas)
           val landmark =
