@@ -147,7 +147,15 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
-  implicit def ShowScalarField[S: Scalar: ClassTag]: ShowInScene[ScalarMeshField[S]] {
+  implicit object ShowInScenePointCloudFromUnstructuredPoints extends ShowInScene[UnstructuredPoints[_3D]] {
+    override type View = PointCloudView
+
+    override def showInScene(points: UnstructuredPoints[_3D], name: String, group: Group): PointCloudView = {
+      ShowInScenePointCloudFromIndexedSeq.showInScene(points.pointSequence, name, group)
+    }
+  }
+
+  implicit def ShowScalarMeshField[S: Scalar: ClassTag]: ShowInScene[ScalarMeshField[S]] {
     type View = ScalarMeshFieldView
   } = new ShowInScene[ScalarMeshField[S]] {
     override type View = ScalarMeshFieldView
@@ -168,6 +176,20 @@ object ShowInScene extends LowPriorityImplicits {
                              name: String,
                              group: Group): VectorFieldView = {
       VectorFieldView(group.peer.vectorFields.add(df, name))
+    }
+  }
+
+  implicit object ShowInSceneDiscreteFieldOfVectorsOnMesh
+      extends ShowInScene[DiscreteField[_3D, TriangleMesh, EuclideanVector[_3D]]] {
+
+    override type View = VectorFieldView
+
+    override def showInScene(df: DiscreteField[_3D, TriangleMesh, EuclideanVector[_3D]],
+                             name: String,
+                             group: Group): VectorFieldView = {
+      val dfUnstructuredPointsDomain = DiscreteField(UnstructuredPointsDomain3D(df.domain.pointSet), df.data)
+
+      VectorFieldView(group.peer.vectorFields.add(dfUnstructuredPointsDomain, name))
     }
   }
 
