@@ -718,10 +718,18 @@ case class StatisticalVolumeMeshModelViewControls private[ui] (
 )
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
-case class PointDistributionModelViewControls[D, DDomain[D] <: DiscreteDomain[D]] private[ui] (
-  referenceView: ShowInScene[DDomain[D]]#View,
+case class PointDistributionModelViewControlsTriangleMesh3D private[ui] (
+  referenceView: TriangleMeshView,
   shapeModelTransformationView: ShapeModelTransformationView
 )
+
+
+// Note this class does not extend Object view, as there is not really a corresponding node to this concept
+case class PointDistributionModelViewControlsTetrahedralMesh3D private[ui] (
+                                                                          referenceView: TetrahedralMeshView,
+                                                                          shapeModelTransformationView: ShapeModelTransformationView
+                                                                        )
+
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
