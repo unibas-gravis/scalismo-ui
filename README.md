@@ -34,7 +34,7 @@ Add the following dependency to your `build.sbt`:
 
 resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
 
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.13.0"
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.90.0"
 ```
 
 The graphical user interface can be called from an application using the command
