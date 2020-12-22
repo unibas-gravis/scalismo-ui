@@ -40,7 +40,7 @@ class LoadStatisticalVolumeMeshModelAction(group: GroupNode)(implicit frame: Sca
   def load(file: File): Try[Unit] = {
 
     for {
-      model <- StatisticalModelIO.readStatisticalVolumeMeshModel(file)
+      model <- StatisticalModelIO.readStatisticalTetrahedralMeshModel3D(file)
     } yield {
       val basename = FileUtil.basename(file)
       group.addStatisticalVolumeMeshModel(model, basename)

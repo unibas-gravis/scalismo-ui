@@ -20,7 +20,7 @@ package scalismo.ui.model
 import java.io.File
 
 import scalismo.geometry._3D
-import scalismo.image.DiscreteScalarImage
+import scalismo.image.DiscreteImage
 import scalismo.io.ImageIO
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -31,7 +31,7 @@ import scala.util.{Failure, Success, Try}
 class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[ImageNode] with Loadable {
   override val name: String = "Images"
 
-  def add(image: DiscreteScalarImage[_3D, Float], name: String): ImageNode = {
+  def add(image: DiscreteImage[_3D, Float], name: String): ImageNode = {
     val node = new ImageNode(this, image, name)
     add(node)
     node
@@ -49,7 +49,7 @@ class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[Ima
   }
 }
 
-class ImageNode(override val parent: ImagesNode, val source: DiscreteScalarImage[_3D, Float], initialName: String)
+class ImageNode(override val parent: ImagesNode, val source: DiscreteImage[_3D, Float], initialName: String)
     extends RenderableSceneNode
     with Grouped
     with Renameable

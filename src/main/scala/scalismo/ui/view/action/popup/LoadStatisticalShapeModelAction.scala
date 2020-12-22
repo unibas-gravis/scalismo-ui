@@ -19,7 +19,7 @@ package scalismo.ui.view.action.popup
 
 import java.io.File
 
-import scalismo.io.StatismoIO
+import scalismo.io.{StatismoIO, StatisticalModelIO}
 import scalismo.io.StatismoIO.{CatalogEntry, StatismoModelType}
 import scalismo.ui.model.{GroupNode, SceneNode}
 import scalismo.ui.resources.icons.BundledIcon
@@ -43,7 +43,7 @@ class LoadStatisticalShapeModelAction(group: GroupNode)(implicit frame: Scalismo
 
     for {
       path <- selectPathFromFile(file)
-      model <- StatismoIO.readStatismoMeshModel(file, path)
+      model <- StatisticalModelIO.readStatisticalMeshModel(file, path)
     } yield {
       val basename = FileUtil.basename(file)
       group.addStatisticalMeshModel(model, basename)

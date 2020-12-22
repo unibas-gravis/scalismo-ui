@@ -17,7 +17,7 @@
 
 package scalismo.ui.model.capabilities
 
-import scalismo.geometry.Point3D
+import scalismo.geometry.{_3D, Point, Point3D}
 
 /**
  * Indicates that this node can perform
@@ -25,5 +25,5 @@ import scalismo.geometry.Point3D
  * space to the original space.
  */
 trait InverseTransformation {
-  def inverseTransform(point: Point3D): Point3D
+  def inverseTransform(point: Point[_3D]): Point[_3D]
 }
