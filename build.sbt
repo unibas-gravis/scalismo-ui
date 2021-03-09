@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
     organization := "ch.unibas.cs.gravis",
     scalaVersion := "2.13.3",
     homepage := Some(url("https://scalismo.org")),
-    licenses += Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
+    licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
       ScmInfo(url("https://github.com/unibas-gravis/scalismo-ui"), "git@github.com:unibas-gravis/scalismo-ui.git")
     ),
