@@ -1,6 +1,6 @@
 import com.typesafe.sbt.{GitBranchPrompt, GitVersioning}
 import sbt.Keys.{unmanagedSourceDirectories, _}
-import sbt.{CrossVersion, Resolver, _}
+import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
 lazy val root = (project in file("."))
@@ -8,23 +8,37 @@ lazy val root = (project in file("."))
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
     scalaVersion := "2.13.3",
+    homepage := Some(url("https://scalismo.org")),
+    licenses += Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
+    scmInfo := Some(
+      ScmInfo(url("https://github.com/unibas-gravis/scalismo-ui"), "git@github.com:unibas-gravis/scalismo-ui.git")
+    ),
+    developers := List(
+      Developer("marcelluethi", "marcelluethi", "marcel.luethi@unibas.ch", url("https://github.com/marcelluethi"))
+    ),
+    publishMavenStyle := true,
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+        Opts.resolver.sonatypeStaging
+    ),
     crossScalaVersions := Seq("2.12.11", "2.13.3"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
-      Resolver.bintrayRepo("unibas-gravis", "maven"),
       "twitter" at "http://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
       case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
     }),
     javacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-      case _             => Seq("-source", "1.8", "-target", "1.8")
+      case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
       "ch.unibas.cs.gravis" %% "scalismo" % "0.90.0",
-      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0",
+      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
       "org.scalatest" %% "scalatest" % "3.0.8" % "test",
       "de.sciss" %% "swingplus" % "0.4.2",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
@@ -74,13 +88,13 @@ lazy val root = (project in file("."))
     mainClass in assembly := Some("scalismo.ui.app.ScalismoViewer"),
     fork in run := true,
     assemblyMergeStrategy in assembly ~= { _ =>
-    {
-      case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-      case PathList("META-INF", s)
-        if s.endsWith(".SF") || s.endsWith(".DSA") || s.endsWith(".RSA") || s.endsWith(".txt") =>
-        MergeStrategy.discard
-      case _ => MergeStrategy.first
-    }
+      {
+        case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
+        case PathList("META-INF", s)
+            if s.endsWith(".SF") || s.endsWith(".DSA") || s.endsWith(".RSA") || s.endsWith(".txt") =>
+          MergeStrategy.discard
+        case _ => MergeStrategy.first
+      }
     }
   )
   .enablePlugins(AutomateHeaderPlugin)
