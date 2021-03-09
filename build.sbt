@@ -1,6 +1,7 @@
 import com.typesafe.sbt.{GitBranchPrompt, GitVersioning}
 import sbt.Keys._
-import sbt.{CrossVersion, Resolver, _}
+import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
+
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
 lazy val root = (project in file("."))
@@ -9,11 +10,25 @@ lazy val root = (project in file("."))
     organization := "ch.unibas.cs.gravis",
     scalaVersion := "2.12.6",
     crossScalaVersions := Seq("2.11.12", "2.12.6"),
+    homepage := Some(url("https://scalismo.org")),
+    licenses += Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
+    scmInfo := Some(
+      ScmInfo(url("https://github.com/unibas-gravis/scalismo-ui"), "git@github.com:unibas-gravis/scalismo-ui.git")
+    ),
+    developers := List(
+      Developer("marcelluethi", "marcelluethi", "marcel.luethi@unibas.ch", url("https://github.com/marcelluethi"))
+    ),
+    publishMavenStyle := true,
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+        Opts.resolver.sonatypeStaging
+    ),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
-      Resolver.bintrayRepo("unibas-gravis", "maven"),
       "twitter" at "http://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -21,13 +36,9 @@ lazy val root = (project in file("."))
         Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.6")
       case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
     }),
-    javacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, 11)) => Seq("-source", "1.6", "-target", "1.6")
-      case _             => Seq("-source", "1.8", "-target", "1.8")
-    }),
     libraryDependencies ++= Seq(
       "ch.unibas.cs.gravis" %% "scalismo" % "0.18.0",
-      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0",
+      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
       "org.scalatest" %% "scalatest" % "3.0.1" % "test",
       "de.sciss" %% "swingplus" % "0.2.2",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
