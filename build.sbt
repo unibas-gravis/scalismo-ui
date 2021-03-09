@@ -11,7 +11,7 @@ lazy val root = (project in file("."))
     scalaVersion := "2.12.6",
     crossScalaVersions := Seq("2.11.12", "2.12.6"),
     homepage := Some(url("https://scalismo.org")),
-    licenses += Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
+    licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
       ScmInfo(url("https://github.com/unibas-gravis/scalismo-ui"), "git@github.com:unibas-gravis/scalismo-ui.git")
     ),
