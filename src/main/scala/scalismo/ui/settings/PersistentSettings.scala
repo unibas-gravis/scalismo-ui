@@ -19,7 +19,6 @@ package scalismo.ui.settings
 
 import scalismo.ui.settings.SettingsFile.Codec
 
-import scala.reflect.runtime.universe.{typeOf, TypeTag}
 import scala.util._
 
 /**
@@ -45,13 +44,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    * @tparam A type of the setting's value.
    * @return the first value with the appropriate key, or None on error/not found.
    */
-  def get[A: TypeTag: Codec](key: String): Option[A] = {
-    typeOf[A] match {
-      case t if t <:< typeOf[Seq[_]] =>
-        throw new IllegalArgumentException("Use the getList() method to retrieve multi-valued settings.")
-      case _ => /* ok */
-    }
-
+  def get[A: Codec](key: String): Option[A] = {
     val result = getList(key)
     result.flatMap(_.headOption)
   }
@@ -65,7 +58,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    * @tparam A type of the setting's value
    * @return all values for the key, or None on error.
    */
-  def getList[A: TypeTag: Codec](key: String): Option[List[A]] = {
+  def getList[A: Codec](key: String): Option[List[A]] = {
 
     Try(doGet(key)) match {
       case Failure(_) => None
@@ -83,12 +76,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    * @tparam A type of the setting's value.
    * @return Failure on error, Success otherwise
    */
-  def set[A: TypeTag: Codec](key: String, value: A): Try[Unit] = {
-    typeOf[A] match {
-      case t if t <:< typeOf[Seq[_]] =>
-        throw new IllegalArgumentException("Use the setList() method to set multi-valued settings.")
-      case _ => /* ok */
-    }
+  def set[A: Codec](key: String, value: A): Try[Unit] = {
     setList(key, List(value))
   }
 
@@ -102,7 +90,7 @@ class PersistentSettings(val settingsFile: SettingsFile) {
    * @tparam A type of the setting's values.
    * @return Failure on error, Success otherwise
    */
-  def setList[A: TypeTag: Codec](key: String, values: List[A]): Try[Unit] = {
+  def setList[A: Codec](key: String, values: List[A]): Try[Unit] = {
     Try(doSet(key, values.map(v => implicitly[Codec[A]].toString(v)))) match {
       case Success(_)    => Success(())
       case Failure(oops) => Failure(oops)

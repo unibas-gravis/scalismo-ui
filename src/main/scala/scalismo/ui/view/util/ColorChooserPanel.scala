@@ -46,7 +46,7 @@ class ColorChooserPanel extends BorderPanel with ChangeListener with ScalismoPub
   private var _color = Color.WHITE
 
   private class WheelWrapper extends Component {
-    override lazy val peer = new ColorPickerPanel()
+    override lazy val peer: ColorPickerPanel = new ColorPickerPanel()
   }
 
   class BrightnessSelector extends JComponent {
@@ -238,10 +238,10 @@ class ColorChooserPanel extends BorderPanel with ChangeListener with ScalismoPub
   private class BrightnessWrapper extends BorderPanel {
 
     class Inner extends Component {
-      override lazy val peer = new BrightnessSelector
+      override lazy val peer: BrightnessSelector = new BrightnessSelector
     }
 
-    val inner = new Inner
+    val inner: Inner = new Inner
 
     layout(inner) = BorderPanel.Position.Center
     border = BorderFactory.createEmptyBorder(3.scaled, 0, 3.scaled, 0)

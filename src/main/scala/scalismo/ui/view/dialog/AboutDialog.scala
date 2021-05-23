@@ -47,25 +47,23 @@ object AboutDialog {
    */
   object BuildInfo {
 
-    import scala.reflect.runtime.universe
+    private val objectName = "scalismo.ui.BuildInfo$"
+    private val buildInfoClazz = Class.forName(objectName)
 
-    private lazy val runtimeMirror = universe.runtimeMirror(getClass.getClassLoader)
-    private lazy val objectName = "scalismo.ui.BuildInfo$"
+    // to access a scala object via java reflection, we need to cheat a bit
+    // and make the default constructor accessible, and then to create a new instance.
+    private val cons = buildInfoClazz.getDeclaredConstructors().head
+    cons.setAccessible(true);
+    private val buildInfoObj = cons.newInstance().asInstanceOf[scalismo.ui.BuildInfo$]
 
-    def proxy(fieldName: String): String =
+    def proxy(fieldName: String): String = {
+
       Try {
-        val moduleSymbol = runtimeMirror.moduleSymbol(Class.forName(objectName))
-
-        val targetMethod = moduleSymbol.typeSignature.members
-          .filter(x => x.isMethod && x.name.toString == fieldName)
-          .head
-          .asMethod
-
-        runtimeMirror
-          .reflect(runtimeMirror.reflectModule(moduleSymbol).instance)
-          .reflectMethod(targetMethod)()
-          .toString
+        val method = buildInfoClazz.getDeclaredMethods.filter(x => x.getName.toString == fieldName).head
+        method.invoke(buildInfoObj).toString
       }.getOrElse("???")
+
+    }
 
     // proxied fields
     def version: String = proxy("version")

@@ -109,6 +109,7 @@ class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
     image.flush()
     ImageIO.write(image, "png", file)
+    ()
   }
 
   def setCameraToAxis(axis: Axis): Unit = {

@@ -51,9 +51,9 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
   }
 
   private val minimumSlider = new FancySlider {
-    min = 0
-    max = 100
-    value = 0
+    this.min = 0
+    this.max = 100
+    this.value = 0
 
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
 
@@ -61,9 +61,9 @@ class ScalarRangePropertyPanel(override val frame: ScalismoFrame) extends Border
   }
 
   private val maximumSlider = new FancySlider {
-    min = 0
-    max = 100
-    value = 100
+    this.min = 0
+    this.max = 100
+    this.value = 100
 
     override def formattedValue(sliderValue: Int): String = formatSliderValue(sliderValue)
 

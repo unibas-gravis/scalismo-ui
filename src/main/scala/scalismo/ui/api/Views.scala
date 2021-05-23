@@ -723,13 +723,11 @@ case class PointDistributionModelViewControlsTriangleMesh3D private[ui] (
   shapeModelTransformationView: ShapeModelTransformationView
 )
 
-
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
 case class PointDistributionModelViewControlsTetrahedralMesh3D private[ui] (
-                                                                          referenceView: TetrahedralMeshView,
-                                                                          shapeModelTransformationView: ShapeModelTransformationView
-                                                                        )
-
+  referenceView: TetrahedralMeshView,
+  shapeModelTransformationView: ShapeModelTransformationView
+)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 
@@ -776,7 +774,7 @@ object TransformationView {
       type PointToPointTransformation[D] = Point[D] => Point[D]
       // here we need a two step process due to type erasure to find the right type.
       s match {
-        case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_]] =>
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_3D]] =>
           Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]]))
         case _ => None
       }

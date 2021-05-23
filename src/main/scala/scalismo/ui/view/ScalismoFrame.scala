@@ -59,7 +59,7 @@ class ScalismoFrame(val scene: Scene) extends MainFrame with ScalismoPublisher {
   /**
    * Convenience constructor that instantiates a new Scene instead of requiring one as an argument.
    */
-  def this() {
+  def this() = {
     this(new Scene)
   }
 

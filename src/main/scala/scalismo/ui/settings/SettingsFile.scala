@@ -112,7 +112,7 @@ object SettingsFile {
       }
     }
 
-    implicit val stringCodec: Codec[String] = Codec({ s: String =>
+    implicit val stringCodec: Codec[String] = Codec({ (s: String) =>
       s
     })
 
