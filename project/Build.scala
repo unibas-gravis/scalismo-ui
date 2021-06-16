@@ -12,7 +12,8 @@ object BuildSettings {
   val buildScalaVersion = "2.11.8"
 
   val buildSettings = Defaults.defaultSettings ++ Seq(
-    scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature"),
+    scalacOptions ++= Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8"),
+    javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
     organization := buildOrganization,
     scalaVersion := buildScalaVersion,
     crossScalaVersions := Seq("2.11.8", "2.12.1")
@@ -40,7 +41,7 @@ object Creds {
 
 object Dependencies {
   val scalismo = "ch.unibas.cs.gravis" %% "scalismo" % "0.15.2"
-  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.0"
+  val scalismoNative = "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1"
   val scalatest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
   val swingPlus = "de.sciss" %% "swingplus" % "0.2.2"
   val jIconFont = "com.github.jiconfont" % "jiconfont-swing" % "1.0.1"
@@ -71,6 +72,21 @@ object ScalismoUiBuild extends Build {
     "scalismo-ui",
     file("."),
     settings = buildSettings ++ Seq(
+       homepage := Some(url("https://scalismo.org")),
+    licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
+    scmInfo := Some(
+      ScmInfo(url("https://github.com/unibas-gravis/scalismo-ui"), "git@github.com:unibas-gravis/scalismo-ui.git")
+    ),
+    developers := List(
+      Developer("marcelluethi", "marcelluethi", "marcel.luethi@unibas.ch", url("https://github.com/marcelluethi"))
+    ),
+    publishMavenStyle := true,
+    publishTo := Some(
+      if (isSnapshot.value)
+        Opts.resolver.sonatypeSnapshots
+      else
+        Opts.resolver.sonatypeStaging
+    ),
       libraryDependencies ++= commonDeps,
       resolvers ++= stkResolvers,
       credentials += Creds.scalismoPrivate,
