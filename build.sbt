@@ -36,6 +36,10 @@ lazy val root = (project in file("."))
         Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.6")
       case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
     }),
+   javacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2,  11)) => Seq("-source", "1.6", "-target", "1.6")
+      case _ => Seq("-source", "1.8", "-target", "1.8")
+    }),
     libraryDependencies ++= Seq(
       "ch.unibas.cs.gravis" %% "scalismo" % "0.18.0",
       "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
