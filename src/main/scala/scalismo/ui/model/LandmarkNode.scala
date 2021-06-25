@@ -118,6 +118,7 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D])
     with HasColor
     with HasOpacity
     with HasLineWidth
+    with HasScaling
     with HasPickable {
   name = sourceLm.id
 
@@ -125,6 +126,7 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D])
   override val opacity = new OpacityProperty()
   override val lineWidth = new LineWidthProperty()
   override val pickable = new PickableProperty()
+  override val scaling: ScalingProperty = new ScalingProperty(1)
 
   // lazy is needed here since traits such as Transformable call source() which need uncertainty, all this at *construction time*
   override lazy val uncertainty = new UncertaintyProperty(
@@ -146,4 +148,5 @@ class LandmarkNode(override val parent: LandmarksNode, sourceLm: Landmark[_3D])
   }
 
   override def group: GroupNode = parent.parent
+
 }
