@@ -226,26 +226,27 @@ object ShowInScene extends LowPriorityImplicits {
 
   }
 
-  implicit object ShowInScenePointDistributionModelTriangleMesh3D extends ShowInScene[PointDistributionModel[_3D, TriangleMesh]] {
-      override type View = PointDistributionModelViewControlsTriangleMesh3D
+  implicit object ShowInScenePointDistributionModelTriangleMesh3D
+      extends ShowInScene[PointDistributionModel[_3D, TriangleMesh]] {
+    override type View = PointDistributionModelViewControlsTriangleMesh3D
 
-      override def showInScene(model: PointDistributionModel[_3D, TriangleMesh], name: String, group: Group): View = {
-        val gpUnstructuredPoints = model.gp
-          .interpolate(NearestNeighborInterpolator3D())
-          .discretize(UnstructuredPointsDomain(model.reference.pointSet.points.toIndexedSeq))
+    override def showInScene(model: PointDistributionModel[_3D, TriangleMesh], name: String, group: Group): View = {
+      val gpUnstructuredPoints = model.gp
+        .interpolate(NearestNeighborInterpolator3D())
+        .discretize(UnstructuredPointsDomain(model.reference.pointSet.points.toIndexedSeq))
 
-        val shapeModelTransform =
-          ShapeModelTransformation(PointTransformation.RigidIdentity,
-            DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
-        val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
-        val tmV = ShowInSceneMesh.showInScene(model.reference, name, group)
-        PointDistributionModelViewControlsTriangleMesh3D(tmV, smV)
+      val shapeModelTransform =
+        ShapeModelTransformation(PointTransformation.RigidIdentity,
+                                 DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
+      val tmV = ShowInSceneMesh.showInScene(model.reference, name, group)
+      PointDistributionModelViewControlsTriangleMesh3D(tmV, smV)
 
-      }
     }
+  }
 
-
-  implicit object ShowInScenePointDistributionModelTetrahedralMesh3D extends ShowInScene[PointDistributionModel[_3D, TetrahedralMesh]] {
+  implicit object ShowInScenePointDistributionModelTetrahedralMesh3D
+      extends ShowInScene[PointDistributionModel[_3D, TetrahedralMesh]] {
     override type View = PointDistributionModelViewControlsTetrahedralMesh3D
 
     override def showInScene(model: PointDistributionModel[_3D, TetrahedralMesh], name: String, group: Group): View = {
@@ -255,14 +256,13 @@ object ShowInScene extends LowPriorityImplicits {
 
       val shapeModelTransform =
         ShapeModelTransformation(PointTransformation.RigidIdentity,
-          DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
+                                 DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
       val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
       val tmV = ShowTetrahedralMesh.showInScene(model.reference, name, group)
       PointDistributionModelViewControlsTetrahedralMesh3D(tmV, smV)
 
     }
   }
-
 
   implicit object ShowInSceneStatisticalMeshModel extends ShowInScene[StatisticalMeshModel] {
     type View = StatisticalMeshModelViewControls
