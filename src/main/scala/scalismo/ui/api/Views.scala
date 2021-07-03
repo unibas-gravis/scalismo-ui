@@ -440,6 +440,12 @@ case class LandmarkView private[ui] (override protected[api] val peer: LandmarkN
     peer.opacity.value = o
   }
 
+  def scalingFactor: Double = peer.scaling.value
+
+  def scalingFactor_=(s: Double): Unit = {
+    peer.scaling.value = s
+  }
+
   def landmark: Landmark[_3D] = peer.source
 
   def transformedLandmark: Landmark[_3D] = peer.transformedSource
@@ -723,13 +729,11 @@ case class PointDistributionModelViewControlsTriangleMesh3D private[ui] (
   shapeModelTransformationView: ShapeModelTransformationView
 )
 
-
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
 case class PointDistributionModelViewControlsTetrahedralMesh3D private[ui] (
-                                                                          referenceView: TetrahedralMeshView,
-                                                                          shapeModelTransformationView: ShapeModelTransformationView
-                                                                        )
-
+  referenceView: TetrahedralMeshView,
+  shapeModelTransformationView: ShapeModelTransformationView
+)
 
 case class Group(override protected[api] val peer: GroupNode) extends ObjectView {
 

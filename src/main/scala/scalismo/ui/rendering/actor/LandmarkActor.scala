@@ -88,19 +88,20 @@ trait LandmarkActor extends ActorColor with ActorOpacity with ActorSceneNode {
       val center = sceneNode.transformedSource.point
       transform.Translate(center(0), center(1), center(2))
 
-      ellipsoid.SetXRadius(xRadius)
-      ellipsoid.SetYRadius(yRadius)
-      ellipsoid.SetZRadius(zRadius)
+      ellipsoid.SetXRadius(xRadius * sceneNode.scaling.value)
+      ellipsoid.SetYRadius(yRadius * sceneNode.scaling.value)
+      ellipsoid.SetZRadius(zRadius * sceneNode.scaling.value)
     }
 
     actorChanged(geometryChanged)
   }
 
-  listenTo(sceneNode, sceneNode.uncertainty)
+  listenTo(sceneNode, sceneNode.uncertainty, sceneNode.scaling)
 
   reactions += {
-    case Transformable.event.GeometryChanged(_)                              => rerender(true)
-    case NodeProperty.event.PropertyChanged(p) if p == sceneNode.uncertainty => rerender(true)
+    case Transformable.event.GeometryChanged(_) => rerender(true)
+    case NodeProperty.event.PropertyChanged(p) if p == sceneNode.uncertainty || p == sceneNode.scaling =>
+      rerender(true)
   }
 
   protected def onInstantiated(): Unit

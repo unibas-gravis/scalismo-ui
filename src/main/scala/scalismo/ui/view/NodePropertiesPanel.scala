@@ -42,6 +42,7 @@ object NodePropertiesPanel {
       props += ScalarRangePropertyPanel
       props += OpacityPropertyPanel
       props += RadiusPropertyPanel
+      props += ScalingPropertyPanel
       props += LineWidthPropertyPanel
 
       new CombinedPropertiesPanel(frame, "Appearance", props.toList.map(c => c(frame)): _*)
