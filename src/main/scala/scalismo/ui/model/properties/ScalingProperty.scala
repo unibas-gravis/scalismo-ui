@@ -26,7 +26,7 @@ class ScalingProperty(initialValue: Double) extends NodeProperty[Double](initial
   def this() = this(ScalingProperty.DefaultValue)
 
   override protected def sanitize(possiblyNotSane: Double): Double = {
-    Math.max(0, possiblyNotSane)
+    Math.max(Double.MinPositiveValue, possiblyNotSane)
   }
 }
 

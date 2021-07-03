@@ -442,8 +442,8 @@ case class LandmarkView private[ui] (override protected[api] val peer: LandmarkN
 
   def scalingFactor: Double = peer.scaling.value
 
-  def scalingFactor_=(o: Double): Unit = {
-    peer.scaling.value = o
+  def scalingFactor_=(s: Double): Unit = {
+    peer.scaling.value = s
   }
 
   def landmark: Landmark[_3D] = peer.source
