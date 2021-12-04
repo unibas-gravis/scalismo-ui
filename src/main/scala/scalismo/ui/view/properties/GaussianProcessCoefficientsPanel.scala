@@ -74,7 +74,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
         (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
       min = -max
       name = index.toString
-      value = 0
+      this.value = 0
       snapToTicks = true
     }
     val value = new Label(labelFormat(0.0f))

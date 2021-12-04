@@ -17,7 +17,6 @@
 
 package scalismo.ui.event
 
-import com.github.ghik.silencer.silent
 import scalismo.ui.util.EdtUtil
 
 import scala.swing.Publisher
@@ -46,7 +45,6 @@ trait ScalismoPublisher extends Publisher {
    * get a warning if you try to use the publish() method. Sweet! :-)
    */
   @deprecated(message = "use method publishEvent instead", since = "always")
-  @silent
   override def publish(e: Event): Unit = {
     doPublish(e)
   }

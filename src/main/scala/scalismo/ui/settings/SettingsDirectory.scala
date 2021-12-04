@@ -46,7 +46,7 @@ object SettingsDirectory {
   private def getOrCreate(dir: File): Try[File] = {
     if (dir.exists()) {
       if (dir.isDirectory) Success(dir)
-      else Failure(new IllegalStateException(dir + " was expected to be a directory, but is a file"))
+      else Failure(new IllegalStateException(dir.toString + " was expected to be a directory, but is a file"))
     } else {
       if (!dir.mkdirs()) {
         Failure(new RuntimeException("Failed to create directory hierarchy"))

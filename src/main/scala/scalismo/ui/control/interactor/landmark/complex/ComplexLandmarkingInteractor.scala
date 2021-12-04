@@ -39,7 +39,7 @@ object ComplexLandmarkingInteractor {
 
   trait Delegate[InteractorType <: ComplexLandmarkingInteractor[InteractorType]]
       extends DelegatedInteractor[ComplexLandmarkingInteractor[InteractorType]] {
-    def onLandmarkCreationToggled()
+    def onLandmarkCreationToggled(): Unit
 
   }
 

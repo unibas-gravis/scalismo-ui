@@ -34,7 +34,7 @@ object NodePropertiesPanel {
   // built-in, default handlers
   val BuiltinHandlers: List[ScalismoFrame => PropertyPanel] = {
 
-    def appearancePanel: ScalismoFrame => PropertyPanel = { frame: ScalismoFrame =>
+    def appearancePanel: ScalismoFrame => PropertyPanel = { (frame: ScalismoFrame) =>
       val props = new ArrayBuffer[ScalismoFrame => PropertyPanel]()
       props += WindowLevelPropertyPanel
       props += ColorPropertyPanel

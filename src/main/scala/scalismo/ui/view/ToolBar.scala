@@ -17,12 +17,12 @@
 
 package scalismo.ui.view
 
-import javax.swing.JButton
-
+import javax.swing
+import javax.swing.{JButton, JToolBar}
 import scala.swing.{Action, Button, Component, Orientable}
 
-class ToolBar extends Component with Orientable.Wrapper {
-  override lazy val peer = new javax.swing.JToolBar with SuperMixin
+class ToolBar extends Component {
+  override lazy val peer: JToolBar = new javax.swing.JToolBar with SuperMixin
 
   def add(c: Component): Unit = {
     peer.add(c.peer)
@@ -46,7 +46,8 @@ class ToolBar extends Component with Orientable.Wrapper {
    * @return the button object that was added to the toolbar and bound to the action.
    */
   def add(action: Action): Button = {
-    val jb = peer.add(action.peer)
+    val actionPeer: javax.swing.Action = action.peer
+    val jb = peer.add(actionPeer)
     new Button {
       override lazy val peer: JButton = jb
     }
@@ -63,4 +64,5 @@ class ToolBar extends Component with Orientable.Wrapper {
   // constructor
   floatable = false
   rollover = true
+
 }

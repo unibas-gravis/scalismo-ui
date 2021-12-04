@@ -46,9 +46,9 @@ class SlicingPositionPanel(override val frame: ScalismoFrame) extends BorderPane
 
     val slider: FancySlider = new FancySlider {
 
-      min = 0
-      max = 0
-      value = 0
+      this.min = 0
+      this.max = 0
+      this.value = 0
 
       //override def formattedValue(sliderValue: Int): String = slicingPosition.map(s => s.precision.format(s.precision.fromInt(sliderValue))).getOrElse("?")
     }
