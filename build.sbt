@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.0.0-RC3",
+    scalaVersion := "3.0.0",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
       else
         Opts.resolver.sonatypeStaging
     ),
-    crossScalaVersions := Seq("2.13.5", "3.0.0-RC3"),
+    crossScalaVersions := Seq("3.0.0", "2.13.6"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
@@ -38,19 +38,14 @@ lazy val root = (project in file("."))
     }),
     libraryDependencies ++= Seq(
       "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
-      "org.scalatest" %% "scalatest" % "3.2.8" % "test",
+      "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
       "com.github.jiconfont" % "jiconfont-font_awesome" % "4.5.0.3",
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, n)) =>
-        Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-2e5deee8a68ca3373b8c19a2ccb517cebf4b43a4")
-      case _ =>
-        Seq("ch.unibas.cs.gravis" %% "scalismo" % "0.90.0")
-    }),
+    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-701a8974372171fc8ac27177e2fdfa56b75788b1"),
     unmanagedSourceDirectories in Compile += {
       val sourceDir = (sourceDirectory in Compile).value
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -83,17 +78,16 @@ lazy val root = (project in file("."))
     ),
     buildInfoPackage := "scalismo.ui"
   )
-  .enablePlugins(BintrayPlugin)
   .settings(
     bintrayOrganization := Some("unibas-gravis"),
     licenses += ("GPL-3.0", url("http://opensource.org/licenses/gpl-3.0"))
   )
   .enablePlugins(AssemblyPlugin)
   .settings(
-    assemblyJarName in assembly := "scalismo-ui.jar",
-    mainClass in assembly := Some("scalismo.ui.app.ScalismoViewer"),
-    fork in run := true,
-    assemblyMergeStrategy in assembly ~= { _ =>
+    assembly/assemblyJarName  := "scalismo-ui.jar",
+    assembly/mainClass  := Some("scalismo.ui.app.ScalismoViewer"),
+    run/fork  := true,
+    assembly/assemblyMergeStrategy ~= { _ =>
       {
         case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
         case PathList("META-INF", s)

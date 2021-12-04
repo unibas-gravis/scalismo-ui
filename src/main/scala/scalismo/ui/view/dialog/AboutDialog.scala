@@ -17,22 +17,34 @@
 
 package scalismo.ui.view.dialog
 
-import java.awt.event.{MouseAdapter, MouseEvent}
-import java.awt.{Color, Cursor, Font}
-import java.net.URI
-
-import javax.swing._
+import scalismo.ui.BuildInfo
 import scalismo.ui.resources.icons.BundledIcon
 import scalismo.ui.resources.thirdparty.ThirdPartyResource
 import scalismo.ui.view.ScalismoFrame
-import scalismo.ui.view.dialog.AboutDialog._
-import scalismo.ui.view.dialog.AboutDialog.scaled._
+import scalismo.ui.view.dialog.AboutDialog.scaled.{s_10, s_128, s_15, s_20, s_3, s_5}
+import scalismo.ui.view.dialog.AboutDialog.{KeyValuePanel, LogoPanel, ThirdPartyPanel}
 import scalismo.ui.view.util.{LinkLabel, MultiLineLabel, ScalableUI}
 
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Dimension, Font}
+import java.net.URI
+import javax.swing.{BorderFactory, Icon, JTextArea, JTextPane}
+import scala.swing.{
+  Action,
+  Alignment,
+  BorderPanel,
+  Button,
+  Component,
+  Dialog,
+  GridBagPanel,
+  Label,
+  ScrollPane,
+  TabbedPane,
+  TextArea
+}
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
-import scala.swing.{Action, _}
 import scala.util.Try
 
 object AboutDialog {
@@ -45,35 +57,35 @@ object AboutDialog {
    *
    * Using runtime reflection avoids this.
    */
-  object BuildInfo {
-
-    private val objectName = "scalismo.ui.BuildInfo$"
-    private val buildInfoClazz = Class.forName(objectName)
-
-    // to access a scala object via java reflection, we need to cheat a bit
-    // and make the default constructor accessible, and then to create a new instance.
-    private val cons = buildInfoClazz.getDeclaredConstructors().head
-    cons.setAccessible(true);
-    private val buildInfoObj = cons.newInstance().asInstanceOf[scalismo.ui.BuildInfo$]
-
-    def proxy(fieldName: String): String = {
-
-      Try {
-        val method = buildInfoClazz.getDeclaredMethods.filter(x => x.getName.toString == fieldName).head
-        method.invoke(buildInfoObj).toString
-      }.getOrElse("???")
-
-    }
-
-    // proxied fields
-    def version: String = proxy("version")
-
-    def scalaVersion: String = proxy("scalaVersion")
-
-    def sbtVersion: String = proxy("sbtVersion")
-
-    def buildTime: String = proxy("buildTime")
-  }
+//  object BuildInfo {
+//
+//    private val objectName = "scalismo.ui.BuildInfo$"
+//    private val buildInfoClazz = Class.forName(objectName)
+//
+//    // to access a scala object via java reflection, we need to cheat a bit
+//    // and make the default constructor accessible, and then to create a new instance.
+//    private val cons = buildInfoClazz.getDeclaredConstructors().head
+//    cons.setAccessible(true);
+//    private val buildInfoObj = cons.newInstance().asInstanceOf[scalismo.ui.BuildInfo$]
+//
+//    def proxy(fieldName: String): String = {
+//
+//      Try {
+//        val method = buildInfoClazz.getDeclaredMethods.filter(x => x.getName.toString == fieldName).head
+//        method.invoke(buildInfoObj).toString
+//      }.getOrElse("???")
+//
+//    }
+//
+//    // proxied fields
+//    def version: String = proxy("version")
+//
+//    def scalaVersion: String = proxy("scalaVersion")
+//
+//    def sbtVersion: String = proxy("sbtVersion")
+//
+//    def buildTime: String = proxy("buildTime")
+//  }
 
   object scaled {
 

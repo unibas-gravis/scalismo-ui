@@ -151,6 +151,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   }
 
   def randomizeValues(): Unit = {
+    import breeze.stats.distributions.Rand.FixedSeed.randBasis
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices.foreach { index =>
