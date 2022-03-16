@@ -17,11 +17,6 @@
 
 package scalismo.ui.view
 
-import java.awt.event.{MouseAdapter, MouseEvent}
-import java.awt.{Color, Cursor, Font, Component => AComponent}
-import java.text.SimpleDateFormat
-
-import javax.swing._
 import scalismo.ui.model.StatusMessage
 import scalismo.ui.model.StatusMessage._
 import scalismo.ui.resources.icons.BundledIcon
@@ -29,6 +24,10 @@ import scalismo.ui.util.EdtUtil
 import scalismo.ui.view.swing.CustomListCellRenderer
 import scalismo.ui.view.util.ScalableUI
 
+import java.awt.event.{MouseAdapter, MouseEvent}
+import java.awt.{Color, Cursor, Font, Component => AComponent}
+import java.text.SimpleDateFormat
+import javax.swing._
 import scala.swing.event.Key
 import scala.swing.{Action, _}
 

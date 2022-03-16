@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.0.0",
+    scalaVersion := "3.1.0",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
       else
         Opts.resolver.sonatypeStaging
     ),
-    crossScalaVersions := Seq("3.0.0", "2.13.6"),
+    crossScalaVersions := Seq("3.1.0", "2.13.8"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
@@ -45,15 +45,7 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-701a8974372171fc8ac27177e2fdfa56b75788b1"),
-    unmanagedSourceDirectories in Compile += {
-      val sourceDir = (sourceDirectory in Compile).value
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, n))            => sourceDir / "scala-2.13+"
-        case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
-      }
-    }
+    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC1")
   )
   .enablePlugins(GitVersioning)
   .settings(
