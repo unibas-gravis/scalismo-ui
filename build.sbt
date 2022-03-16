@@ -45,7 +45,7 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC1")
+    libraryDependencies ++= Seq("ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC1")
   )
   .enablePlugins(GitVersioning)
   .settings(
@@ -76,10 +76,10 @@ lazy val root = (project in file("."))
   )
   .enablePlugins(AssemblyPlugin)
   .settings(
-    assembly/assemblyJarName  := "scalismo-ui.jar",
-    assembly/mainClass  := Some("scalismo.ui.app.ScalismoViewer"),
-    run/fork  := true,
-    assembly/assemblyMergeStrategy ~= { _ =>
+    assembly / assemblyJarName := "scalismo-ui.jar",
+    assembly / mainClass := Some("scalismo.ui.app.ScalismoViewer"),
+    run / fork := true,
+    assembly / assemblyMergeStrategy ~= { _ =>
       {
         case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
         case PathList("META-INF", s)
