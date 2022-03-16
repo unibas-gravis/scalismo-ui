@@ -59,7 +59,7 @@ trait VectorFieldActor extends SingleDataSetActor with ActorOpacity with ActorSc
     for (((point, vector), _) <- sceneNode.source.pointsWithValues.zipWithIndex) {
       points.InsertNextPoint(point(0), point(1), point(2))
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
-      scalars.InsertNextValue(vector.norm)
+      scalars.InsertNextValue(vector.norm.toFloat)
     }
 
     new vtkPolyData {

@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.0.0",
+    scalaVersion := "3.1.0",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -17,17 +17,19 @@ lazy val root = (project in file("."))
       Developer("marcelluethi", "marcelluethi", "marcel.luethi@unibas.ch", url("https://github.com/marcelluethi"))
     ),
     publishMavenStyle := true,
-    publishTo := Some(
+    publishTo := Some(Opts.resolver.sonatypeSnapshots/*
       if (isSnapshot.value)
         Opts.resolver.sonatypeSnapshots
       else
-        Opts.resolver.sonatypeStaging
+        Opts.resolver.sonatypeStaging*/
     ),
-    crossScalaVersions := Seq("3.0.0", "2.13.6"),
+    crossScalaVersions := Seq("3.1.0", "2.13.7"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
+      "jz3d-snapshot" at "https://maven.jzy3d.org/releases",
+      "jz3d-snapshot" at "https://maven.jzy3d.org/shapshots",
       "twitter" at "https://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -37,7 +39,6 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
@@ -45,7 +46,7 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-701a8974372171fc8ac27177e2fdfa56b75788b1"),
+    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-2fa2e8af0e706556d5db2581d3896b4814cc46a7-SNAPSHOT"),
     unmanagedSourceDirectories in Compile += {
       val sourceDir = (sourceDirectory in Compile).value
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -79,7 +80,6 @@ lazy val root = (project in file("."))
     buildInfoPackage := "scalismo.ui"
   )
   .settings(
-    bintrayOrganization := Some("unibas-gravis"),
     licenses += ("GPL-3.0", url("http://opensource.org/licenses/gpl-3.0"))
   )
   .enablePlugins(AssemblyPlugin)
