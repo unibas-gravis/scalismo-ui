@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.1.0",
+    scalaVersion := "2.13.7",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -46,7 +46,7 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-2fa2e8af0e706556d5db2581d3896b4814cc46a7-SNAPSHOT"),
+    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-d266ceffe50122314c3d67def4ae4095f59df649"),
     unmanagedSourceDirectories in Compile += {
       val sourceDir = (sourceDirectory in Compile).value
       CrossVersion.partialVersion(scalaVersion.value) match {

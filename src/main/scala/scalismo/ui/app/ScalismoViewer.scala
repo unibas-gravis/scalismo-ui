@@ -17,12 +17,13 @@
 
 package scalismo.ui.app
 
+import ch.unibas.cs.gravis.vtkjavanativelibs.VtkNativeLibraries
+
 import java.io.{File, IOException}
 import scalismo.geometry._3D
 import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatismoIO, StatisticalModelIO}
 import scalismo.ui.api.ScalismoUI
 import scalismo.ui.util.FileUtil
-import vtkjava.InitializationMode
 
 import scala.util.{Failure, Success}
 
@@ -38,8 +39,7 @@ object ScalismoViewer {
   }
 
   def main(args: Array[String]): Unit = {
-    vtkjava.VtkNativeLibraries.initialize(InitializationMode.WARN_VERBOSE)
-    //scalismo.initialize()
+    scalismo.initialize()
 
 
     val ui = ScalismoUI("Scalismo Viewer")

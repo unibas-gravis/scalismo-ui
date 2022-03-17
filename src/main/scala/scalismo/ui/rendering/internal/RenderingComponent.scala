@@ -23,6 +23,7 @@ import com.jogamp.opengl.awt.GLJPanel
 import java.util.concurrent.locks.ReentrantLock
 import scalismo.ui.view.ViewportPanel
 import vtk._
+import vtk.rendering.jogl.vtkJoglPanelComponent
 
 /**
  * This is essentially a Scala re-implementation based on `vtk.rendering.jogl.vtkJoglPanelComponent`.
@@ -32,7 +33,7 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
 
   ////// fields / constructor
 
-  private val renderWindow = new vtkGenericOpenGLRenderWindow()
+  private val renderWindow = new vtkJoglPanelComponent().getRenderWindow()//new vtkGenericOpenGLRenderWindow()
   private val lock = new ReentrantLock
   private var renderer = new vtkRenderer
 
@@ -63,9 +64,9 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
   // Link renderWindow with renderer
   renderWindow.AddRenderer(renderer)
 
-  renderWindow.SetIsDirect(1)
-  renderWindow.SetSupportsOpenGL(1)
-  renderWindow.SetIsCurrent(true)
+//  renderWindow.SetIsDirect(1)
+//  renderWindow.SetSupportsOpenGL(1)
+//  renderWindow.SetIsCurrent(true)
 
   // Make sure that when VTK internally requests a Render, it gets triggered properly
   renderWindow.AddObserver("WindowFrameEvent", this, "Render")
@@ -91,7 +92,7 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.vtkCompo
 
       // renderWindow.SetMapped(1) // this is there in the original code, but causes DEADLOCKs on Windows.
       renderWindow.SetPosition(0, 0)
-      renderWindow.OpenGLInit()
+      //renderWindow.OpenGLInit()
 
       setSize(drawable.getSurfaceWidth, drawable.getSurfaceHeight)
 
