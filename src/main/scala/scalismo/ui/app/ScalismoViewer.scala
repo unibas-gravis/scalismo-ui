@@ -41,7 +41,6 @@ object ScalismoViewer {
   def main(args: Array[String]): Unit = {
     scalismo.initialize()
 
-
     val ui = ScalismoUI("Scalismo Viewer")
 
     val defaultGroup = ui.createGroup("Default Group")

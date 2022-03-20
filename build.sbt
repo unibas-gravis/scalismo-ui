@@ -17,11 +17,11 @@ lazy val root = (project in file("."))
       Developer("marcelluethi", "marcelluethi", "marcel.luethi@unibas.ch", url("https://github.com/marcelluethi"))
     ),
     publishMavenStyle := true,
-    publishTo := Some(Opts.resolver.sonatypeSnapshots/*
+    publishTo := Some(
       if (isSnapshot.value)
         Opts.resolver.sonatypeSnapshots
       else
-        Opts.resolver.sonatypeStaging*/
+        Opts.resolver.sonatypeStaging
     ),
     crossScalaVersions := Seq("3.1.0", "2.13.8"),
     resolvers ++= Seq(
@@ -50,7 +50,7 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-font_awesome" % "4.5.0.3",
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
-    ),
+    )
   )
   .enablePlugins(GitVersioning)
   .settings(

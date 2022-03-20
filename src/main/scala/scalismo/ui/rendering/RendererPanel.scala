@@ -69,7 +69,6 @@ object RendererPanel {
 
 }
 
-
 class RendererPanel(viewport: ViewportPanel) extends BorderPanel {
 
   private class RenderableAndActors(val renderable: Renderable, val actorsOption: Option[Actors]) {
