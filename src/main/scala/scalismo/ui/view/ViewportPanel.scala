@@ -17,8 +17,6 @@
 
 package scalismo.ui.view
 
-import javax.swing.border.TitledBorder
-import javax.swing.{BorderFactory, SwingConstants}
 import scalismo.ui.control.SlicingPosition
 import scalismo.ui.event.ScalismoPublisher
 import scalismo.ui.model.{Axis, BoundingBox, Scene}
@@ -28,6 +26,8 @@ import scalismo.ui.util.FileIoMetadata
 import scalismo.ui.view.action.SaveAction
 import scalismo.ui.view.util.{AxisColor, ScalableUI}
 
+import javax.swing.border.TitledBorder
+import javax.swing.{BorderFactory, SwingConstants}
 import scala.swing._
 import scala.swing.event.{Event, ValueChanged}
 

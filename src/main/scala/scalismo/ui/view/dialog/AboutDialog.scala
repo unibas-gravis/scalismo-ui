@@ -33,47 +33,8 @@ import scala.swing.{Action, Alignment, BorderPanel, Button, Component, Dialog, G
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
-import scala.util.Try
 
 object AboutDialog {
-
-  /**
-   * This is essentially a workaround for IntelliJ Idea not liking
-   * auto-generated sources. (I.e. Idea continues to bitch about
-   * not finding scalismo.ui.BuildInfo, thus making it impossible
-   * to compile or start the program from the UI).
-   *
-   * Using runtime reflection avoids this.
-   */
-//  object BuildInfo {
-//
-//    private val objectName = "scalismo.ui.BuildInfo$"
-//    private val buildInfoClazz = Class.forName(objectName)
-//
-//    // to access a scala object via java reflection, we need to cheat a bit
-//    // and make the default constructor accessible, and then to create a new instance.
-//    private val cons = buildInfoClazz.getDeclaredConstructors().head
-//    cons.setAccessible(true);
-//    private val buildInfoObj = cons.newInstance().asInstanceOf[scalismo.ui.BuildInfo$]
-//
-//    def proxy(fieldName: String): String = {
-//
-//      Try {
-//        val method = buildInfoClazz.getDeclaredMethods.filter(x => x.getName.toString == fieldName).head
-//        method.invoke(buildInfoObj).toString
-//      }.getOrElse("???")
-//
-//    }
-//
-//    // proxied fields
-//    def version: String = proxy("version")
-//
-//    def scalaVersion: String = proxy("scalaVersion")
-//
-//    def sbtVersion: String = proxy("sbtVersion")
-//
-//    def buildTime: String = proxy("buildTime")
-//  }
 
   object scaled {
 
