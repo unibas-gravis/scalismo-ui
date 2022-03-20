@@ -42,7 +42,8 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC2",
+      "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
+      "ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC1",
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
@@ -50,7 +51,6 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
-    libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-d266ceffe50122314c3d67def4ae4095f59df649"),
   )
   .enablePlugins(GitVersioning)
   .settings(

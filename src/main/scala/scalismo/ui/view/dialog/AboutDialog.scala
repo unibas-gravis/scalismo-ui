@@ -29,7 +29,19 @@ import java.awt.event.{MouseAdapter, MouseEvent}
 import java.awt.{Color, Cursor, Dimension, Font}
 import java.net.URI
 import javax.swing.{BorderFactory, Icon, JTextArea, JTextPane}
-import scala.swing.{Action, Alignment, BorderPanel, Button, Component, Dialog, GridBagPanel, Label, ScrollPane, TabbedPane, TextArea}
+import scala.swing.{
+  Action,
+  Alignment,
+  BorderPanel,
+  Button,
+  Component,
+  Dialog,
+  GridBagPanel,
+  Label,
+  ScrollPane,
+  TabbedPane,
+  TextArea
+}
 import scala.swing.GridBagPanel.{Anchor, Fill}
 import scala.swing.Swing.EmptyIcon
 import scala.swing.TabbedPane.Page
