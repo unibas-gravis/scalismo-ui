@@ -74,7 +74,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
         (GaussianProcessCoefficientsPanel.MaxAbsoluteCoefficientValue / GaussianProcessCoefficientsPanel.CoefficientValueStep).toInt
       min = -max
       name = index.toString
-      value = 0
+      this.value = 0
       snapToTicks = true
     }
     val value = new Label(labelFormat(0.0f))
@@ -151,6 +151,7 @@ class GaussianProcessCoefficientsPanel(override val frame: ScalismoFrame) extend
   }
 
   def randomizeValues(): Unit = {
+    import breeze.stats.distributions.Rand.FixedSeed.randBasis
     node.foreach { n =>
       val coeffs = n.transformation.coefficients.toArray
       coeffs.indices.foreach { index =>

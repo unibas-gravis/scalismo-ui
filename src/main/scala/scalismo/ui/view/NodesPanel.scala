@@ -18,7 +18,6 @@
 package scalismo.ui.view
 
 import java.awt.event._
-
 import javax.swing.event.{TreeSelectionEvent, TreeSelectionListener}
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree._
@@ -136,7 +135,7 @@ object NodesPanel {
 
 }
 
-class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilters {
+class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilters { self =>
   private val scene = frame.scene
 
   val rootNode = new ViewNode(scene)
@@ -206,9 +205,9 @@ class NodesPanel(val frame: ScalismoFrame) extends BorderPanel with NodeListFilt
     setCellRenderer(new SceneNodeCellRenderer)
     getSelectionModel.setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION)
     addTreeSelectionListener(selectionListener)
-    addKeyListener(keyListener)
-    addMouseListener(mouseListener)
-    addComponentListener(componentListener)
+    addKeyListener(self.keyListener)
+    addMouseListener(self.mouseListener)
+    addComponentListener(self.componentListener)
     setExpandsSelectedPaths(true)
     setLargeModel(true)
   }

@@ -780,7 +780,7 @@ object TransformationView {
       type PointToPointTransformation[D] = Point[D] => Point[D]
       // here we need a two step process due to type erasure to find the right type.
       s match {
-        case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_]] =>
+        case value: TransformationNode[_] if value.transformation.isInstanceOf[PointToPointTransformation[_3D]] =>
           Some(TransformationView(s.asInstanceOf[TransformationNode[PointToPointTransformation[_3D]]]))
         case _ => None
       }

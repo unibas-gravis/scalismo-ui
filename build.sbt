@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "2.13.3",
+    scalaVersion := "3.1.0",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -23,12 +23,12 @@ lazy val root = (project in file("."))
       else
         Opts.resolver.sonatypeStaging
     ),
-    crossScalaVersions := Seq("2.12.11", "2.13.3"),
+    crossScalaVersions := Seq("3.1.0", "2.13.8"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
-      "twitter" at "http://maven.twttr.com/"
+      "twitter" at "https://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
       case _ => Seq("-encoding", "UTF-8", "-Xlint", "-deprecation", "-unchecked", "-feature", "-target:jvm-1.8")
@@ -37,22 +37,15 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "0.90.0",
       "ch.unibas.cs.gravis" % "scalismo-native-all" % "4.0.1",
-      "org.scalatest" %% "scalatest" % "3.0.8" % "test",
-      "de.sciss" %% "swingplus" % "0.4.2",
+      "ch.unibas.cs.gravis" %% "scalismo" % "0.91-RC1",
+      "org.scalatest" %% "scalatest" % "3.2.10" % "test",
+      "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
       "com.github.jiconfont" % "jiconfont-font_awesome" % "4.5.0.3",
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
-    ),
-    unmanagedSourceDirectories in Compile += {
-      val sourceDir = (sourceDirectory in Compile).value
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
-      }
-    }
+    )
   )
   .enablePlugins(GitVersioning)
   .settings(
@@ -77,17 +70,16 @@ lazy val root = (project in file("."))
     ),
     buildInfoPackage := "scalismo.ui"
   )
-  .enablePlugins(BintrayPlugin)
   .settings(
     bintrayOrganization := Some("unibas-gravis"),
     licenses += ("GPL-3.0", url("http://opensource.org/licenses/gpl-3.0"))
   )
   .enablePlugins(AssemblyPlugin)
   .settings(
-    assemblyJarName in assembly := "scalismo-ui.jar",
-    mainClass in assembly := Some("scalismo.ui.app.ScalismoViewer"),
-    fork in run := true,
-    assemblyMergeStrategy in assembly ~= { _ =>
+    assembly / assemblyJarName := "scalismo-ui.jar",
+    assembly / mainClass := Some("scalismo.ui.app.ScalismoViewer"),
+    run / fork := true,
+    assembly / assemblyMergeStrategy ~= { _ =>
       {
         case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
         case PathList("META-INF", s)
@@ -104,8 +96,3 @@ lazy val root = (project in file("."))
     licenses += ("GPL-3.0", url("http://www.gnu.org/licenses/gpl-3.0.en.html")),
     headerLicense := Some(HeaderLicense.GPLv3("2016", "University of Basel, Graphics and Vision Research Group"))
   )
-
-libraryDependencies ++= Seq(
-  compilerPlugin("com.github.ghik" % "silencer-plugin" % "1.7.0" cross CrossVersion.full),
-  "com.github.ghik" % "silencer-lib" % "1.7.0" % Provided cross CrossVersion.full
-)

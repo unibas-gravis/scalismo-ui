@@ -76,14 +76,16 @@ object FontIcon {
 
     var actualSize: Float = height
     // loop until we find a font size where the character will fit completely into the requested size
-    do {
+    var runLessThanOnce = true // we need to simulate a do while loop, which is not supported anymore in scala 3.0
+    while (runLessThanOnce || needed.width > width || needed.height > height) {
       font = baseFont.deriveFont(actualSize)
       val metrics = graphics.getFontMetrics(font)
       bounds = metrics.getStringBounds(string, graphics)
       needed.width = Math.ceil(bounds.getWidth).toInt
       needed.height = Math.ceil(bounds.getHeight).toInt
       actualSize -= .5f
-    } while (needed.width > width || needed.height > height)
+      runLessThanOnce = false
+    }
 
     // we might be smaller than requested (normally in at most one dimension), so adjust for that
     val xOffset: Float = (width - needed.width).toFloat / 2.0f

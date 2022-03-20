@@ -73,7 +73,7 @@ object ScalismoViewer {
             MeshIO.readMesh(file) match {
               case Success(mesh) => ui.show(defaultGroup, mesh, basename)
               case Failure(_) =>
-                ImageIO.read3DScalarImageAsType[Float](file, resampleOblique = true) match {
+                ImageIO.read3DScalarImageAsType[Float](file) match {
                   case Success(image) => ui.show(defaultGroup, image, basename)
                   case Failure(t)     => showErrorMessage(file, t)
                 }
