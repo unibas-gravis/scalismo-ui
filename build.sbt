@@ -30,6 +30,9 @@ lazy val root = (project in file("."))
       Resolver.sonatypeRepo("snapshots"),
       "jz3d-snapshot" at "https://maven.jzy3d.org/releases",
       "jz3d-snapshot" at "https://maven.jzy3d.org/shapshots",
+      Resolver.sonatypeRepo("chunibascsgravis-1045"),
+      Resolver.sonatypeRepo("chunibascsgravis-1049"),
+      Resolver.sonatypeRepo("chunibascsgravis-1050"),
       "twitter" at "https://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -48,14 +51,6 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     ),
     libraryDependencies ++=  Seq("ch.unibas.cs.gravis" %% "scalismo" % "develop-d266ceffe50122314c3d67def4ae4095f59df649"),
-    unmanagedSourceDirectories in Compile += {
-      val sourceDir = (sourceDirectory in Compile).value
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, n))            => sourceDir / "scala-2.13+"
-        case Some((2, n)) if n >= 13 => sourceDir / "scala-2.13+"
-        case _                       => sourceDir / "scala-2.13-"
-      }
-    }
   )
   .enablePlugins(GitVersioning)
   .settings(
