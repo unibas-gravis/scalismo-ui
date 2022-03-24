@@ -53,7 +53,7 @@ trait TransformationGlyphActor extends VectorFieldActor {
     for ((vector, _) <- sceneNode.transformedSource.values.zipWithIndex) {
       val norm = vector.norm
       vectors.InsertNextTuple3(vector(0), vector(1), vector(2))
-      scalars.InsertNextValue(norm)
+      scalars.InsertNextValue(norm.toFloat)
       if (norm > maxNorm) maxNorm = norm
       if (norm < minNorm) minNorm = norm
     }

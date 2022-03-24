@@ -17,8 +17,9 @@
 
 package scalismo.ui.app
 
-import java.io.{File, IOException}
+import ch.unibas.cs.gravis.vtkjavanativelibs.VtkNativeLibraries
 
+import java.io.{File, IOException}
 import scalismo.geometry._3D
 import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatismoIO, StatisticalModelIO}
 import scalismo.ui.api.ScalismoUI

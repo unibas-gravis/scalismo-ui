@@ -28,6 +28,11 @@ lazy val root = (project in file("."))
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
       Resolver.sonatypeRepo("snapshots"),
+      "jz3d-snapshot" at "https://maven.jzy3d.org/releases",
+      "jz3d-snapshot" at "https://maven.jzy3d.org/shapshots",
+      Resolver.sonatypeRepo("chunibascsgravis-1045"),
+      Resolver.sonatypeRepo("chunibascsgravis-1049"),
+      Resolver.sonatypeRepo("chunibascsgravis-1050"),
       "twitter" at "https://maven.twttr.com/"
     ),
     scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
@@ -71,7 +76,6 @@ lazy val root = (project in file("."))
     buildInfoPackage := "scalismo.ui"
   )
   .settings(
-    bintrayOrganization := Some("unibas-gravis"),
     licenses += ("GPL-3.0", url("http://opensource.org/licenses/gpl-3.0"))
   )
   .enablePlugins(AssemblyPlugin)
