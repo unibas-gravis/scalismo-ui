@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package scalismo.ui.rendering.internal
 
 import com.jogamp.opengl.{GLAutoDrawable, GLCapabilities, GLEventListener, GLProfile}
@@ -35,7 +36,7 @@ class RenderingComponent(viewport: ViewportPanel) extends vtk.rendering.jogl.vtk
 
   private lazy val interceptor = new EventInterceptor(viewport.frame)
   private lazy val interactor = new RenderWindowInteractor()
-  private lazy val glPanel = new GLJPanelWithViewport(viewport, new GLCapabilities(GLProfile.getDefault()))
+  private lazy val glPanel = new GLJPanelWithViewport(viewport, new GLCapabilities(GLProfile.getMaximum(true)))
 
   val rendererState = new RendererStateImplementation(renderer, viewport)
 
