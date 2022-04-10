@@ -18,7 +18,6 @@
 package scalismo.ui.rendering.internal
 
 import java.awt.event.{KeyEvent, MouseEvent, MouseWheelEvent, MouseWheelListener}
-
 import scalismo.ui.control.interactor.Interactor.Verdict.Block
 import scalismo.ui.view.ScalismoFrame
 import vtk.rendering.vtkEventInterceptor
@@ -45,7 +44,5 @@ class EventInterceptor(frame: ScalismoFrame) extends vtkEventInterceptor {
 
   override def mouseReleased(e: MouseEvent): Boolean = frame.interactor.mouseReleased(e) == Block
 
-  // This is an extension to the original vtkEventInterceptor.
-  // Since VTK doesn't handle mouse wheel events anyway, there's no need to block them, hence a Unit return type.
   override def mouseWheelMoved(e: MouseWheelEvent): Boolean = frame.interactor.mouseWheelMoved(e) == Block
 }
