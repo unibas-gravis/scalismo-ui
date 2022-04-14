@@ -1,4 +1,4 @@
-# Scalismo-ui [![Build Status](https://travis-ci.org/unibas-gravis/scalismo-ui.svg?branch=master)](https://travis-ci.org/unibas-gravis/scalismo-ui)
+# Scalismo-ui 
 
 Scalismo-ui is a library for visualizing statistical shape models and related 3D objects, such as 3D meshes or 3D medical images. It is designed to complement the [Scalismo](https://github.com/unibas-gravis/scalismo) framework and to make it easy to build  graphical shape modelling applications and to allow for "visual debugging" of complex image analysis algorithms.
 Further, it can be used as a standalone application for visualizing shape models, 3D meshes and 3D medical images.
@@ -34,7 +34,7 @@ Add the following dependency to your `build.sbt`:
 
 resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
 
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.90.0"
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.91.0"
 ```
 
 The graphical user interface can be called from an application using the command
@@ -54,12 +54,12 @@ to have the application available as a jar file. This can be built by calling
 sbt assembly
 ```
 
-The resulting jar file is ```target/scala-2.12/scalismo-ui.jar```
+The resulting jar file is ```target/scala-3.1.0/scalismo-ui.jar```
 
 
 # Documentation
 
-Checkout the [Scalismo-tutorials](https://unibas-gravis.github.io/scalismo-tutorial/) for examples how to use *Scalismo-ui* in your
+Checkout the [Scalismo-website](https://scalismo.org) for examples on how to use *Scalismo-ui* in your
 programs. 
  
 #### Undocumented features
@@ -71,18 +71,18 @@ For questions regarding scalismo-ui or suggestions for improvements, please post
 
 # Maintainers
 
-* University of Basel, Graphics and Vision research: [@unibas-gravis](https://github.com/unibas-gravis), [homepage](http://gravis.cs.unibas.ch)
-* Marcel Luethi, [@marcelluethi](https://github.com/marcelluethi)
-* Ghazi Bouabene, [@ghazi-bouabene](https://github.com/ghazi-bouabene)
+Scalismo-UI is maintained by researchers from the Graphics and vision research group at the University of Basel. See the following links for more information:
 
+* [Organisation unibas-gravis on Github](https://github.com/unibas-gravis) 
+* [Website at University of Basel](https://shapemodelling.cs.unibas.ch/web/).
 
 # Contributions
 
-Contributions to scalismo-ui are very welceom. Please send us a pull request from your fork of this repository!
+Contributions to scalismo-ui are very welcome. Please send us a pull request from your fork of this repository!
 We do have to ask you to sign the [contributors agreement](contributors-agreement.pdf) before we can merge any of your work into our code base.
 
 # Copyright and Licenses
 
 All code is released under the GNU public license, available [here](https://opensource.org/licenses/GPL-3.0).
 
-Copyright, University of Basel, 2017.
+Copyright, University of Basel, 2022.
