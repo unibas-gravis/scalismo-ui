@@ -59,11 +59,8 @@ class LoadStatisticalShapeModelAction(group: GroupNode)(implicit frame: Scalismo
     StatismoIO.readModelCatalog(file) match {
 
       case Failure(ex) =>
-        if (ex == StatismoIO.NoCatalogPresentException) {
-          // no catalog, assuming a single contained model
-          Success("/")
-        } else Failure(ex)
-
+        // no catalog, assuming a single contained model
+        Success("/")
       case Success(catalog) =>
         val entries = catalog.filter(e => e.modelType == StatismoModelType.Polygon_Mesh)
 
