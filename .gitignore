@@ -16,4 +16,7 @@ playground/
 /bin/
 /src-local/
 /statismo-ui.jar
-
+.plexus
+.bloop
+null
+project/project
