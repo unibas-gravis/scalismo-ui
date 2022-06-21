@@ -77,14 +77,18 @@ lazy val root = (project in file("."))
     assembly / assemblyJarName := "scalismo-ui.jar",
     assembly / mainClass := Some("scalismo.ui.app.ScalismoViewer"),
     run / fork := true,
-    assembly / assemblyMergeStrategy ~= { _ =>
-      {
-        case PathList("META-INF", "MANIFEST.MF") => MergeStrategy.discard
-        case PathList("META-INF", s)
-            if s.endsWith(".SF") || s.endsWith(".DSA") || s.endsWith(".RSA") || s.endsWith(".txt") =>
-          MergeStrategy.discard
-        case _ => MergeStrategy.first
-      }
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", xs @ _*) =>
+        (xs map { _.toLowerCase }) match {
+          case ("manifest.mf" :: Nil) | ("index.list" :: Nil) | ("dependencies" :: Nil) =>
+            MergeStrategy.discard
+          case ps @ (x :: xs) if ps.last.endsWith(".sf") || ps.last.endsWith(".dsa") =>
+            MergeStrategy.discard
+          case "services" :: xs =>
+            MergeStrategy.filterDistinctLines
+          case _ => MergeStrategy.first
+        }
+      case _ => MergeStrategy.first
     }
   )
   .enablePlugins(AutomateHeaderPlugin)
