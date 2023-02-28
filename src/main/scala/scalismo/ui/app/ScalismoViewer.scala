@@ -21,7 +21,7 @@ import ch.unibas.cs.gravis.vtkjavanativelibs.VtkNativeLibraries
 
 import java.io.{File, IOException}
 import scalismo.geometry._3D
-import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatismoIO, StatisticalModelIO}
+import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatisticalModelIO}
 import scalismo.ui.api.ScalismoUI
 import scalismo.ui.util.FileUtil
 
