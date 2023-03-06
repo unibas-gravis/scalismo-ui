@@ -83,7 +83,7 @@ object FileIoMetadata {
 
   val StatisticalVolumeMeshModel: FileIoMetadata = new FileIoMetadata {
     override val description = "Statistical Volume Shape Model"
-    override val fileExtensions = List("h5")
+    override val fileExtensions = List("h5", "json")
   }
 
   val Image: FileIoMetadata = new FileIoMetadata {
@@ -98,7 +98,7 @@ object FileIoMetadata {
 
   val StatisticalShapeModel: FileIoMetadata = new FileIoMetadata {
     override val description = "Statistical Shape Model"
-    override val fileExtensions = List("h5")
+    override val fileExtensions = List("h5", "json")
   }
 
 }
