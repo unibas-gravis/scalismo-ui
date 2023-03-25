@@ -3,7 +3,7 @@ import sbt.Keys.{unmanagedSourceDirectories, _}
 import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
-ThisBuild / version := "0.92-SNAPSHOT"
+ThisBuild / version := "0.92-RC1"
 
 lazy val root = (project in file("."))
   .settings(
