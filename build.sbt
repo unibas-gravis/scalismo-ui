@@ -3,11 +3,13 @@ import sbt.Keys.{unmanagedSourceDirectories, _}
 import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
+ThisBuild / version := "0.92-SNAPSHOT"
+
 lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.1.0",
+    scalaVersion := "3.2.2",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -23,7 +25,6 @@ lazy val root = (project in file("."))
       else
         Opts.resolver.sonatypeStaging
     ),
-    crossScalaVersions := Seq("3.1.0", "2.13.8"),
     resolvers ++= Seq(
       Resolver.jcenterRepo,
       Resolver.sonatypeRepo("releases"),
@@ -37,7 +38,7 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "0.91.1",
+      "ch.unibas.cs.gravis" %% "scalismo" % "0.92-RC1",
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
@@ -45,12 +46,6 @@ lazy val root = (project in file("."))
       "com.github.jiconfont" % "jiconfont-elusive" % "2.0.2",
       "com.github.jiconfont" % "jiconfont-entypo" % "2.0.2"
     )
-  )
-  .enablePlugins(GitVersioning)
-  .settings(
-    git.baseVersion := "develop",
-    git.useGitDescribe := false,
-    useJGit
   )
   .enablePlugins(GitBranchPrompt)
   .enablePlugins(BuildInfoPlugin)

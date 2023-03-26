@@ -730,6 +730,12 @@ case class PointDistributionModelViewControlsTriangleMesh3D private[ui] (
 )
 
 // Note this class does not extend Object view, as there is not really a corresponding node to this concept
+case class PointDistributionModelViewControlsUnstructuredPointsDomain3D private[ui] (
+  referenceView: PointCloudView,
+  shapeModelTransformationView: ShapeModelTransformationView
+)
+
+// Note this class does not extend Object view, as there is not really a corresponding node to this concept
 case class PointDistributionModelViewControlsTetrahedralMesh3D private[ui] (
   referenceView: TetrahedralMeshView,
   shapeModelTransformationView: ShapeModelTransformationView

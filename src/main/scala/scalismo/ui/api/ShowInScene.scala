@@ -245,6 +245,27 @@ object ShowInScene extends LowPriorityImplicits {
     }
   }
 
+  implicit object ShowInScenePointDistributionModelUnstructuredPointsDomain3D
+      extends ShowInScene[PointDistributionModel[_3D, UnstructuredPointsDomain]] {
+    override type View = PointDistributionModelViewControlsUnstructuredPointsDomain3D
+
+    override def showInScene(model: PointDistributionModel[_3D, UnstructuredPointsDomain],
+                             name: String,
+                             group: Group): View = {
+      val gpUnstructuredPoints = model.gp
+        .interpolate(NearestNeighborInterpolator3D())
+        .discretize(UnstructuredPointsDomain(model.reference.pointSet.points.toIndexedSeq))
+
+      val shapeModelTransform =
+        ShapeModelTransformation(PointTransformation.RigidIdentity,
+                                 DiscreteLowRankGpPointTransformation(gpUnstructuredPoints))
+      val smV = CreateShapeModelTransformation.showInScene(shapeModelTransform, name, group)
+      val tmV = ShowInScenePointCloudFromDomain.showInScene(model.reference, name, group)
+      PointDistributionModelViewControlsUnstructuredPointsDomain3D(tmV, smV)
+
+    }
+  }
+
   implicit object ShowInScenePointDistributionModelTetrahedralMesh3D
       extends ShowInScene[PointDistributionModel[_3D, TetrahedralMesh]] {
     override type View = PointDistributionModelViewControlsTetrahedralMesh3D
