@@ -34,7 +34,7 @@ Add the following dependency to your `build.sbt`:
 
 resolvers += Resolver.bintrayRepo("unibas-gravis", "maven")
 
-libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.91.0"
+libraryDependencies += "ch.unibas.cs.gravis" %% "scalismo-ui" % "0.92.0"
 ```
 
 The graphical user interface can be called from an application using the command
@@ -85,4 +85,4 @@ We do have to ask you to sign the [contributors agreement](contributors-agreemen
 
 All code is released under the GNU public license, available [here](https://opensource.org/licenses/GPL-3.0).
 
-Copyright, University of Basel, 2022.
+Copyright, University of Basel, 2023.

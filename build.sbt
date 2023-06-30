@@ -3,13 +3,13 @@ import sbt.Keys.{unmanagedSourceDirectories, _}
 import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
-ThisBuild / version := "0.92-RC1"
+ThisBuild / version := "0.92.0"
 
 lazy val root = (project in file("."))
   .settings(
     name := "scalismo.ui",
     organization := "ch.unibas.cs.gravis",
-    scalaVersion := "3.2.2",
+    scalaVersion := "3.3.0",
     homepage := Some(url("https://scalismo.org")),
     licenses := Seq("GPLv3" -> url("http://www.gnu.org/licenses/gpl-3.0.html")),
     scmInfo := Some(
@@ -38,7 +38,7 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "0.92-RC1",
+      "ch.unibas.cs.gravis" %% "scalismo" % "0.92.0",
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",
