@@ -22,7 +22,7 @@ import java.io.File
 import scalismo.common.{DiscreteField, DomainWarp}
 import scalismo.common.DiscreteField.ScalarMeshField
 import scalismo.geometry.{_3D, Point, Point3D}
-import scalismo.io.MeshIO
+import scalismo.vtk.io.{MeshIO => MeshIOVtk}
 import scalismo.mesh.TriangleMesh
 import scalismo.transformations.Transformation
 import scalismo.ui.model.capabilities._
@@ -46,7 +46,7 @@ class ScalarMeshFieldsNode(override val parent: GroupNode)
   }
 
   override def load(file: File): Try[Unit] = {
-    val r = MeshIO.readScalarMeshFieldAsType[Float](file)
+    val r = MeshIOVtk.readScalarMeshFieldAsType[Float](file)
     r match {
       case Failure(ex) => Failure(ex)
       case Success(scalarMeshField) =>
@@ -90,7 +90,7 @@ class ScalarMeshFieldNode(override val parent: ScalarMeshFieldsNode,
     DiscreteField(canWarp.transform(untransformed.mesh, Transformation(transformation)), untransformed.data)
   }
 
-  override def save(file: File): Try[Unit] = MeshIO.writeScalarMeshField[Float](transformedSource, file)
+  override def save(file: File): Try[Unit] = MeshIOVtk.writeScalarMeshField[Float](transformedSource, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.ScalarMeshField
 

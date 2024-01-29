@@ -21,7 +21,8 @@ import ch.unibas.cs.gravis.vtkjavanativelibs.VtkNativeLibraries
 
 import java.io.{File, IOException}
 import scalismo.geometry._3D
-import scalismo.io.{ImageIO, LandmarkIO, MeshIO, StatisticalModelIO}
+import scalismo.io.{LandmarkIO, MeshIO, StatisticalModelIO}
+import scalismo.vtk.io.{ImageIO => ImageIOVtk}
 import scalismo.ui.api.ScalismoUI
 import scalismo.ui.util.FileUtil
 
@@ -39,7 +40,7 @@ object ScalismoViewer {
   }
 
   def main(args: Array[String]): Unit = {
-    scalismo.initialize()
+    scalismo.vtk.scalismo.initialize()
 
     val ui = ScalismoUI("Scalismo Viewer")
 
@@ -74,14 +75,14 @@ object ScalismoViewer {
             MeshIO.readMesh(file) match {
               case Success(mesh) => ui.show(defaultGroup, mesh, basename)
               case Failure(_) =>
-                ImageIO.read3DScalarImageAsType[Float](file) match {
+                ImageIOVtk.read3DScalarImageAsType[Float](file) match {
                   case Success(image) => ui.show(defaultGroup, image, basename)
                   case Failure(t)     => showErrorMessage(file, t)
                 }
             }
 
           case "nii" =>
-            ImageIO.read3DScalarImageAsType[Float](file) match {
+            ImageIOVtk.read3DScalarImageAsType[Float](file) match {
               case Success(image) => ui.show(defaultGroup, image, basename)
               case Failure(t)     => showErrorMessage(file, t)
             }

@@ -22,7 +22,7 @@ import java.io.File
 import scalismo.common.{DiscreteField, DomainWarp, UnstructuredPointsDomain}
 import scalismo.common.DiscreteField.ScalarVolumeMeshField
 import scalismo.geometry.{_3D, Point, Point3D}
-import scalismo.io.MeshIO
+import scalismo.vtk.io.{MeshIO => MeshIOVtk}
 import scalismo.mesh.TetrahedralMesh
 import scalismo.transformations.Transformation
 import scalismo.ui.model.capabilities._
@@ -39,7 +39,7 @@ class ScalarTetrahedralMeshFieldsNode(override val parent: GroupNode)
   override def loadMetadata: FileIoMetadata = FileIoMetadata.ScalarTetrahedralMeshField
 
   override def load(file: File): Try[Unit] = {
-    val r = MeshIO.readScalarVolumeMeshFieldAsType[Float](file)
+    val r = MeshIOVtk.readScalarVolumeMeshFieldAsType[Float](file)
     r match {
       case Failure(ex) => Failure(ex)
       case Success(mesh) =>
@@ -89,7 +89,7 @@ class ScalarTetrahedralMeshFieldNode(override val parent: ScalarTetrahedralMeshF
     DiscreteField(canWarp.transform(untransformed.mesh, Transformation(transformation)), untransformed.data)
   }
 
-  override def save(file: File): Try[Unit] = MeshIO.writeScalarVolumeMeshField(transformedSource, file)
+  override def save(file: File): Try[Unit] = MeshIOVtk.writeScalarVolumeMeshField(transformedSource, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.ScalarTetrahedralMeshField
 

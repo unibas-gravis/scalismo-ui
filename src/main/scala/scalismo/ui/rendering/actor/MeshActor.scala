@@ -29,7 +29,7 @@ import scalismo.ui.rendering.actor.MeshActor.MeshRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
-import scalismo.utils.MeshConversion
+import scalismo.vtk.utils.MeshConversion
 import vtk.{vtkPolyData, vtkPolyDataNormals, vtkUnsignedCharArray}
 
 object TriangleMeshActor extends SimpleActorsFactory[TriangleMeshNode] {

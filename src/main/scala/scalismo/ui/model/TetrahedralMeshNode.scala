@@ -20,7 +20,7 @@ package scalismo.ui.model
 import java.io.File
 
 import scalismo.geometry.{_3D, Point, Point3D}
-import scalismo.io.MeshIO
+import scalismo.vtk.io.{MeshIO => MeshIOVtk}
 import scalismo.mesh.TetrahedralMesh3D
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -36,7 +36,7 @@ class TetrahedralMeshesNode(override val parent: GroupNode)
   override def loadMetadata: FileIoMetadata = FileIoMetadata.TetrahedralMeshRead
 
   override def load(file: File): Try[Unit] = {
-    val r = MeshIO.readTetrahedralMesh(file)
+    val r = MeshIOVtk.readTetrahedralMesh(file)
     r match {
       case Failure(ex) => Failure(ex)
       case Success(mesh) =>
@@ -87,7 +87,7 @@ class TetrahedralMeshNode(override val parent: TetrahedralMeshesNode,
 
   override val pickable = new PickableProperty()
 
-  override def save(file: File): Try[Unit] = MeshIO.writeTetrahedralMesh(transformedSource, file)
+  override def save(file: File): Try[Unit] = MeshIOVtk.writeTetrahedralMesh(transformedSource, file)
 
   override def saveMetadata: FileIoMetadata = FileIoMetadata.TetrahedralMeshWrite
 

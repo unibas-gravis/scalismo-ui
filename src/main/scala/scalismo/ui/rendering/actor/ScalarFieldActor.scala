@@ -26,7 +26,7 @@ import scalismo.ui.model.{BoundingBox, ScalarFieldNode}
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
-import scalismo.utils.MeshConversion
+import scalismo.vtk.utils.MeshConversion
 import vtk.{vtkGlyph3D, vtkPoints, vtkPolyData, vtkSphereSource}
 
 object ScalarFieldActor extends SimpleActorsFactory[ScalarFieldNode] {

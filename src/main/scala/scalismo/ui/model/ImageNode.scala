@@ -21,6 +21,7 @@ import java.io.File
 
 import scalismo.geometry._3D
 import scalismo.image.DiscreteImage
+import scalismo.vtk.io.{ImageIO => ImageIOVtk}
 import scalismo.io.ImageIO
 import scalismo.ui.model.capabilities._
 import scalismo.ui.model.properties._
@@ -40,7 +41,7 @@ class ImagesNode(override val parent: GroupNode) extends SceneNodeCollection[Ima
   override def loadMetadata: FileIoMetadata = FileIoMetadata.Image
 
   override def load(file: File): Try[Unit] = {
-    ImageIO.read3DScalarImageAsType[Float](file) match {
+    ImageIOVtk.read3DScalarImageAsType[Float](file) match {
       case Success(image) =>
         add(image, FileUtil.basename(file))
         Success(())
@@ -76,7 +77,7 @@ class ImageNode(override val parent: ImagesNode, val source: DiscreteImage[_3D, 
   override def save(file: File): Try[Unit] = {
     val ext = FileUtil.extension(file)
     ext match {
-      case "vtk" => ImageIO.writeVTK(source, file)
+      case "vtk" => ImageIOVtk.writeVTK(source, file)
       case "nii" => ImageIO.writeNifti(source, file)
       case _     => Failure(new Exception(s"File $file: unsupported file extension"))
     }

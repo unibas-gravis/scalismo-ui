@@ -46,7 +46,7 @@ import scalismo.ui.rendering.actor.TetrahedralActor.TetrahedralRenderable
 import scalismo.ui.rendering.actor.mixin._
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ViewportPanel, ViewportPanel2D, ViewportPanel3D}
-import scalismo.utils.{TetrahedralMeshConversion}
+import scalismo.vtk.utils.TetrahedralMeshConversion
 
 import vtk.vtkUnstructuredGrid
 

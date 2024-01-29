@@ -26,7 +26,7 @@ import scalismo.ui.rendering.actor.ImageActor2D.InstanceData
 import scalismo.ui.rendering.actor.mixin.{ActorOpacity, ActorSceneNode, IsImageActor}
 import scalismo.ui.rendering.util.VtkUtil
 import scalismo.ui.view.{ScalismoFrame, ViewportPanel, ViewportPanel2D, ViewportPanel3D}
-import scalismo.utils.ImageConversion
+import scalismo.vtk.utils.ImageConversion
 import vtk._
 
 object ImageActor extends SimpleActorsFactory[ImageNode] {
