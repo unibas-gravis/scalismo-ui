@@ -40,7 +40,7 @@ object ScalismoViewer {
   }
 
   def main(args: Array[String]): Unit = {
-    scalismo.vtk.scalismo.initialize()
+    scalismo.vtk.initialize()
 
     val ui = ScalismoUI("Scalismo Viewer")
 

@@ -3,7 +3,7 @@ import sbt.Keys.{unmanagedSourceDirectories, _}
 import sbt.{CrossVersion, Developer, Resolver, ScmInfo, _}
 import com.typesafe.sbt.SbtGit.{git, useJGit}
 
-ThisBuild / version := "1.0-SNAPSHOT"
+ThisBuild / version := "1.0-RC1"
 
 lazy val root = (project in file("."))
   .settings(
@@ -38,9 +38,8 @@ lazy val root = (project in file("."))
       case _ => Seq("-source", "1.8", "-target", "1.8")
     }),
     libraryDependencies ++= Seq(
-      "ch.unibas.cs.gravis" %% "scalismo" % "1.0-SNAPSHOT",
-      "ch.unibas.cs.gravis" %% "scalismo-vtk" % "1.0-SNAPSHOT",
-      "ch.unibas.cs.gravis" %% "scalismo-asm" % "1.0-SNAPSHOT",
+      "ch.unibas.cs.gravis" %% "scalismo-vtk" % "1.0-RC1",
+      "ch.unibas.cs.gravis" %% "scalismo-asm" % "1.0-RC1",
       "org.scalatest" %% "scalatest" % "3.2.10" % "test",
       "de.sciss" %% "swingplus" % "0.5.0",
       "com.github.jiconfont" % "jiconfont-swing" % "1.0.1",

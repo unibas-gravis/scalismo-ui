@@ -67,7 +67,7 @@ class ScalismoUI(title: String) extends SimpleAPI with SimpleAPIDefaultImpl {
 object ScalismoUI {
 
   def apply(title: String = ""): ScalismoUI = {
-    scalismo.vtk.scalismo.initialize()
+    scalismo.vtk.initialize()
     ScalismoLookAndFeel.initializeWith(ScalismoLookAndFeel.DefaultLookAndFeelClassName)
     new ScalismoUI(title)
   }
